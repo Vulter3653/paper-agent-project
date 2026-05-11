@@ -52,6 +52,7 @@ function App() {
   const [papers, setPapers] = useState<PaperSummary[]>(demoPapers);
   const [selectedId, setSelectedId] = useState<string>(demoPapers[0].id);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const selected = useMemo(() => papers.find((paper) => paper.id === selectedId) ?? papers[0], [papers, selectedId]);
 
   useEffect(() => {
@@ -65,6 +66,21 @@ function App() {
     }, 2500);
     return () => window.clearInterval(timer);
   }, [job]);
+
+  async function refreshJob() {
+    if (!job) return;
+    setRefreshing(true);
+    try {
+      const response = await fetch(apiUrl(`/api/search-jobs/${job.id}`));
+      if (!response.ok) throw new Error("Failed to refresh search job");
+      const data = (await response.json()) as JobResponse;
+      setJob(data.job);
+      setPapers(data.papers);
+      setSelectedId((current) => (data.papers.some((paper) => paper.id === current) ? current : data.papers[0]?.id ?? ""));
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   async function startSearch() {
     setLoading(true);
@@ -112,8 +128,8 @@ function App() {
         <div className="tablePanel">
           <div className="panelTitle">
             <h2>Ranked Papers</h2>
-            <button className="iconButton" aria-label="Refresh job">
-              <RefreshCw size={18} />
+            <button className="iconButton" onClick={refreshJob} disabled={!job || refreshing} aria-label="Refresh job">
+              <RefreshCw size={18} className={refreshing ? "spin" : undefined} />
             </button>
           </div>
           <table>

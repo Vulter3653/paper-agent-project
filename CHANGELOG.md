@@ -15,6 +15,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Changed`: Updated `apps/web/src/main.tsx` to call the deployed Worker API through `VITE_API_BASE_URL`, defaulting to `https://paper-agent-project.shch3653.workers.dev`, and added Vite environment typings.
 - `Infra`: Added root `wrangler.toml` so the existing Cloudflare Build configuration can deploy with `npx wrangler deploy` from repository root.
 - `Fixed`: Renamed Worker in `apps/worker/wrangler.toml` to `paper-agent-project` so it matches the existing Cloudflare Worker service.
 - `Fixed`: Added missing `build` scripts to `apps/worker/package.json` and `packages/shared/package.json` so Cloudflare root-level `npm run build` succeeds across workspaces.

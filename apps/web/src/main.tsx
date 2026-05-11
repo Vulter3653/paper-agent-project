@@ -9,6 +9,12 @@ type JobResponse = {
   papers: PaperSummary[];
 };
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://paper-agent-project.shch3653.workers.dev").replace(/\/$/, "");
+
+function apiUrl(path: string): string {
+  return `${apiBaseUrl}${path}`;
+}
+
 const demoPapers: PaperSummary[] = [
   {
     id: "demo-1",
@@ -51,7 +57,7 @@ function App() {
   useEffect(() => {
     if (!job || job.status === "completed" || job.status === "failed") return;
     const timer = window.setInterval(async () => {
-      const response = await fetch(`/api/search-jobs/${job.id}`);
+      const response = await fetch(apiUrl(`/api/search-jobs/${job.id}`));
       if (!response.ok) return;
       const data = (await response.json()) as JobResponse;
       setJob(data.job);
@@ -63,7 +69,7 @@ function App() {
   async function startSearch() {
     setLoading(true);
     try {
-      const response = await fetch("/api/search-jobs", {
+      const response = await fetch(apiUrl("/api/search-jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword, yearStart: 2020, maxResults: 20 })

@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS papers (
   journal_name TEXT NOT NULL,
   doi TEXT NOT NULL,
   oa_status TEXT NOT NULL,
+  openalex_id TEXT,
+  abstract TEXT,
+  cited_by_count INTEGER DEFAULT 0,
   created_at TEXT NOT NULL,
   FOREIGN KEY (job_id) REFERENCES search_jobs(id) ON DELETE CASCADE
 );

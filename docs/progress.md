@@ -35,11 +35,11 @@ Worker health: https://paper-agent-project.shch3653.workers.dev/api/health
 
 Current next implementation target:
 
-1. Commit and push this progress handoff update if it is still uncommitted.
-2. Replace demo search persistence with real OpenAlex search integration.
-3. Save OpenAlex paper metadata into D1 `papers`.
-4. Return persisted D1 results to the dashboard.
-5. Add CSV download endpoint while R2 remains disabled.
+1. Verify the deployed Worker after Cloudflare finishes building the latest `main` commit.
+2. Click `Run` on the dashboard and confirm returned papers are real OpenAlex results, not demo titles.
+3. Confirm new D1 columns `openalex_id`, `abstract`, and `cited_by_count` are present and populated for new rows.
+4. Add CSV download endpoint while R2 remains disabled.
+5. Add Crossref metadata enrichment after OpenAlex flow is confirmed stable.
 
 ## Current Status
 
@@ -48,12 +48,13 @@ The project is deployed through the cloud workflow:
 1. Code changes are committed and pushed to `origin/main`.
 2. Cloudflare picks up GitHub changes and deploys the Worker and Pages projects.
 3. The dashboard calls the deployed Worker API.
-4. The Worker writes search job demo results to Cloudflare D1.
+4. The Worker searches OpenAlex and writes search job results to Cloudflare D1.
 5. D1 Console queries now return stored rows.
 
 The latest confirmed behavior is normal:
 
 - Clicking `Run` in the dashboard creates a search job.
+- `POST /api/search-jobs` now calls the OpenAlex Works API, maps returned works, scores them, and stores the result in D1.
 - `search_jobs`, `papers`, and `evaluations` receive rows in D1.
 - D1 Console no longer returns empty results after a successful run.
 
@@ -100,7 +101,10 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - CORS headers for dashboard access.
 - D1 binding validation.
 - D1 schema creation/backfill checks.
-- Demo search job persistence into D1.
+- OpenAlex Works API search using the dashboard keyword.
+- OpenAlex result mapping for title, authors, year, journal/source, DOI, OA status, abstract, OpenAlex ID, and citation count.
+- Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
+- Search job persistence into D1.
 - D1 readback for job, paper, and evaluation data.
 - JSON error responses for API failures.
 
@@ -113,6 +117,12 @@ Tables:
 - `search_jobs`
 - `papers`
 - `evaluations`
+
+Additional paper metadata now tracked/backfilled:
+
+- `openalex_id`
+- `abstract`
+- `cited_by_count`
 
 Indexes:
 
@@ -135,6 +145,7 @@ The deployed D1 database already had some existing schema constraints, including
 - Dashboard connected to the deployed Worker API.
 - Worker POST route fixed after Cloudflare error 1101 by returning JSON errors and handling D1 schema drift.
 - D1 insert fixed for `papers.created_at NOT NULL`.
+- Demo-only persistence was replaced with OpenAlex search and D1 persistence.
 
 ## Verification Completed
 
@@ -143,6 +154,7 @@ These commands passed after recent code changes:
 ```bash
 npm run typecheck
 npm run build
+npx wrangler deploy --dry-run
 ```
 
 Cloud behavior was also verified:
@@ -155,27 +167,18 @@ SELECT * FROM evaluations;
 
 After clicking `Run`, these queries returned stored data.
 
-## Current Local State At Handoff
-
-As of 2026-05-13, the local working tree had documentation-only handoff changes:
-
-- `CHANGELOG.md`
-- `docs/progress.md`
-
-These should be committed and pushed before starting feature work if not already done.
-
 ## Remaining Work
 
-The current search result is still demo data. The next major implementation phase is replacing demo persistence with real paper discovery:
+The current search result should now come from OpenAlex after the latest deployment completes. The next major implementation phase is hardening and extending real paper discovery:
 
-1. Add OpenAlex search integration.
-2. Save real paper metadata to `papers`.
+1. Confirm deployed OpenAlex search from the dashboard and D1 Console.
+2. Add CSV download endpoint while R2 remains disabled.
 3. Add Crossref metadata enrichment.
 4. Add Unpaywall open access checks.
-5. Implement real scoring and evaluation rows.
+5. Improve scoring and evaluation rows beyond basic lexical scoring.
 6. Add report generation.
 7. Add job progress states instead of immediately marking jobs as `completed`.
-8. Add tests around Worker API persistence and D1 row mapping.
+8. Add tests around Worker API persistence, OpenAlex mapping, and D1 row mapping.
 
 ## Useful D1 Checks
 
@@ -193,4 +196,13 @@ Count rows:
 SELECT COUNT(*) FROM search_jobs;
 SELECT COUNT(*) FROM papers;
 SELECT COUNT(*) FROM evaluations;
+```
+
+OpenAlex metadata check:
+
+```sql
+SELECT title, openalex_id, cited_by_count, substr(abstract, 1, 120) AS abstract_preview
+FROM papers
+ORDER BY created_at DESC
+LIMIT 10;
 ```

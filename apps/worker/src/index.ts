@@ -1,4 +1,4 @@
-import type { PaperSummary, SearchJob } from "@paper-agent/shared";
+import { calculateFinalScore, type PaperSummary, type SearchJob } from "@paper-agent/shared";
 
 export interface Env {
   DB?: D1Database;
@@ -17,22 +17,42 @@ type CreateSearchJobRequest = {
   maxResults?: number;
 };
 
-const demoPapers: PaperSummary[] = [
-  {
-    id: "demo-1",
-    rank: 1,
-    title: "Automated Scholarly Paper Discovery with Agentic Workflows",
-    authors: "Kim, Lee, Park",
-    year: 2025,
-    journalName: "Journal of AI Research",
-    doi: "10.0000/demo.1",
-    oaStatus: "unknown",
-    abstractScore: 0.91,
-    finalScore: 0.88,
-    includeStatus: "include",
-    relevanceReason: "Keyword, abstract, and method terms are directly aligned."
-  }
-];
+type PaperRecord = PaperSummary & {
+  openalexId: string;
+  abstract: string;
+  citedByCount: number;
+};
+
+type OpenAlexResponse = {
+  results?: OpenAlexWork[];
+};
+
+type OpenAlexWork = {
+  id?: string;
+  display_name?: string;
+  title?: string;
+  publication_year?: number;
+  doi?: string | null;
+  cited_by_count?: number;
+  abstract_inverted_index?: Record<string, number[]> | null;
+  authorships?: Array<{
+    author?: {
+      display_name?: string;
+    };
+  }>;
+  primary_location?: {
+    source?: {
+      display_name?: string;
+    } | null;
+  } | null;
+  host_venue?: {
+    display_name?: string;
+  } | null;
+  open_access?: {
+    is_oa?: boolean;
+    oa_status?: string;
+  } | null;
+};
 
 type SearchJobRow = {
   id: string;
@@ -77,9 +97,19 @@ export default {
         const body = await readJson<CreateSearchJobRequest>(request);
         if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
         await ensureSchema(env.DB);
-        const job = createDemoJob(body.keyword ?? "AI interview employer branding");
-        await saveDemoSearchResult(env.DB, job, demoPapers);
-        return json((await getSearchResult(env.DB, job.id)) ?? { job, papers: demoPapers });
+        const keyword = normalizeKeyword(body.keyword);
+        const maxResults = normalizeMaxResults(body.maxResults);
+        const job = createSearchJob(keyword, "searching");
+        await saveSearchJob(env.DB, job);
+        const papers = await searchOpenAlex(keyword, {
+          email: env.OPENALEX_EMAIL,
+          maxResults,
+          yearStart: body.yearStart,
+          yearEnd: body.yearEnd
+        });
+        const completedJob = completeSearchJob(job);
+        await saveSearchResult(env.DB, completedJob, papers);
+        return json((await getSearchResult(env.DB, completedJob.id)) ?? { job: completedJob, papers });
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
       }
@@ -110,16 +140,34 @@ async function readJson<T extends object>(request: Request): Promise<Partial<T>>
   }
 }
 
-function createDemoJob(keyword: string, id = `job-${crypto.randomUUID()}`): SearchJob {
+function normalizeKeyword(keyword: string | undefined): string {
+  const normalized = keyword?.trim();
+  return normalized || "AI interview employer branding";
+}
+
+function normalizeMaxResults(maxResults: number | undefined): number {
+  if (typeof maxResults !== "number" || !Number.isFinite(maxResults)) return 20;
+  return Math.max(1, Math.min(50, Math.trunc(maxResults)));
+}
+
+function createSearchJob(keyword: string, status: SearchJob["status"], id = `job-${crypto.randomUUID()}`): SearchJob {
   const now = new Date().toISOString();
   return {
     id,
     keyword,
+    status,
+    currentStep: status === "searching" ? "openalex_search" : "ranking",
+    totalSteps: 12,
+    createdAt: now
+  };
+}
+
+function completeSearchJob(job: SearchJob): SearchJob {
+  return {
+    ...job,
     status: "completed",
     currentStep: "ranking",
-    totalSteps: 12,
-    createdAt: now,
-    completedAt: now
+    completedAt: new Date().toISOString()
   };
 }
 
@@ -150,6 +198,9 @@ async function ensureSchema(db: D1Database): Promise<void> {
         journal_name TEXT NOT NULL,
         doi TEXT NOT NULL,
         oa_status TEXT NOT NULL,
+        openalex_id TEXT,
+        abstract TEXT,
+        cited_by_count INTEGER DEFAULT 0,
         FOREIGN KEY (job_id) REFERENCES search_jobs(id) ON DELETE CASCADE
       )`
     )
@@ -186,6 +237,9 @@ async function ensureSchema(db: D1Database): Promise<void> {
   await ensureColumn(db, "papers", "journal_name", "TEXT DEFAULT ''");
   await ensureColumn(db, "papers", "doi", "TEXT DEFAULT ''");
   await ensureColumn(db, "papers", "oa_status", "TEXT DEFAULT 'unknown'");
+  await ensureColumn(db, "papers", "openalex_id", "TEXT");
+  await ensureColumn(db, "papers", "abstract", "TEXT");
+  await ensureColumn(db, "papers", "cited_by_count", "INTEGER DEFAULT 0");
   await ensureColumn(db, "papers", "created_at", "TEXT");
 
   await ensureColumn(db, "evaluations", "id", "TEXT");
@@ -208,15 +262,26 @@ async function ensureColumn(db: D1Database, tableName: string, columnName: strin
   await db.prepare(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`).run();
 }
 
-async function saveDemoSearchResult(db: D1Database, job: SearchJob, papers: PaperSummary[]): Promise<void> {
+async function saveSearchJob(db: D1Database, job: SearchJob): Promise<void> {
+  await db
+    .prepare(
+      `INSERT INTO search_jobs (id, keyword, status, current_step, total_steps, created_at, completed_at, error_message)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(job.id, job.keyword, job.status, job.currentStep, job.totalSteps, job.createdAt, job.completedAt ?? null, job.errorMessage ?? null)
+    .run();
+}
+
+async function saveSearchResult(db: D1Database, job: SearchJob, papers: PaperRecord[]): Promise<void> {
   const now = new Date().toISOString();
   const statements: D1PreparedStatement[] = [
     db
       .prepare(
-        `INSERT INTO search_jobs (id, keyword, status, current_step, total_steps, created_at, completed_at, error_message)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        `UPDATE search_jobs
+         SET status = ?, current_step = ?, completed_at = ?, error_message = ?
+         WHERE id = ?`
       )
-      .bind(job.id, job.keyword, job.status, job.currentStep, job.totalSteps, job.createdAt, job.completedAt ?? null, job.errorMessage ?? null)
+      .bind(job.status, job.currentStep, job.completedAt ?? null, job.errorMessage ?? null, job.id)
   ];
 
   for (const paper of papers) {
@@ -224,10 +289,27 @@ async function saveDemoSearchResult(db: D1Database, job: SearchJob, papers: Pape
     statements.push(
       db
         .prepare(
-          `INSERT INTO papers (id, job_id, rank, title, authors, year, journal_name, doi, oa_status, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO papers (
+            id, job_id, rank, title, authors, year, journal_name, doi, oa_status,
+            openalex_id, abstract, cited_by_count, created_at
+           )
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
-        .bind(paperId, job.id, paper.rank, paper.title, paper.authors, paper.year, paper.journalName, paper.doi, paper.oaStatus, now)
+        .bind(
+          paperId,
+          job.id,
+          paper.rank,
+          paper.title,
+          paper.authors,
+          paper.year,
+          paper.journalName,
+          paper.doi,
+          paper.oaStatus,
+          paper.openalexId,
+          paper.abstract,
+          paper.citedByCount,
+          now
+        )
     );
     statements.push(
       db
@@ -248,6 +330,135 @@ async function saveDemoSearchResult(db: D1Database, job: SearchJob, papers: Pape
   }
 
   await db.batch(statements);
+}
+
+async function searchOpenAlex(
+  keyword: string,
+  options: { email?: string; maxResults: number; yearStart?: number; yearEnd?: number }
+): Promise<PaperRecord[]> {
+  const url = new URL("https://api.openalex.org/works");
+  url.searchParams.set("search", keyword);
+  url.searchParams.set("per-page", String(options.maxResults));
+  url.searchParams.set("sort", "cited_by_count:desc");
+  if (options.email) url.searchParams.set("mailto", options.email);
+
+  const filters: string[] = [];
+  if (options.yearStart) filters.push(`from_publication_date:${Math.trunc(options.yearStart)}-01-01`);
+  if (options.yearEnd) filters.push(`to_publication_date:${Math.trunc(options.yearEnd)}-12-31`);
+  if (filters.length) url.searchParams.set("filter", filters.join(","));
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Accept: "application/json",
+      "User-Agent": options.email ? `paper-agent-project (${options.email})` : "paper-agent-project"
+    }
+  });
+  if (!response.ok) throw new Error(`OpenAlex request failed with ${response.status}`);
+
+  const data = (await response.json()) as OpenAlexResponse;
+  return (data.results ?? []).slice(0, options.maxResults).map((work, index) => mapOpenAlexWork(work, keyword, index + 1));
+}
+
+function mapOpenAlexWork(work: OpenAlexWork, keyword: string, rank: number): PaperRecord {
+  const abstract = reconstructAbstract(work.abstract_inverted_index);
+  const title = work.display_name || work.title || "Untitled work";
+  const authors = mapAuthors(work);
+  const year = work.publication_year ?? 0;
+  const citedByCount = work.cited_by_count ?? 0;
+  const scores = scorePaper({ keyword, title, abstract, citedByCount, year });
+  return {
+    id: work.id || `openalex-${rank}`,
+    rank,
+    title,
+    authors,
+    year,
+    journalName: work.primary_location?.source?.display_name || work.host_venue?.display_name || "Unknown source",
+    doi: normalizeDoi(work.doi),
+    oaStatus: mapOaStatus(work.open_access),
+    abstractScore: scores.abstractScore,
+    finalScore: scores.finalScore,
+    includeStatus: scores.finalScore >= 0.35 ? "include" : "review",
+    relevanceReason: scores.reason,
+    openalexId: work.id ?? "",
+    abstract,
+    citedByCount
+  };
+}
+
+function reconstructAbstract(index: OpenAlexWork["abstract_inverted_index"]): string {
+  if (!index) return "";
+  const words: Array<[number, string]> = [];
+  for (const [word, positions] of Object.entries(index)) {
+    for (const position of positions) words.push([position, word]);
+  }
+  return words
+    .sort(([left], [right]) => left - right)
+    .map(([, word]) => word)
+    .join(" ");
+}
+
+function mapAuthors(work: OpenAlexWork): string {
+  const authors = (work.authorships ?? [])
+    .map((authorship) => authorship.author?.display_name)
+    .filter((name): name is string => Boolean(name));
+  return authors.slice(0, 5).join(", ") || "Unknown authors";
+}
+
+function normalizeDoi(doi: string | null | undefined): string {
+  return doi?.replace(/^https?:\/\/doi\.org\//i, "") ?? "";
+}
+
+function mapOaStatus(openAccess: OpenAlexWork["open_access"]): PaperSummary["oaStatus"] {
+  if (!openAccess) return "unknown";
+  if (openAccess.is_oa) return "oa";
+  return openAccess.oa_status === "closed" ? "closed" : "unknown";
+}
+
+function scorePaper(input: { keyword: string; title: string; abstract: string; citedByCount: number; year: number }) {
+  const titleScore = keywordOverlap(input.keyword, input.title);
+  const abstractScore = keywordOverlap(input.keyword, input.abstract);
+  const citationScore = Math.min(input.citedByCount / 100, 1);
+  const recencyScore = scoreRecency(input.year);
+  const finalScore = calculateFinalScore({
+    abstractRelevance: abstractScore,
+    titleRelevance: titleScore,
+    journalQuality: 0.5,
+    citationInfluence: citationScore,
+    recency: recencyScore
+  });
+  const reason = [
+    `title keyword overlap ${titleScore.toFixed(2)}`,
+    `abstract keyword overlap ${abstractScore.toFixed(2)}`,
+    `citations ${input.citedByCount}`,
+    `year ${input.year || "unknown"}`
+  ].join("; ");
+  return {
+    abstractScore: roundScore(abstractScore),
+    finalScore: roundScore(finalScore),
+    reason
+  };
+}
+
+function keywordOverlap(keyword: string, text: string): number {
+  const keywordTerms = tokenize(keyword);
+  if (!keywordTerms.length) return 0;
+  const textTerms = new Set(tokenize(text));
+  const matches = keywordTerms.filter((term) => textTerms.has(term)).length;
+  return matches / keywordTerms.length;
+}
+
+function tokenize(value: string): string[] {
+  return Array.from(new Set(value.toLowerCase().match(/[a-z0-9가-힣]+/g) ?? [])).filter((term) => term.length > 1);
+}
+
+function scoreRecency(year: number): number {
+  if (!year) return 0;
+  const currentYear = new Date().getUTCFullYear();
+  return Math.max(0, Math.min(1, 1 - (currentYear - year) / 10));
+}
+
+function roundScore(score: number): number {
+  return Math.round(score * 1000) / 1000;
 }
 
 async function getSearchResult(db: D1Database, jobId: string): Promise<{ job: SearchJob; papers: PaperSummary[] } | null> {

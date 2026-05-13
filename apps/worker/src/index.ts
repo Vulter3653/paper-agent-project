@@ -130,6 +130,19 @@ export default {
       }
     }
 
+    const csvMatch = url.pathname.match(/^\/api\/search-jobs\/([^/]+)\/papers\.csv$/);
+    if (csvMatch && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const result = await getSearchResult(env.DB, csvMatch[1]);
+        if (!result) return json({ error: "Search job not found" }, 404);
+        return csv(result);
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
     return json({ error: "Not found" }, 404);
   }
 };
@@ -580,6 +593,62 @@ function json(data: unknown, status = 200): Response {
       ...corsHeaders()
     }
   });
+}
+
+function csv(result: { job: SearchJob; papers: PaperSummary[] }): Response {
+  const headers = [
+    "job_id",
+    "keyword",
+    "rank",
+    "title",
+    "authors",
+    "year",
+    "journal_name",
+    "doi",
+    "oa_status",
+    "abstract_score",
+    "final_score",
+    "include_status",
+    "relevance_reason"
+  ];
+  const rows = result.papers.map((paper) => [
+    result.job.id,
+    result.job.keyword,
+    paper.rank,
+    paper.title,
+    paper.authors,
+    paper.year,
+    paper.journalName,
+    paper.doi,
+    paper.oaStatus,
+    paper.abstractScore,
+    paper.finalScore,
+    paper.includeStatus,
+    paper.relevanceReason
+  ]);
+  const body = [headers, ...rows].map((row) => row.map(formatCsvCell).join(",")).join("\n");
+  const fileName = `${sanitizeFileName(result.job.keyword)}-${result.job.id}.csv`;
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${fileName}"`,
+      ...corsHeaders()
+    }
+  });
+}
+
+function formatCsvCell(value: string | number): string {
+  const text = String(value);
+  if (!/[",\n\r]/.test(text)) return text;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function sanitizeFileName(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "papers";
 }
 
 function corsHeaders(): HeadersInit {

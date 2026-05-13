@@ -39,7 +39,8 @@ Current next implementation target:
 2. Verify the deployed Worker after Cloudflare finishes building the latest `main` commit.
 3. Click `Run` on the dashboard and confirm returned papers are real OpenAlex results, not demo titles.
 4. Confirm new D1 columns `openalex_id`, `abstract`, and `cited_by_count` are present and populated for new rows.
-5. Add CSV download endpoint while R2 remains disabled.
+5. Verify the deployed CSV download button and direct CSV endpoint.
+6. Add Crossref metadata enrichment after OpenAlex and CSV flows are confirmed stable.
 
 ## Current Status
 
@@ -98,6 +99,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - `GET /api/health`
 - `POST /api/search-jobs`
 - `GET /api/search-jobs/:id`
+- `GET /api/search-jobs/:id/papers.csv`
 - CORS headers for dashboard access.
 - D1 binding validation.
 - D1 schema creation/backfill checks.
@@ -108,6 +110,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
 - Search job persistence into D1.
 - D1 readback for job, paper, and evaluation data.
+- Direct CSV generation from persisted D1 results while R2 is unavailable.
 - JSON error responses for API failures.
 
 ### D1 Schema
@@ -149,6 +152,7 @@ The deployed D1 database already had some existing schema constraints, including
 - D1 insert fixed for `papers.created_at NOT NULL`.
 - Demo-only persistence was replaced with OpenAlex search and D1 persistence.
 - OpenAlex 429 errors now return a clearer message asking for `OPENALEX_API_KEY` and `OPENALEX_EMAIL`.
+- CSV export endpoint and dashboard CSV button were added and locally verified.
 
 ## Verification Completed
 
@@ -159,6 +163,8 @@ npm run typecheck
 npm run build
 npx wrangler deploy --dry-run
 ```
+
+CSV endpoint was also locally verified with `wrangler dev`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id/papers.csv`.
 
 ## Manual Cloudflare Settings Required
 
@@ -196,16 +202,16 @@ After clicking `Run`, these queries returned stored data.
 
 ## Remaining Work
 
-The current search result should now come from OpenAlex after the latest deployment completes. The next major implementation phase is hardening and extending real paper discovery:
+The current search result should now come from OpenAlex after the latest deployment completes. CSV export is implemented locally and should be verified after Cloudflare deploys the next commit. The next major implementation phase is hardening and extending real paper discovery:
 
 1. Confirm deployed OpenAlex search from the dashboard and D1 Console.
-2. Add CSV download endpoint while R2 remains disabled.
+2. Confirm deployed CSV download from dashboard and direct endpoint.
 3. Add Crossref metadata enrichment.
 4. Add Unpaywall open access checks.
 5. Improve scoring and evaluation rows beyond basic lexical scoring.
 6. Add report generation.
 7. Add job progress states instead of immediately marking jobs as `completed`.
-8. Add tests around Worker API persistence, OpenAlex mapping, and D1 row mapping.
+8. Add tests around Worker API persistence, OpenAlex mapping, CSV generation, and D1 row mapping.
 
 ## Useful D1 Checks
 
@@ -232,4 +238,10 @@ SELECT title, openalex_id, cited_by_count, substr(abstract, 1, 120) AS abstract_
 FROM papers
 ORDER BY created_at DESC
 LIMIT 10;
+```
+
+CSV check:
+
+```text
+https://paper-agent-project.shch3653.workers.dev/api/search-jobs/<job_id>/papers.csv
 ```

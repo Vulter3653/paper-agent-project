@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { FileText, Play, RefreshCw, Search } from "lucide-react";
+import { Download, FileText, Play, RefreshCw, Search } from "lucide-react";
 import type { PaperSummary, SearchJob } from "@paper-agent/shared";
 import "./styles.css";
 
@@ -107,6 +107,11 @@ function App() {
     }
   }
 
+  function downloadCsv() {
+    if (!job) return;
+    window.location.href = apiUrl(`/api/search-jobs/${job.id}/papers.csv`);
+  }
+
   return (
     <main className="shell">
       <section className="toolbar">
@@ -136,9 +141,14 @@ function App() {
         <div className="tablePanel">
           <div className="panelTitle">
             <h2>Ranked Papers</h2>
-            <button className="iconButton" onClick={refreshJob} disabled={!job || refreshing} aria-label="Refresh job">
-              <RefreshCw size={18} className={refreshing ? "spin" : undefined} />
-            </button>
+            <div className="panelActions">
+              <button className="iconButton" onClick={downloadCsv} disabled={!job} aria-label="Download CSV">
+                <Download size={18} />
+              </button>
+              <button className="iconButton" onClick={refreshJob} disabled={!job || refreshing} aria-label="Refresh job">
+                <RefreshCw size={18} className={refreshing ? "spin" : undefined} />
+              </button>
+            </div>
           </div>
           <table>
             <thead>

@@ -303,6 +303,74 @@ tbody tr.selected {
   padding: 18px 18px 8px;
 }
 
+.scoreBreakdown {
+  border-bottom: 1px solid #e8edf2;
+  margin: 0 18px 4px;
+  padding: 8px 0 16px;
+}
+
+.scoreSummary {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.scoreSummary span {
+  color: #607080;
+  font-size: 12px;
+}
+
+.scoreSummary strong {
+  color: #1d5fd1;
+  font-size: 22px;
+}
+
+.scoreBars {
+  display: grid;
+  gap: 12px;
+}
+
+.scoreItem {
+  min-width: 0;
+}
+
+.scoreLabel {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.scoreLabel span,
+.scoreItem p {
+  color: #607080;
+  font-size: 12px;
+}
+
+.scoreLabel strong {
+  font-size: 12px;
+}
+
+.scoreTrack {
+  background: #e8edf2;
+  border-radius: 999px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.scoreTrack span {
+  background: #238548;
+  display: block;
+  height: 100%;
+}
+
+.scoreItem p {
+  line-height: 1.35;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+
 dl {
   margin: 0;
   padding: 0 18px;

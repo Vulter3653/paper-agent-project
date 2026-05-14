@@ -2,6 +2,66 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Dashboard Score Breakdown
+
+### Context
+
+The dashboard needed to show score components after a run, starting from the previously defined item 2: relevance, journal fit, Crossref verification, OA status, citations, and recency.
+
+### Code Changes Under Test
+
+- Added `citedByCount` to `PaperSummary` in `packages/shared/src/index.ts`.
+- Added `p.cited_by_count` to the Worker paper summary SELECT and response mapper.
+- Added `ScoreBreakdown` UI in `apps/web/src/main.tsx`.
+- Added score bar styles in `apps/web/src/styles.css`.
+
+### Expected Behavior
+
+- Selecting a paper shows six score bars in Paper Detail.
+- Relevance uses `abstractScore`.
+- Journal Fit is `1.00` because only allowlisted journals are returned.
+- Crossref score derives from `verificationStatus`.
+- Open Access score derives from Unpaywall/PDF/page availability.
+- Citation score derives from OpenAlex `citedByCount`.
+- Recency score derives from publication year.
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All three passed.
+
+Runtime check:
+
+```bash
+npx wrangler dev --port 8787 --ip 127.0.0.1 \
+  --var UNPAYWALL_EMAIL:<contact email> \
+  --var CROSSREF_EMAIL:<contact email> \
+  --var OPENALEX_EMAIL:<contact email>
+```
+
+Create and poll a local search job:
+
+```bash
+curl -s -X POST http://127.0.0.1:8787/api/search-jobs \
+  -H 'Content-Type: application/json' \
+  -d '{"keyword":"AI interview employer branding","maxResults":3}'
+
+curl -s http://127.0.0.1:8787/api/search-jobs/job-31a5b171-3f6b-4614-82c4-322b505a5d89
+```
+
+Observed:
+
+- Job completed normally.
+- Paper response included `citedByCount`.
+- Example verified value: `citedByCount: 378`.
+
 ## 2026-05-14 - Asynchronous Worker Progress Updates
 
 ### Context

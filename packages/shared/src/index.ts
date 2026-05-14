@@ -31,6 +31,7 @@ export type PaperSummary = {
   journalName: string;
   doi: string;
   oaStatus: "oa" | "closed" | "unknown";
+  citedByCount?: number;
   publisher?: string;
   issn?: string;
   publicationType?: string;

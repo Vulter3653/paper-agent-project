@@ -14,6 +14,12 @@ type PipelineStep = {
   label: string;
 };
 
+type ScoreBreakdownItem = {
+  label: string;
+  value: number;
+  detail: string;
+};
+
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://paper-agent-project.shch3653.workers.dev").replace(/\/$/, "");
 
 function apiUrl(path: string): string {
@@ -39,6 +45,7 @@ const demoPapers: PaperSummary[] = [
     journalName: "Information Systems Research",
     doi: "10.0000/demo.1",
     oaStatus: "unknown",
+    citedByCount: 42,
     abstractScore: 0.91,
     finalScore: 0.88,
     includeStatus: "include",
@@ -53,6 +60,7 @@ const demoPapers: PaperSummary[] = [
     journalName: "Information Systems Review",
     doi: "10.0000/demo.2",
     oaStatus: "oa",
+    citedByCount: 128,
     abstractScore: 0.86,
     finalScore: 0.82,
     includeStatus: "include",
@@ -215,6 +223,7 @@ function App() {
           {selected ? (
             <>
               <h3>{selected.title}</h3>
+              <ScoreBreakdown paper={selected} />
               <dl>
                 <dt>Authors</dt>
                 <dd>{selected.authors}</dd>
@@ -253,6 +262,56 @@ function App() {
       </section>
     </main>
   );
+}
+
+function ScoreBreakdown({ paper }: { paper: PaperSummary }) {
+  const items = getScoreBreakdown(paper);
+  return (
+    <div className="scoreBreakdown">
+      <div className="scoreSummary">
+        <span>Score Breakdown</span>
+        <strong>{paper.finalScore.toFixed(2)}</strong>
+      </div>
+      <div className="scoreBars">
+        {items.map((item) => (
+          <div className="scoreItem" key={item.label}>
+            <div className="scoreLabel">
+              <span>{item.label}</span>
+              <strong>{item.value.toFixed(2)}</strong>
+            </div>
+            <div className="scoreTrack">
+              <span style={{ width: `${Math.round(item.value * 100)}%` }} />
+            </div>
+            <p>{item.detail}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getScoreBreakdown(paper: PaperSummary): ScoreBreakdownItem[] {
+  const relevance = paper.abstractScore;
+  const journalFit = 1;
+  const verification = paper.verificationStatus === "verified" ? 1 : paper.verificationStatus === "partial" ? 0.5 : 0;
+  const openAccess = paper.oaPdfUrl ? 1 : paper.oaLandingPageUrl || paper.oaStatus === "oa" ? 0.75 : paper.unpaywallStatus === "not_found" ? 0 : 0.25;
+  const citation = Math.min((paper.citedByCount ?? 0) / 100, 1);
+  const recency = getRecencyScore(paper.year);
+
+  return [
+    { label: "Relevance", value: relevance, detail: paper.relevanceReason },
+    { label: "Journal Fit", value: journalFit, detail: "Included in the business school journal allowlist." },
+    { label: "Crossref", value: verification, detail: paper.verificationReason ?? "No verification recorded." },
+    { label: "Open Access", value: openAccess, detail: paper.unpaywallReason ?? "No Unpaywall lookup recorded." },
+    { label: "Citation", value: citation, detail: `${paper.citedByCount ?? 0} citations from OpenAlex.` },
+    { label: "Recency", value: recency, detail: `${paper.year || "Unknown"} publication year.` }
+  ];
+}
+
+function getRecencyScore(year: number): number {
+  if (!year) return 0;
+  const currentYear = new Date().getUTCFullYear();
+  return Math.max(0, Math.min(1, 1 - (currentYear - year) / 10));
 }
 
 function PipelineProgress({ job, loading }: { job: SearchJob | null; loading: boolean }) {

@@ -121,6 +121,7 @@ type PaperSummaryRow = {
   journal_name: string;
   doi: string;
   oa_status: PaperSummary["oaStatus"];
+  cited_by_count: number | null;
   abstract_score: number | null;
   final_score: number | null;
   include_status: PaperSummary["includeStatus"] | null;
@@ -918,6 +919,7 @@ async function getSearchResult(db: D1Database, jobId: string): Promise<{ job: Se
         p.journal_name,
         p.doi,
         p.oa_status,
+        p.cited_by_count,
         p.publisher,
         p.issn,
         p.publication_type,
@@ -972,6 +974,7 @@ function mapPaperSummary(row: PaperSummaryRow): PaperSummary {
     journalName: row.journal_name,
     doi: row.doi,
     oaStatus: row.oa_status,
+    citedByCount: row.cited_by_count ?? 0,
     abstractScore: row.abstract_score ?? 0,
     finalScore: row.final_score ?? 0,
     includeStatus: row.include_status ?? "review",

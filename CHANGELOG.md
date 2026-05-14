@@ -15,6 +15,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Added`: Added score breakdown visualization in `apps/web/src/main.tsx` and `apps/web/src/styles.css` for relevance, journal fit, Crossref verification, OA, citations, and recency.
+- `Changed`: Included `citedByCount` in `PaperSummary` API mapping through `packages/shared/src/index.ts` and `apps/worker/src/index.ts`.
 - `Changed`: Updated `apps/worker/src/index.ts` to create search jobs immediately and process OpenAlex, journal filtering, Crossref, Unpaywall, and ranking in the background with persisted step updates.
 - `Changed`: Updated dashboard polling in `apps/web/src/main.tsx` so selected papers update when asynchronous results arrive.
 - `Added`: Added pipeline progress visualization to `apps/web/src/main.tsx` and `apps/web/src/styles.css` for search run status.

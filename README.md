@@ -109,7 +109,10 @@ Recommended names:
 Never commit real credentials. Use `.env.example` as a template and set production secrets in Cloudflare.
 
 ```text
+SEARCH_PROVIDER
 WOS_API_KEY
+OPENALEX_EMAIL
+OPENALEX_API_KEY
 CROSSREF_EMAIL
 UNPAYWALL_EMAIL
 GOOGLE_CLIENT_EMAIL
@@ -121,11 +124,30 @@ GOOGLE_DRIVE_FOLDER_ID
 
 1. User enters a keyword in the dashboard.
 2. Worker creates a search job.
-3. Search Agent queries Web of Science and Crossref.
+3. Search Agent queries the configured source provider and Crossref.
 4. Results are saved to D1.
 5. Ranking Agent computes Top 5 papers.
 6. CSV and Markdown report outputs are stored in R2 when the `REPORTS` binding is available.
 7. Dashboard displays status, ranked papers, scores, and report links.
+
+## Search Provider
+
+Production should use Web of Science after Clarivate approval:
+
+```text
+SEARCH_PROVIDER=wos
+WOS_API_KEY=...
+```
+
+Before the WoS API key is issued, use OpenAlex for integration testing:
+
+```text
+SEARCH_PROVIDER=openalex
+OPENALEX_EMAIL=...
+OPENALEX_API_KEY=optional
+```
+
+OpenAlex is a temporary fallback for testing the dashboard, D1, R2, MCP, CSV, and Markdown report flow. Final scholarly quality checks should be repeated after switching back to `SEARCH_PROVIDER=wos`.
 
 ## Strict Change Tracking
 

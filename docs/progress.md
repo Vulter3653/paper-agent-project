@@ -36,22 +36,23 @@ Worker health: https://paper-agent-project.shch3653.workers.dev/api/health
 Current next implementation target:
 
 0. Wait for Clarivate to approve the `wos-starter` subscription for `MON AI Team Paper Agent Project`.
-1. After approval, copy the issued API key into the Cloudflare Worker variables/secrets as `WOS_API_KEY`.
-2. Wait for Cloudflare to deploy the next `main` commit.
-3. Open `/api/diagnostics` and confirm `env.wosApiKey` is `true`.
-4. Open the dashboard and confirm the System Checks panel reports D1 schema readiness, WoS API key presence, Crossref email presence, Unpaywall email presence, and R2 report binding presence.
-5. Click `Run` and confirm the Pipeline Progress panel advances through `wos_search`, journal filtering, Crossref, Unpaywall, ranking, and completion.
-6. Confirm D1 `papers.openalex_id` stores the WoS UID for new rows. The column name is retained for schema compatibility.
-7. Verify deployed CSV and Markdown report downloads include Crossref, Unpaywall, and evaluation score data.
-8. In R2 bucket `paper-agent-outputs`, confirm `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md` are created for completed jobs.
-9. Confirm the Markdown report includes executive summary metrics, top-ranked table, paper details, OA landing page, and license details.
-10. Confirm the dashboard Recent Jobs panel lists saved jobs and can reload prior job results.
-11. Confirm new jobs use persisted component-score final ranking: relevance 35%, journal fit 20%, Crossref verification 15%, OA 10%, citation 10%, recency 10%.
-12. Use `docs/mcp.md` as the current source of truth for MCP attachment and the implemented read-only MCP Worker.
-13. Deployed MCP is verified at `https://paper-agent-mcp.shch3653.workers.dev/health`.
-14. MCP protocol connectivity and read-only tool calls are verified with `npm run smoke:mcp`.
-15. Start the next major implementation phase: controlled write MCP design, Recent Jobs filters, PDF/XLSX generation, or report section expansion.
-16. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
+1. Until `WOS_API_KEY` is issued, set Worker variables `SEARCH_PROVIDER=openalex` and `OPENALEX_EMAIL=<contact email>` for integration testing.
+2. After WoS approval, change `SEARCH_PROVIDER=wos` and copy the issued API key into the Cloudflare Worker variables/secrets as `WOS_API_KEY`.
+3. Wait for Cloudflare to deploy the next `main` commit.
+4. Open `/api/diagnostics` and confirm `searchProvider`, provider readiness, D1 schema, Crossref, Unpaywall, and R2 report binding status.
+5. Open the dashboard and confirm the System Checks panel reports the active provider and provider readiness.
+6. Click `Run` and confirm the Pipeline Progress panel advances through source search, journal filtering, Crossref, Unpaywall, ranking, and completion.
+7. Confirm D1 `papers.openalex_id` stores the external source identifier. The column name is retained for schema compatibility.
+8. Verify deployed CSV and Markdown report downloads include Crossref, Unpaywall, and evaluation score data.
+9. In R2 bucket `paper-agent-outputs`, confirm `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md` are created for completed jobs.
+10. Confirm the Markdown report includes executive summary metrics, top-ranked table, paper details, OA landing page, and license details.
+11. Confirm the dashboard Recent Jobs panel lists saved jobs and can reload prior job results.
+12. Confirm new jobs use persisted component-score final ranking: relevance 35%, journal fit 20%, Crossref verification 15%, OA 10%, citation 10%, recency 10%.
+13. Use `docs/mcp.md` as the current source of truth for MCP attachment and the implemented read-only MCP Worker.
+14. Deployed MCP is verified at `https://paper-agent-mcp.shch3653.workers.dev/health`.
+15. MCP protocol connectivity and read-only tool calls are verified with `npm run smoke:mcp`.
+16. Start the next major implementation phase: OpenAlex integration test run, controlled write MCP design, Recent Jobs filters, PDF/XLSX generation, or report section expansion.
+17. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
 
 ## Current Status
 
@@ -60,16 +61,16 @@ The project is deployed through the cloud workflow:
 1. Code changes are committed and pushed to `origin/main`.
 2. Cloudflare picks up GitHub changes and deploys the Worker and Pages projects.
 3. The dashboard calls the deployed Worker API.
-4. The Worker searches Web of Science and writes search job results to Cloudflare D1.
+4. The Worker searches the configured source provider and writes search job results to Cloudflare D1.
 5. D1 Console queries now return stored rows.
 
 The latest confirmed behavior is normal:
 
 - Clicking `Run` in the dashboard creates a search job.
-- `POST /api/search-jobs` now calls the Web of Science Starter API, maps returned documents, scores them, and stores the result in D1.
+- `POST /api/search-jobs` calls the configured source provider, maps returned documents, scores them, and stores the result in D1.
 - `search_jobs`, `papers`, and `evaluations` receive rows in D1.
 - D1 Console no longer returns empty results after a successful run.
-- Deployed `/api/diagnostics` confirms `crossrefEmail: true`, `unpaywallEmail: true`, and `r2Reports: true`; `wosApiKey` remains `false` until Clarivate approval is complete.
+- Deployed `/api/diagnostics` confirms provider readiness, Crossref, Unpaywall, and R2 status; `wosApiKey` remains `false` until Clarivate approval is complete.
 
 ## Repository And Deployment Targets
 
@@ -131,10 +132,13 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - R2 `REPORTS` binding for generated output storage.
 - D1 schema creation/backfill checks.
 - Asynchronous search job processing with persisted `current_step` updates.
+- `SEARCH_PROVIDER` switch for `wos` or temporary `openalex` integration testing.
 - Web of Science Starter API search using the dashboard keyword.
 - Web of Science API key support through `WOS_API_KEY`.
 - Web of Science retry/backoff handling for 429 and 5xx responses.
 - Web of Science result mapping for title, authors, year, journal/source, DOI, abstract/keywords, WoS UID, and citation count.
+- Temporary OpenAlex Works API fallback using `OPENALEX_EMAIL` and optional `OPENALEX_API_KEY`.
+- OpenAlex result mapping for title, authors, publication year/date, source, DOI, OA status, abstract, type, and citation count.
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
 - Final ranking based on persisted component scores: relevance, journal fit, verification, OA, citation, and recency.
 - Search job persistence into D1.
@@ -269,6 +273,8 @@ Dashboard Score Breakdown was locally verified through typecheck/build and Worke
 Persisted evaluation score components were locally verified with `wrangler dev`, `POST /api/search-jobs`, `GET /api/search-jobs/:id`, and `GET /api/search-jobs/:id/papers.csv`. The API response and CSV included `relevanceScore`, `journalFitScore`, `verificationScore`, `oaScore`, `citationScore`, and `recencyScore`; example verified values included `journalFitScore: 1`, `verificationScore: 1`, `oaScore: 1`, `citationScore: 1`, and `recencyScore: 0.6`.
 
 Diagnostics were locally verified with `wrangler dev` and `GET /api/diagnostics`. The response returned `ok: true`, `db.bound: true`, no missing columns, and expected warning-level false values for disabled features such as R2 reports.
+
+Temporary OpenAlex provider was locally verified with `wrangler dev --var SEARCH_PROVIDER:openalex --var OPENALEX_EMAIL:...`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id`. The completed test job `job-16b478a9-acb5-482e-891d-ba459ab116b5` returned an allowlisted `Journal of Management Studies` result, Crossref verification, Unpaywall OA PDF metadata, and diagnostics with `searchProvider: openalex` plus `activeProviderReady: true`.
 
 R2 output storage was statically verified with typecheck/build/dry-run. Runtime verification should be done after deployment by completing a search job, downloading `GET /api/search-jobs/:id/papers.csv` and `GET /api/search-jobs/:id/report.md`, and confirming R2 objects exist under `reports/<job_id>/`.
 

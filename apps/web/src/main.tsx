@@ -26,15 +26,21 @@ type ScoreBreakdownItem = {
 
 type DiagnosticsResponse = {
   ok: boolean;
+  searchProvider: "wos" | "openalex";
   db: {
     bound: boolean;
     missingColumns: Array<{ table: string; column: string; ok: boolean }>;
   };
   env: {
     wosApiKey: boolean;
+    openAlexEmail: boolean;
+    openAlexApiKey: boolean;
     crossrefEmail: boolean;
     unpaywallEmail: boolean;
     r2Reports: boolean;
+  };
+  readiness: {
+    activeProviderReady: boolean;
   };
 };
 
@@ -45,7 +51,7 @@ function apiUrl(path: string): string {
 }
 
 const pipelineSteps: PipelineStep[] = [
-  { id: "wos_search", label: "WoS" },
+  { id: "source_search", label: "Source Search" },
   { id: "journal_filter", label: "Journal Filter" },
   { id: "crossref_enrichment", label: "Crossref" },
   { id: "unpaywall_check", label: "Unpaywall" },
@@ -358,7 +364,10 @@ function DiagnosticsPanel({
   const missingCount = diagnostics?.db.missingColumns.length ?? 0;
   const envItems = diagnostics
     ? [
+        ["Active provider", diagnostics.readiness.activeProviderReady],
         ["WoS API key", diagnostics.env.wosApiKey],
+        ["OpenAlex email", diagnostics.env.openAlexEmail],
+        ["OpenAlex API key", diagnostics.env.openAlexApiKey],
         ["Crossref email", diagnostics.env.crossrefEmail],
         ["Unpaywall email", diagnostics.env.unpaywallEmail],
         ["R2 reports", diagnostics.env.r2Reports]
@@ -370,7 +379,13 @@ function DiagnosticsPanel({
       <div className="diagnosticsHeader">
         <div>
           <h2>System Checks</h2>
-          <p>{diagnostics ? (diagnostics.ok ? "Ready" : `${missingCount} schema issue${missingCount === 1 ? "" : "s"}`) : "Not checked"}</p>
+          <p>
+            {diagnostics
+              ? diagnostics.ok
+                ? `Ready · ${diagnostics.searchProvider}`
+                : `${missingCount} schema issue${missingCount === 1 ? "" : "s"} · ${diagnostics.searchProvider}`
+              : "Not checked"}
+          </p>
         </div>
         <button className="iconButton" onClick={onRefresh} aria-label="Refresh diagnostics">
           <RefreshCw size={18} />
@@ -486,7 +501,7 @@ function getScoreBreakdown(paper: PaperSummary): ScoreBreakdownItem[] {
     { label: "Journal Fit", value: journalFit, detail: "Included in the business school journal allowlist." },
     { label: "Crossref", value: verification, detail: paper.verificationReason ?? "No verification recorded." },
     { label: "Open Access", value: openAccess, detail: paper.unpaywallReason ?? "No Unpaywall lookup recorded." },
-    { label: "Citation", value: citation, detail: `${paper.citedByCount ?? 0} citations from Web of Science.` },
+    { label: "Citation", value: citation, detail: `${paper.citedByCount ?? 0} citations from the active search provider.` },
     { label: "Recency", value: recency, detail: `${paper.year || "Unknown"} publication year.` }
   ];
 }
@@ -533,9 +548,15 @@ function getActiveStepIndex(job: SearchJob | null, loading: boolean): number {
   if (loading) return 0;
   if (!job) return -1;
   if (job.status === "completed") return pipelineSteps.length - 1;
-  if (job.status === "failed") return Math.max(0, pipelineSteps.findIndex((step) => step.id === job.currentStep));
-  const index = pipelineSteps.findIndex((step) => step.id === job.currentStep);
+  const normalizedStep = normalizePipelineStep(job.currentStep);
+  if (job.status === "failed") return Math.max(0, pipelineSteps.findIndex((step) => step.id === normalizedStep));
+  const index = pipelineSteps.findIndex((step) => step.id === normalizedStep);
   return index >= 0 ? index : 0;
+}
+
+function normalizePipelineStep(currentStep: string): string {
+  if (currentStep === "wos_search" || currentStep === "openalex_search") return "source_search";
+  return currentStep;
 }
 
 function getCompletedStepCount(job: SearchJob | null, loading: boolean, activeIndex: number): number {

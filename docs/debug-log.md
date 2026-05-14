@@ -2,6 +2,98 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Temporary OpenAlex Search Provider
+
+### Context
+
+WoS API approval is still delayed. To run practical end-to-end integration tests before `WOS_API_KEY` is issued, the Worker now supports a temporary OpenAlex provider selected by environment variable.
+
+### Code Changes Under Test
+
+- Added `SEARCH_PROVIDER` with supported values:
+  - `wos`
+  - `openalex`
+- Default remains `wos`.
+- Added OpenAlex Worker variables:
+  - `OPENALEX_EMAIL`
+  - `OPENALEX_API_KEY` optional
+- Added OpenAlex Works API search path using keyword search, publication date filters, citation sorting, polite pool `mailto`, and optional `api_key`.
+- OpenAlex results are mapped into the existing `PaperRecord` structure so journal filtering, Crossref enrichment, Unpaywall enrichment, ranking, D1, R2, CSV, Markdown, dashboard, and MCP read paths stay unchanged.
+- Dashboard diagnostics now show the active provider and provider readiness.
+- Pipeline progress now normalizes `wos_search` and `openalex_search` into the same source-search stage.
+
+### Required Cloudflare Test Settings
+
+For temporary integration testing before WoS approval:
+
+```text
+SEARCH_PROVIDER=openalex
+OPENALEX_EMAIL=<contact email>
+OPENALEX_API_KEY=<optional>
+```
+
+After WoS approval:
+
+```text
+SEARCH_PROVIDER=wos
+WOS_API_KEY=<Clarivate issued key>
+```
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+Local OpenAlex runtime test:
+
+```bash
+npx wrangler dev --config apps/worker/wrangler.toml --port 8787 \
+  --var SEARCH_PROVIDER:openalex \
+  --var OPENALEX_EMAIL:<contact email> \
+  --var CROSSREF_EMAIL:<contact email> \
+  --var UNPAYWALL_EMAIL:<contact email>
+```
+
+Then:
+
+```bash
+curl -s http://localhost:8787/api/diagnostics
+curl -s -X POST http://localhost:8787/api/search-jobs \
+  -H 'Content-Type: application/json' \
+  --data '{"keyword":"Marketing","yearStart":2020,"maxResults":5}'
+curl -s http://localhost:8787/api/search-jobs/<job_id>
+```
+
+Observed successful job:
+
+```text
+job-16b478a9-acb5-482e-891d-ba459ab116b5
+```
+
+Result:
+
+- `status: completed`
+- `currentStep: completed`
+- persisted one allowlisted result from `Journal of Management Studies`
+- Crossref verification returned `verified`
+- Unpaywall returned direct OA PDF metadata
+- diagnostics returned `searchProvider: openalex`, no missing D1 columns, and `activeProviderReady: true`
+
+### Troubleshooting
+
+The first OpenAlex runtime request failed with:
+
+```text
+OpenAlex request failed with 400
+```
+
+Direct API inspection showed `host_venue` is not a valid current `select` field. The fallback now reads the journal/source from `primary_location.source.display_name`.
+
 ## 2026-05-14 - Cloudflare Remote MCP Worker Attachment
 
 ### Context

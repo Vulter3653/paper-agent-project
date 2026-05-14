@@ -15,6 +15,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Added`: Added temporary `SEARCH_PROVIDER=openalex` support in `apps/worker/src/index.ts` so integration testing can run before `WOS_API_KEY` is issued.
+- `Changed`: Updated dashboard diagnostics in `apps/web/src/main.tsx` to display the active search provider and OpenAlex readiness.
+- `Docs`: Added `SEARCH_PROVIDER`, `OPENALEX_EMAIL`, and `OPENALEX_API_KEY` to `.env.example` and documented the WoS/OpenAlex switch in `README.md`.
 - `Added`: Added `apps/mcp` Cloudflare Remote MCP Worker with read-only D1/R2 tools for diagnostics, recent jobs, job details, paper results, and report links.
 - `Added`: Added `apps/mcp/scripts/smoke-test.mjs` and `npm run smoke:mcp` for deployed MCP protocol verification.
 - `Infra`: Added `paper-agent-mcp` Wrangler configuration with Durable Object `MCP_OBJECT`, D1 `DB`, R2 `REPORTS`, and `nodejs_compat` for the Cloudflare Agents SDK.

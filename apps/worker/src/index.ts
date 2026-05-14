@@ -3,7 +3,10 @@ import { calculateFinalScore, isBusinessSchoolJournal, normalizeJournalName, typ
 export interface Env {
   DB?: D1Database;
   REPORTS?: R2Bucket;
+  SEARCH_PROVIDER?: string;
   WOS_API_KEY?: string;
+  OPENALEX_EMAIL?: string;
+  OPENALEX_API_KEY?: string;
   CROSSREF_EMAIL?: string;
   UNPAYWALL_EMAIL?: string;
   GOOGLE_CLIENT_EMAIL?: string;
@@ -26,17 +29,25 @@ type DiagnosticsColumnCheck = {
 
 type DiagnosticsResponse = {
   ok: boolean;
+  searchProvider: SearchProvider;
   db: {
     bound: boolean;
     missingColumns: DiagnosticsColumnCheck[];
   };
   env: {
     wosApiKey: boolean;
+    openAlexEmail: boolean;
+    openAlexApiKey: boolean;
     crossrefEmail: boolean;
     unpaywallEmail: boolean;
     r2Reports: boolean;
   };
+  readiness: {
+    activeProviderReady: boolean;
+  };
 };
+
+type SearchProvider = "wos" | "openalex";
 
 type PaperRecord = PaperSummary & {
   openalexId: string;
@@ -101,6 +112,39 @@ type WosDocument = {
     authorKeywords?: string[];
     keywordsPlus?: string[];
   };
+};
+
+type OpenAlexResponse = {
+  results?: OpenAlexWork[];
+};
+
+type OpenAlexWork = {
+  id?: string;
+  doi?: string | null;
+  title?: string | null;
+  display_name?: string | null;
+  publication_year?: number | null;
+  publication_date?: string | null;
+  authorships?: Array<{
+    author?: {
+      display_name?: string | null;
+    };
+  }>;
+  primary_location?: {
+    source?: {
+      display_name?: string | null;
+    } | null;
+  } | null;
+  host_venue?: {
+    display_name?: string | null;
+  } | null;
+  open_access?: {
+    is_oa?: boolean;
+    oa_status?: string | null;
+  } | null;
+  cited_by_count?: number | null;
+  abstract_inverted_index?: Record<string, number[]> | null;
+  type?: string | null;
 };
 
 type CrossrefResponse = {
@@ -217,11 +261,15 @@ export default {
         await ensureSchema(env.DB);
         const keyword = normalizeKeyword(body.keyword);
         const maxResults = normalizeMaxResults(body.maxResults);
-        const job = createSearchJob(keyword, "searching");
+        const searchProvider = normalizeSearchProvider(env.SEARCH_PROVIDER);
+        const job = createSearchJob(keyword, "searching", searchProvider);
         await saveSearchJob(env.DB, job);
         ctx.waitUntil(
           processSearchJob(env.DB, job, keyword, {
+            searchProvider,
             wosApiKey: env.WOS_API_KEY,
+            openAlexEmail: env.OPENALEX_EMAIL,
+            openAlexApiKey: env.OPENALEX_API_KEY,
             crossrefEmail: env.CROSSREF_EMAIL ?? env.UNPAYWALL_EMAIL,
             unpaywallEmail: env.UNPAYWALL_EMAIL,
             reports: env.REPORTS,
@@ -307,13 +355,21 @@ function normalizeListLimit(limit: string | null): number {
   return Math.max(1, Math.min(25, parsed));
 }
 
-function createSearchJob(keyword: string, status: SearchJob["status"], id = `job-${crypto.randomUUID()}`): SearchJob {
+function normalizeSearchProvider(value: string | undefined): SearchProvider {
+  return value?.toLowerCase() === "openalex" ? "openalex" : "wos";
+}
+
+function getSearchStepId(searchProvider: SearchProvider): string {
+  return searchProvider === "openalex" ? "openalex_search" : "wos_search";
+}
+
+function createSearchJob(keyword: string, status: SearchJob["status"], searchProvider: SearchProvider, id = `job-${crypto.randomUUID()}`): SearchJob {
   const now = new Date().toISOString();
   return {
     id,
     keyword,
     status,
-    currentStep: status === "searching" ? "wos_search" : "ranking",
+    currentStep: status === "searching" ? getSearchStepId(searchProvider) : "ranking",
     totalSteps: 6,
     createdAt: now
   };
@@ -461,17 +517,25 @@ async function ensureColumn(db: D1Database, tableName: string, columnName: strin
 
 async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
   const missingColumns = env.DB ? await getMissingColumns(env.DB) : [];
+  const searchProvider = normalizeSearchProvider(env.SEARCH_PROVIDER);
+  const activeProviderReady = searchProvider === "openalex" ? Boolean(env.OPENALEX_EMAIL) : Boolean(env.WOS_API_KEY);
   return {
-    ok: Boolean(env.DB) && missingColumns.length === 0,
+    ok: Boolean(env.DB) && missingColumns.length === 0 && activeProviderReady,
+    searchProvider,
     db: {
       bound: Boolean(env.DB),
       missingColumns
     },
     env: {
       wosApiKey: Boolean(env.WOS_API_KEY),
+      openAlexEmail: Boolean(env.OPENALEX_EMAIL),
+      openAlexApiKey: Boolean(env.OPENALEX_API_KEY),
       crossrefEmail: Boolean(env.CROSSREF_EMAIL),
       unpaywallEmail: Boolean(env.UNPAYWALL_EMAIL),
       r2Reports: Boolean(env.REPORTS)
+    },
+    readiness: {
+      activeProviderReady
     }
   };
 }
@@ -676,7 +740,10 @@ async function processSearchJob(
   initialJob: SearchJob,
   keyword: string,
   options: {
+    searchProvider: SearchProvider;
     wosApiKey?: string;
+    openAlexEmail?: string;
+    openAlexApiKey?: string;
     crossrefEmail?: string;
     unpaywallEmail?: string;
     reports?: R2Bucket;
@@ -687,8 +754,11 @@ async function processSearchJob(
 ): Promise<void> {
   let job = initialJob;
   try {
-    job = await updateSearchJobProgress(db, job, "searching", "wos_search");
-    const candidates = await searchWebOfScience(keyword, options);
+    job = await updateSearchJobProgress(db, job, "searching", getSearchStepId(options.searchProvider));
+    const candidates =
+      options.searchProvider === "openalex"
+        ? await searchOpenAlex(keyword, options)
+        : await searchWebOfScience(keyword, options);
 
     job = await updateSearchJobProgress(db, job, "scoring", "journal_filter");
     const allowedPapers = filterAllowedBusinessSchoolJournals(candidates).slice(0, options.maxResults);
@@ -734,6 +804,83 @@ async function searchWebOfScience(
 
   const data = (await response.json()) as WosStarterResponse;
   return (data.documents ?? []).slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
+}
+
+async function searchOpenAlex(
+  keyword: string,
+  options: {
+    openAlexEmail?: string;
+    openAlexApiKey?: string;
+    maxResults: number;
+    yearStart?: number;
+    yearEnd?: number;
+  }
+): Promise<PaperRecord[]> {
+  if (!options.openAlexEmail) {
+    throw new Error("OpenAlex email is not configured. Add OPENALEX_EMAIL in Cloudflare Worker variables/secrets for temporary OpenAlex testing.");
+  }
+
+  const url = new URL("https://api.openalex.org/works");
+  const candidateLimit = Math.min(100, Math.max(options.maxResults, options.maxResults * 5));
+  url.searchParams.set("search", keyword);
+  url.searchParams.set("per-page", String(candidateLimit));
+  url.searchParams.set("page", "1");
+  url.searchParams.set("sort", "cited_by_count:desc");
+  url.searchParams.set("mailto", options.openAlexEmail);
+  url.searchParams.set(
+    "select",
+    [
+      "id",
+      "doi",
+      "title",
+      "display_name",
+      "publication_year",
+      "publication_date",
+      "authorships",
+      "primary_location",
+      "open_access",
+      "cited_by_count",
+      "abstract_inverted_index",
+      "type"
+    ].join(",")
+  );
+  const filters = buildOpenAlexFilters(options.yearStart, options.yearEnd);
+  if (filters) url.searchParams.set("filter", filters);
+  if (options.openAlexApiKey) url.searchParams.set("api_key", options.openAlexApiKey);
+
+  const response = await fetchOpenAlexWithRetry(url, options.openAlexEmail);
+  const data = (await response.json()) as OpenAlexResponse;
+  return (data.results ?? []).slice(0, candidateLimit).map((work, index) => mapOpenAlexWork(work, keyword, index + 1));
+}
+
+function buildOpenAlexFilters(yearStart: number | undefined, yearEnd: number | undefined): string {
+  const filters: string[] = [];
+  if (yearStart) filters.push(`from_publication_date:${Math.trunc(yearStart)}-01-01`);
+  if (yearEnd) filters.push(`to_publication_date:${Math.trunc(yearEnd)}-12-31`);
+  return filters.join(",");
+}
+
+async function fetchOpenAlexWithRetry(url: URL, email: string): Promise<Response> {
+  const maxAttempts = 3;
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const response = await fetch(url.toString(), {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": `paper-agent-project (${email})`
+      }
+    });
+    if (response.ok) return response;
+    lastResponse = response;
+    if (response.status !== 429 && response.status < 500) break;
+    await sleep(2 ** attempt * 1000);
+  }
+
+  if (lastResponse?.status === 429) {
+    throw new Error("OpenAlex rate limit reached (429). Wait for the quota window to reset or reduce search frequency.");
+  }
+  throw new Error(`OpenAlex request failed with ${lastResponse?.status ?? "unknown status"}`);
 }
 
 function buildWosQuery(keyword: string, yearStart: number | undefined, yearEnd: number | undefined): string {
@@ -823,6 +970,70 @@ function mapWosDocument(document: WosDocument, keyword: string, rank: number): P
     unpaywallStatus: doi ? "skipped" : "not_found",
     unpaywallReason: doi ? "Unpaywall lookup pending." : "No DOI available for Unpaywall lookup."
   };
+}
+
+function mapOpenAlexWork(work: OpenAlexWork, keyword: string, rank: number): PaperRecord {
+  const abstract = getOpenAlexAbstract(work);
+  const title = work.title ?? work.display_name ?? "Untitled work";
+  const authors = getOpenAlexAuthors(work);
+  const year = work.publication_year ?? 0;
+  const citedByCount = work.cited_by_count ?? 0;
+  const scores = scorePaper({ keyword, title, abstract, citedByCount, year });
+  const doi = normalizeDoi(work.doi);
+  const isOpenAccess = Boolean(work.open_access?.is_oa);
+  return {
+    id: work.id ?? `openalex-${rank}`,
+    rank,
+    title,
+    authors,
+    year,
+    journalName: getOpenAlexJournalName(work),
+    doi,
+    oaStatus: isOpenAccess ? "oa" : "unknown",
+    abstractScore: scores.abstractScore,
+    finalScore: scores.finalScore,
+    includeStatus: scores.finalScore >= 0.35 ? "include" : "review",
+    relevanceReason: scores.reason,
+    openalexId: work.id ?? "",
+    abstract,
+    citedByCount,
+    crossrefId: "",
+    publisher: "",
+    issn: "",
+    publicationType: work.type ?? "",
+    publishedDate: work.publication_date ?? "",
+    verificationStatus: doi ? "unverified" : "partial",
+    verificationReason: doi ? "Crossref verification pending." : "No DOI available for Crossref verification.",
+    crossrefJournalName: "",
+    oaPdfUrl: "",
+    oaLandingPageUrl: "",
+    oaLicense: "",
+    oaHostType: "",
+    oaRepository: "",
+    unpaywallStatus: doi ? "skipped" : "not_found",
+    unpaywallReason: doi ? "Unpaywall lookup pending." : "No DOI available for Unpaywall lookup."
+  };
+}
+
+function getOpenAlexAuthors(work: OpenAlexWork): string {
+  const authors = (work.authorships ?? [])
+    .map((authorship) => authorship.author?.display_name)
+    .filter((name): name is string => Boolean(name));
+  return authors.slice(0, 5).join(", ") || "Unknown authors";
+}
+
+function getOpenAlexJournalName(work: OpenAlexWork): string {
+  return work.primary_location?.source?.display_name ?? "Unknown source";
+}
+
+function getOpenAlexAbstract(work: OpenAlexWork): string {
+  const index = work.abstract_inverted_index;
+  if (!index) return "";
+  const terms = Object.entries(index).flatMap(([term, positions]) => positions.map((position) => ({ term, position })));
+  return terms
+    .sort((left, right) => left.position - right.position)
+    .map((item) => item.term)
+    .join(" ");
 }
 
 async function enrichPapersWithCrossref(papers: PaperRecord[], email: string | undefined): Promise<PaperRecord[]> {

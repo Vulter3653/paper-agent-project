@@ -45,7 +45,8 @@ Current next implementation target:
 7. Verify deployed CSV and Markdown report downloads include Crossref, Unpaywall, and evaluation score data.
 8. In R2 bucket `paper-agent-outputs`, confirm `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md` are created for completed jobs.
 9. Confirm the Markdown report includes executive summary metrics, top-ranked table, paper details, OA landing page, and license details.
-10. Start the next major implementation phase: ranking formula improvements or PDF report generation.
+10. Confirm the dashboard Recent Jobs panel lists saved jobs and can reload prior job results.
+11. Start the next major implementation phase: ranking formula improvements or PDF report generation.
 
 ## Current Status
 
@@ -98,6 +99,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Ranked papers table.
 - Selected paper detail panel.
 - Status metrics for job state, step, paper count, and top score.
+- Recent Jobs panel for reloading saved D1 search jobs without creating a new search.
 - Refresh button calls `GET /api/search-jobs/:id`.
 - API error messages are shown in the page when search creation or refresh fails.
 - Dashboard API base URL supports `VITE_API_BASE_URL`, with a deployed Worker default.
@@ -109,6 +111,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 
 - `GET /api/health`
 - `POST /api/search-jobs`
+- `GET /api/search-jobs?limit=10`
 - `GET /api/search-jobs/:id`
 - `GET /api/search-jobs/:id/papers.csv`
 - `GET /api/search-jobs/:id/report.md`
@@ -125,6 +128,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
 - Search job persistence into D1.
 - D1 readback for job, paper, and evaluation data.
+- Recent search job listing from D1.
 - CSV generation from persisted D1 results, with R2 storage under `reports/<job_id>/papers.csv` when available.
 - Markdown report generation from persisted D1 results, with R2 storage under `reports/<job_id>/report.md` when available.
 - CSV and Markdown download endpoints serve the R2 object first and fall back to direct generation if no object exists.

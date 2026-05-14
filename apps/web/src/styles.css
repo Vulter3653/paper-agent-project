@@ -301,6 +301,82 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.recentJobsPanel {
+  background: #ffffff;
+  border: 1px solid #d9e0e7;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 16px;
+}
+
+.recentJobsHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.recentJobsHeader p {
+  color: #607080;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.recentJobsList {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recentJobsList button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d9e0e7;
+  border-radius: 8px;
+  color: #17202a;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  min-height: 58px;
+  min-width: 0;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.recentJobsList button:hover,
+.recentJobsList .activeJob {
+  background: #eef5ff;
+  border-color: #9bc2ff;
+}
+
+.recentJobsList button:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.recentJobsList span {
+  display: block;
+  min-width: 0;
+}
+
+.recentJobsList strong,
+.recentJobsList small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recentJobsList strong {
+  font-size: 13px;
+}
+
+.recentJobsList small {
+  color: #607080;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
 .contentGrid {
   align-items: start;
   display: grid;
@@ -492,6 +568,10 @@ dd {
   }
 
   .diagnosticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .recentJobsList {
     grid-template-columns: 1fr;
   }
 

@@ -2,6 +2,36 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Recent Jobs Dashboard Recovery
+
+### Context
+
+Clarivate `wos-starter` approval is still pending, so new live searches remain blocked. The dashboard needed a way to recover and inspect prior D1 search jobs without creating a new search.
+
+### Code Changes Under Test
+
+- Added Worker route:
+
+```text
+GET /api/search-jobs?limit=10
+```
+
+- The route returns recent `search_jobs` rows ordered by `created_at DESC`.
+- Added dashboard Recent Jobs panel that loads recent jobs on startup and can reload a prior job through `GET /api/search-jobs/:id`.
+- Refreshing or creating a job refreshes the recent jobs list.
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All passed. The dry-run output showed `env.DB` and `env.REPORTS` bindings.
+
 ## 2026-05-14 - Markdown Report Format Improvement
 
 ### Context

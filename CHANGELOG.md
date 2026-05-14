@@ -15,6 +15,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Added`: Added `GET /api/search-jobs?limit=` in `apps/worker/src/index.ts` for recent search job listing.
+- `Added`: Added a Recent Jobs panel in `apps/web/src/main.tsx` and `apps/web/src/styles.css` so saved jobs can be reloaded without starting a new search.
 - `Changed`: Improved Markdown report output in `apps/worker/src/index.ts` with executive summary metrics, a top-ranked table, generated timestamp, OA landing page, and license details.
 - `Docs`: Recorded deployed `UNPAYWALL_EMAIL` diagnostics verification in `docs/debug-log.md` and `docs/progress.md`.
 - `Infra`: Enabled the `REPORTS` R2 binding for bucket `paper-agent-outputs` in `wrangler.toml` and `apps/worker/wrangler.toml`.

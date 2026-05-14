@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Download, FileText, Play, RefreshCw, Search } from "lucide-react";
+import { Download, FileText, History, Play, RefreshCw, Search } from "lucide-react";
 import type { PaperSummary, SearchJob } from "@paper-agent/shared";
 import "./styles.css";
 
 type JobResponse = {
   job: SearchJob;
   papers: PaperSummary[];
+};
+
+type JobsResponse = {
+  jobs: SearchJob[];
 };
 
 type PipelineStep = {
@@ -97,10 +101,14 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [diagnostics, setDiagnostics] = useState<DiagnosticsResponse | null>(null);
   const [diagnosticsError, setDiagnosticsError] = useState("");
+  const [recentJobs, setRecentJobs] = useState<SearchJob[]>([]);
+  const [recentJobsError, setRecentJobsError] = useState("");
+  const [loadingJobId, setLoadingJobId] = useState("");
   const selected = useMemo(() => papers.find((paper) => paper.id === selectedId) ?? papers[0], [papers, selectedId]);
 
   useEffect(() => {
     void refreshDiagnostics();
+    void refreshRecentJobs();
   }, []);
 
   useEffect(() => {
@@ -112,6 +120,7 @@ function App() {
       setJob(data.job);
       setPapers(data.papers);
       setSelectedId((current) => (data.papers.some((paper) => paper.id === current) ? current : data.papers[0]?.id ?? ""));
+      if (data.job.status === "completed" || data.job.status === "failed") void refreshRecentJobs();
     }, 2500);
     return () => window.clearInterval(timer);
   }, [job]);
@@ -127,6 +136,7 @@ function App() {
       setJob(data.job);
       setPapers(data.papers);
       setSelectedId((current) => (data.papers.some((paper) => paper.id === current) ? current : data.papers[0]?.id ?? ""));
+      await refreshRecentJobs();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to refresh search job");
     } finally {
@@ -148,6 +158,7 @@ function App() {
       setJob(data.job);
       setPapers(data.papers);
       setSelectedId(data.papers[0]?.id ?? "");
+      await refreshRecentJobs();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to create search job");
     } finally {
@@ -176,6 +187,36 @@ function App() {
     }
   }
 
+  async function refreshRecentJobs() {
+    setRecentJobsError("");
+    try {
+      const response = await fetch(apiUrl("/api/search-jobs?limit=10"));
+      if (!response.ok) throw new Error(await readApiError(response, "Failed to load recent jobs"));
+      const data = (await response.json()) as JobsResponse;
+      setRecentJobs(data.jobs);
+    } catch (error) {
+      setRecentJobsError(error instanceof Error ? error.message : "Failed to load recent jobs");
+    }
+  }
+
+  async function loadSearchJob(jobId: string) {
+    setLoadingJobId(jobId);
+    setErrorMessage("");
+    try {
+      const response = await fetch(apiUrl(`/api/search-jobs/${jobId}`));
+      if (!response.ok) throw new Error(await readApiError(response, "Failed to load search job"));
+      const data = (await response.json()) as JobResponse;
+      setJob(data.job);
+      setKeyword(data.job.keyword);
+      setPapers(data.papers);
+      setSelectedId(data.papers[0]?.id ?? "");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Failed to load search job");
+    } finally {
+      setLoadingJobId("");
+    }
+  }
+
   return (
     <main className="shell">
       <section className="toolbar">
@@ -201,6 +242,7 @@ function App() {
       </section>
       <PipelineProgress job={job} loading={loading} />
       <DiagnosticsPanel diagnostics={diagnostics} errorMessage={diagnosticsError} onRefresh={refreshDiagnostics} />
+      <RecentJobsPanel jobs={recentJobs} activeJobId={job?.id} loadingJobId={loadingJobId} errorMessage={recentJobsError} onLoad={loadSearchJob} onRefresh={refreshRecentJobs} />
       {errorMessage ? <p className="errorMessage">{errorMessage}</p> : null}
 
       <section className="contentGrid">
@@ -359,6 +401,52 @@ function DiagnosticsPanel({
   );
 }
 
+function RecentJobsPanel({
+  jobs,
+  activeJobId,
+  loadingJobId,
+  errorMessage,
+  onLoad,
+  onRefresh
+}: {
+  jobs: SearchJob[];
+  activeJobId?: string;
+  loadingJobId: string;
+  errorMessage: string;
+  onLoad: (jobId: string) => void;
+  onRefresh: () => void;
+}) {
+  return (
+    <section className="recentJobsPanel">
+      <div className="recentJobsHeader">
+        <div>
+          <h2>Recent Jobs</h2>
+          <p>{jobs.length ? `${jobs.length} latest` : "No saved jobs"}</p>
+        </div>
+        <button className="iconButton" onClick={onRefresh} aria-label="Refresh recent jobs">
+          <RefreshCw size={18} />
+        </button>
+      </div>
+      {errorMessage ? <p className="diagnosticsError">{errorMessage}</p> : null}
+      {jobs.length ? (
+        <div className="recentJobsList">
+          {jobs.map((item) => (
+            <button key={item.id} className={item.id === activeJobId ? "activeJob" : ""} onClick={() => onLoad(item.id)} disabled={loadingJobId === item.id}>
+              {loadingJobId === item.id ? <RefreshCw size={16} className="spin" /> : <History size={16} />}
+              <span>
+                <strong>{item.keyword}</strong>
+                <small>
+                  {item.status} · {formatDateTime(item.createdAt)}
+                </small>
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function ScoreBreakdown({ paper }: { paper: PaperSummary }) {
   const items = getScoreBreakdown(paper);
   return (
@@ -463,6 +551,12 @@ function getStepState(index: number, activeIndex: number, completedCount: number
   if (index < completedCount) return "done";
   if ((loading && index === 0) || index === activeIndex) return "active";
   return "pending";
+}
+
+function formatDateTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString();
 }
 
 function Metric({ label, value }: { label: string; value: string }) {

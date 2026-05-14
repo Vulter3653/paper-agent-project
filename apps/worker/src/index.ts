@@ -199,6 +199,17 @@ export default {
       }
     }
 
+    if (url.pathname === "/api/search-jobs" && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const limit = normalizeListLimit(url.searchParams.get("limit"));
+        return json({ jobs: await listSearchJobs(env.DB, limit) });
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
     if (url.pathname === "/api/search-jobs" && request.method === "POST") {
       try {
         const body = await readJson<CreateSearchJobRequest>(request);
@@ -288,6 +299,12 @@ function normalizeKeyword(keyword: string | undefined): string {
 function normalizeMaxResults(maxResults: number | undefined): number {
   if (typeof maxResults !== "number" || !Number.isFinite(maxResults)) return 20;
   return Math.max(1, Math.min(50, Math.trunc(maxResults)));
+}
+
+function normalizeListLimit(limit: string | null): number {
+  const parsed = Number.parseInt(limit ?? "", 10);
+  if (!Number.isFinite(parsed)) return 10;
+  return Math.max(1, Math.min(25, parsed));
 }
 
 function createSearchJob(keyword: string, status: SearchJob["status"], id = `job-${crypto.randomUUID()}`): SearchJob {
@@ -1157,6 +1174,19 @@ async function getSearchResult(db: D1Database, jobId: string): Promise<{ job: Se
     job: mapSearchJob(jobRow),
     papers: paperRows.results.map(mapPaperSummary)
   };
+}
+
+async function listSearchJobs(db: D1Database, limit: number): Promise<SearchJob[]> {
+  const rows = await db
+    .prepare(
+      `SELECT id, keyword, status, current_step, total_steps, created_at, completed_at, error_message
+       FROM search_jobs
+       ORDER BY created_at DESC
+       LIMIT ?`
+    )
+    .bind(limit)
+    .all<SearchJobRow>();
+  return rows.results.map(mapSearchJob);
 }
 
 function mapSearchJob(row: SearchJobRow): SearchJob {

@@ -35,12 +35,12 @@ Worker health: https://paper-agent-project.shch3653.workers.dev/api/health
 
 Current next implementation target:
 
-1. Wait for Cloudflare to deploy the next `main` commit.
-2. Open the dashboard and confirm the System Checks panel reports D1 schema readiness.
-3. If System Checks reports missing columns, add only those columns in D1 Console using the tracked migration files.
-4. Click `Run` and confirm the Pipeline Progress panel advances through persisted Worker steps.
-5. Select a result and confirm Score Breakdown displays persisted relevance, journal fit, Crossref, Open Access, citation, and recency scores.
-6. Confirm D1 `evaluations` rows include `relevance_score`, `journal_fit_score`, `verification_score`, `oa_score`, `citation_score`, and `recency_score`.
+1. Add `WOS_API_KEY` to the Cloudflare Worker variables/secrets for `paper-agent-project`.
+2. Wait for Cloudflare to deploy the next `main` commit.
+3. Open `/api/diagnostics` and confirm `env.wosApiKey` is `true`.
+4. Open the dashboard and confirm the System Checks panel reports D1 schema readiness and WoS API key presence.
+5. Click `Run` and confirm the Pipeline Progress panel advances through `wos_search`, journal filtering, Crossref, Unpaywall, ranking, and completion.
+6. Confirm D1 `papers.openalex_id` stores the WoS UID for new rows. The column name is retained for schema compatibility.
 7. Verify deployed CSV download includes Crossref, Unpaywall, and evaluation score columns.
 8. Start the next major implementation phase: ranking formula improvements or report generation.
 
@@ -51,13 +51,13 @@ The project is deployed through the cloud workflow:
 1. Code changes are committed and pushed to `origin/main`.
 2. Cloudflare picks up GitHub changes and deploys the Worker and Pages projects.
 3. The dashboard calls the deployed Worker API.
-4. The Worker searches OpenAlex and writes search job results to Cloudflare D1.
+4. The Worker searches Web of Science and writes search job results to Cloudflare D1.
 5. D1 Console queries now return stored rows.
 
 The latest confirmed behavior is normal:
 
 - Clicking `Run` in the dashboard creates a search job.
-- `POST /api/search-jobs` now calls the OpenAlex Works API, maps returned works, scores them, and stores the result in D1.
+- `POST /api/search-jobs` now calls the Web of Science Starter API, maps returned documents, scores them, and stores the result in D1.
 - `search_jobs`, `papers`, and `evaluations` receive rows in D1.
 - D1 Console no longer returns empty results after a successful run.
 
@@ -95,7 +95,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Refresh button calls `GET /api/search-jobs/:id`.
 - API error messages are shown in the page when search creation or refresh fails.
 - Dashboard API base URL supports `VITE_API_BASE_URL`, with a deployed Worker default.
-- Pipeline Progress panel visualizes OpenAlex search, journal filtering, Crossref enrichment, Unpaywall check, ranking, and completion status.
+- Pipeline Progress panel visualizes Web of Science search, journal filtering, Crossref enrichment, Unpaywall check, ranking, and completion status.
 - Paper Detail panel shows Score Breakdown for relevance, journal fit, Crossref verification, open access, citations, and recency.
 - System Checks panel calls `GET /api/diagnostics` to display D1 schema readiness and Worker environment variable presence.
 
@@ -110,15 +110,15 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - D1 binding validation.
 - D1 schema creation/backfill checks.
 - Asynchronous search job processing with persisted `current_step` updates.
-- OpenAlex Works API search using the dashboard keyword.
-- OpenAlex API key support through `OPENALEX_API_KEY`.
-- OpenAlex retry/backoff handling for 429 and 5xx responses.
-- OpenAlex result mapping for title, authors, year, journal/source, DOI, OA status, abstract, OpenAlex ID, and citation count.
+- Web of Science Starter API search using the dashboard keyword.
+- Web of Science API key support through `WOS_API_KEY`.
+- Web of Science retry/backoff handling for 429 and 5xx responses.
+- Web of Science result mapping for title, authors, year, journal/source, DOI, abstract/keywords, WoS UID, and citation count.
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
 - Search job persistence into D1.
 - D1 readback for job, paper, and evaluation data.
 - Direct CSV generation from persisted D1 results while R2 is unavailable.
-- Crossref DOI lookup after OpenAlex search.
+- Crossref DOI lookup after Web of Science search.
 - Crossref metadata enrichment for publisher, ISSN, publication type, and published date.
 - Basic DOI/title/year/journal verification status and reason fields.
 - Unpaywall DOI lookup after Crossref enrichment.
@@ -138,7 +138,7 @@ Tables:
 
 Additional paper metadata now tracked/backfilled:
 
-- `openalex_id`
+- `openalex_id` stores the external source identifier; new rows store the WoS UID for schema compatibility.
 - `abstract`
 - `cited_by_count`
 - `crossref_id`
@@ -186,14 +186,14 @@ The deployed D1 database already had some existing schema constraints, including
 - Dashboard connected to the deployed Worker API.
 - Worker POST route fixed after Cloudflare error 1101 by returning JSON errors and handling D1 schema drift.
 - D1 insert fixed for `papers.created_at NOT NULL`.
-- Demo-only persistence was replaced with OpenAlex search and D1 persistence.
-- OpenAlex 429 errors now return a clearer message asking for `OPENALEX_API_KEY` and `OPENALEX_EMAIL`.
+- Demo-only persistence was replaced with real scholarly search and D1 persistence.
+- Web of Science errors now return clearer messages for missing `WOS_API_KEY`, authorization failures, and 429 quota limits.
 - CSV export endpoint and dashboard CSV button were added and locally verified.
-- Crossref enrichment was added after OpenAlex mapping so DOI-backed results carry publisher, ISSN, publication type, published date, and verification reasons.
+- Crossref enrichment was added after source mapping so DOI-backed results carry publisher, ISSN, publication type, published date, and verification reasons.
 - Unpaywall enrichment was added after Crossref mapping so DOI-backed results carry OA PDF/page metadata without requiring R2 storage.
 - Journal allowlist filtering was added so only journals from `packages/shared/src/businessSchoolJournals.ts` appear in search results.
 - Pipeline Progress was added to the dashboard so users can see where a run is in the paper discovery flow.
-- Worker job execution was changed to return a job immediately and continue OpenAlex, journal filtering, Crossref, Unpaywall, and ranking in the background with D1 progress updates.
+- Worker job execution was changed to return a job immediately and continue Web of Science, journal filtering, Crossref, Unpaywall, and ranking in the background with D1 progress updates.
 - Score Breakdown was added to the dashboard detail view; the Worker now returns `citedByCount` in paper summaries for citation scoring.
 - Score component values are now persisted in `evaluations` and returned through API/CSV so the dashboard can prefer stored scores over frontend estimates.
 - Diagnostics were added so D1 schema drift and environment readiness can be checked from the API and dashboard before running jobs.
@@ -216,7 +216,7 @@ Unpaywall enrichment was locally verified with `wrangler dev --var UNPAYWALL_EMA
 
 Business school journal allowlist filtering was locally verified with `wrangler dev`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id/papers.csv`. The local JSON and CSV responses contained only allowlisted journals, including `Journal of the Academy of Marketing Science` and `Journal of Business Ethics`, and excluded the previously observed non-allowlisted `International Journal of Information Management` result.
 
-Asynchronous Worker progress was locally verified with `wrangler dev`, `POST /api/search-jobs`, `GET /api/search-jobs/:id`, and `GET /api/search-jobs/:id/papers.csv`. The POST response returned immediately with `status: searching`, `currentStep: openalex_search`, `totalSteps: 6`, and an empty `papers` array; a later GET returned `status: completed`, `currentStep: completed`, and persisted paper results.
+Asynchronous Worker progress was locally verified with `wrangler dev`, `POST /api/search-jobs`, `GET /api/search-jobs/:id`, and `GET /api/search-jobs/:id/papers.csv`. The POST response returned immediately with `status: searching`, `currentStep: openalex_search`, `totalSteps: 6`, and an empty `papers` array; a later GET returned `status: completed`, `currentStep: completed`, and persisted paper results. New builds use `currentStep: wos_search` for the first search stage.
 
 Dashboard Score Breakdown was locally verified through typecheck/build and Worker API polling. The Worker response now includes `citedByCount` in paper summaries; a local completed job returned `citedByCount: 378`, enabling the dashboard Citation score bar.
 
@@ -226,7 +226,7 @@ Diagnostics were locally verified with `wrangler dev` and `GET /api/diagnostics`
 
 ## Manual Cloudflare Settings Required
 
-For real OpenAlex search, configure these on the Worker service:
+For real Web of Science search, configure these on the Worker service:
 
 ```text
 Workers & Pages
@@ -238,16 +238,15 @@ Workers & Pages
 Add:
 
 ```text
-OPENALEX_EMAIL=<contact email>
-OPENALEX_API_KEY=<OpenAlex API key>
+WOS_API_KEY=<Clarivate Web of Science API key>
 CROSSREF_EMAIL=<contact email>
 UNPAYWALL_EMAIL=<contact email>
 ```
 
-OpenAlex API key can be created from:
+Clarivate API access is managed from:
 
 ```text
-https://openalex.org/settings/api
+https://developer.clarivate.com/apis
 ```
 
 Cloud behavior was also verified:
@@ -262,7 +261,7 @@ After clicking `Run`, these queries returned stored data.
 
 ## Remaining Work
 
-OpenAlex search, D1 persistence, CSV export, Crossref enrichment, Unpaywall metadata lookup, business school journal allowlist filtering, dashboard pipeline visualization, asynchronous job progress updates, dashboard score breakdown, persisted evaluation score components, and API/dashboard diagnostics are implemented locally. After Cloudflare deploys the next commit, verify the deployed dashboard and D1 rows. The next major implementation phase is hardening and extending real paper discovery:
+Web of Science search, D1 persistence, CSV export, Crossref enrichment, Unpaywall metadata lookup, business school journal allowlist filtering, dashboard pipeline visualization, asynchronous job progress updates, dashboard score breakdown, persisted evaluation score components, and API/dashboard diagnostics are implemented locally. After Cloudflare deploys the next commit and `WOS_API_KEY` is configured, verify the deployed dashboard and D1 rows. The next major implementation phase is hardening and extending real paper discovery:
 
 1. Confirm deployed System Checks panel and `/api/diagnostics`.
 2. Confirm deployed pipeline progress visualization after clicking `Run`.
@@ -270,7 +269,7 @@ OpenAlex search, D1 persistence, CSV export, Crossref enrichment, Unpaywall meta
 4. Confirm deployed persisted evaluation score columns in D1 and CSV.
 5. Improve ranking formula using the persisted component scores.
 6. Add report generation.
-7. Add tests around Worker API persistence, diagnostics, OpenAlex mapping, journal allowlist filtering, Crossref enrichment, Unpaywall enrichment, CSV generation, D1 row mapping, asynchronous progress updates, and score breakdown mapping.
+7. Add tests around Worker API persistence, diagnostics, Web of Science mapping, journal allowlist filtering, Crossref enrichment, Unpaywall enrichment, CSV generation, D1 row mapping, asynchronous progress updates, and score breakdown mapping.
 
 ## Useful D1 Checks
 
@@ -290,7 +289,7 @@ SELECT COUNT(*) FROM papers;
 SELECT COUNT(*) FROM evaluations;
 ```
 
-OpenAlex metadata check:
+Web of Science source metadata check:
 
 ```sql
 SELECT title, openalex_id, cited_by_count, substr(abstract, 1, 120) AS abstract_preview

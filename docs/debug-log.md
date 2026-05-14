@@ -2,6 +2,57 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Clarivate Web of Science Search Replacement
+
+### Context
+
+The user requested replacing the paper search source with Clarivate Web of Science API after reviewing the Clarivate developer API site.
+
+Official Clarivate pages checked:
+
+```text
+https://developer.clarivate.com/apis
+https://developer.clarivate.com/apis/wos
+https://developer.clarivate.com/apis/wos-starter/swagger
+```
+
+### Code Changes Under Test
+
+- Replaced the Worker search stage from OpenAlex Works API to Web of Science Starter API:
+
+```text
+GET https://api.clarivate.com/apis/wos-starter/v1/documents
+Header: X-ApiKey: <WOS_API_KEY>
+Query: q=TS=(...), limit, page, db=WOS, sortField=TC+D
+```
+
+- Updated the first persisted Worker step from `openalex_search` to `wos_search`.
+- Updated diagnostics to report `env.wosApiKey`.
+- Updated the dashboard pipeline label to `WoS`.
+- Updated required local/Cloudflare variable documentation to `WOS_API_KEY`.
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All passed.
+
+### Troubleshooting Notes
+
+- The D1 `papers.openalex_id` column is intentionally retained for compatibility with the existing deployed schema. New rows store the WoS UID in this column.
+- Runtime WoS search was not executed locally because the Clarivate `WOS_API_KEY` value is not present in the local environment.
+- After deployment, add `WOS_API_KEY` to the Cloudflare Worker variables/secrets and verify `/api/diagnostics` reports `env.wosApiKey: true`.
+
+### Resolution
+
+The codebase now uses Web of Science Starter API as the primary paper search source. Remaining action: commit, push, configure `WOS_API_KEY` in Cloudflare, wait for deployment, and run the dashboard search flow.
+
 ## 2026-05-14 - Diagnostics Endpoint And Dashboard Checks
 
 ### Context

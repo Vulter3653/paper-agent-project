@@ -16,7 +16,7 @@ apps/worker
   -> D1 metadata
   -> R2 reports
   -> Vectorize abstract search
-  -> Google Drive / OpenAlex / Crossref / Unpaywall tools
+  -> Google Drive / Web of Science / Crossref / Unpaywall tools
 ```
 
 ## Repository Structure
@@ -76,8 +76,7 @@ Recommended names:
 Never commit real credentials. Use `.env.example` as a template and set production secrets in Cloudflare.
 
 ```text
-OPENALEX_EMAIL
-OPENALEX_API_KEY
+WOS_API_KEY
 CROSSREF_EMAIL
 UNPAYWALL_EMAIL
 GOOGLE_CLIENT_EMAIL
@@ -89,7 +88,7 @@ GOOGLE_DRIVE_FOLDER_ID
 
 1. User enters a keyword in the dashboard.
 2. Worker creates a search job.
-3. Search Agent queries OpenAlex and Crossref.
+3. Search Agent queries Web of Science and Crossref.
 4. Results are saved to D1.
 5. Ranking Agent computes Top 5 papers.
 6. Dashboard displays status, ranked papers, scores, and report links.

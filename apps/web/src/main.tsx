@@ -27,8 +27,7 @@ type DiagnosticsResponse = {
     missingColumns: Array<{ table: string; column: string; ok: boolean }>;
   };
   env: {
-    openAlexEmail: boolean;
-    openAlexApiKey: boolean;
+    wosApiKey: boolean;
     crossrefEmail: boolean;
     unpaywallEmail: boolean;
     r2Reports: boolean;
@@ -42,7 +41,7 @@ function apiUrl(path: string): string {
 }
 
 const pipelineSteps: PipelineStep[] = [
-  { id: "openalex_search", label: "OpenAlex" },
+  { id: "wos_search", label: "WoS" },
   { id: "journal_filter", label: "Journal Filter" },
   { id: "crossref_enrichment", label: "Crossref" },
   { id: "unpaywall_check", label: "Unpaywall" },
@@ -309,8 +308,7 @@ function DiagnosticsPanel({
   const missingCount = diagnostics?.db.missingColumns.length ?? 0;
   const envItems = diagnostics
     ? [
-        ["OpenAlex email", diagnostics.env.openAlexEmail],
-        ["OpenAlex key", diagnostics.env.openAlexApiKey],
+        ["WoS API key", diagnostics.env.wosApiKey],
         ["Crossref email", diagnostics.env.crossrefEmail],
         ["Unpaywall email", diagnostics.env.unpaywallEmail],
         ["R2 reports", diagnostics.env.r2Reports]
@@ -392,7 +390,7 @@ function getScoreBreakdown(paper: PaperSummary): ScoreBreakdownItem[] {
     { label: "Journal Fit", value: journalFit, detail: "Included in the business school journal allowlist." },
     { label: "Crossref", value: verification, detail: paper.verificationReason ?? "No verification recorded." },
     { label: "Open Access", value: openAccess, detail: paper.unpaywallReason ?? "No Unpaywall lookup recorded." },
-    { label: "Citation", value: citation, detail: `${paper.citedByCount ?? 0} citations from OpenAlex.` },
+    { label: "Citation", value: citation, detail: `${paper.citedByCount ?? 0} citations from Web of Science.` },
     { label: "Recency", value: recency, detail: `${paper.year || "Unknown"} publication year.` }
   ];
 }

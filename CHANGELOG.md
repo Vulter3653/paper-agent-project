@@ -15,6 +15,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Changed`: Replaced OpenAlex search with Clarivate Web of Science Starter API search in `apps/worker/src/index.ts`, using `WOS_API_KEY` and `X-ApiKey` authentication.
+- `Changed`: Updated dashboard pipeline and System Checks labels in `apps/web/src/main.tsx` from OpenAlex to WoS.
+- `Docs`: Replaced OpenAlex setup references with Web of Science setup in `.env.example`, `README.md`, `docs/progress.md`, and `docs/debug-log.md`.
 - `Added`: Added `GET /api/diagnostics` in `apps/worker/src/index.ts` to report D1 schema and Worker environment readiness.
 - `Added`: Added dashboard System Checks panel in `apps/web/src/main.tsx` and `apps/web/src/styles.css`.
 - `Added`: Persisted score breakdown columns in `evaluations` via `apps/worker/schema.sql`, `apps/worker/src/index.ts`, and `apps/worker/migrations/0004_add_evaluation_score_columns.sql`.

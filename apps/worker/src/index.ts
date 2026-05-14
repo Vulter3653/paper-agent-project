@@ -3,8 +3,7 @@ import { calculateFinalScore, isBusinessSchoolJournal, normalizeJournalName, typ
 export interface Env {
   DB?: D1Database;
   REPORTS?: R2Bucket;
-  OPENALEX_EMAIL?: string;
-  OPENALEX_API_KEY?: string;
+  WOS_API_KEY?: string;
   CROSSREF_EMAIL?: string;
   UNPAYWALL_EMAIL?: string;
   GOOGLE_CLIENT_EMAIL?: string;
@@ -32,8 +31,7 @@ type DiagnosticsResponse = {
     missingColumns: DiagnosticsColumnCheck[];
   };
   env: {
-    openAlexEmail: boolean;
-    openAlexApiKey: boolean;
+    wosApiKey: boolean;
     crossrefEmail: boolean;
     unpaywallEmail: boolean;
     r2Reports: boolean;
@@ -70,35 +68,39 @@ type EvaluationScores = {
   recencyScore: number;
 };
 
-type OpenAlexResponse = {
-  results?: OpenAlexWork[];
+type WosStarterResponse = {
+  documents?: WosDocument[];
 };
 
-type OpenAlexWork = {
-  id?: string;
-  display_name?: string;
-  title?: string;
-  publication_year?: number;
-  doi?: string | null;
-  cited_by_count?: number;
-  abstract_inverted_index?: Record<string, number[]> | null;
-  authorships?: Array<{
-    author?: {
-      display_name?: string;
-    };
+type WosDocument = {
+  uid?: string;
+  title?: string | string[] | { value?: string };
+  names?: {
+    authors?: Array<{
+      displayName?: string;
+      fullName?: string;
+      name?: string;
+    }>;
+  };
+  source?: {
+    sourceTitle?: string;
+    publishYear?: number | string;
+    publicationYear?: number | string;
+    year?: number | string;
+  };
+  identifiers?: {
+    doi?: string;
+    DOI?: string;
+  };
+  citations?: Array<{
+    count?: number;
+    db?: string;
   }>;
-  primary_location?: {
-    source?: {
-      display_name?: string;
-    } | null;
-  } | null;
-  host_venue?: {
-    display_name?: string;
-  } | null;
-  open_access?: {
-    is_oa?: boolean;
-    oa_status?: string;
-  } | null;
+  abstract?: string | { value?: string };
+  keywords?: string[] | {
+    authorKeywords?: string[];
+    keywordsPlus?: string[];
+  };
 };
 
 type CrossrefResponse = {
@@ -208,9 +210,8 @@ export default {
         await saveSearchJob(env.DB, job);
         ctx.waitUntil(
           processSearchJob(env.DB, job, keyword, {
-            email: env.OPENALEX_EMAIL,
-            apiKey: env.OPENALEX_API_KEY,
-            crossrefEmail: env.CROSSREF_EMAIL ?? env.OPENALEX_EMAIL,
+            wosApiKey: env.WOS_API_KEY,
+            crossrefEmail: env.CROSSREF_EMAIL ?? env.UNPAYWALL_EMAIL,
             unpaywallEmail: env.UNPAYWALL_EMAIL,
             maxResults,
             yearStart: body.yearStart,
@@ -277,7 +278,7 @@ function createSearchJob(keyword: string, status: SearchJob["status"], id = `job
     id,
     keyword,
     status,
-    currentStep: status === "searching" ? "openalex_search" : "ranking",
+    currentStep: status === "searching" ? "wos_search" : "ranking",
     totalSteps: 6,
     createdAt: now
   };
@@ -432,9 +433,8 @@ async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
       missingColumns
     },
     env: {
-      openAlexEmail: Boolean(env.OPENALEX_EMAIL),
-      openAlexApiKey: Boolean(env.OPENALEX_API_KEY),
-      crossrefEmail: Boolean(env.CROSSREF_EMAIL || env.OPENALEX_EMAIL),
+      wosApiKey: Boolean(env.WOS_API_KEY),
+      crossrefEmail: Boolean(env.CROSSREF_EMAIL),
       unpaywallEmail: Boolean(env.UNPAYWALL_EMAIL),
       r2Reports: Boolean(env.REPORTS)
     }
@@ -641,8 +641,7 @@ async function processSearchJob(
   initialJob: SearchJob,
   keyword: string,
   options: {
-    email?: string;
-    apiKey?: string;
+    wosApiKey?: string;
     crossrefEmail?: string;
     unpaywallEmail?: string;
     maxResults: number;
@@ -652,8 +651,8 @@ async function processSearchJob(
 ): Promise<void> {
   let job = initialJob;
   try {
-    job = await updateSearchJobProgress(db, job, "searching", "openalex_search");
-    const candidates = await searchOpenAlex(keyword, options);
+    job = await updateSearchJobProgress(db, job, "searching", "wos_search");
+    const candidates = await searchWebOfScience(keyword, options);
 
     job = await updateSearchJobProgress(db, job, "scoring", "journal_filter");
     const allowedPapers = filterAllowedBusinessSchoolJournals(candidates).slice(0, options.maxResults);
@@ -671,51 +670,48 @@ async function processSearchJob(
   }
 }
 
-async function searchOpenAlex(
+async function searchWebOfScience(
   keyword: string,
   options: {
-    email?: string;
-    apiKey?: string;
+    wosApiKey?: string;
     maxResults: number;
     yearStart?: number;
     yearEnd?: number;
   }
 ): Promise<PaperRecord[]> {
-  const url = new URL("https://api.openalex.org/works");
+  if (!options.wosApiKey) {
+    throw new Error("Web of Science API key is not configured. Add WOS_API_KEY in Cloudflare Worker variables/secrets, then redeploy.");
+  }
+
+  const url = new URL("https://api.clarivate.com/apis/wos-starter/v1/documents");
   const candidateLimit = Math.min(100, Math.max(options.maxResults, options.maxResults * 5));
-  url.searchParams.set("search", keyword);
-  url.searchParams.set("per-page", String(candidateLimit));
-  url.searchParams.set("sort", "cited_by_count:desc");
-  url.searchParams.set(
-    "select",
-    [
-      "id",
-      "doi",
-      "display_name",
-      "title",
-      "publication_year",
-      "cited_by_count",
-      "abstract_inverted_index",
-      "authorships",
-      "primary_location",
-      "open_access"
-    ].join(",")
-  );
-  if (options.apiKey) url.searchParams.set("api_key", options.apiKey);
-  if (options.email) url.searchParams.set("mailto", options.email);
+  url.searchParams.set("q", buildWosQuery(keyword, options.yearStart, options.yearEnd));
+  url.searchParams.set("limit", String(candidateLimit));
+  url.searchParams.set("page", "1");
+  url.searchParams.set("db", "WOS");
+  url.searchParams.set("sortField", "TC+D");
 
-  const filters: string[] = [];
-  if (options.yearStart) filters.push(`from_publication_date:${Math.trunc(options.yearStart)}-01-01`);
-  if (options.yearEnd) filters.push(`to_publication_date:${Math.trunc(options.yearEnd)}-12-31`);
-  if (filters.length) url.searchParams.set("filter", filters.join(","));
+  const response = await fetchWosWithRetry(url, options.wosApiKey);
 
-  const response = await fetchOpenAlexWithRetry(url, options.email);
-
-  const data = (await response.json()) as OpenAlexResponse;
-  return (data.results ?? []).slice(0, candidateLimit).map((work, index) => mapOpenAlexWork(work, keyword, index + 1));
+  const data = (await response.json()) as WosStarterResponse;
+  return (data.documents ?? []).slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
 }
 
-async function fetchOpenAlexWithRetry(url: URL, email: string | undefined): Promise<Response> {
+function buildWosQuery(keyword: string, yearStart: number | undefined, yearEnd: number | undefined): string {
+  const terms = [`TS=(${escapeWosQuery(keyword)})`];
+  const start = yearStart ? Math.trunc(yearStart) : null;
+  const end = yearEnd ? Math.trunc(yearEnd) : null;
+  if (start && end) terms.push(`PY=(${start}-${end})`);
+  else if (start) terms.push(`PY=(${start}-${new Date().getUTCFullYear()})`);
+  else if (end) terms.push(`PY=(1900-${end})`);
+  return terms.join(" AND ");
+}
+
+function escapeWosQuery(value: string): string {
+  return value.replace(/[()"']/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function fetchWosWithRetry(url: URL, apiKey: string): Promise<Response> {
   const maxAttempts = 3;
   let lastResponse: Response | null = null;
 
@@ -723,7 +719,7 @@ async function fetchOpenAlexWithRetry(url: URL, email: string | undefined): Prom
     const response = await fetch(url.toString(), {
       headers: {
         Accept: "application/json",
-        "User-Agent": email ? `paper-agent-project (${email})` : "paper-agent-project"
+        "X-ApiKey": apiKey
       }
     });
 
@@ -734,44 +730,42 @@ async function fetchOpenAlexWithRetry(url: URL, email: string | undefined): Prom
     await sleep(2 ** attempt * 1000);
   }
 
+  if (lastResponse?.status === 401 || lastResponse?.status === 403) {
+    throw new Error("Web of Science request was not authorized. Check WOS_API_KEY in Cloudflare Worker variables/secrets.");
+  }
   if (lastResponse?.status === 429) {
-    const reset = lastResponse.headers.get("X-RateLimit-Reset");
-    const remaining = lastResponse.headers.get("X-RateLimit-Remaining");
-    const resetText = reset ? ` Reset in ${reset} seconds.` : "";
-    const remainingText = remaining ? ` Remaining credits: ${remaining}.` : "";
-    throw new Error(
-      `OpenAlex rate limit reached (429). Add OPENALEX_API_KEY and OPENALEX_EMAIL in Cloudflare Worker variables/secrets, then redeploy.${remainingText}${resetText}`
-    );
+    throw new Error("Web of Science rate limit reached (429). Wait for the Clarivate quota window to reset or reduce search frequency.");
   }
 
-  throw new Error(`OpenAlex request failed with ${lastResponse?.status ?? "unknown status"}`);
+  throw new Error(`Web of Science request failed with ${lastResponse?.status ?? "unknown status"}`);
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function mapOpenAlexWork(work: OpenAlexWork, keyword: string, rank: number): PaperRecord {
-  const abstract = reconstructAbstract(work.abstract_inverted_index);
-  const title = work.display_name || work.title || "Untitled work";
-  const authors = mapAuthors(work);
-  const year = work.publication_year ?? 0;
-  const citedByCount = work.cited_by_count ?? 0;
+function mapWosDocument(document: WosDocument, keyword: string, rank: number): PaperRecord {
+  const abstract = getWosAbstract(document);
+  const title = getWosTitle(document);
+  const authors = getWosAuthors(document);
+  const year = getWosYear(document);
+  const citedByCount = getWosCitationCount(document);
   const scores = scorePaper({ keyword, title, abstract, citedByCount, year });
+  const doi = getWosDoi(document);
   return {
-    id: work.id || `openalex-${rank}`,
+    id: document.uid || `wos-${rank}`,
     rank,
     title,
     authors,
     year,
-    journalName: work.primary_location?.source?.display_name || work.host_venue?.display_name || "Unknown source",
-    doi: normalizeDoi(work.doi),
-    oaStatus: mapOaStatus(work.open_access),
+    journalName: getWosJournalName(document),
+    doi,
+    oaStatus: "unknown",
     abstractScore: scores.abstractScore,
     finalScore: scores.finalScore,
     includeStatus: scores.finalScore >= 0.35 ? "include" : "review",
     relevanceReason: scores.reason,
-    openalexId: work.id ?? "",
+    openalexId: document.uid ?? "",
     abstract,
     citedByCount,
     crossrefId: "",
@@ -779,16 +773,16 @@ function mapOpenAlexWork(work: OpenAlexWork, keyword: string, rank: number): Pap
     issn: "",
     publicationType: "",
     publishedDate: "",
-    verificationStatus: normalizeDoi(work.doi) ? "unverified" : "partial",
-    verificationReason: normalizeDoi(work.doi) ? "Crossref verification pending." : "No DOI available for Crossref verification.",
+    verificationStatus: doi ? "unverified" : "partial",
+    verificationReason: doi ? "Crossref verification pending." : "No DOI available for Crossref verification.",
     crossrefJournalName: "",
     oaPdfUrl: "",
     oaLandingPageUrl: "",
     oaLicense: "",
     oaHostType: "",
     oaRepository: "",
-    unpaywallStatus: normalizeDoi(work.doi) ? "skipped" : "not_found",
-    unpaywallReason: normalizeDoi(work.doi) ? "Unpaywall lookup pending." : "No DOI available for Unpaywall lookup."
+    unpaywallStatus: doi ? "skipped" : "not_found",
+    unpaywallReason: doi ? "Unpaywall lookup pending." : "No DOI available for Unpaywall lookup."
   };
 }
 
@@ -982,33 +976,55 @@ function isSimilarText(left: string, right: string): boolean {
   return overlap >= 0.6;
 }
 
-function reconstructAbstract(index: OpenAlexWork["abstract_inverted_index"]): string {
-  if (!index) return "";
-  const words: Array<[number, string]> = [];
-  for (const [word, positions] of Object.entries(index)) {
-    for (const position of positions) words.push([position, word]);
-  }
-  return words
-    .sort(([left], [right]) => left - right)
-    .map(([, word]) => word)
-    .join(" ");
-}
-
-function mapAuthors(work: OpenAlexWork): string {
-  const authors = (work.authorships ?? [])
-    .map((authorship) => authorship.author?.display_name)
-    .filter((name): name is string => Boolean(name));
-  return authors.slice(0, 5).join(", ") || "Unknown authors";
-}
-
 function normalizeDoi(doi: string | null | undefined): string {
   return doi?.replace(/^https?:\/\/doi\.org\//i, "") ?? "";
 }
 
-function mapOaStatus(openAccess: OpenAlexWork["open_access"]): PaperSummary["oaStatus"] {
-  if (!openAccess) return "unknown";
-  if (openAccess.is_oa) return "oa";
-  return openAccess.oa_status === "closed" ? "closed" : "unknown";
+function getWosTitle(document: WosDocument): string {
+  const title = document.title;
+  if (Array.isArray(title)) return title[0] ?? "Untitled work";
+  if (typeof title === "object") return title.value ?? "Untitled work";
+  return title || "Untitled work";
+}
+
+function getWosAuthors(document: WosDocument): string {
+  const authors = (document.names?.authors ?? [])
+    .map((author) => author.displayName ?? author.fullName ?? author.name)
+    .filter((name): name is string => Boolean(name));
+  return authors.slice(0, 5).join(", ") || "Unknown authors";
+}
+
+function getWosJournalName(document: WosDocument): string {
+  return document.source?.sourceTitle ?? "Unknown source";
+}
+
+function getWosYear(document: WosDocument): number {
+  const value = document.source?.publishYear ?? document.source?.publicationYear ?? document.source?.year;
+  if (typeof value === "number") return value;
+  if (typeof value === "string") return Number.parseInt(value, 10) || 0;
+  return 0;
+}
+
+function getWosDoi(document: WosDocument): string {
+  return normalizeDoi(document.identifiers?.doi ?? document.identifiers?.DOI);
+}
+
+function getWosCitationCount(document: WosDocument): number {
+  const citations = document.citations ?? [];
+  const wosCitation = citations.find((citation) => citation.db?.toUpperCase() === "WOS");
+  return wosCitation?.count ?? citations[0]?.count ?? 0;
+}
+
+function getWosAbstract(document: WosDocument): string {
+  const abstract = document.abstract;
+  if (typeof abstract === "string") return abstract;
+  if (typeof abstract === "object") return abstract.value ?? "";
+  if (Array.isArray(document.keywords)) return document.keywords.join(" ");
+  const keywordGroups = document.keywords;
+  if (keywordGroups && typeof keywordGroups === "object") {
+    return [...(keywordGroups.authorKeywords ?? []), ...(keywordGroups.keywordsPlus ?? [])].join(" ");
+  }
+  return "";
 }
 
 function scorePaper(input: { keyword: string; title: string; abstract: string; citedByCount: number; year: number }) {

@@ -213,6 +213,7 @@ export default {
             wosApiKey: env.WOS_API_KEY,
             crossrefEmail: env.CROSSREF_EMAIL ?? env.UNPAYWALL_EMAIL,
             unpaywallEmail: env.UNPAYWALL_EMAIL,
+            reports: env.REPORTS,
             maxResults,
             yearStart: body.yearStart,
             yearEnd: body.yearEnd
@@ -244,6 +245,8 @@ export default {
         await ensureSchema(env.DB);
         const result = await getSearchResult(env.DB, csvMatch[1]);
         if (!result) return json({ error: "Search job not found" }, 404);
+        const stored = await getStoredOutput(env.REPORTS, getCsvOutputKey(result.job.id), getCsvFileName(result));
+        if (stored) return stored;
         return csv(result);
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
@@ -257,6 +260,8 @@ export default {
         await ensureSchema(env.DB);
         const result = await getSearchResult(env.DB, reportMatch[1]);
         if (!result) return json({ error: "Search job not found" }, 404);
+        const stored = await getStoredOutput(env.REPORTS, getMarkdownReportOutputKey(result.job.id), getMarkdownReportFileName(result));
+        if (stored) return stored;
         return markdownReport(result);
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
@@ -657,6 +662,7 @@ async function processSearchJob(
     wosApiKey?: string;
     crossrefEmail?: string;
     unpaywallEmail?: string;
+    reports?: R2Bucket;
     maxResults: number;
     yearStart?: number;
     yearEnd?: number;
@@ -677,7 +683,9 @@ async function processSearchJob(
     const unpaywallEnriched = await enrichPapersWithUnpaywall(crossrefEnriched, options.unpaywallEmail);
 
     job = await updateSearchJobProgress(db, job, "ranking", "ranking");
-    await saveSearchResult(db, completeSearchJob(job), unpaywallEnriched);
+    const completedJob = completeSearchJob(job);
+    await saveSearchResult(db, completedJob, unpaywallEnriched);
+    await persistSearchOutputs(options.reports, { job: completedJob, papers: unpaywallEnriched });
   } catch (error) {
     await saveSearchFailure(db, job, error);
   }
@@ -1211,7 +1219,70 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-function csv(result: { job: SearchJob; papers: PaperSummary[] }): Response {
+type SearchResult = { job: SearchJob; papers: PaperSummary[] };
+
+async function persistSearchOutputs(reports: R2Bucket | undefined, result: SearchResult): Promise<void> {
+  if (!reports) return;
+  try {
+    await Promise.all([
+      reports.put(getCsvOutputKey(result.job.id), getCsvBody(result), {
+        httpMetadata: {
+          contentType: "text/csv; charset=utf-8",
+          contentDisposition: `attachment; filename="${getCsvFileName(result)}"`
+        }
+      }),
+      reports.put(getMarkdownReportOutputKey(result.job.id), getMarkdownReportBody(result), {
+        httpMetadata: {
+          contentType: "text/markdown; charset=utf-8",
+          contentDisposition: `attachment; filename="${getMarkdownReportFileName(result)}"`
+        }
+      })
+    ]);
+  } catch (error) {
+    console.warn(`R2 output persistence failed for ${result.job.id}: ${getErrorMessage(error)}`);
+  }
+}
+
+async function getStoredOutput(reports: R2Bucket | undefined, key: string, fileName: string): Promise<Response | null> {
+  if (!reports) return null;
+  const object = await reports.get(key);
+  if (!object) return null;
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("ETag", object.httpEtag);
+  if (!headers.has("Content-Disposition")) headers.set("Content-Disposition", `attachment; filename="${fileName}"`);
+  for (const [name, value] of Object.entries(corsHeaders())) headers.set(name, value);
+  return new Response(object.body, { headers });
+}
+
+function getCsvOutputKey(jobId: string): string {
+  return `reports/${jobId}/papers.csv`;
+}
+
+function getMarkdownReportOutputKey(jobId: string): string {
+  return `reports/${jobId}/report.md`;
+}
+
+function getCsvFileName(result: SearchResult): string {
+  return `${sanitizeFileName(result.job.keyword)}-${result.job.id}.csv`;
+}
+
+function getMarkdownReportFileName(result: SearchResult): string {
+  return `${sanitizeFileName(result.job.keyword)}-${result.job.id}-report.md`;
+}
+
+function csv(result: SearchResult): Response {
+  const body = getCsvBody(result);
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${getCsvFileName(result)}"`,
+      ...corsHeaders()
+    }
+  });
+}
+
+function getCsvBody(result: SearchResult): string {
   const headers = [
     "job_id",
     "keyword",
@@ -1280,18 +1351,21 @@ function csv(result: { job: SearchJob; papers: PaperSummary[] }): Response {
     paper.includeStatus,
     paper.relevanceReason
   ]);
-  const body = [headers, ...rows].map((row) => row.map(formatCsvCell).join(",")).join("\n");
-  const fileName = `${sanitizeFileName(result.job.keyword)}-${result.job.id}.csv`;
+  return [headers, ...rows].map((row) => row.map(formatCsvCell).join(",")).join("\n");
+}
+
+function markdownReport(result: SearchResult): Response {
+  const body = getMarkdownReportBody(result);
   return new Response(body, {
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${fileName}"`,
+      "Content-Type": "text/markdown; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${getMarkdownReportFileName(result)}"`,
       ...corsHeaders()
     }
   });
 }
 
-function markdownReport(result: { job: SearchJob; papers: PaperSummary[] }): Response {
+function getMarkdownReportBody(result: SearchResult): string {
   const lines = [
     `# Paper Agent Report`,
     "",
@@ -1342,15 +1416,7 @@ function markdownReport(result: { job: SearchJob; papers: PaperSummary[] }): Res
     );
   }
 
-  const body = `${lines.join("\n")}\n`;
-  const fileName = `${sanitizeFileName(result.job.keyword)}-${result.job.id}-report.md`;
-  return new Response(body, {
-    headers: {
-      "Content-Type": "text/markdown; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${fileName}"`,
-      ...corsHeaders()
-    }
-  });
+  return `${lines.join("\n")}\n`;
 }
 
 function formatReportScore(value: number): string {

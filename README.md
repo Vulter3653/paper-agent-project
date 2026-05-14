@@ -91,7 +91,8 @@ GOOGLE_DRIVE_FOLDER_ID
 3. Search Agent queries Web of Science and Crossref.
 4. Results are saved to D1.
 5. Ranking Agent computes Top 5 papers.
-6. Dashboard displays status, ranked papers, scores, and report links.
+6. CSV and Markdown report outputs are stored in R2 when the `REPORTS` binding is available.
+7. Dashboard displays status, ranked papers, scores, and report links.
 
 ## Strict Change Tracking
 

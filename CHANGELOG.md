@@ -15,6 +15,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Infra`: Enabled the `REPORTS` R2 binding for bucket `paper-agent-outputs` in `wrangler.toml` and `apps/worker/wrangler.toml`.
+- `Changed`: Updated `apps/worker/src/index.ts` to persist CSV and Markdown report outputs to R2 under `reports/<job_id>/` and serve stored R2 objects when available.
+- `Docs`: Updated `README.md`, `docs/progress.md`, and `docs/debug-log.md` with R2 output storage behavior and verification steps.
 - `Added`: Added `GET /api/search-jobs/:id/report.md` in `apps/worker/src/index.ts` and a dashboard Markdown report download button in `apps/web/src/main.tsx`.
 - `Docs`: Recorded Clarivate `wos-starter` subscription approval as priority 0 in `docs/progress.md`.
 - `Changed`: Replaced OpenAlex search with Clarivate Web of Science Starter API search in `apps/worker/src/index.ts`, using `WOS_API_KEY` and `X-ApiKey` authentication.

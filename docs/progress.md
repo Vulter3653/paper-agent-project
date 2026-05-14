@@ -43,7 +43,8 @@ Current next implementation target:
 5. Click `Run` and confirm the Pipeline Progress panel advances through `wos_search`, journal filtering, Crossref, Unpaywall, ranking, and completion.
 6. Confirm D1 `papers.openalex_id` stores the WoS UID for new rows. The column name is retained for schema compatibility.
 7. Verify deployed CSV and Markdown report downloads include Crossref, Unpaywall, and evaluation score data.
-8. Start the next major implementation phase: ranking formula improvements or PDF report generation.
+8. In R2 bucket `paper-agent-outputs`, confirm `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md` are created for completed jobs.
+9. Start the next major implementation phase: ranking formula improvements or PDF report generation.
 
 ## Current Status
 
@@ -71,6 +72,8 @@ The latest confirmed behavior is normal:
 - D1 database: `paper_agent_db`
 - D1 binding: `DB`
 - D1 database ID: `4d622431-3574-4e04-a359-dada93e97438`
+- R2 bucket: `paper-agent-outputs`
+- R2 binding: `REPORTS`
 - Default Worker API URL: `https://paper-agent-project.shch3653.workers.dev`
 - Dashboard URL: `https://paper-agent-project.pages.dev/`
 
@@ -110,6 +113,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - `GET /api/diagnostics`
 - CORS headers for dashboard access.
 - D1 binding validation.
+- R2 `REPORTS` binding for generated output storage.
 - D1 schema creation/backfill checks.
 - Asynchronous search job processing with persisted `current_step` updates.
 - Web of Science Starter API search using the dashboard keyword.
@@ -119,8 +123,9 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.
 - Search job persistence into D1.
 - D1 readback for job, paper, and evaluation data.
-- Direct CSV generation from persisted D1 results while R2 is unavailable.
-- Direct Markdown report generation from persisted D1 results while R2 is unavailable.
+- CSV generation from persisted D1 results, with R2 storage under `reports/<job_id>/papers.csv` when available.
+- Markdown report generation from persisted D1 results, with R2 storage under `reports/<job_id>/report.md` when available.
+- CSV and Markdown download endpoints serve the R2 object first and fall back to direct generation if no object exists.
 - Crossref DOI lookup after Web of Science search.
 - Crossref metadata enrichment for publisher, ISSN, publication type, and published date.
 - Basic DOI/title/year/journal verification status and reason fields.
@@ -184,7 +189,7 @@ The deployed D1 database already had some existing schema constraints, including
 
 - Worker name aligned to the existing Cloudflare service: `paper-agent-project`.
 - Root `wrangler.toml` added for Cloudflare root deploy compatibility.
-- D1 binding configured without R2, because R2 is intentionally disabled for the MVP.
+- R2 bucket `paper-agent-outputs` and Worker binding `REPORTS` are now configured.
 - Workspace build scripts added so root `npm run build` succeeds.
 - Dashboard connected to the deployed Worker API.
 - Worker POST route fixed after Cloudflare error 1101 by returning JSON errors and handling D1 schema drift.
@@ -200,7 +205,7 @@ The deployed D1 database already had some existing schema constraints, including
 - Score Breakdown was added to the dashboard detail view; the Worker now returns `citedByCount` in paper summaries for citation scoring.
 - Score component values are now persisted in `evaluations` and returned through API/CSV so the dashboard can prefer stored scores over frontend estimates.
 - Diagnostics were added so D1 schema drift and environment readiness can be checked from the API and dashboard before running jobs.
-- Markdown report download was added as an R2-free interim report output.
+- Markdown report download was added and CSV/Markdown outputs are stored in R2 when the `REPORTS` binding is available.
 
 ## Verification Completed
 
@@ -228,7 +233,7 @@ Persisted evaluation score components were locally verified with `wrangler dev`,
 
 Diagnostics were locally verified with `wrangler dev` and `GET /api/diagnostics`. The response returned `ok: true`, `db.bound: true`, no missing columns, and expected warning-level false values for disabled features such as R2 reports.
 
-Markdown report generation was statically verified with typecheck/build/dry-run. Runtime verification should be done against a deployed or local completed search job using `GET /api/search-jobs/:id/report.md`.
+R2 output storage was statically verified with typecheck/build/dry-run. Runtime verification should be done after deployment by completing a search job, downloading `GET /api/search-jobs/:id/papers.csv` and `GET /api/search-jobs/:id/report.md`, and confirming R2 objects exist under `reports/<job_id>/`.
 
 ## Manual Cloudflare Settings Required
 
@@ -273,7 +278,7 @@ Web of Science search, D1 persistence, CSV export, Crossref enrichment, Unpaywal
 1. Confirm deployed System Checks panel and `/api/diagnostics`.
 2. Confirm deployed pipeline progress visualization after clicking `Run`.
 3. Confirm deployed score breakdown in the Paper Detail panel.
-4. Confirm deployed persisted evaluation score columns in D1, CSV, and Markdown report output.
+4. Confirm deployed persisted evaluation score columns in D1, CSV, Markdown report output, and R2 objects.
 5. Improve ranking formula using the persisted component scores.
 6. Add PDF report generation when R2 or another durable output target is available.
 7. Add tests around Worker API persistence, diagnostics, Web of Science mapping, journal allowlist filtering, Crossref enrichment, Unpaywall enrichment, CSV/report generation, D1 row mapping, asynchronous progress updates, and score breakdown mapping.
@@ -396,4 +401,11 @@ Markdown report check:
 
 ```text
 https://paper-agent-project.shch3653.workers.dev/api/search-jobs/<job_id>/report.md
+```
+
+R2 object check:
+
+```text
+R2 -> paper-agent-outputs -> reports/<job_id>/papers.csv
+R2 -> paper-agent-outputs -> reports/<job_id>/report.md
 ```

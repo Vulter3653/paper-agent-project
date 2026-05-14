@@ -2,6 +2,58 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - R2 Output Storage Binding
+
+### Context
+
+R2 bucket creation is complete. The Worker can now persist generated output files instead of only streaming CSV/Markdown responses directly from D1.
+
+### Code Changes Under Test
+
+- Enabled `REPORTS` R2 binding for bucket `paper-agent-outputs` in both Worker config files:
+
+```text
+wrangler.toml
+apps/worker/wrangler.toml
+```
+
+- Search completion now attempts to write:
+
+```text
+reports/<job_id>/papers.csv
+reports/<job_id>/report.md
+```
+
+- Download endpoints check R2 first, then fall back to direct D1-based generation:
+
+```text
+GET /api/search-jobs/:id/papers.csv
+GET /api/search-jobs/:id/report.md
+```
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All passed. The dry-run output showed both bindings:
+
+```text
+env.DB (paper_agent_db)
+env.REPORTS (paper-agent-outputs)
+```
+
+### Troubleshooting Notes
+
+- R2 persistence is non-blocking for job success. If R2 writes fail, the job remains completed and the download endpoints still generate content directly from D1.
+- Runtime verification requires a deployed Worker with the `REPORTS` binding and a completed search job.
+- After a completed job, check R2 bucket `paper-agent-outputs` for `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md`.
+
 ## 2026-05-14 - Markdown Report Output While WoS Approval Is Pending
 
 ### Context

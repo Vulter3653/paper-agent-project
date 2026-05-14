@@ -15,6 +15,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Changed`: Improved Markdown report output in `apps/worker/src/index.ts` with executive summary metrics, a top-ranked table, generated timestamp, OA landing page, and license details.
 - `Docs`: Recorded deployed `UNPAYWALL_EMAIL` diagnostics verification in `docs/debug-log.md` and `docs/progress.md`.
 - `Infra`: Enabled the `REPORTS` R2 binding for bucket `paper-agent-outputs` in `wrangler.toml` and `apps/worker/wrangler.toml`.
 - `Changed`: Updated `apps/worker/src/index.ts` to persist CSV and Markdown report outputs to R2 under `reports/<job_id>/` and serve stored R2 objects when available.

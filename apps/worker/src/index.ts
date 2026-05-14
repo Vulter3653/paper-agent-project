@@ -1366,6 +1366,7 @@ function markdownReport(result: SearchResult): Response {
 }
 
 function getMarkdownReportBody(result: SearchResult): string {
+  const summary = summarizeReport(result.papers);
   const lines = [
     `# Paper Agent Report`,
     "",
@@ -1375,7 +1376,36 @@ function getMarkdownReportBody(result: SearchResult): string {
     `- Current step: ${result.job.currentStep}`,
     `- Created at: ${result.job.createdAt}`,
     `- Completed at: ${result.job.completedAt ?? "Not completed"}`,
+    `- Generated at: ${new Date().toISOString()}`,
     `- Paper count: ${result.papers.length}`,
+    `- Include: ${summary.includeCount}`,
+    `- Review: ${summary.reviewCount}`,
+    `- Exclude: ${summary.excludeCount}`,
+    `- Open access with PDF: ${summary.oaPdfCount}`,
+    `- Average final score: ${formatReportScore(summary.averageFinalScore)}`,
+    "",
+    "## Executive Summary",
+    "",
+    `This report contains ${result.papers.length} allowlisted journal result${result.papers.length === 1 ? "" : "s"} for the search keyword "${result.job.keyword}".`,
+    `The highest ranked result is ${summary.topPaper ? `"${summary.topPaper.title}" with a final score of ${formatReportScore(summary.topPaper.finalScore)}.` : "not available because no papers were saved."}`,
+    `Crossref verification found ${summary.verifiedCount} verified result${summary.verifiedCount === 1 ? "" : "s"}, and Unpaywall found ${summary.oaPdfCount} result${summary.oaPdfCount === 1 ? "" : "s"} with a direct PDF URL.`,
+    "",
+    "## Top Ranked Table",
+    "",
+    "| Rank | Title | Year | Journal | Final | Include | DOI | OA PDF |",
+    "| --- | --- | --- | --- | ---: | --- | --- | --- |",
+    ...result.papers.map((paper) =>
+      [
+        paper.rank,
+        escapeMarkdownTableCell(paper.title),
+        paper.year || "Unknown",
+        escapeMarkdownTableCell(paper.journalName),
+        formatReportScore(paper.finalScore),
+        paper.includeStatus,
+        paper.doi ? escapeMarkdownTableCell(paper.doi) : "Not available",
+        paper.oaPdfUrl ? "Yes" : "No"
+      ].join(" | ")
+    ).map((row) => `| ${row} |`),
     "",
     "## Ranked Papers",
     ""
@@ -1401,6 +1431,8 @@ function getMarkdownReportBody(result: SearchResult): string {
       `- Verification: ${paper.verificationStatus ?? "unverified"} - ${paper.verificationReason ?? "No verification recorded."}`,
       `- Unpaywall: ${paper.unpaywallStatus ?? "skipped"} - ${paper.unpaywallReason ?? "No Unpaywall lookup recorded."}`,
       `- OA PDF: ${paper.oaPdfUrl || "Not available"}`,
+      `- OA landing page: ${paper.oaLandingPageUrl || "Not available"}`,
+      `- License: ${[paper.oaLicense, paper.oaHostType, paper.oaRepository].filter(Boolean).join(" / ") || "Not available"}`,
       "",
       "Score breakdown:",
       "",
@@ -1419,8 +1451,30 @@ function getMarkdownReportBody(result: SearchResult): string {
   return `${lines.join("\n")}\n`;
 }
 
+function summarizeReport(papers: PaperSummary[]) {
+  const includeCount = papers.filter((paper) => paper.includeStatus === "include").length;
+  const reviewCount = papers.filter((paper) => paper.includeStatus === "review").length;
+  const excludeCount = papers.filter((paper) => paper.includeStatus === "exclude").length;
+  const verifiedCount = papers.filter((paper) => paper.verificationStatus === "verified").length;
+  const oaPdfCount = papers.filter((paper) => Boolean(paper.oaPdfUrl)).length;
+  const averageFinalScore = papers.length ? papers.reduce((total, paper) => total + paper.finalScore, 0) / papers.length : 0;
+  return {
+    includeCount,
+    reviewCount,
+    excludeCount,
+    verifiedCount,
+    oaPdfCount,
+    averageFinalScore,
+    topPaper: papers[0]
+  };
+}
+
 function formatReportScore(value: number): string {
   return value.toFixed(3);
+}
+
+function escapeMarkdownTableCell(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
 }
 
 function formatCsvCell(value: string | number): string {

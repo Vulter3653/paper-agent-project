@@ -44,7 +44,8 @@ Current next implementation target:
 6. Confirm D1 `papers.openalex_id` stores the WoS UID for new rows. The column name is retained for schema compatibility.
 7. Verify deployed CSV and Markdown report downloads include Crossref, Unpaywall, and evaluation score data.
 8. In R2 bucket `paper-agent-outputs`, confirm `reports/<job_id>/papers.csv` and `reports/<job_id>/report.md` are created for completed jobs.
-9. Start the next major implementation phase: ranking formula improvements or PDF report generation.
+9. Confirm the Markdown report includes executive summary metrics, top-ranked table, paper details, OA landing page, and license details.
+10. Start the next major implementation phase: ranking formula improvements or PDF report generation.
 
 ## Current Status
 
@@ -207,6 +208,7 @@ The deployed D1 database already had some existing schema constraints, including
 - Score component values are now persisted in `evaluations` and returned through API/CSV so the dashboard can prefer stored scores over frontend estimates.
 - Diagnostics were added so D1 schema drift and environment readiness can be checked from the API and dashboard before running jobs.
 - Markdown report download was added and CSV/Markdown outputs are stored in R2 when the `REPORTS` binding is available.
+- Markdown report output now includes an executive summary, include/review/exclude counts, OA PDF count, average score, top-ranked table, OA landing page, and license details.
 
 ## Verification Completed
 

@@ -2,6 +2,35 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Markdown Report Format Improvement
+
+### Context
+
+Clarivate `wos-starter` approval is still the priority 0 external blocker, so development continued on report output quality that can be verified without live WoS access.
+
+### Code Changes Under Test
+
+- Added executive summary metrics to Markdown reports:
+  - include/review/exclude counts
+  - open access PDF count
+  - average final score
+  - generated timestamp
+- Added a top-ranked Markdown table before detailed paper sections.
+- Added OA landing page and license/host/repository details to each paper section.
+- Escaped pipe characters in table cells so journal titles and paper titles do not break Markdown tables.
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All passed. The dry-run output showed `env.DB` and `env.REPORTS` bindings.
+
 ## 2026-05-14 - Unpaywall Runtime Variable Verification
 
 ### Context

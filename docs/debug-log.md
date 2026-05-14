@@ -2,6 +2,82 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Unpaywall OA Metadata Foundation
+
+### Context
+
+`UNPAYWALL_EMAIL` was added to the Cloudflare Worker variables/secrets. The next implementation phase was to check DOI-backed papers against Unpaywall and store open access metadata without using R2.
+
+### Code Changes Under Test
+
+- Added Unpaywall DOI lookup in `apps/worker/src/index.ts`.
+- Added paper fields for OA PDF URL, OA landing page URL, license, host type, repository, Unpaywall status, and Unpaywall reason.
+- Added D1 schema creation/backfill checks for the new Unpaywall columns.
+- Added Unpaywall columns to CSV output.
+- Added dashboard table/detail display for PDF/page availability and OA metadata.
+- Added shared dashboard/API type fields in `packages/shared/src/index.ts`.
+
+### Notes
+
+- R2 remains disabled due to billing, so the Worker stores only Unpaywall metadata and URLs.
+- The Worker skips Unpaywall lookup gracefully when `UNPAYWALL_EMAIL` is not configured.
+- Local runtime verification first returned `unpaywallStatus: skipped` because shell environment variables are not automatically injected into Worker `env` by `wrangler dev`.
+- Re-running `wrangler dev` with `--var UNPAYWALL_EMAIL:...` injected the value correctly.
+- Added a tracked manual migration file:
+
+```text
+apps/worker/migrations/0003_add_unpaywall_columns.sql
+```
+
+Use Cloudflare D1 Console to run `PRAGMA table_info(papers);`, then run only the missing `ALTER TABLE` statements from that migration file.
+
+### Verification Commands
+
+Static checks:
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run
+```
+
+All three passed.
+
+Runtime check:
+
+```bash
+npx wrangler dev --port 8787 --ip 127.0.0.1 \
+  --var UNPAYWALL_EMAIL:<contact email> \
+  --var CROSSREF_EMAIL:<contact email> \
+  --var OPENALEX_EMAIL:<contact email>
+```
+
+Create a local search job:
+
+```bash
+curl -s -X POST http://127.0.0.1:8787/api/search-jobs \
+  -H 'Content-Type: application/json' \
+  -d '{"keyword":"AI interview employer branding","maxResults":1}'
+```
+
+Observed:
+
+- HTTP 200.
+- Response included `oaPdfUrl`, `oaLandingPageUrl`, `oaLicense`, `oaHostType`, `unpaywallStatus`, and `unpaywallReason`.
+- `unpaywallStatus` returned `found` for the verified local DOI test.
+
+CSV check:
+
+```bash
+curl -s -D - http://127.0.0.1:8787/api/search-jobs/job-7c4e87a1-dccb-4f12-a8bf-79c589e80b59/papers.csv
+```
+
+Observed:
+
+- HTTP 200.
+- CSV header included `oa_pdf_url`, `oa_landing_page_url`, `oa_license`, `oa_host_type`, `oa_repository`, `unpaywall_status`, and `unpaywall_reason`.
+- CSV row included Unpaywall metadata.
+
 ## 2026-05-14 - D1 Missing Publisher Column
 
 ### Context

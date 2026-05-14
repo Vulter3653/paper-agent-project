@@ -35,13 +35,12 @@ Worker health: https://paper-agent-project.shch3653.workers.dev/api/health
 
 Current next implementation target:
 
-1. Repair the deployed D1 `papers` table if `publisher` or other Crossref columns are missing.
-2. Add `CROSSREF_EMAIL` to the Cloudflare Worker variables/secrets for `paper-agent-project`.
-3. Wait for Cloudflare to deploy the next `main` commit.
-4. Click `Run` on the dashboard and confirm each returned paper can show Crossref metadata where DOI matching succeeds.
-5. Confirm new D1 columns `crossref_id`, `publisher`, `issn`, `publication_type`, `published_date`, `verification_status`, and `verification_reason` are present and populated for new rows.
-6. Verify the deployed CSV download includes Crossref and verification columns.
-7. Start the next major implementation phase: Unpaywall open access checks.
+1. Wait for Cloudflare to deploy the next `main` commit.
+2. Repair the deployed D1 `papers` table if Unpaywall columns are missing.
+3. Click `Run` on the dashboard and confirm each returned paper can show Unpaywall OA metadata where DOI lookup succeeds.
+4. Confirm new D1 columns `oa_pdf_url`, `oa_landing_page_url`, `oa_license`, `oa_host_type`, `oa_repository`, `unpaywall_status`, and `unpaywall_reason` are present and populated for new rows.
+5. Verify the deployed CSV download includes Unpaywall columns.
+6. Start the next major implementation phase: scoring/evaluation improvements or report generation.
 
 ## Current Status
 
@@ -115,6 +114,8 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Crossref DOI lookup after OpenAlex search.
 - Crossref metadata enrichment for publisher, ISSN, publication type, and published date.
 - Basic DOI/title/year/journal verification status and reason fields.
+- Unpaywall DOI lookup after Crossref enrichment.
+- Unpaywall open access metadata persistence for PDF URL, landing page URL, license, host type, repository, status, and reason.
 - JSON error responses for API failures.
 
 ### D1 Schema
@@ -139,6 +140,13 @@ Additional paper metadata now tracked/backfilled:
 - `published_date`
 - `verification_status`
 - `verification_reason`
+- `oa_pdf_url`
+- `oa_landing_page_url`
+- `oa_license`
+- `oa_host_type`
+- `oa_repository`
+- `unpaywall_status`
+- `unpaywall_reason`
 
 Indexes:
 
@@ -165,6 +173,7 @@ The deployed D1 database already had some existing schema constraints, including
 - OpenAlex 429 errors now return a clearer message asking for `OPENALEX_API_KEY` and `OPENALEX_EMAIL`.
 - CSV export endpoint and dashboard CSV button were added and locally verified.
 - Crossref enrichment was added after OpenAlex mapping so DOI-backed results carry publisher, ISSN, publication type, published date, and verification reasons.
+- Unpaywall enrichment was added after Crossref mapping so DOI-backed results carry OA PDF/page metadata without requiring R2 storage.
 
 ## Verification Completed
 
@@ -179,6 +188,8 @@ npx wrangler deploy --dry-run
 CSV endpoint was also locally verified with `wrangler dev`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id/papers.csv`.
 
 Crossref enrichment was locally verified with `wrangler dev`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id/papers.csv`. The local JSON and CSV responses included `publisher`, `issn`, `publication_type`, `published_date`, `verification_status`, and `verification_reason`.
+
+Unpaywall enrichment was locally verified with `wrangler dev --var UNPAYWALL_EMAIL:...`, `POST /api/search-jobs`, and `GET /api/search-jobs/:id/papers.csv`. The local JSON and CSV responses included `oa_pdf_url`, `oa_landing_page_url`, `oa_license`, `oa_host_type`, `oa_repository`, `unpaywall_status`, and `unpaywall_reason`.
 
 ## Manual Cloudflare Settings Required
 
@@ -197,6 +208,7 @@ Add:
 OPENALEX_EMAIL=<contact email>
 OPENALEX_API_KEY=<OpenAlex API key>
 CROSSREF_EMAIL=<contact email>
+UNPAYWALL_EMAIL=<contact email>
 ```
 
 OpenAlex API key can be created from:
@@ -217,15 +229,13 @@ After clicking `Run`, these queries returned stored data.
 
 ## Remaining Work
 
-OpenAlex search, D1 persistence, CSV export, and Crossref enrichment are implemented locally. After Cloudflare deploys the next commit, verify the deployed dashboard and D1 rows. The next major implementation phase is hardening and extending real paper discovery:
+OpenAlex search, D1 persistence, CSV export, Crossref enrichment, and Unpaywall metadata lookup are implemented locally. After Cloudflare deploys the next commit, verify the deployed dashboard and D1 rows. The next major implementation phase is hardening and extending real paper discovery:
 
-1. Add `CROSSREF_EMAIL` to Worker variables/secrets.
-2. Confirm deployed Crossref enrichment from the dashboard, CSV endpoint, and D1 Console.
-3. Add Unpaywall open access checks.
-4. Improve scoring and evaluation rows beyond basic lexical scoring.
-5. Add report generation.
-6. Add job progress states instead of immediately marking jobs as `completed`.
-7. Add tests around Worker API persistence, OpenAlex mapping, Crossref enrichment, CSV generation, and D1 row mapping.
+1. Confirm deployed Unpaywall enrichment from the dashboard, CSV endpoint, and D1 Console.
+2. Improve scoring and evaluation rows beyond basic lexical scoring.
+3. Add report generation.
+4. Add job progress states instead of immediately marking jobs as `completed`.
+5. Add tests around Worker API persistence, OpenAlex mapping, Crossref enrichment, Unpaywall enrichment, CSV generation, and D1 row mapping.
 
 ## Useful D1 Checks
 
@@ -273,6 +283,27 @@ Then add only the missing Crossref columns from:
 
 ```text
 apps/worker/migrations/0002_add_crossref_columns.sql
+```
+
+Unpaywall metadata check:
+
+```sql
+SELECT title, doi, oa_pdf_url, oa_landing_page_url, oa_license, oa_host_type, oa_repository, unpaywall_status, unpaywall_reason
+FROM papers
+ORDER BY created_at DESC
+LIMIT 10;
+```
+
+If this query returns `no such column: oa_pdf_url`, first run:
+
+```sql
+PRAGMA table_info(papers);
+```
+
+Then add only the missing Unpaywall columns from:
+
+```text
+apps/worker/migrations/0003_add_unpaywall_columns.sql
 ```
 
 CSV check:

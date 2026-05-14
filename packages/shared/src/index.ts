@@ -35,6 +35,13 @@ export type PaperSummary = {
   publishedDate?: string;
   verificationStatus?: "verified" | "partial" | "unverified";
   verificationReason?: string;
+  oaPdfUrl?: string;
+  oaLandingPageUrl?: string;
+  oaLicense?: string;
+  oaHostType?: string;
+  oaRepository?: string;
+  unpaywallStatus?: "found" | "not_found" | "skipped" | "failed";
+  unpaywallReason?: string;
   abstractScore: number;
   finalScore: number;
   includeStatus: "include" | "exclude" | "review";

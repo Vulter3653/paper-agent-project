@@ -29,6 +29,13 @@ CREATE TABLE IF NOT EXISTS papers (
   published_date TEXT,
   verification_status TEXT,
   verification_reason TEXT,
+  oa_pdf_url TEXT,
+  oa_landing_page_url TEXT,
+  oa_license TEXT,
+  oa_host_type TEXT,
+  oa_repository TEXT,
+  unpaywall_status TEXT,
+  unpaywall_reason TEXT,
   created_at TEXT NOT NULL,
   FOREIGN KEY (job_id) REFERENCES search_jobs(id) ON DELETE CASCADE
 );

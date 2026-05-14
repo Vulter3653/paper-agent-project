@@ -42,7 +42,12 @@ const demoPapers: PaperSummary[] = [
     abstractScore: 0.86,
     finalScore: 0.82,
     includeStatus: "include",
-    relevanceReason: "The paper covers literature review automation and evaluation."
+    relevanceReason: "The paper covers literature review automation and evaluation.",
+    oaPdfUrl: "https://example.com/demo-paper.pdf",
+    oaLicense: "cc-by",
+    oaHostType: "repository",
+    unpaywallStatus: "found",
+    unpaywallReason: "Demo OA location includes PDF URL"
   }
 ];
 
@@ -157,6 +162,7 @@ function App() {
                 <th>Title</th>
                 <th>Year</th>
                 <th>OA</th>
+                <th>PDF</th>
                 <th>Abstract</th>
                 <th>Final</th>
               </tr>
@@ -168,6 +174,7 @@ function App() {
                   <td>{paper.title}</td>
                   <td>{paper.year}</td>
                   <td>{paper.oaStatus}</td>
+                  <td>{paper.oaPdfUrl ? "yes" : paper.oaLandingPageUrl ? "page" : "-"}</td>
                   <td>{paper.abstractScore.toFixed(2)}</td>
                   <td>{paper.finalScore.toFixed(2)}</td>
                 </tr>
@@ -191,6 +198,26 @@ function App() {
                 <dd>{selected.journalName}</dd>
                 <dt>DOI</dt>
                 <dd>{selected.doi}</dd>
+                <dt>Verification</dt>
+                <dd>{selected.verificationStatus ?? "unverified"} · {selected.verificationReason ?? "No verification recorded."}</dd>
+                <dt>Open Access</dt>
+                <dd>{selected.unpaywallStatus ?? "skipped"} · {selected.unpaywallReason ?? "No Unpaywall lookup recorded."}</dd>
+                <dt>PDF</dt>
+                <dd>
+                  {selected.oaPdfUrl ? (
+                    <a href={selected.oaPdfUrl} target="_blank" rel="noreferrer">
+                      Open PDF
+                    </a>
+                  ) : selected.oaLandingPageUrl ? (
+                    <a href={selected.oaLandingPageUrl} target="_blank" rel="noreferrer">
+                      Open OA page
+                    </a>
+                  ) : (
+                    "No OA URL found"
+                  )}
+                </dd>
+                <dt>License</dt>
+                <dd>{[selected.oaLicense, selected.oaHostType, selected.oaRepository].filter(Boolean).join(" · ") || "Unknown"}</dd>
                 <dt>Relevance</dt>
                 <dd>{selected.relevanceReason}</dd>
               </dl>

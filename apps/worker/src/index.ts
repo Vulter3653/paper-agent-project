@@ -30,6 +30,13 @@ type PaperRecord = PaperSummary & {
   publishedDate: string;
   verificationStatus: "verified" | "partial" | "unverified";
   verificationReason: string;
+  oaPdfUrl: string;
+  oaLandingPageUrl: string;
+  oaLicense: string;
+  oaHostType: string;
+  oaRepository: string;
+  unpaywallStatus: "found" | "not_found" | "skipped" | "failed";
+  unpaywallReason: string;
 };
 
 type OpenAlexResponse = {
@@ -79,6 +86,20 @@ type CrossrefWork = {
   "published-online"?: { "date-parts"?: number[][] };
 };
 
+type UnpaywallResponse = {
+  is_oa?: boolean;
+  oa_status?: string;
+  best_oa_location?: UnpaywallLocation | null;
+};
+
+type UnpaywallLocation = {
+  url_for_pdf?: string | null;
+  url_for_landing_page?: string | null;
+  license?: string | null;
+  host_type?: string | null;
+  repository_institution?: string | null;
+};
+
 type SearchJobRow = {
   id: string;
   keyword: string;
@@ -109,6 +130,13 @@ type PaperSummaryRow = {
   published_date: string | null;
   verification_status: PaperRecord["verificationStatus"] | null;
   verification_reason: string | null;
+  oa_pdf_url: string | null;
+  oa_landing_page_url: string | null;
+  oa_license: string | null;
+  oa_host_type: string | null;
+  oa_repository: string | null;
+  unpaywall_status: PaperRecord["unpaywallStatus"] | null;
+  unpaywall_reason: string | null;
 };
 
 export default {
@@ -136,6 +164,7 @@ export default {
           email: env.OPENALEX_EMAIL,
           apiKey: env.OPENALEX_API_KEY,
           crossrefEmail: env.CROSSREF_EMAIL ?? env.OPENALEX_EMAIL,
+          unpaywallEmail: env.UNPAYWALL_EMAIL,
           maxResults,
           yearStart: body.yearStart,
           yearEnd: body.yearEnd
@@ -254,6 +283,13 @@ async function ensureSchema(db: D1Database): Promise<void> {
         published_date TEXT,
         verification_status TEXT,
         verification_reason TEXT,
+        oa_pdf_url TEXT,
+        oa_landing_page_url TEXT,
+        oa_license TEXT,
+        oa_host_type TEXT,
+        oa_repository TEXT,
+        unpaywall_status TEXT,
+        unpaywall_reason TEXT,
         FOREIGN KEY (job_id) REFERENCES search_jobs(id) ON DELETE CASCADE
       )`
     )
@@ -300,6 +336,13 @@ async function ensureSchema(db: D1Database): Promise<void> {
   await ensureColumn(db, "papers", "published_date", "TEXT");
   await ensureColumn(db, "papers", "verification_status", "TEXT");
   await ensureColumn(db, "papers", "verification_reason", "TEXT");
+  await ensureColumn(db, "papers", "oa_pdf_url", "TEXT");
+  await ensureColumn(db, "papers", "oa_landing_page_url", "TEXT");
+  await ensureColumn(db, "papers", "oa_license", "TEXT");
+  await ensureColumn(db, "papers", "oa_host_type", "TEXT");
+  await ensureColumn(db, "papers", "oa_repository", "TEXT");
+  await ensureColumn(db, "papers", "unpaywall_status", "TEXT");
+  await ensureColumn(db, "papers", "unpaywall_reason", "TEXT");
   await ensureColumn(db, "papers", "created_at", "TEXT");
 
   await ensureColumn(db, "evaluations", "id", "TEXT");
@@ -352,9 +395,11 @@ async function saveSearchResult(db: D1Database, job: SearchJob, papers: PaperRec
           `INSERT INTO papers (
             id, job_id, rank, title, authors, year, journal_name, doi, oa_status,
             openalex_id, abstract, cited_by_count, crossref_id, publisher, issn,
-            publication_type, published_date, verification_status, verification_reason, created_at
+            publication_type, published_date, verification_status, verification_reason,
+            oa_pdf_url, oa_landing_page_url, oa_license, oa_host_type, oa_repository,
+            unpaywall_status, unpaywall_reason, created_at
            )
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           paperId,
@@ -376,6 +421,13 @@ async function saveSearchResult(db: D1Database, job: SearchJob, papers: PaperRec
           paper.publishedDate,
           paper.verificationStatus,
           paper.verificationReason,
+          paper.oaPdfUrl,
+          paper.oaLandingPageUrl,
+          paper.oaLicense,
+          paper.oaHostType,
+          paper.oaRepository,
+          paper.unpaywallStatus,
+          paper.unpaywallReason,
           now
         )
     );
@@ -402,7 +454,15 @@ async function saveSearchResult(db: D1Database, job: SearchJob, papers: PaperRec
 
 async function searchOpenAlex(
   keyword: string,
-  options: { email?: string; apiKey?: string; crossrefEmail?: string; maxResults: number; yearStart?: number; yearEnd?: number }
+  options: {
+    email?: string;
+    apiKey?: string;
+    crossrefEmail?: string;
+    unpaywallEmail?: string;
+    maxResults: number;
+    yearStart?: number;
+    yearEnd?: number;
+  }
 ): Promise<PaperRecord[]> {
   const url = new URL("https://api.openalex.org/works");
   url.searchParams.set("search", keyword);
@@ -435,7 +495,8 @@ async function searchOpenAlex(
 
   const data = (await response.json()) as OpenAlexResponse;
   const papers = (data.results ?? []).slice(0, options.maxResults).map((work, index) => mapOpenAlexWork(work, keyword, index + 1));
-  return enrichPapersWithCrossref(papers, options.crossrefEmail);
+  const crossrefEnriched = await enrichPapersWithCrossref(papers, options.crossrefEmail);
+  return enrichPapersWithUnpaywall(crossrefEnriched, options.unpaywallEmail);
 }
 
 async function fetchOpenAlexWithRetry(url: URL, email: string | undefined): Promise<Response> {
@@ -503,7 +564,14 @@ function mapOpenAlexWork(work: OpenAlexWork, keyword: string, rank: number): Pap
     publicationType: "",
     publishedDate: "",
     verificationStatus: normalizeDoi(work.doi) ? "unverified" : "partial",
-    verificationReason: normalizeDoi(work.doi) ? "Crossref verification pending." : "No DOI available for Crossref verification."
+    verificationReason: normalizeDoi(work.doi) ? "Crossref verification pending." : "No DOI available for Crossref verification.",
+    oaPdfUrl: "",
+    oaLandingPageUrl: "",
+    oaLicense: "",
+    oaHostType: "",
+    oaRepository: "",
+    unpaywallStatus: normalizeDoi(work.doi) ? "skipped" : "not_found",
+    unpaywallReason: normalizeDoi(work.doi) ? "Unpaywall lookup pending." : "No DOI available for Unpaywall lookup."
   };
 }
 
@@ -580,6 +648,84 @@ function applyCrossrefMetadata(paper: PaperRecord, crossref: CrossrefWork): Pape
     publishedDate: getCrossrefDate(crossref),
     verificationStatus: matchCount >= 2 ? "verified" : matchCount >= 1 ? "partial" : "unverified",
     verificationReason: checks.join("; ")
+  };
+}
+
+async function enrichPapersWithUnpaywall(papers: PaperRecord[], email: string | undefined): Promise<PaperRecord[]> {
+  const enriched: PaperRecord[] = [];
+  for (const paper of papers) {
+    if (!paper.doi) {
+      enriched.push(paper);
+      continue;
+    }
+
+    if (!email) {
+      enriched.push({
+        ...paper,
+        unpaywallStatus: "skipped",
+        unpaywallReason: "UNPAYWALL_EMAIL is not configured."
+      });
+      continue;
+    }
+
+    try {
+      const unpaywall = await fetchUnpaywallWork(paper.doi, email);
+      enriched.push(applyUnpaywallMetadata(paper, unpaywall));
+    } catch (error) {
+      enriched.push({
+        ...paper,
+        unpaywallStatus: "failed",
+        unpaywallReason: `Unpaywall lookup failed: ${getErrorMessage(error)}`
+      });
+    }
+  }
+  return enriched;
+}
+
+async function fetchUnpaywallWork(doi: string, email: string): Promise<UnpaywallResponse> {
+  const url = new URL(`https://api.unpaywall.org/v2/${encodeURIComponent(doi)}`);
+  url.searchParams.set("email", email);
+  const response = await fetchUnpaywallWithRetry(url, email);
+  return (await response.json()) as UnpaywallResponse;
+}
+
+async function fetchUnpaywallWithRetry(url: URL, email: string): Promise<Response> {
+  const maxAttempts = 3;
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const response = await fetch(url.toString(), {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": `paper-agent-project (${email})`
+      }
+    });
+    if (response.ok) return response;
+    lastResponse = response;
+    if (response.status !== 429 && response.status < 500) break;
+    await sleep(2 ** attempt * 1000);
+  }
+
+  throw new Error(`Unpaywall request failed with ${lastResponse?.status ?? "unknown status"}`);
+}
+
+function applyUnpaywallMetadata(paper: PaperRecord, unpaywall: UnpaywallResponse): PaperRecord {
+  const location = unpaywall.best_oa_location;
+  const pdfUrl = location?.url_for_pdf ?? "";
+  const landingPageUrl = location?.url_for_landing_page ?? "";
+  const status: PaperRecord["unpaywallStatus"] = unpaywall.is_oa ? "found" : "not_found";
+  return {
+    ...paper,
+    oaStatus: unpaywall.is_oa ? "oa" : paper.oaStatus === "oa" ? "oa" : "closed",
+    oaPdfUrl: pdfUrl,
+    oaLandingPageUrl: landingPageUrl,
+    oaLicense: location?.license ?? "",
+    oaHostType: location?.host_type ?? "",
+    oaRepository: location?.repository_institution ?? "",
+    unpaywallStatus: status,
+    unpaywallReason: unpaywall.is_oa
+      ? `OA location ${pdfUrl ? "includes PDF URL" : landingPageUrl ? "includes landing page only" : "has no URL"}`
+      : `Unpaywall OA status: ${unpaywall.oa_status ?? "closed"}`
   };
 }
 
@@ -699,6 +845,13 @@ async function getSearchResult(db: D1Database, jobId: string): Promise<{ job: Se
         p.published_date,
         p.verification_status,
         p.verification_reason,
+        p.oa_pdf_url,
+        p.oa_landing_page_url,
+        p.oa_license,
+        p.oa_host_type,
+        p.oa_repository,
+        p.unpaywall_status,
+        p.unpaywall_reason,
         e.abstract_score,
         e.final_score,
         e.include_status,
@@ -749,7 +902,14 @@ function mapPaperSummary(row: PaperSummaryRow): PaperSummary {
     publicationType: row.publication_type ?? "",
     publishedDate: row.published_date ?? "",
     verificationStatus: row.verification_status ?? "unverified",
-    verificationReason: row.verification_reason ?? "No verification recorded."
+    verificationReason: row.verification_reason ?? "No verification recorded.",
+    oaPdfUrl: row.oa_pdf_url ?? "",
+    oaLandingPageUrl: row.oa_landing_page_url ?? "",
+    oaLicense: row.oa_license ?? "",
+    oaHostType: row.oa_host_type ?? "",
+    oaRepository: row.oa_repository ?? "",
+    unpaywallStatus: row.unpaywall_status ?? "skipped",
+    unpaywallReason: row.unpaywall_reason ?? "No Unpaywall lookup recorded."
   };
 }
 
@@ -780,6 +940,13 @@ function csv(result: { job: SearchJob; papers: PaperSummary[] }): Response {
     "published_date",
     "verification_status",
     "verification_reason",
+    "oa_pdf_url",
+    "oa_landing_page_url",
+    "oa_license",
+    "oa_host_type",
+    "oa_repository",
+    "unpaywall_status",
+    "unpaywall_reason",
     "abstract_score",
     "final_score",
     "include_status",
@@ -801,6 +968,13 @@ function csv(result: { job: SearchJob; papers: PaperSummary[] }): Response {
     paper.publishedDate ?? "",
     paper.verificationStatus ?? "",
     paper.verificationReason ?? "",
+    paper.oaPdfUrl ?? "",
+    paper.oaLandingPageUrl ?? "",
+    paper.oaLicense ?? "",
+    paper.oaHostType ?? "",
+    paper.oaRepository ?? "",
+    paper.unpaywallStatus ?? "",
+    paper.unpaywallReason ?? "",
     paper.abstractScore,
     paper.finalScore,
     paper.includeStatus,

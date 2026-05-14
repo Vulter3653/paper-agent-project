@@ -79,6 +79,18 @@ Verify the deployed Remote MCP Worker:
 npm run smoke:mcp
 ```
 
+Verify the latest completed job across Worker API, MCP, and R2 report outputs:
+
+```bash
+npm run e2e:reports
+```
+
+To verify a specific job:
+
+```bash
+JOB_ID=job-... npm run e2e:reports
+```
+
 To test another endpoint or a specific D1 job:
 
 ```bash

@@ -2,6 +2,58 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-14 - Worker MCP R2 End-To-End Report Verification
+
+### Context
+
+OpenAlex provider runtime testing is now working. The next recommended task was to verify that the latest completed job is consistent across the deployed Worker API, D1, MCP tools, download endpoints, and R2 output objects.
+
+### Added Verification
+
+Added reusable script:
+
+```bash
+npm run e2e:reports
+```
+
+Optional target:
+
+```bash
+JOB_ID=job-... npm run e2e:reports
+```
+
+### Current Result
+
+The deployed e2e check passed.
+
+Verified job:
+
+```text
+job-9c382a48-7192-4934-987f-63e47ceac7bf
+```
+
+Observed:
+
+```text
+searchProvider: openalex
+paperCount: 9
+CSV endpoint: 200
+Markdown endpoint: 200
+R2 CSV: reports/job-9c382a48-7192-4934-987f-63e47ceac7bf/papers.csv
+R2 Markdown: reports/job-9c382a48-7192-4934-987f-63e47ceac7bf/report.md
+```
+
+R2 object presence:
+
+```text
+papers.csv exists, size 5980
+report.md exists, size 10704
+```
+
+### Troubleshooting
+
+The first script version checked the download endpoints with `HEAD`. The Worker routes currently implement `GET`, not `HEAD`, so the CSV check returned 404. The script now falls back to `GET` whenever `HEAD` is not successful, matching how the dashboard downloads files.
+
 ## 2026-05-14 - Temporary OpenAlex Search Provider
 
 ### Context

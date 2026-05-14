@@ -278,6 +278,19 @@ Temporary OpenAlex provider was locally verified with `wrangler dev --var SEARCH
 
 R2 output storage was statically verified with typecheck/build/dry-run. Runtime verification should be done after deployment by completing a search job, downloading `GET /api/search-jobs/:id/papers.csv` and `GET /api/search-jobs/:id/report.md`, and confirming R2 objects exist under `reports/<job_id>/`.
 
+Deployed OpenAlex e2e report verification passed with:
+
+```bash
+npm run e2e:reports
+```
+
+Verified job `job-9c382a48-7192-4934-987f-63e47ceac7bf` had 9 papers, Worker/MCP top-paper agreement, CSV and Markdown download status 200, and R2 objects present:
+
+```text
+reports/job-9c382a48-7192-4934-987f-63e47ceac7bf/papers.csv
+reports/job-9c382a48-7192-4934-987f-63e47ceac7bf/report.md
+```
+
 Cloudflare Remote MCP was statically verified with:
 
 ```bash

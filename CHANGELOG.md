@@ -15,6 +15,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Added`: Added `apps/mcp/scripts/e2e-check.mjs` and `npm run e2e:reports` to verify deployed Worker API, MCP tools, download endpoints, and R2 report objects for the latest completed job.
+- `Docs`: Recorded OpenAlex deployed e2e report verification in `docs/debug-log.md`, `docs/progress.md`, `docs/mcp.md`, and `README.md`.
 - `Added`: Added temporary `SEARCH_PROVIDER=openalex` support in `apps/worker/src/index.ts` so integration testing can run before `WOS_API_KEY` is issued.
 - `Changed`: Updated dashboard diagnostics in `apps/web/src/main.tsx` to display the active search provider and OpenAlex readiness.
 - `Docs`: Added `SEARCH_PROVIDER`, `OPENALEX_EMAIL`, and `OPENALEX_API_KEY` to `.env.example` and documented the WoS/OpenAlex switch in `README.md`.

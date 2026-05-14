@@ -106,10 +106,30 @@ Smoke test command:
 npm run smoke:mcp
 ```
 
+End-to-end report verification:
+
+```bash
+npm run e2e:reports
+```
+
+This verifies:
+
+```text
+Worker diagnostics
+latest completed D1 job
+Worker job detail API
+MCP job and paper tools
+MCP report link tool
+CSV download endpoint
+Markdown report download endpoint
+R2 object presence for papers.csv and report.md
+```
+
 Optional overrides:
 
 ```bash
 MCP_URL=https://paper-agent-mcp.shch3653.workers.dev/mcp MCP_JOB_ID=job-... npm run smoke:mcp
+JOB_ID=job-... npm run e2e:reports
 ```
 
 ### Phase 2: Controlled Write MCP

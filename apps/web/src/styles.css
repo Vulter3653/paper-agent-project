@@ -1,7 +1,7 @@
 :root {
-  color: #17202a;
+  color: #1d252d;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f6f7f9;
+  background: #f3f5f7;
 }
 
 * {
@@ -19,15 +19,17 @@ input {
 
 .shell {
   min-height: 100vh;
-  padding: 28px;
+  margin: 0 auto;
+  max-width: 1480px;
+  padding: 24px;
 }
 
 .toolbar {
-  align-items: end;
+  align-items: stretch;
   display: flex;
   gap: 24px;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 h1,
@@ -38,13 +40,39 @@ p {
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 30px;
   line-height: 1.2;
 }
 
-.toolbar p {
+.titleBlock {
+  min-width: 280px;
+}
+
+.titleBlock p,
+.panelTitle p,
+.diagnosticsHeader p,
+.recentJobsHeader p,
+.reportPreviewHeader p {
   color: #607080;
-  margin-top: 6px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.eyebrow {
+  color: #6f4c1b;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.commandPanel {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  min-width: min(560px, 48vw);
 }
 
 .searchBox {
@@ -52,9 +80,9 @@ h1 {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   display: flex;
   gap: 10px;
-  min-width: 460px;
   padding: 8px 8px 8px 12px;
 }
 
@@ -79,17 +107,34 @@ h1 {
   padding: 0 14px;
 }
 
+.searchBox button:hover,
+.iconButton:hover {
+  filter: brightness(0.96);
+}
+
+.searchBox button:disabled,
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
 .iconButton {
-  background: #eef3f8;
+  background: #edf2f7;
   color: #1d2b3a;
   justify-content: center;
   min-width: 38px;
   padding: 0;
 }
 
+.runMeta {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .statusBand {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-bottom: 18px;
 }
@@ -98,7 +143,8 @@ h1 {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
-  padding: 16px;
+  min-width: 0;
+  padding: 14px;
 }
 
 .metric span {
@@ -112,6 +158,31 @@ h1 {
   display: block;
   font-size: 22px;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric small {
+  color: #607080;
+  display: block;
+  font-size: 12px;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metricValue.ok {
+  color: #1f7a45;
+}
+
+.metricValue.warn {
+  color: #8a5a00;
+}
+
+.metricValue.danger {
+  color: #b42318;
 }
 
 .errorMessage {
@@ -123,11 +194,18 @@ h1 {
   padding: 12px 14px;
 }
 
+.operationsGrid {
+  align-items: stretch;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.75fr);
+  margin-bottom: 18px;
+}
+
 .pipelinePanel {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
-  margin-bottom: 18px;
   padding: 16px;
 }
 
@@ -166,7 +244,7 @@ h1 {
 .pipelineSteps {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   list-style: none;
   margin: 14px 0 0;
   padding: 0;
@@ -178,7 +256,7 @@ h1 {
   border-radius: 8px;
   display: flex;
   gap: 8px;
-  min-height: 46px;
+  min-height: 44px;
   min-width: 0;
   padding: 8px;
 }
@@ -237,7 +315,6 @@ h1 {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
-  margin-bottom: 18px;
   padding: 16px;
 }
 
@@ -248,7 +325,6 @@ h1 {
   margin-bottom: 12px;
 }
 
-.diagnosticsHeader p,
 .diagnosticsError,
 .missingColumns {
   color: #607080;
@@ -264,7 +340,7 @@ h1 {
 .diagnosticsGrid {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .diagnosticsGrid div {
@@ -275,25 +351,42 @@ h1 {
 
 .checkOk,
 .checkWarn,
-.checkFail {
+.checkFail,
+.statusBadge {
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
   padding: 5px 9px;
+  white-space: nowrap;
 }
 
-.checkOk {
+.checkOk,
+.statusBadge.ok {
   background: #f1fbf5;
+  border-color: #c5ebd2;
   color: #238548;
 }
 
-.checkWarn {
+.checkWarn,
+.statusBadge.warn {
   background: #fff8e8;
+  border-color: #f2daa2;
   color: #8a5a00;
 }
 
-.checkFail {
+.checkFail,
+.statusBadge.danger {
   background: #fff1f1;
+  border-color: #f4b8b8;
   color: #b42318;
+}
+
+.statusBadge.neutral {
+  background: #eef3f8;
+  border-color: #d9e0e7;
+  color: #415264;
 }
 
 .missingColumns {
@@ -305,7 +398,6 @@ h1 {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
-  margin-bottom: 18px;
   padding: 16px;
 }
 
@@ -317,17 +409,10 @@ h1 {
   margin-bottom: 12px;
 }
 
-.recentJobsHeader p,
-.reportPreviewHeader p {
-  color: #607080;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
 .recentJobsList {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .recentJobsList button {
@@ -383,7 +468,6 @@ h1 {
   background: #ffffff;
   border: 1px solid #d9e0e7;
   border-radius: 8px;
-  margin-bottom: 18px;
   padding: 16px;
 }
 
@@ -435,7 +519,13 @@ h1 {
   align-items: start;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 390px;
+}
+
+.mainColumn,
+.sideColumn {
+  display: grid;
+  gap: 18px;
 }
 
 .tablePanel,
@@ -450,7 +540,7 @@ h1 {
   border-bottom: 1px solid #e8edf2;
   display: flex;
   justify-content: space-between;
-  min-height: 58px;
+  min-height: 64px;
   padding: 0 16px;
 }
 
@@ -463,8 +553,13 @@ h2 {
   font-size: 16px;
 }
 
+.tableScroll {
+  overflow-x: auto;
+}
+
 table {
   border-collapse: collapse;
+  min-width: 860px;
   width: 100%;
 }
 
@@ -474,6 +569,7 @@ td {
   font-size: 14px;
   padding: 12px 14px;
   text-align: left;
+  vertical-align: middle;
 }
 
 th {
@@ -491,14 +587,63 @@ tbody tr.selected {
   background: #eef5ff;
 }
 
+.rankPill,
+.scorePill {
+  align-items: center;
+  background: #eef3f8;
+  border-radius: 999px;
+  color: #1d2b3a;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  justify-content: center;
+  min-width: 34px;
+  padding: 5px 8px;
+}
+
+.scorePill {
+  background: #eaf4ff;
+  color: #1d5fd1;
+}
+
+.paperTitleCell {
+  min-width: 300px;
+}
+
+.paperTitleCell strong,
+.paperTitleCell small {
+  display: block;
+}
+
+.paperTitleCell strong {
+  line-height: 1.35;
+}
+
+.paperTitleCell small {
+  color: #607080;
+  font-size: 12px;
+  margin-top: 4px;
+  max-width: 460px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .detailPanel {
   padding-bottom: 18px;
+}
+
+.detailHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 18px 0;
 }
 
 .detailPanel h3 {
   font-size: 18px;
   line-height: 1.35;
-  padding: 18px 18px 8px;
+  padding: 12px 18px 8px;
 }
 
 .scoreBreakdown {
@@ -581,7 +726,10 @@ dt {
 }
 
 dd {
+  font-size: 14px;
+  line-height: 1.45;
   margin: 4px 0 0;
+  overflow-wrap: anywhere;
 }
 
 .emptyCell,
@@ -603,14 +751,23 @@ dd {
 
 @media (max-width: 900px) {
   .toolbar,
+  .operationsGrid,
   .contentGrid {
     display: block;
   }
 
-  .searchBox {
+  .commandPanel {
     margin-top: 16px;
     min-width: 0;
+  }
+
+  .searchBox {
+    min-width: 0;
     width: 100%;
+  }
+
+  .runMeta {
+    justify-content: flex-start;
   }
 
   .statusBand {
@@ -625,11 +782,34 @@ dd {
     grid-template-columns: 1fr;
   }
 
-  .recentJobsList {
-    grid-template-columns: 1fr;
+  .diagnosticsPanel,
+  .sideColumn {
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .shell {
+    padding: 16px;
   }
 
-  .detailPanel {
-    margin-top: 18px;
+  h1 {
+    font-size: 24px;
+  }
+
+  .searchBox {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .searchBox button {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .statusBand,
+  .pipelineSteps {
+    grid-template-columns: 1fr;
   }
 }

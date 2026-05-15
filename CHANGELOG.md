@@ -15,6 +15,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Changed`: Refined dashboard UI/UX in `apps/web/src/main.tsx` and `apps/web/src/styles.css` with a command-focused header, compact status metrics, provider readiness badges, two-column operations area, richer ranked-paper table, side detail panel, and responsive layout improvements.
+- `Docs`: Recorded dashboard UI/UX verification in `docs/debug-log.md` and `docs/progress.md`.
 - `Docs`: Recorded latest direct Worker deployment version and WoS smoke verification results in `docs/progress.md` and `docs/debug-log.md`.
 - `Fixed`: Normalized DOI and email values before Unpaywall requests in `apps/worker/src/index.ts` to avoid malformed lookup URLs from secret/input whitespace.
 - `Fixed`: Changed WoS year filtering in `apps/worker/src/index.ts` to emit explicit `PY=(YYYY OR YYYY...)` clauses for short ranges because `PY=(start-end)` returned zero Starter API candidates.

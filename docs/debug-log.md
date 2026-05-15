@@ -2,6 +2,37 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-15 - Dashboard UI/UX Refresh
+
+### Context
+
+The dashboard was functionally complete but visually flat. The requested task was to improve the frontend UI/UX without changing the backend API flow.
+
+### Code Changes Under Test
+
+- Reworked the top header into a command-focused search area with provider/readiness badges.
+- Added richer status cards with include/review counts.
+- Moved pipeline and system checks into a compact operations grid.
+- Reworked the main content into a larger ranked-paper workspace and a right-side detail/recent-jobs column.
+- Added paper status badges, rank pills, score pills, journal column, and author subtext in the result table.
+- Kept report preview in the main workflow below the ranked paper table.
+- Added responsive layout rules for tablet and mobile widths.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build
+npm run dev:web
+curl -s -I http://127.0.0.1:5173/
+```
+
+Static checks passed. The local Vite server returned HTTP 200.
+
+### Notes
+
+Headless Chromium screenshot capture was attempted, but the environment's Chromium process did not complete screenshot output due to local font/DBus runtime errors. The process was terminated and no screenshot artifact was committed.
+
 ## 2026-05-15 - WoS Search Runtime Result Counts
 
 ### Context

@@ -64,6 +64,7 @@ Current next implementation target:
     - Extend `npm run e2e:reports` to verify XLSX endpoint and R2 object.
     - After XLSX is stable, add `reports/<job_id>/report.pdf`.
 18. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
+19. After Cloudflare Pages deploys the dashboard UI/UX refresh, verify the production page at `https://paper-agent-project.pages.dev/` across desktop and mobile widths.
 
 ## Current Status
 
@@ -90,6 +91,7 @@ The latest confirmed behavior is normal:
 - Latest confirmed WoS runtime job `job-b83c7239-03a0-4376-98bc-cee2ed8a5b6e` returned `sourceResultCount=50`, `allowedResultCount=8`, and 8 stored papers.
 - Latest smoke job after Unpaywall normalization `job-3939c7f5-d674-4069-bacd-e18d5ebff919` returned `sourceResultCount=10`, `allowedResultCount=0`; use a larger candidate window for full allowlist validation.
 - Unpaywall DOI/email request values are normalized before lookup; this requires one more deployed runtime check because the last confirmed job returned Unpaywall 422 responses.
+- Dashboard UI/UX has been refreshed locally with an improved command header, operational status layout, ranked-paper table, detail panel, and responsive CSS. Static checks passed and the local Vite server returned HTTP 200.
 
 ## Repository And Deployment Targets
 
@@ -136,6 +138,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Dashboard API base URL supports `VITE_API_BASE_URL`, with a deployed Worker default.
 - Pipeline Progress panel visualizes Web of Science search, journal filtering, Crossref enrichment, Unpaywall check, ranking, and completion status.
 - Status metrics include `Source / Allowed` for new jobs after deployment.
+- Dashboard layout uses a command header, compact status band, operations grid, main ranked-paper workspace, side detail panel, and recent job list.
 - Paper Detail panel shows Score Breakdown for relevance, journal fit, Crossref verification, open access, citations, and recency.
 - System Checks panel calls `GET /api/diagnostics` to display D1 schema readiness and Worker environment variable presence.
 - Report Preview panel fetches `GET /api/search-jobs/:id/report.md` for completed jobs and displays the Markdown report in the dashboard before download.

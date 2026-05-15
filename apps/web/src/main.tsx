@@ -115,6 +115,8 @@ function App() {
   const [reportPreviewError, setReportPreviewError] = useState("");
   const [reportPreviewLoading, setReportPreviewLoading] = useState(false);
   const selected = useMemo(() => papers.find((paper) => paper.id === selectedId) ?? papers[0], [papers, selectedId]);
+  const includedCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "include").length, [papers]);
+  const reviewCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "review").length, [papers]);
 
   useEffect(() => {
     void refreshDiagnostics();
@@ -251,138 +253,177 @@ function App() {
   return (
     <main className="shell">
       <section className="toolbar">
-        <div>
+        <div className="titleBlock">
+          <span className="eyebrow">MON AI Team</span>
           <h1>Paper Agent Dashboard</h1>
-          <p>Search jobs, ranked papers, relevance reasons, and report links.</p>
+          <p>WoS-backed literature screening workspace</p>
         </div>
-        <div className="searchBox">
-          <Search size={18} />
-          <input value={keyword} onChange={(event) => setKeyword(event.target.value)} aria-label="Research keyword" />
-          <button onClick={startSearch} disabled={loading}>
-            {loading ? <RefreshCw size={18} className="spin" /> : <Play size={18} />}
-            Run
-          </button>
+        <div className="commandPanel">
+          <div className="searchBox">
+            <Search size={18} />
+            <input value={keyword} onChange={(event) => setKeyword(event.target.value)} aria-label="Research keyword" />
+            <button onClick={startSearch} disabled={loading || !keyword.trim()}>
+              {loading ? <RefreshCw size={18} className="spin" /> : <Play size={18} />}
+              Run
+            </button>
+          </div>
+          <div className="runMeta">
+            <StatusBadge value={diagnostics?.searchProvider ?? "wos"} tone="neutral" />
+            <StatusBadge value={diagnostics?.readiness.activeProviderReady ? "ready" : "check"} tone={diagnostics?.readiness.activeProviderReady ? "ok" : "warn"} />
+          </div>
         </div>
       </section>
 
       <section className="statusBand">
-        <Metric label="Status" value={job?.status ?? "demo"} />
+        <Metric label="Status" value={job?.status ?? "demo"} tone={getStatusTone(job?.status)} />
         <Metric label="Step" value={job?.currentStep ?? "ranking preview"} />
         <Metric label="Source / Allowed" value={job ? `${job.sourceResultCount ?? "-"} / ${job.allowedResultCount ?? "-"}` : "-"} />
-        <Metric label="Papers" value={String(papers.length)} />
+        <Metric label="Papers" value={String(papers.length)} detail={`${includedCount} include · ${reviewCount} review`} />
         <Metric label="Top Score" value={papers[0] ? papers[0].finalScore.toFixed(2) : "-"} />
       </section>
-      <PipelineProgress job={job} loading={loading} />
-      <DiagnosticsPanel diagnostics={diagnostics} errorMessage={diagnosticsError} onRefresh={refreshDiagnostics} />
-      <RecentJobsPanel jobs={recentJobs} activeJobId={job?.id} loadingJobId={loadingJobId} errorMessage={recentJobsError} onLoad={loadSearchJob} onRefresh={refreshRecentJobs} />
-      <ReportPreviewPanel
-        job={job}
-        report={reportPreview}
-        loading={reportPreviewLoading}
-        errorMessage={reportPreviewError}
-        onRefresh={() => refreshReportPreview()}
-        onDownload={downloadReport}
-      />
+
+      <section className="operationsGrid">
+        <PipelineProgress job={job} loading={loading} />
+        <DiagnosticsPanel diagnostics={diagnostics} errorMessage={diagnosticsError} onRefresh={refreshDiagnostics} />
+      </section>
+
       {errorMessage ? <p className="errorMessage">{errorMessage}</p> : null}
 
       <section className="contentGrid">
-        <div className="tablePanel">
-          <div className="panelTitle">
-            <h2>Ranked Papers</h2>
-            <div className="panelActions">
-              <button className="iconButton" onClick={downloadReport} disabled={!job} aria-label="Download Markdown report">
-                <FileText size={18} />
-              </button>
-              <button className="iconButton" onClick={downloadCsv} disabled={!job} aria-label="Download CSV">
-                <Download size={18} />
-              </button>
-              <button className="iconButton" onClick={refreshJob} disabled={!job || refreshing} aria-label="Refresh job">
-                <RefreshCw size={18} className={refreshing ? "spin" : undefined} />
-              </button>
+        <section className="mainColumn">
+          <div className="tablePanel">
+            <div className="panelTitle">
+              <div>
+                <h2>Ranked Papers</h2>
+                <p>{papers.length ? `${papers.length} allowlisted results` : "No saved results"}</p>
+              </div>
+              <div className="panelActions">
+                <button className="iconButton" onClick={downloadReport} disabled={!job} aria-label="Download Markdown report" title="Download Markdown report">
+                  <FileText size={18} />
+                </button>
+                <button className="iconButton" onClick={downloadCsv} disabled={!job} aria-label="Download CSV" title="Download CSV">
+                  <Download size={18} />
+                </button>
+                <button className="iconButton" onClick={refreshJob} disabled={!job || refreshing} aria-label="Refresh job" title="Refresh job">
+                  <RefreshCw size={18} className={refreshing ? "spin" : undefined} />
+                </button>
+              </div>
+            </div>
+            <div className="tableScroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Title</th>
+                    <th>Journal</th>
+                    <th>Year</th>
+                    <th>Status</th>
+                    <th>OA</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {papers.length ? (
+                    papers.map((paper) => (
+                      <tr key={paper.id} className={paper.id === selected?.id ? "selected" : ""} onClick={() => setSelectedId(paper.id)}>
+                        <td>
+                          <span className="rankPill">{paper.rank}</span>
+                        </td>
+                        <td className="paperTitleCell">
+                          <strong>{paper.title}</strong>
+                          <small>{paper.authors}</small>
+                        </td>
+                        <td>{paper.journalName}</td>
+                        <td>{paper.year || "-"}</td>
+                        <td>
+                          <StatusBadge value={paper.includeStatus} tone={getIncludeTone(paper.includeStatus)} />
+                        </td>
+                        <td>{paper.oaPdfUrl ? "PDF" : paper.oaLandingPageUrl ? "Page" : paper.oaStatus}</td>
+                        <td>
+                          <span className="scorePill">{paper.finalScore.toFixed(2)}</span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="emptyCell">
+                        No allowed journal results.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Title</th>
-                <th>Year</th>
-                <th>OA</th>
-                <th>PDF</th>
-                <th>Abstract</th>
-                <th>Final</th>
-              </tr>
-            </thead>
-            <tbody>
-              {papers.length ? (
-                papers.map((paper) => (
-                  <tr key={paper.id} className={paper.id === selected?.id ? "selected" : ""} onClick={() => setSelectedId(paper.id)}>
-                    <td>{paper.rank}</td>
-                    <td>{paper.title}</td>
-                    <td>{paper.year}</td>
-                    <td>{paper.oaStatus}</td>
-                    <td>{paper.oaPdfUrl ? "yes" : paper.oaLandingPageUrl ? "page" : "-"}</td>
-                    <td>{paper.abstractScore.toFixed(2)}</td>
-                    <td>{paper.finalScore.toFixed(2)}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="emptyCell">
-                    No allowed journal results.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
 
-        <aside className="detailPanel">
-          <div className="panelTitle">
-            <h2>Paper Detail</h2>
-            <FileText size={18} />
-          </div>
-          {selected ? (
-            <>
-              <h3>{selected.title}</h3>
-              <ScoreBreakdown paper={selected} />
-              <dl>
-                <dt>Authors</dt>
-                <dd>{selected.authors}</dd>
-                <dt>Journal</dt>
-                <dd>{selected.journalName}</dd>
-                <dt>DOI</dt>
-                <dd>{selected.doi}</dd>
-                <dt>Verification</dt>
-                <dd>{selected.verificationStatus ?? "unverified"} · {selected.verificationReason ?? "No verification recorded."}</dd>
-                <dt>Open Access</dt>
-                <dd>{selected.unpaywallStatus ?? "skipped"} · {selected.unpaywallReason ?? "No Unpaywall lookup recorded."}</dd>
-                <dt>PDF</dt>
-                <dd>
-                  {selected.oaPdfUrl ? (
-                    <a href={selected.oaPdfUrl} target="_blank" rel="noreferrer">
-                      Open PDF
-                    </a>
-                  ) : selected.oaLandingPageUrl ? (
-                    <a href={selected.oaLandingPageUrl} target="_blank" rel="noreferrer">
-                      Open OA page
-                    </a>
-                  ) : (
-                    "No OA URL found"
-                  )}
-                </dd>
-                <dt>License</dt>
-                <dd>{[selected.oaLicense, selected.oaHostType, selected.oaRepository].filter(Boolean).join(" · ") || "Unknown"}</dd>
-                <dt>Relevance</dt>
-                <dd>{selected.relevanceReason}</dd>
-              </dl>
-            </>
-          ) : (
-            <p className="emptyState">No allowed journal result selected.</p>
-          )}
+          <ReportPreviewPanel
+            job={job}
+            report={reportPreview}
+            loading={reportPreviewLoading}
+            errorMessage={reportPreviewError}
+            onRefresh={() => refreshReportPreview()}
+            onDownload={downloadReport}
+          />
+        </section>
+
+        <aside className="sideColumn">
+          <PaperDetailPanel selected={selected} />
+          <RecentJobsPanel jobs={recentJobs} activeJobId={job?.id} loadingJobId={loadingJobId} errorMessage={recentJobsError} onLoad={loadSearchJob} onRefresh={refreshRecentJobs} />
         </aside>
       </section>
     </main>
+  );
+}
+
+function PaperDetailPanel({ selected }: { selected?: PaperSummary }) {
+  return (
+    <section className="detailPanel">
+      <div className="panelTitle">
+        <div>
+          <h2>Paper Detail</h2>
+          <p>{selected ? `${selected.year || "Unknown year"} · ${selected.journalName}` : "No selection"}</p>
+        </div>
+        <FileText size={18} />
+      </div>
+      {selected ? (
+        <>
+          <div className="detailHeader">
+            <StatusBadge value={selected.includeStatus} tone={getIncludeTone(selected.includeStatus)} />
+            <span className="scorePill">{selected.finalScore.toFixed(2)}</span>
+          </div>
+          <h3>{selected.title}</h3>
+          <ScoreBreakdown paper={selected} />
+          <dl>
+            <dt>Authors</dt>
+            <dd>{selected.authors}</dd>
+            <dt>DOI</dt>
+            <dd>{selected.doi || "Not available"}</dd>
+            <dt>Verification</dt>
+            <dd>{selected.verificationStatus ?? "unverified"} · {selected.verificationReason ?? "No verification recorded."}</dd>
+            <dt>Open Access</dt>
+            <dd>{selected.unpaywallStatus ?? "skipped"} · {selected.unpaywallReason ?? "No Unpaywall lookup recorded."}</dd>
+            <dt>PDF</dt>
+            <dd>
+              {selected.oaPdfUrl ? (
+                <a href={selected.oaPdfUrl} target="_blank" rel="noreferrer">
+                  Open PDF
+                </a>
+              ) : selected.oaLandingPageUrl ? (
+                <a href={selected.oaLandingPageUrl} target="_blank" rel="noreferrer">
+                  Open OA page
+                </a>
+              ) : (
+                "No OA URL found"
+              )}
+            </dd>
+            <dt>License</dt>
+            <dd>{[selected.oaLicense, selected.oaHostType, selected.oaRepository].filter(Boolean).join(" · ") || "Unknown"}</dd>
+          </dl>
+        </>
+      ) : (
+        <p className="emptyState">No allowed journal result selected.</p>
+      )}
+    </section>
   );
 }
 
@@ -421,7 +462,7 @@ function DiagnosticsPanel({
               : "Not checked"}
           </p>
         </div>
-        <button className="iconButton" onClick={onRefresh} aria-label="Refresh diagnostics">
+        <button className="iconButton" onClick={onRefresh} aria-label="Refresh diagnostics" title="Refresh diagnostics">
           <RefreshCw size={18} />
         </button>
       </div>
@@ -472,7 +513,7 @@ function RecentJobsPanel({
           <h2>Recent Jobs</h2>
           <p>{jobs.length ? `${jobs.length} latest` : "No saved jobs"}</p>
         </div>
-        <button className="iconButton" onClick={onRefresh} aria-label="Refresh recent jobs">
+        <button className="iconButton" onClick={onRefresh} aria-label="Refresh recent jobs" title="Refresh recent jobs">
           <RefreshCw size={18} />
         </button>
       </div>
@@ -676,13 +717,33 @@ function formatDateTime(value: string): string {
   return date.toLocaleString();
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({ label, value, detail, tone = "neutral" }: { label: string; value: string; detail?: string; tone?: BadgeTone }) {
   return (
     <div className="metric">
       <span>{label}</span>
-      <strong>{value}</strong>
+      <strong className={`metricValue ${tone}`}>{value}</strong>
+      {detail ? <small>{detail}</small> : null}
     </div>
   );
+}
+
+type BadgeTone = "ok" | "warn" | "danger" | "neutral";
+
+function StatusBadge({ value, tone }: { value: string; tone: BadgeTone }) {
+  return <span className={`statusBadge ${tone}`}>{value}</span>;
+}
+
+function getStatusTone(status?: SearchJob["status"]): BadgeTone {
+  if (status === "completed") return "ok";
+  if (status === "failed") return "danger";
+  if (status) return "warn";
+  return "neutral";
+}
+
+function getIncludeTone(status: PaperSummary["includeStatus"]): BadgeTone {
+  if (status === "include") return "ok";
+  if (status === "exclude") return "danger";
+  return "warn";
 }
 
 async function readApiError(response: Response, fallback: string): Promise<string> {

@@ -19,6 +19,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-15
 
+- `Changed`: Expanded WoS retrieval in `apps/worker/src/index.ts` with keyword-variant searches, allowlist source-title priority queries, sequential rate-limit spacing, and DOI/UID/title deduplication before journal filtering.
+- `Docs`: Recorded WoS keyword expansion and allowlist-priority search work in `docs/debug-log.md` and `docs/progress.md`.
 - `Changed`: Reorganized `CHANGELOG.md` into dated sections so prior and future changes are tracked by modification date.
 - `Changed`: Updated the dashboard `Max` search option in `apps/web/src/main.tsx` and `apps/web/src/styles.css` to allow numeric typing while enforcing the 1-50 limit on blur and request payload creation.
 - `Added`: Added dashboard search option controls for max results, start year, and end year in `apps/web/src/main.tsx` and `apps/web/src/styles.css`, wiring them into `POST /api/search-jobs`.

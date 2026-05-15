@@ -1,4 +1,11 @@
-import { calculateFinalScore, isBusinessSchoolJournal, normalizeJournalName, type PaperSummary, type SearchJob } from "@paper-agent/shared";
+import {
+  BUSINESS_SCHOOL_JOURNALS,
+  calculateFinalScore,
+  isBusinessSchoolJournal,
+  normalizeJournalName,
+  type PaperSummary,
+  type SearchJob
+} from "@paper-agent/shared";
 
 export interface Env {
   DB?: D1Database;
@@ -53,6 +60,25 @@ type DiagnosticsResponse = {
 };
 
 type SearchProvider = "wos" | "openalex";
+
+const WOS_REQUEST_DELAY_MS = 1100;
+const WOS_PRIORITY_SOURCE_TITLES = [
+  "Journal of Business Research",
+  "Journal of Business Ethics",
+  "Journal of Marketing",
+  "Journal of Marketing Research",
+  "Journal of the Academy of Marketing Science",
+  "Information Systems Research",
+  "MIS Quarterly",
+  "Journal of Management",
+  "Academy of Management Journal",
+  "Strategic Management Journal",
+  "Human Resource Management",
+  "Journal of Applied Psychology",
+  "Personnel Psychology",
+  "Organization Science",
+  "Management Science"
+] as const;
 
 type PaperRecord = PaperSummary & {
   openalexId: string;
@@ -848,19 +874,44 @@ async function searchWebOfScience(
     throw new Error("Web of Science API key is not configured. Add WOS_API_KEY in Cloudflare Worker variables/secrets, then redeploy.");
   }
 
-  const url = new URL("https://api.clarivate.com/apis/wos-starter/v1/documents");
   const candidateLimit = Math.min(50, Math.max(options.maxResults, options.maxResults * 5));
-  url.searchParams.set("q", buildWosQuery(keyword, options.yearStart, options.yearEnd));
-  url.searchParams.set("limit", String(candidateLimit));
+  const queries = buildWosSearchQueries(keyword, options.yearStart, options.yearEnd);
+  const documents: WosDocument[] = [];
+  const seen = new Set<string>();
+  let lastError: unknown = null;
+
+  for (const [index, query] of queries.entries()) {
+    if (index > 0) await sleep(WOS_REQUEST_DELAY_MS);
+    try {
+      const page = await fetchWosDocuments(query, candidateLimit, options.wosApiKey);
+      for (const document of page) {
+        const key = getWosDocumentKey(document);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        documents.push(document);
+      }
+    } catch (error) {
+      lastError = error;
+      if (index === 0) throw error;
+    }
+    if (documents.length >= candidateLimit) break;
+  }
+
+  if (!documents.length && lastError) throw lastError;
+  return documents.slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
+}
+
+async function fetchWosDocuments(query: string, limit: number, apiKey: string): Promise<WosDocument[]> {
+  const url = new URL("https://api.clarivate.com/apis/wos-starter/v1/documents");
+  url.searchParams.set("q", query);
+  url.searchParams.set("limit", String(limit));
   url.searchParams.set("page", "1");
   url.searchParams.set("db", "WOS");
   url.searchParams.set("sortField", "TC+D");
 
-  const response = await fetchWosWithRetry(url, options.wosApiKey);
-
+  const response = await fetchWosWithRetry(url, apiKey);
   const data = (await response.json()) as WosStarterResponse;
-  const documents = data.hits ?? data.documents ?? [];
-  return documents.slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
+  return data.hits ?? data.documents ?? [];
 }
 
 async function searchOpenAlex(
@@ -950,6 +1001,54 @@ function buildWosQuery(keyword: string, yearStart: number | undefined, yearEnd: 
   return terms.join(" AND ");
 }
 
+function buildWosSearchQueries(keyword: string, yearStart: number | undefined, yearEnd: number | undefined): string[] {
+  const variants = buildKeywordVariants(keyword);
+  const queries = new Set<string>();
+  for (const variant of variants) {
+    queries.add(buildWosQuery(variant, yearStart, yearEnd));
+  }
+  const sourceQuery = buildWosSourceTitleQuery();
+  for (const variant of variants.slice(0, 2)) {
+    queries.add([buildWosQuery(variant, yearStart, yearEnd), sourceQuery].filter(Boolean).join(" AND "));
+  }
+  return Array.from(queries).slice(0, 4);
+}
+
+function buildKeywordVariants(keyword: string): string[] {
+  const normalized = escapeWosQuery(keyword);
+  const tokens = tokenize(normalized).filter((token) => !isWeakSearchToken(token));
+  const variants = new Set<string>();
+  if (normalized) variants.add(normalized);
+
+  const phrasePairs = extractKeywordPhrases(tokens);
+  for (const phrase of phrasePairs) variants.add(phrase);
+
+  if (tokens.includes("ai")) variants.add(tokens.map((token) => (token === "ai" ? "artificial intelligence" : token)).join(" "));
+  if (tokens.includes("interview")) variants.add("algorithmic hiring OR digital interview OR AI interview");
+  if (tokens.includes("branding")) variants.add("employer branding OR organizational attractiveness OR recruitment branding");
+  if (tokens.includes("employer")) variants.add("employer branding OR recruitment");
+
+  return Array.from(variants).filter(Boolean).slice(0, 6);
+}
+
+function extractKeywordPhrases(tokens: string[]): string[] {
+  const phrases: string[] = [];
+  for (let index = 0; index < tokens.length - 1; index++) {
+    phrases.push(`${tokens[index]} ${tokens[index + 1]}`);
+  }
+  if (tokens.length >= 3) phrases.push(tokens.slice(0, 3).join(" "));
+  return phrases;
+}
+
+function isWeakSearchToken(token: string): boolean {
+  return new Set(["and", "or", "the", "for", "with", "from", "into", "using", "study", "effect", "effects"]).has(token);
+}
+
+function buildWosSourceTitleQuery(): string {
+  const allowedSources = WOS_PRIORITY_SOURCE_TITLES.filter((title) => BUSINESS_SCHOOL_JOURNALS.includes(title));
+  return `SO=(${allowedSources.map((title) => `"${escapeWosPhrase(title)}"`).join(" OR ")})`;
+}
+
 function buildWosYearQuery(start: number, end: number): string {
   const normalizedStart = Math.min(start, end);
   const normalizedEnd = Math.max(start, end);
@@ -960,6 +1059,10 @@ function buildWosYearQuery(start: number, end: number): string {
 
 function escapeWosQuery(value: string): string {
   return value.replace(/[()"']/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function escapeWosPhrase(value: string): string {
+  return value.replace(/["']/g, " ").replace(/\s+/g, " ").trim();
 }
 
 async function fetchWosWithRetry(url: URL, apiKey: string): Promise<Response> {
@@ -1334,6 +1437,13 @@ function getWosCitationCount(document: WosDocument): number {
   const citations = document.citations ?? [];
   const wosCitation = citations.find((citation) => citation.db?.toUpperCase() === "WOS");
   return wosCitation?.count ?? citations[0]?.count ?? 0;
+}
+
+function getWosDocumentKey(document: WosDocument): string {
+  const doi = getWosDoi(document);
+  if (doi) return `doi:${doi.toLowerCase()}`;
+  if (document.uid) return `uid:${document.uid}`;
+  return `title:${normalizeJournalName(getWosTitle(document))}:${getWosYear(document)}`;
 }
 
 function getWosAbstract(document: WosDocument): string {

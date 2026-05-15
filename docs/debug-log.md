@@ -2,6 +2,42 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-15 - WoS Keyword Expansion And Allowlist Priority Search
+
+### Context
+
+The dashboard `Run` failure was fixed, but low-result queries such as `AI interview employer branding` could still complete with very few WoS candidates and zero allowlisted papers. The requested next work was:
+
+1. Keyword decomposition search.
+2. Approved journal / allowlist-priority search.
+
+### Code Changes Under Test
+
+- `searchWebOfScience` now builds multiple WoS queries from the input keyword.
+- The first query remains the exact user keyword.
+- Additional queries use token pairs and domain-oriented expansions such as:
+  - `artificial intelligence`
+  - `algorithmic hiring OR digital interview OR AI interview`
+  - `employer branding OR organizational attractiveness OR recruitment branding`
+- Added source-title-priority queries with `SO=(...)` for a curated subset of approved business school journals.
+- WoS requests are executed sequentially with a short delay to reduce 429 risk.
+- Candidate records are deduplicated by DOI, WoS UID, or title/year before downstream allowlist filtering.
+- Existing API payloads and dashboard controls remain unchanged.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run --config apps/worker/wrangler.toml
+```
+
+All passed.
+
+### Runtime Check
+
+After Cloudflare deploys this commit, run a low-result query with a small `Max` value first to preserve WoS quota. Confirm `sourceResultCount` increases compared with the previous exact-only behavior.
+
 ## 2026-05-15 - Dashboard Search Options
 
 ### Context

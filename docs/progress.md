@@ -67,7 +67,7 @@ Current next implementation target:
 19. After Cloudflare Pages deploys the dashboard UI/UX refresh, verify the production page at `https://paper-agent-project.pages.dev/` across desktop and mobile widths.
 20. Dashboard `Run` no longer fails with `Web of Science request failed with 400`.
 21. Search option controls for `Max`, `From`, and `To` are implemented locally; after Cloudflare Pages deploy, verify they appear and that different settings change `sourceResultCount`.
-22. Next improve low-result queries by adding keyword decomposition, source-title-aware retrieval, or multi-page WoS collection.
+22. Keyword decomposition and source-title-aware WoS retrieval are implemented locally; after Cloudflare deploy, verify `sourceResultCount` and `allowedResultCount` improve for low-result queries.
 23. `CHANGELOG.md` is now organized by modification date. Continue moving completed entries from `Unreleased` into the current `YYYY-MM-DD` section before each commit.
 
 ## Current Status
@@ -101,6 +101,7 @@ The latest confirmed behavior is normal:
 - Dashboard search options now expose `Max`, `From`, and `To` fields and send them to the existing Worker search API.
 - Dashboard `Max` accepts typed numeric input and enforces the 1-50 limit before the search request is sent.
 - `CHANGELOG.md` has been reorganized into dated sections for `2026-05-15`, `2026-05-14`, `2026-05-13`, and `2026-05-11`, with `Unreleased` reserved for in-progress changes.
+- WoS retrieval now uses keyword decomposition, curated allowlist source-title priority queries, sequential request spacing, and DOI/UID/title deduplication before journal filtering.
 
 ## Repository And Deployment Targets
 
@@ -175,6 +176,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Web of Science Starter API response parsing reads `hits`, with `documents` retained as a compatibility fallback.
 - Web of Science year filters use explicit OR clauses for short ranges.
 - Web of Science candidate request limit is capped at 50 to satisfy the Starter API limit range.
+- Web of Science retrieval expands low-result keywords and runs allowlist source-title-priority queries before downstream filtering.
 - Temporary OpenAlex Works API fallback using `OPENALEX_EMAIL` and optional `OPENALEX_API_KEY`.
 - OpenAlex result mapping for title, authors, publication year/date, source, DOI, OA status, abstract, type, and citation count.
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.

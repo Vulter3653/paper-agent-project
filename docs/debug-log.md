@@ -44,6 +44,8 @@ search_jobs.allowed_result_count
 
 The Worker now records how many provider candidates were received and how many passed the approved business school journal allowlist. The dashboard now displays this as `Source / Allowed`, making zero-result jobs diagnosable without inspecting logs.
 
+The count diagnostics exposed the actual parser defect: Clarivate's official Web of Science Starter JavaScript client models the document list as `hits`, not `documents`. The Worker now reads `data.hits` first and keeps `data.documents` only as a compatibility fallback.
+
 ### Verification Commands
 
 ```bash
@@ -62,6 +64,13 @@ After deployment, run another WoS job and confirm:
 Source / Allowed shows a numeric pair.
 If Source > 0 and Allowed = 0, the API returned results but the approved journal filter removed them.
 If Source = 0, the WoS query itself returned no candidates for the keyword/date range.
+```
+
+Expected after the `hits` parser fix:
+
+```text
+Source should be greater than 0 for broad business keywords such as marketing.
+Allowed may still be 0 if the first page of WoS candidates does not include approved journals.
 ```
 
 ## 2026-05-15 - WoS API Key Runtime Diagnostics

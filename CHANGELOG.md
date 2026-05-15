@@ -15,6 +15,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- `Fixed`: Corrected WoS Starter API response parsing in `apps/worker/src/index.ts` to read the official `hits` array, with `documents` retained as a compatibility fallback.
 - `Added`: Added `source_result_count` and `allowed_result_count` search job diagnostics in `apps/worker/src/index.ts`, `apps/worker/schema.sql`, and `apps/worker/migrations/0005_add_search_job_result_counts.sql`.
 - `Changed`: Added a dashboard `Source / Allowed` metric in `apps/web/src/main.tsx` and `apps/web/src/styles.css` to explain zero-result WoS jobs after journal allowlist filtering.
 - `Docs`: Recorded WoS runtime verification, zero-result troubleshooting, and search result count diagnostics in `docs/debug-log.md` and `docs/progress.md`.

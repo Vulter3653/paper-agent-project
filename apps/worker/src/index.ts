@@ -86,6 +86,7 @@ type EvaluationScores = {
 
 type WosStarterResponse = {
   documents?: WosDocument[];
+  hits?: WosDocument[];
 };
 
 type WosDocument = {
@@ -858,7 +859,8 @@ async function searchWebOfScience(
   const response = await fetchWosWithRetry(url, options.wosApiKey);
 
   const data = (await response.json()) as WosStarterResponse;
-  return (data.documents ?? []).slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
+  const documents = data.hits ?? data.documents ?? [];
+  return documents.slice(0, candidateLimit).map((document, index) => mapWosDocument(document, keyword, index + 1));
 }
 
 async function searchOpenAlex(

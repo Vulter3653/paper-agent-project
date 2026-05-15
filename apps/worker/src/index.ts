@@ -849,7 +849,7 @@ async function searchWebOfScience(
   }
 
   const url = new URL("https://api.clarivate.com/apis/wos-starter/v1/documents");
-  const candidateLimit = Math.min(100, Math.max(options.maxResults, options.maxResults * 5));
+  const candidateLimit = Math.min(50, Math.max(options.maxResults, options.maxResults * 5));
   url.searchParams.set("q", buildWosQuery(keyword, options.yearStart, options.yearEnd));
   url.searchParams.set("limit", String(candidateLimit));
   url.searchParams.set("page", "1");
@@ -986,6 +986,10 @@ async function fetchWosWithRetry(url: URL, apiKey: string): Promise<Response> {
   }
   if (lastResponse?.status === 429) {
     throw new Error("Web of Science rate limit reached (429). Wait for the Clarivate quota window to reset or reduce search frequency.");
+  }
+
+  if (lastResponse?.status === 400) {
+    throw new Error("Web of Science request failed with 400. Check query syntax and ensure request limit is within the WoS Starter API 1-50 range.");
   }
 
   throw new Error(`Web of Science request failed with ${lastResponse?.status ?? "unknown status"}`);

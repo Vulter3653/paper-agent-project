@@ -2,6 +2,70 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-15 - Dashboard Run Failed At WoS Search
+
+### Context
+
+The user reported that clicking `Run` in the dashboard produced `status=failed`.
+
+### Investigation
+
+Recent deployed jobs showed:
+
+```text
+job-7581dd40-75dd-4853-90c7-812b41ccc047
+keyword=AI interview employer branding
+status=failed
+currentStep=wos_search
+errorMessage=Web of Science request failed with 400
+```
+
+Diagnostics were healthy:
+
+```text
+searchProvider=wos
+wosApiKey=true
+wosApiKeySource=WOS_API_KEY
+missingColumns=[]
+crossrefEmail=true
+unpaywallEmail=true
+r2Reports=true
+```
+
+The dashboard sends `maxResults=20`. The Worker multiplied this by 5 to collect candidates, producing `limit=100` for WoS. The WoS Starter API limit range is 1-50, so the request failed with HTTP 400 before any papers could be saved.
+
+### Resolution
+
+Changed the WoS candidate limit cap from 100 to 50:
+
+```text
+candidateLimit = min(50, max(maxResults, maxResults * 5))
+```
+
+Also made the WoS 400 error message more specific so future failures point to query syntax or the 1-50 limit range.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run --config apps/worker/wrangler.toml
+```
+
+All passed.
+
+### Next Runtime Check
+
+After deployment, click `Run` in the dashboard again or run:
+
+```bash
+curl -s -X POST https://paper-agent-project.shch3653.workers.dev/api/search-jobs \
+  -H 'Content-Type: application/json' \
+  --data '{"keyword":"AI interview employer branding","yearStart":2020,"maxResults":20}'
+```
+
+Expected result: the job should leave `wos_search` and complete or proceed to journal filtering without a WoS 400 error.
+
 ## 2026-05-15 - Dashboard UI/UX Refresh
 
 ### Context

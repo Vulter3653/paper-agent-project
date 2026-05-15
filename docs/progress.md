@@ -65,6 +65,7 @@ Current next implementation target:
     - After XLSX is stable, add `reports/<job_id>/report.pdf`.
 18. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
 19. After Cloudflare Pages deploys the dashboard UI/UX refresh, verify the production page at `https://paper-agent-project.pages.dev/` across desktop and mobile widths.
+20. Deploy the WoS Starter API limit fix and verify dashboard `Run` no longer fails with `Web of Science request failed with 400`.
 
 ## Current Status
 
@@ -92,6 +93,7 @@ The latest confirmed behavior is normal:
 - Latest smoke job after Unpaywall normalization `job-3939c7f5-d674-4069-bacd-e18d5ebff919` returned `sourceResultCount=10`, `allowedResultCount=0`; use a larger candidate window for full allowlist validation.
 - Unpaywall DOI/email request values are normalized before lookup; this requires one more deployed runtime check because the last confirmed job returned Unpaywall 422 responses.
 - Dashboard UI/UX has been refreshed locally with an improved command header, operational status layout, ranked-paper table, detail panel, and responsive CSS. Static checks passed and the local Vite server returned HTTP 200.
+- Latest dashboard `Run` failure was traced to WoS `limit=100` from dashboard `maxResults=20`; Worker code now caps WoS candidate requests at the Starter API maximum of 50.
 
 ## Repository And Deployment Targets
 
@@ -164,6 +166,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Web of Science result mapping for title, authors, year, journal/source, DOI, abstract/keywords, WoS UID, and citation count.
 - Web of Science Starter API response parsing reads `hits`, with `documents` retained as a compatibility fallback.
 - Web of Science year filters use explicit OR clauses for short ranges.
+- Web of Science candidate request limit is capped at 50 to satisfy the Starter API limit range.
 - Temporary OpenAlex Works API fallback using `OPENALEX_EMAIL` and optional `OPENALEX_API_KEY`.
 - OpenAlex result mapping for title, authors, publication year/date, source, DOI, OA status, abstract, type, and citation count.
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.

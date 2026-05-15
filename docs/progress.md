@@ -69,8 +69,8 @@ Current next implementation target:
 21. Search option controls for `Max`, `From`, and `To` are implemented locally; after Cloudflare Pages deploy, verify they appear and that different settings change `sourceResultCount`.
 22. Keyword decomposition and source-title-aware WoS retrieval are implemented locally; after Cloudflare deploy, verify `sourceResultCount` and `allowedResultCount` improve for low-result queries.
 23. `CHANGELOG.md` is now organized by modification date. Continue moving completed entries from `Unreleased` into the current `YYYY-MM-DD` section before each commit.
-24. Journal category selection from `경영대학 학술지 목록.docx` is implemented locally. After Cloudflare deploy, verify the dashboard `Field` selector and run a small search with `journalCategoryId="organization-hr"` or another selected field.
-25. Confirm selected-field jobs search selected `국제 S급` source titles first, then selected `국제 A1급`, and only save papers from that selected field's journal set.
+24. Journal category selection from `경영대학 학술지 목록.docx` is deployed and user-confirmed as working. Use this as the baseline for the next UI/reporting step.
+25. Next recommended implementation: display each result's matched field/rank on the dashboard and in report output, for example `2. 조직인사 / 국제 S급` or `2. 조직인사 / 국제 A1급`.
 
 ## Current Status
 
@@ -107,6 +107,7 @@ The latest confirmed behavior is normal:
 - Runtime confirmation job `job-9da78c65-3f85-479d-9ee0-7354c3f1f4dd` completed with `sourceResultCount=15` and `allowedResultCount=1` for `AI interview employer branding`, confirming expanded WoS retrieval improves low-result queries.
 - The `경영대학 학술지 목록.docx` numbered field groups are now represented as shared category metadata with `국제 S급`, `국제 A1급`, and `국내 A급` lists.
 - Dashboard search options now include a `Field` selector. When selected, the Worker prioritizes that field's `국제 S급` WoS source-title query first, then `국제 A1급`, and filters saved papers to that selected field.
+- Deployed journal category selection was user-confirmed as normally working after the `eb2dbe3` push.
 
 ## Repository And Deployment Targets
 

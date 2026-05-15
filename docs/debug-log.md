@@ -41,6 +41,12 @@ After Cloudflare deploys the commit, open the dashboard and confirm the `Field` 
 
 Expected behavior: the job completes, `Source / Allowed` updates, and saved papers are restricted to the selected field's journal list.
 
+### Runtime Confirmation
+
+After the `eb2dbe3` push and Cloudflare deployment, the user confirmed the category selector workflow works normally from the dashboard. This means the next session can treat selected-field search priority and selected-field result filtering as the current deployed baseline.
+
+Next recommended debugging target is not search execution itself, but result transparency: expose the matched journal field/rank on paper rows, paper detail, CSV, and Markdown report output so reviewers can see whether each saved result matched `국제 S급` or `국제 A1급`.
+
 ## 2026-05-15 - WoS Keyword Expansion And Allowlist Priority Search
 
 ### Context

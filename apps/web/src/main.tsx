@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Download, Eye, FileText, History, Play, RefreshCw, Search } from "lucide-react";
-import type { PaperSummary, SearchJob } from "@paper-agent/shared";
+import { BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS, type PaperSummary, type SearchJob } from "@paper-agent/shared";
 import "./styles.css";
 
 type JobResponse = {
@@ -103,6 +103,7 @@ function App() {
   const [maxResults, setMaxResults] = useState("20");
   const [yearStart, setYearStart] = useState("2020");
   const [yearEnd, setYearEnd] = useState("");
+  const [journalCategoryId, setJournalCategoryId] = useState("");
   const [job, setJob] = useState<SearchJob | null>(null);
   const [papers, setPapers] = useState<PaperSummary[]>(demoPapers);
   const [selectedId, setSelectedId] = useState<string>(demoPapers[0].id);
@@ -172,7 +173,7 @@ function App() {
       const response = await fetch(apiUrl("/api/search-jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildSearchPayload(keyword, maxResults, yearStart, yearEnd))
+        body: JSON.stringify(buildSearchPayload(keyword, maxResults, yearStart, yearEnd, journalCategoryId))
       });
       if (!response.ok) throw new Error(await readApiError(response, "Failed to create search job"));
       const data = (await response.json()) as JobResponse;
@@ -285,6 +286,17 @@ function App() {
                 placeholder="20"
                 aria-label="Maximum results"
               />
+            </label>
+            <label className="categoryOption">
+              <span>Field</span>
+              <select value={journalCategoryId} onChange={(event) => setJournalCategoryId(event.target.value)} aria-label="Journal category">
+                <option value="">All fields</option>
+                {BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               <span>From</span>
@@ -763,8 +775,8 @@ function formatDateTime(value: string): string {
   return date.toLocaleString();
 }
 
-function buildSearchPayload(keyword: string, maxResults: string, yearStart: string, yearEnd: string) {
-  const payload: { keyword: string; maxResults: number; yearStart?: number; yearEnd?: number } = {
+function buildSearchPayload(keyword: string, maxResults: string, yearStart: string, yearEnd: string, journalCategoryId: string) {
+  const payload: { keyword: string; maxResults: number; yearStart?: number; yearEnd?: number; journalCategoryId?: string } = {
     keyword: keyword.trim(),
     maxResults: parseLimitedMaxResults(maxResults)
   };
@@ -772,6 +784,7 @@ function buildSearchPayload(keyword: string, maxResults: string, yearStart: stri
   const end = parseOptionalYear(yearEnd);
   if (start) payload.yearStart = start;
   if (end) payload.yearEnd = end;
+  if (journalCategoryId) payload.journalCategoryId = journalCategoryId;
   return payload;
 }
 

@@ -2,6 +2,45 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-15 - Journal Category Selector And Ranked Source Priority
+
+### Context
+
+The dashboard needed to expose the numbered categories from `경영대학 학술지 목록.docx`, such as `1. 공통`, `2. 조직인사`, and the remaining field groups. When a category is selected, WoS retrieval should prioritize that category's `국제 S급` journals first, then `국제 A1급` journals.
+
+### Code Changes Under Test
+
+- Added structured category metadata in `packages/shared/src/businessSchoolJournals.ts`.
+- Added dashboard `Field` selector options from the shared category list.
+- `POST /api/search-jobs` now accepts optional `journalCategoryId`.
+- Worker normalizes the category id against the shared list before processing.
+- Selected category WoS query order is:
+  1. keyword variant + selected category `국제 S급` source titles
+  2. keyword variant + selected category `국제 A1급` source titles
+  3. exact keyword fallback
+- Selected category result filtering now saves only journals that belong to that selected category.
+- If no category is selected, the existing all-field allowlist behavior remains available.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build
+npx wrangler deploy --dry-run --config apps/worker/wrangler.toml
+```
+
+All passed locally.
+
+### Runtime Check
+
+After Cloudflare deploys the commit, open the dashboard and confirm the `Field` selector appears next to `Max`, `From`, and `To`. Run one small quota-safe search with a selected field, for example:
+
+```json
+{"keyword":"employer branding","yearStart":2020,"maxResults":3,"journalCategoryId":"organization-hr"}
+```
+
+Expected behavior: the job completes, `Source / Allowed` updates, and saved papers are restricted to the selected field's journal list.
+
 ## 2026-05-15 - WoS Keyword Expansion And Allowlist Priority Search
 
 ### Context

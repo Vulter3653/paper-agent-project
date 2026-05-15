@@ -1,6 +1,7 @@
 import {
   BUSINESS_SCHOOL_JOURNALS,
   calculateFinalScore,
+  getBusinessSchoolJournalCategory,
   isBusinessSchoolJournal,
   normalizeJournalName,
   type PaperSummary,
@@ -30,6 +31,7 @@ type CreateSearchJobRequest = {
   yearStart?: number;
   yearEnd?: number;
   maxResults?: number;
+  journalCategoryId?: string;
 };
 
 type DiagnosticsColumnCheck = {
@@ -309,7 +311,8 @@ export default {
             reports: env.REPORTS,
             maxResults,
             yearStart: body.yearStart,
-            yearEnd: body.yearEnd
+            yearEnd: body.yearEnd,
+            journalCategoryId: normalizeJournalCategoryId(body.journalCategoryId)
           })
         );
         return json({ job, papers: [] });
@@ -381,6 +384,11 @@ function normalizeKeyword(keyword: string | undefined): string {
 function normalizeMaxResults(maxResults: number | undefined): number {
   if (typeof maxResults !== "number" || !Number.isFinite(maxResults)) return 20;
   return Math.max(1, Math.min(50, Math.trunc(maxResults)));
+}
+
+function normalizeJournalCategoryId(categoryId: string | undefined): string | undefined {
+  const normalized = categoryId?.trim();
+  return getBusinessSchoolJournalCategory(normalized) ? normalized : undefined;
 }
 
 function normalizeListLimit(limit: string | null): number {
@@ -829,6 +837,7 @@ async function processSearchJob(
     maxResults: number;
     yearStart?: number;
     yearEnd?: number;
+    journalCategoryId?: string;
   }
 ): Promise<void> {
   let job = initialJob;
@@ -840,7 +849,7 @@ async function processSearchJob(
         : await searchWebOfScience(keyword, options);
 
     job = await updateSearchJobProgress(db, job, "scoring", "journal_filter");
-    const allowedPapers = filterAllowedBusinessSchoolJournals(candidates).slice(0, options.maxResults);
+    const allowedPapers = filterAllowedBusinessSchoolJournals(candidates, options.journalCategoryId).slice(0, options.maxResults);
 
     job = await updateSearchJobProgress(db, job, "enriching_metadata", "crossref_enrichment");
     const crossrefEnriched = await enrichPapersWithCrossref(allowedPapers, options.crossrefEmail);
@@ -868,6 +877,7 @@ async function searchWebOfScience(
     maxResults: number;
     yearStart?: number;
     yearEnd?: number;
+    journalCategoryId?: string;
   }
 ): Promise<PaperRecord[]> {
   if (!options.wosApiKey) {
@@ -875,7 +885,7 @@ async function searchWebOfScience(
   }
 
   const candidateLimit = Math.min(50, Math.max(options.maxResults, options.maxResults * 5));
-  const queries = buildWosSearchQueries(keyword, options.yearStart, options.yearEnd);
+  const queries = buildWosSearchQueries(keyword, options.yearStart, options.yearEnd, options.journalCategoryId);
   const documents: WosDocument[] = [];
   const seen = new Set<string>();
   let lastError: unknown = null;
@@ -1001,15 +1011,30 @@ function buildWosQuery(keyword: string, yearStart: number | undefined, yearEnd: 
   return terms.join(" AND ");
 }
 
-function buildWosSearchQueries(keyword: string, yearStart: number | undefined, yearEnd: number | undefined): string[] {
+function buildWosSearchQueries(keyword: string, yearStart: number | undefined, yearEnd: number | undefined, journalCategoryId?: string): string[] {
   const variants = buildKeywordVariants(keyword);
   const queries = new Set<string>();
+
+  const category = getBusinessSchoolJournalCategory(journalCategoryId);
+  if (category) {
+    const sSourceQuery = buildWosSourceTitleQuery(category.internationalS);
+    const a1SourceQuery = buildWosSourceTitleQuery(category.internationalA1);
+    for (const sourceQuery of [sSourceQuery, a1SourceQuery]) {
+      if (!sourceQuery) continue;
+      for (const variant of variants.slice(0, 2)) {
+        queries.add([buildWosQuery(variant, yearStart, yearEnd), sourceQuery].join(" AND "));
+      }
+    }
+    queries.add(buildWosQuery(variants[0] ?? keyword, yearStart, yearEnd));
+    return Array.from(queries).slice(0, 5);
+  }
+
+  const sourceQuery = buildWosSourceTitleQuery(WOS_PRIORITY_SOURCE_TITLES);
+  for (const variant of variants.slice(0, 2)) {
+    if (sourceQuery) queries.add([buildWosQuery(variant, yearStart, yearEnd), sourceQuery].join(" AND "));
+  }
   for (const variant of variants) {
     queries.add(buildWosQuery(variant, yearStart, yearEnd));
-  }
-  const sourceQuery = buildWosSourceTitleQuery();
-  for (const variant of variants.slice(0, 2)) {
-    queries.add([buildWosQuery(variant, yearStart, yearEnd), sourceQuery].filter(Boolean).join(" AND "));
   }
   return Array.from(queries).slice(0, 4);
 }
@@ -1044,8 +1069,10 @@ function isWeakSearchToken(token: string): boolean {
   return new Set(["and", "or", "the", "for", "with", "from", "into", "using", "study", "effect", "effects"]).has(token);
 }
 
-function buildWosSourceTitleQuery(): string {
-  const allowedSources = WOS_PRIORITY_SOURCE_TITLES.filter((title) => BUSINESS_SCHOOL_JOURNALS.includes(title));
+function buildWosSourceTitleQuery(sourceTitles: readonly string[]): string {
+  const allowlistedTitles: readonly string[] = BUSINESS_SCHOOL_JOURNALS;
+  const allowedSources = sourceTitles.filter((title) => allowlistedTitles.includes(title));
+  if (!allowedSources.length) return "";
   return `SO=(${allowedSources.map((title) => `"${escapeWosPhrase(title)}"`).join(" OR ")})`;
 }
 
@@ -1285,15 +1312,25 @@ function applyCrossrefMetadata(paper: PaperRecord, crossref: CrossrefWork): Pape
   };
 }
 
-function filterAllowedBusinessSchoolJournals(papers: PaperRecord[]): PaperRecord[] {
+function filterAllowedBusinessSchoolJournals(papers: PaperRecord[], journalCategoryId?: string): PaperRecord[] {
   return papers
-    .filter((paper) => isAllowedBusinessSchoolJournal(paper))
+    .filter((paper) => isAllowedBusinessSchoolJournal(paper, journalCategoryId))
     .map((paper, index) => ({ ...paper, rank: index + 1 }));
 }
 
-function isAllowedBusinessSchoolJournal(paper: PaperRecord): boolean {
+function isAllowedBusinessSchoolJournal(paper: PaperRecord, journalCategoryId?: string): boolean {
   const sourceNames = [paper.journalName, paper.crossrefJournalName].filter(Boolean);
+  const category = getBusinessSchoolJournalCategory(journalCategoryId);
+  if (category) {
+    const categoryJournalSet = new Set([...category.internationalS, ...category.internationalA1, ...category.domesticA].map(normalizeJournalName));
+    return sourceNames.some((sourceName) => isCategoryJournalMatch(sourceName, categoryJournalSet));
+  }
   return sourceNames.some((sourceName) => isBusinessSchoolJournal(sourceName) || isCloseJournalNameMatch(sourceName));
+}
+
+function isCategoryJournalMatch(sourceName: string, categoryJournalSet: Set<string>): boolean {
+  const normalized = normalizeJournalName(sourceName);
+  return categoryJournalSet.has(normalized) || (normalized.endsWith("s") && categoryJournalSet.has(normalized.slice(0, -1)));
 }
 
 function isCloseJournalNameMatch(sourceName: string): boolean {

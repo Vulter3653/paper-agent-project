@@ -1,4 +1,13 @@
-export { BUSINESS_SCHOOL_JOURNALS, isBusinessSchoolJournal, normalizeJournalName } from "./businessSchoolJournals";
+export {
+  BUSINESS_SCHOOL_JOURNALS,
+  BUSINESS_SCHOOL_JOURNAL_CATEGORIES,
+  BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS,
+  getBusinessSchoolJournalCategory,
+  getPriorityInternationalJournals,
+  isBusinessSchoolJournal,
+  normalizeJournalName,
+  type BusinessSchoolJournalCategory
+} from "./businessSchoolJournals";
 
 export type SearchJobStatus =
   | "queued"

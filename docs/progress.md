@@ -69,6 +69,8 @@ Current next implementation target:
 21. Search option controls for `Max`, `From`, and `To` are implemented locally; after Cloudflare Pages deploy, verify they appear and that different settings change `sourceResultCount`.
 22. Keyword decomposition and source-title-aware WoS retrieval are implemented locally; after Cloudflare deploy, verify `sourceResultCount` and `allowedResultCount` improve for low-result queries.
 23. `CHANGELOG.md` is now organized by modification date. Continue moving completed entries from `Unreleased` into the current `YYYY-MM-DD` section before each commit.
+24. Journal category selection from `경영대학 학술지 목록.docx` is implemented locally. After Cloudflare deploy, verify the dashboard `Field` selector and run a small search with `journalCategoryId="organization-hr"` or another selected field.
+25. Confirm selected-field jobs search selected `국제 S급` source titles first, then selected `국제 A1급`, and only save papers from that selected field's journal set.
 
 ## Current Status
 
@@ -103,6 +105,8 @@ The latest confirmed behavior is normal:
 - `CHANGELOG.md` has been reorganized into dated sections for `2026-05-15`, `2026-05-14`, `2026-05-13`, and `2026-05-11`, with `Unreleased` reserved for in-progress changes.
 - WoS retrieval now uses keyword decomposition, curated allowlist source-title priority queries, sequential request spacing, and DOI/UID/title deduplication before journal filtering.
 - Runtime confirmation job `job-9da78c65-3f85-479d-9ee0-7354c3f1f4dd` completed with `sourceResultCount=15` and `allowedResultCount=1` for `AI interview employer branding`, confirming expanded WoS retrieval improves low-result queries.
+- The `경영대학 학술지 목록.docx` numbered field groups are now represented as shared category metadata with `국제 S급`, `국제 A1급`, and `국내 A급` lists.
+- Dashboard search options now include a `Field` selector. When selected, the Worker prioritizes that field's `국제 S급` WoS source-title query first, then `국제 A1급`, and filters saved papers to that selected field.
 
 ## Repository And Deployment Targets
 
@@ -151,6 +155,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Status metrics include `Source / Allowed` for new jobs after deployment.
 - Dashboard layout uses a command header, compact status band, operations grid, main ranked-paper workspace, side detail panel, and recent job list.
 - Dashboard command header includes search option controls for result count and optional year range.
+- Dashboard command header includes a journal field selector sourced from the shared business school journal category list.
 - Paper Detail panel shows Score Breakdown for relevance, journal fit, Crossref verification, open access, citations, and recency.
 - System Checks panel calls `GET /api/diagnostics` to display D1 schema readiness and Worker environment variable presence.
 - Report Preview panel fetches `GET /api/search-jobs/:id/report.md` for completed jobs and displays the Markdown report in the dashboard before download.
@@ -178,6 +183,7 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Web of Science year filters use explicit OR clauses for short ranges.
 - Web of Science candidate request limit is capped at 50 to satisfy the Starter API limit range.
 - Web of Science retrieval expands low-result keywords and runs allowlist source-title-priority queries before downstream filtering.
+- Optional `journalCategoryId` request payloads restrict selected-field jobs to the selected category's approved journals and prioritize selected `국제 S급` before `국제 A1급` source-title searches.
 - Temporary OpenAlex Works API fallback using `OPENALEX_EMAIL` and optional `OPENALEX_API_KEY`.
 - OpenAlex result mapping for title, authors, publication year/date, source, DOI, OA status, abstract, type, and citation count.
 - Basic relevance scoring based on title keyword overlap, abstract keyword overlap, citation count, and recency.

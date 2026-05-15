@@ -19,6 +19,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-15
 
+- `Added`: Added business-school journal category metadata from `경영대학 학술지 목록.docx` in `packages/shared/src/businessSchoolJournals.ts`, exposed dashboard category selection in `apps/web/src/main.tsx`, and wired selected categories into Worker WoS search priority.
+- `Changed`: Updated `apps/worker/src/index.ts` so selected journal fields search `국제 S급` source titles first, then `국제 A1급`, and filter saved results to the selected field's journal set.
+- `Docs`: Recorded journal category selector implementation and verification in `docs/debug-log.md` and `docs/progress.md`.
 - `Docs`: Recorded deployed runtime confirmation that expanded WoS retrieval improved `AI interview employer branding` from zero allowed results to one allowlisted result in `docs/debug-log.md` and `docs/progress.md`.
 - `Changed`: Expanded WoS retrieval in `apps/worker/src/index.ts` with keyword-variant searches, allowlist source-title priority queries, sequential rate-limit spacing, and DOI/UID/title deduplication before journal filtering.
 - `Docs`: Recorded WoS keyword expansion and allowlist-priority search work in `docs/debug-log.md` and `docs/progress.md`.

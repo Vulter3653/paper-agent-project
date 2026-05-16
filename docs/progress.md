@@ -1,6 +1,6 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-15
+Updated: 2026-05-16
 
 ## Mandatory Session Handoff Rules
 
@@ -110,6 +110,26 @@ The latest confirmed behavior is normal:
 - Dashboard search options now include a `Field` selector. When selected, the Worker prioritizes that field's `국제 S급` WoS source-title query first, then `국제 A1급`, and filters saved papers to that selected field.
 - Deployed journal category selection was user-confirmed as normally working after the `eb2dbe3` push.
 - Result `Field / Rank` metadata is now derived from stored journal names and displayed in dashboard rows, paper details, CSV exports, and Markdown reports without a D1 schema migration.
+
+## Agent Work Attribution
+
+The following recent repository work was implemented and/or recorded by Codex in this session history and should be treated as Codex-authored project state unless later commits supersede it:
+
+- `91799a4 feat: show journal field rank`
+  - Added `Field / Rank` visibility to dashboard rows, paper details, CSV exports, and Markdown reports.
+  - Added shared journal matching helpers so existing D1 rows can display field/rank without a schema migration.
+- `b4826d6 docs: record category search confirmation`
+  - Recorded user-confirmed deployed behavior for category selection and selected-field WoS priority.
+- `eb2dbe3 feat: add journal category search priority`
+  - Added numbered business-school journal category selection from `경영대학 학술지 목록.docx`.
+  - Wired selected categories into WoS search priority: selected `국제 S급` first, then selected `국제 A1급`.
+  - Restricted selected-field saved results to the selected category journal set.
+- `0b98a25 docs: confirm expanded wos retrieval`
+  - Recorded deployed runtime confirmation for expanded WoS retrieval.
+- `2a49e1e feat: expand wos retrieval queries`
+  - Expanded WoS retrieval with keyword variants, curated source-title priority queries, sequential spacing, and deduplication.
+
+Current local note: `GEMINI.md` exists as an untracked handoff/rules file. It has not been committed by Codex. Do not delete or commit it unless the user explicitly requests that policy file to become part of the repository.
 
 ## Repository And Deployment Targets
 

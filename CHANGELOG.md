@@ -17,6 +17,11 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 - No unreleased changes.
 
+## 2026-05-16
+
+- `Docs`: Recorded Codex-authored recent work attribution in `docs/progress.md`, including the journal category priority and Field/Rank dashboard/reporting commits.
+- `Docs`: Noted that local `GEMINI.md` is currently untracked and should not be deleted or committed unless explicitly requested.
+
 ## 2026-05-15
 
 - `Added`: Added matched journal field/rank metadata to `PaperSummary`, dashboard paper rows/details, CSV exports, and Markdown reports.

@@ -19,8 +19,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-16
 
-- `Docs`: Recorded Codex-authored recent work attribution in `docs/progress.md`, including the journal category priority and Field/Rank dashboard/reporting commits.
-- `Docs`: Noted that local `GEMINI.md` is currently untracked and should not be deleted or committed unless explicitly requested.
+- Docs: Reformatted Codex-authored recent work attribution in `docs/progress.md` to use `Label: description. (codex)` entries. (codex)
+- Docs: Recorded Codex-authored recent work attribution in `docs/progress.md`, including the journal category priority and Field/Rank dashboard/reporting commits. (codex)
+- Docs: Noted that local `GEMINI.md` is currently untracked and should not be deleted or committed unless explicitly requested. (codex)
 
 ## 2026-05-15
 

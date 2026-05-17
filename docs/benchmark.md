@@ -1,20 +1,89 @@
 # Benchmark
 
+Source document: `paper_agent_enhanced_report.md`
+
+The benchmark follows a REPRO-Bench-style structure adapted to scholarly paper discovery. It must evaluate both final ranked outputs and intermediate agent behavior.
+
+## Compared Approaches
+
 The benchmark compares three approaches:
 
 1. Rule-based scholarly keyword search baseline
 2. Single LLM recommendation baseline
 3. Proposed top-journal-aware Agent with tool use, metadata verification, ranking, and critic review
 
-## Metrics
+## Minimum Dataset
+
+Create at least 20 tasks. Each task should include:
+
+- `task_id`
+- `keyword`
+- `field`
+- `year_start`
+- `year_end`
+- `max_results`
+- gold relevant papers, preferably 3-5 per task
+- gold DOI values
+- human relevance label from 1 to 5
+
+Recommended files:
+
+```text
+benchmark/tasks.jsonl
+benchmark/gold_relevant_papers.csv
+benchmark/baseline_results.csv
+benchmark/proposed_agent_results.csv
+benchmark/benchmark_summary.md
+```
+
+Example task:
+
+```json
+{"task_id":"T001","keyword":"AI interview employer branding","field":"organization-hr","year_start":2020,"year_end":2026,"max_results":5}
+```
+
+## Core Metrics
 
 - Precision@5
+- NDCG@5
 - Paper validity rate
 - DOI accuracy
 - Top journal precision
 - Hallucination rate
-- DOI validity rate
 - OA PDF success rate
 - Report completeness
 - Latency
 - Cost and quota usage
+
+## Agent-Level Metrics
+
+| Agent | Metrics | Failure Types |
+| --- | --- | --- |
+| Planner | Query Coverage, Field Accuracy | Missing key concepts, wrong field classification |
+| Journal Selector | Field Classification Accuracy, Journal Set Precision | Wrong field, wrong journal universe |
+| Retriever | Recall@20, Candidate Validity Rate | Missing relevant papers, duplicates, invalid works |
+| Verifier | DOI Accuracy, Metadata Match Accuracy | Wrong DOI, false verification |
+| OA Agent | OA Status Accuracy, PDF URL Precision | Closed paper marked as OA, invalid PDF URL |
+| Relevance | Human Relevance Correlation, Binary Accuracy | Keyword match but low real relevance |
+| Ranking | Precision@5, NDCG@5, Verified@5 | Weak papers ranked high |
+| Critic | Error Detection Precision/Recall | Missed metadata/relevance errors or excessive false alarms |
+| Report | Completeness, Format Validity | Missing DOI, score, field/rank, or evidence |
+| MCP | Tool Correctness, Safety, E2E Consistency | Wrong D1/R2 result, unsafe tool exposure |
+
+## Baseline Definitions
+
+| Baseline | Description | Risk |
+| --- | --- | --- |
+| Rule-based Search | WoS/OpenAlex keyword search ranked by citation count. | No DOI verification, weak topic reasoning. |
+| Single LLM | Ask an LLM to recommend papers directly. | High hallucination and DOI fabrication risk. |
+| Proposed Agent | Search, allowlist, Crossref, Unpaywall, scoring, report. | More complex and API-quota dependent. |
+
+## Human Evaluation Rubric
+
+| Score | Meaning |
+| --- | --- |
+| 5 | Directly relevant and immediately useful for the research topic. |
+| 4 | Highly relevant with minor scope differences. |
+| 3 | Indirectly relevant. |
+| 2 | Only keyword-level relevance. |
+| 1 | Irrelevant or invalid recommendation. |

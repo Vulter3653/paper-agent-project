@@ -22,6 +22,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-17 (codex)
 
+- Added: Added `paper_agent_enhanced_report.md` as the submission-oriented enhanced planning source document. (codex)
+- Docs: Reflected `paper_agent_enhanced_report.md` into `docs/workflow.md`, `docs/benchmark.md`, `docs/mcp.md`, and `docs/progress.md` as the current submission-oriented workflow and roadmap. (codex)
 - Docs: Recorded previous work check results in `docs/progress.md`, including the current absence of referenced Gemini prototype files in the worktree. (codex)
 - Docs: Committed the existing `GEMINI.md` handoff file after updating its strict agent attribution rules. (codex)
 - Docs: Added strict agent attribution rules to `CHANGELOG.md`, `docs/progress.md`, and `GEMINI.md`, requiring `Label: description. (agent-id)` entries. (codex)

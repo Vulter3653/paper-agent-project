@@ -31,6 +31,22 @@ MCP is for agent-to-tool execution, not for normal user UI traffic.
 
 ## Recommended Rollout
 
+The enhanced report separates MCP candidates into required, recommended, conditional, deferred, and forbidden groups. Production MCP must remain least-privilege and should extend the existing custom Paper-Agent MCP before attaching broad third-party servers.
+
+## MCP Candidate Selection
+
+| Priority | Candidate | Purpose | Rule |
+| --- | --- | --- | --- |
+| Required | Custom Paper-Agent MCP | D1/R2 job, result, report, trace, and critic review inspection. | Extend current `apps/mcp` read-only tools first. |
+| Required | GitHub / Version Control MCP | Issue, PR, commit, changelog, progress management. | Developer-only; never expose repo write tools to end users. |
+| Required | Cloudflare MCP | Workers, Pages, D1, R2, deployment status checks. | Read-only first; no account-management tools. |
+| Recommended | Google Drive / Sheets MCP | OA PDF storage and team review tables. | Upload only Unpaywall-confirmed OA PDFs. |
+| Recommended | Research / Academic Search MCP | Semantic Scholar/OpenAlex/citation graph support. | Use as retriever comparison or supplement, not as the core source of truth. |
+| Recommended | Database MCP | Local benchmark/result analysis. | Production D1 should remain behind custom MCP tools. |
+| Conditional | File System MCP | Local benchmark fixture and report artifact inspection. | Local development only; no production arbitrary write. |
+| Conditional | Search / Extraction MCP | Public web support for low-risk supplemental discovery. | No paywall bypass or unrestricted fetch. |
+| Deferred | Aggregator / Meta-MCP | Discover and route many MCP servers. | Avoid tool sprawl and permission ambiguity during MVP. |
+
 ### Phase 1: Read-Only MCP
 
 Expose only safe read tools first.
@@ -171,6 +187,18 @@ Rules:
 - Store report outputs in R2.
 - Keep metadata in D1.
 - Do not expose raw credentials.
+
+### Phase 1+ Trace And Critic Tools
+
+Before any write MCP tools, add read-only tools for the enhanced multi-agent workflow:
+
+```text
+get_agent_traces(job_id)
+get_critic_reviews(job_id)
+get_benchmark_result(task_id)
+```
+
+These tools support evaluation and demo review without introducing mutation risk.
 
 ## Tools To Avoid
 

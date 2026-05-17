@@ -1,8 +1,11 @@
 # Integrated Workflow Design
 
-Source document: `AI_Agent_프로젝트_전체_통합본.pdf`
+Source documents:
 
-This document reflects the integrated project report into the implementation roadmap. The target system is a top-journal-aware literature review assistant, not a generic paper search tool.
+- `AI_Agent_프로젝트_전체_통합본.pdf`
+- `paper_agent_enhanced_report.md`
+
+This document reflects the integrated project report and the enhanced project report into the implementation roadmap. The target system is a top-journal-aware literature review assistant, not a generic paper search tool.
 
 ## Product Definition
 
@@ -43,22 +46,31 @@ User
 -> User downloads outputs
 ```
 
+## Project Definition
+
+The project should be presented as a verifiable top-journal literature review assistant. The core claim is not broad search coverage, but controlled retrieval, journal-quality filtering, metadata verification, transparent scoring, and reproducible report output.
+
+The enhanced report reframes the submission around three priorities:
+
+1. Current implementation evidence from the deployed Cloudflare stack.
+2. Explicit multi-agent roles and traceable intermediate outputs.
+3. REPRO-Bench-style evaluation comparing rule-based, single-LLM, and proposed agent workflows.
+
 ## Agent Responsibilities
 
-| Agent | Responsibility | Current Status |
-| --- | --- | --- |
-| Planner Agent | Convert user topic into keywords, sub-questions, field classification, and year/result constraints. | Partial: keyword input and search job creation exist. |
-| Journal Selector Agent | Select top journal universe by field using allowlist, ISSN, FT50/ABS/JCR/SCImago/CiteScore criteria. | Partial: business school journal allowlist exists. |
-| Search/Retriever Agent | Retrieve candidate papers from approved scholarly APIs. | Blocked for WoS until `WOS_API_KEY`; previous stored D1 jobs can be reviewed. |
-| Verifier Agent | Verify DOI, title, year, journal, authors, publisher, and ISSN with Crossref. | Partial: DOI-backed Crossref enrichment and verification exist. |
-| OA Download Agent | Check Unpaywall, store OA URLs, and later upload allowed OA PDFs to Google Drive. | Partial: Unpaywall metadata exists; Drive upload not implemented. |
-| Journal Evaluation Agent | Score journal quality using allowlist, top journal status, Q1/JCR/SCImago/CiteScore/FT50/ABS. | Partial: allowlist pass currently maps to journal fit score. |
-| Relevance Evaluation Agent | Score title/abstract similarity against the user topic and explain inclusion. | Partial: keyword-overlap score exists; embedding/Vectorize not implemented. |
-| Ranking Agent | Combine relevance, journal quality, verification, OA availability, citation count, and recency. | Partial: persisted component scores and final score exist; formula needs refinement. |
-| Summarizer Agent | Summarize research question, theory, method, data, and findings. | Not implemented. |
-| Comparator Agent | Compare each paper with the user topic and identify commonality, difference, and research gap. | Not implemented. |
-| Critic Agent | Recheck metadata, journal match, relevance, hallucination risk, and unsupported claims. | Not implemented. |
-| Report Agent | Generate PDF/Excel/Markdown/CSV outputs and store them in R2. | Partial: CSV and Markdown reports stored in R2. |
+| Agent | Responsibility | Current Status | Next Implementation |
+| --- | --- | --- | --- |
+| Planner Agent | Convert user topic into keywords, sub-questions, field classification, and year/result constraints. | Partial: dashboard keyword, max, year, and field inputs exist; keyword variants exist in Worker. | Move keyword decomposition into `agents/plannerAgent.ts` and persist planner trace. |
+| Journal Selector Agent | Select field-specific journal universe and rank priority. | Implemented for business school categories and `국제 S급` -> `국제 A1급` priority. | Persist selected field/rank universe in job metadata or agent trace. |
+| Retriever Agent | Retrieve candidate papers from approved scholarly APIs. | Implemented for WoS, with OpenAlex fallback retained for testing. | Move WoS/OpenAlex calls into tool modules and benchmark Recall@20. |
+| Verifier Agent | Verify DOI, title, year, journal, authors, publisher, and ISSN with Crossref. | Implemented as Crossref enrichment and verification fields. | Persist verifier input/output summary in `agent_traces`. |
+| Open Access Agent | Check Unpaywall, store OA URLs, and later upload allowed OA PDFs to Google Drive. | Implemented for Unpaywall metadata; Drive upload not implemented. | Add Drive upload only for Unpaywall-confirmed OA PDFs. |
+| Journal Evaluation Agent | Score journal quality using allowlist, field, and rank class. | Implemented through allowlist, field/rank metadata, and journal fit score. | Add optional JCR/SCImago/CiteScore enrichment if API access is available. |
+| Relevance Agent | Score title/abstract similarity against the user topic and explain inclusion. | Partial: keyword-overlap score exists. | Add Vectorize or embedding similarity and human-label evaluation. |
+| Ranking Agent | Combine relevance, journal quality, verification, OA availability, citation count, and recency. | Implemented with persisted component scores and final score. | Validate score weights against benchmark tasks. |
+| Critic Agent | Recheck metadata, journal match, relevance, hallucination risk, and unsupported claims. | Not implemented. | Add `critic_reviews` table with risk flags and downgrade/review recommendations. |
+| Report Agent | Generate CSV/Markdown/XLSX/PDF outputs and store them in R2. | Partial: CSV and Markdown reports stored in R2. | Add XLSX first, then PDF. Include field/rank, critic notes, and trace summary. |
+| MCP Interface | Allow external agents to inspect job/result/report state through controlled tools. | Implemented read-only MCP tools. | Add trace and critic-review read tools before any write tools. |
 
 ## Workflow Stages
 
@@ -67,14 +79,14 @@ User
 | 1 | User enters keyword/topic | Dashboard state | Implemented |
 | 2 | Create search job | D1 `search_jobs` | Implemented |
 | 3 | Select field and journal universe | D1 / shared allowlist | Partial |
-| 4 | Search candidate papers | External API results | Blocked by WoS approval |
+| 4 | Search candidate papers | External API results | Implemented with WoS; OpenAlex fallback available |
 | 5 | Verify DOI and bibliography | D1 `papers` Crossref fields | Partial |
 | 6 | Check OA availability | D1 Unpaywall fields | Implemented |
 | 7 | Store OA PDF in Drive | Drive file ID / URL | Not implemented |
 | 8 | Persist paper metadata | D1 `papers` | Implemented |
 | 9 | Evaluate journal quality | D1 `evaluations` | Partial |
 | 10 | Evaluate relevance | D1 `evaluations` / Vectorize | Partial |
-| 11 | Rank and critic-review | D1 scores and reasons | Partial |
+| 11 | Rank and critic-review | D1 scores and reasons | Ranking implemented; critic not implemented |
 | 12 | Generate outputs | R2 CSV/Markdown now; PDF/XLSX later | Partial |
 
 ## Data Architecture
@@ -146,6 +158,31 @@ Human evaluation rubric:
 | 2 | Only keyword-level relevance. |
 | 1 | Irrelevant or invalid recommendation. |
 
+## Paper-Agent-Bench Plan
+
+The enhanced report proposes a REPRO-Bench-style evaluation adapted for literature review. The benchmark should include at least 20 tasks, each with a keyword, field, year range, max result count, gold relevant papers, DOI labels, and human relevance labels.
+
+Minimum task example:
+
+```json
+{"task_id":"T001","keyword":"AI interview employer branding","field":"organization-hr","year_start":2020,"year_end":2026,"max_results":5}
+```
+
+Agent-level metrics:
+
+| Agent | Metrics |
+| --- | --- |
+| Planner | Query Coverage, Field Accuracy |
+| Journal Selector | Field Classification Accuracy, Journal Set Precision |
+| Retriever | Recall@20, Candidate Validity Rate |
+| Verifier | DOI Accuracy, Metadata Match Accuracy |
+| OA Agent | OA Status Accuracy, PDF URL Precision |
+| Relevance | Human Relevance Correlation, Binary Accuracy |
+| Ranking | Precision@5, NDCG@5, Verified@5 |
+| Critic | Error Detection Precision/Recall |
+| Report | Completeness, Format Validity |
+| MCP | Tool Correctness, Safety, E2E Consistency |
+
 ## Security And Policy Constraints
 
 - Do not bypass paywalls.
@@ -155,30 +192,19 @@ Human evaluation rubric:
 - Do not expose destructive tools such as database drop, account management, or unrestricted file deletion.
 - Treat journal metrics as evidence, not as the only quality signal.
 
-## Current Blocker
+## Submission Roadmap
 
-`wos-starter` subscription approval is pending. Until approval is complete, do not treat live search failures as workflow defects.
+The enhanced report prioritizes benchmark evidence and reproducibility before additional visual polish.
 
-After approval:
-
-```text
-1. Add WOS_API_KEY to Worker secrets.
-2. Confirm /api/diagnostics shows wosApiKey: true.
-3. Run a fresh search.
-4. Confirm D1 paper/evaluation rows.
-5. Confirm R2 reports/<job_id>/papers.csv and report.md.
-```
-
-## Next Implementation Priorities Excluding WoS
-
-1. Add failed/completed filters to Recent Jobs.
-2. Add report sections for summary, comparison, research gap, and critic note.
-3. Add PDF/XLSX output generation to R2.
-4. Add read-only MCP tools following `docs/mcp.md`.
-5. Add Vectorize-backed relevance scoring.
-6. Add Google Drive OA PDF upload for Unpaywall-confirmed PDFs.
-7. Add benchmark fixtures and automated tests for CSV, Markdown, D1 mapping, scoring, and diagnostics.
-
-Completed WoS-excluded hardening:
-
-- Final ranking formula now uses persisted score components.
+| Priority | Work | Completion Standard |
+| --- | --- | --- |
+| 1 | Expand benchmark tasks | `benchmark/tasks.jsonl` with at least 20 tasks and gold relevant papers. |
+| 2 | Baseline comparison | Rule-based, single-LLM, and proposed-agent result tables. |
+| 3 | Critic Agent | `critic_reviews` table with risk level, flags, recommendation, and critic note. |
+| 4 | Agent traces | `agent_traces` table with each agent input/output summary. |
+| 5 | XLSX output | `GET /api/search-jobs/:id/papers.xlsx` and R2 `reports/<job_id>/papers.xlsx`. |
+| 6 | PDF output | `GET /api/search-jobs/:id/report.pdf` and R2 `reports/<job_id>/report.pdf`. |
+| 7 | Vectorize relevance | Embedding-based relevance scoring and benchmark comparison. |
+| 8 | Drive upload | Store only Unpaywall-confirmed OA PDFs in Google Drive. |
+| 9 | Prompt and paper list docs | Complete `docs/prompts.md` and `used_papers.md`. |
+| 10 | Final presentation package | 8-12 page paper, slides, and 2-3 minute demo script. |

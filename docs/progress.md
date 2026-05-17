@@ -60,11 +60,7 @@ Current next implementation target:
 14. Use `docs/mcp.md` as the current source of truth for MCP attachment and the implemented read-only MCP Worker.
 15. Deployed MCP is verified at `https://paper-agent-mcp.shch3653.workers.dev/health`.
 16. MCP protocol connectivity and read-only tool calls are verified with `npm run smoke:mcp`.
-17. Start the next major implementation phase with XLSX output first, then PDF output.
-    - Add `reports/<job_id>/papers.xlsx` generation and R2 persistence.
-    - Add dashboard XLSX download button.
-    - Extend `npm run e2e:reports` to verify XLSX endpoint and R2 object.
-    - After XLSX is stable, add `reports/<job_id>/report.pdf`.
+17. Use `paper_agent_enhanced_report.md` as the current submission-oriented master plan.
 18. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
 19. After Cloudflare Pages deploys the dashboard UI/UX refresh, verify the production page at `https://paper-agent-project.pages.dev/` across desktop and mobile widths.
 20. Dashboard `Run` no longer fails with `Web of Science request failed with 400`.
@@ -73,7 +69,13 @@ Current next implementation target:
 23. `CHANGELOG.md` is now organized by modification date. Continue moving completed entries from `Unreleased` into the current `YYYY-MM-DD` section before each commit.
 24. Journal category selection from `경영대학 학술지 목록.docx` is deployed and user-confirmed as working. Use this as the baseline for the next UI/reporting step.
 25. Result `Field / Rank` visibility is implemented locally. After Cloudflare deploy, verify dashboard rows/details plus CSV and Markdown report downloads show values such as `2. 조직인사 / 국제 S급`.
-26. Next recommended implementation: add a search settings summary bar that records keyword, selected field, priority order, year range, and max count for each active job.
+26. Next recommended implementation for product UX: add a search settings summary bar that records keyword, selected field, priority order, year range, and max count for each active job.
+27. Next recommended implementation for submission quality: expand the benchmark first, before adding more UI polish.
+    - Add at least 20 tasks to `benchmark/tasks.jsonl`.
+    - Add gold relevant papers and DOI labels.
+    - Compare rule-based, single-LLM, and proposed-agent outputs.
+    - Generate `benchmark/benchmark_summary.md`.
+28. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
 
 ## Current Status
 
@@ -112,6 +114,8 @@ The latest confirmed behavior is normal:
 - Dashboard search options now include a `Field` selector. When selected, the Worker prioritizes that field's `국제 S급` WoS source-title query first, then `국제 A1급`, and filters saved papers to that selected field.
 - Deployed journal category selection was user-confirmed as normally working after the `eb2dbe3` push.
 - Result `Field / Rank` metadata is now derived from stored journal names and displayed in dashboard rows, paper details, CSV exports, and Markdown reports without a D1 schema migration.
+- `paper_agent_enhanced_report.md` has been reviewed and reflected into `docs/workflow.md`, `docs/benchmark.md`, and `docs/mcp.md`.
+- The enhanced report shifts the next major priority from feature-only work to submission evidence: benchmark expansion, baseline comparison, Critic Agent, agent traces, XLSX/PDF outputs, and demo-ready documentation.
 
 ## Agent Work Attribution
 

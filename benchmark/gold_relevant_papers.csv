@@ -8,7 +8,7 @@ T002,G006,Artificial intelligence and fairness in personnel selection,To be veri
 T003,G007,Generative artificial intelligence in advertising and consumer response,To be verified,2023,To be verified,,5,yes,needs_crossref_verification,Primary generative AI advertising target.
 T003,G008,AI-generated content and persuasion knowledge in marketing,To be verified,2023,To be verified,,4,yes,needs_crossref_verification,Relevant to consumer persuasion.
 T003,G009,Consumer trust in AI-created brand communication,To be verified,2023,To be verified,,4,yes,needs_crossref_verification,Use for marketing top journal search validation.
-T004,G010,Algorithmic management and worker autonomy,To be verified,2020,To be verified,,5,yes,needs_crossref_verification,Core algorithmic management target.
+T004,G010,The Role of Human Managers within Algorithmic Performance Management Systems: A Process Model of Employee Trust in Managers through Reflexivity,Keith Leavitt; Christopher M. Barnes; Debra L. Shapiro,2025,Academy of Management Review,10.5465/amr.2022.0058,5,yes,verified,Promoted from gold_candidate_review.csv because it is a DOI-backed journal article in the same field and an approved international S journal.
 T004,G011,Employee trust under algorithmic control systems,To be verified,2020,To be verified,,4,yes,needs_crossref_verification,HR/organization relevance.
 T004,G012,Digital monitoring and employee outcomes,To be verified,2020,To be verified,,3,yes,needs_crossref_verification,Adjacent relevance.
 T005,G013,Algorithm transparency and consumer trust,To be verified,2020,To be verified,,5,yes,needs_crossref_verification,Core AI transparency marketing target.
@@ -53,7 +53,7 @@ T017,G051,Diversity management and team outcomes,To be verified,2020,To be verif
 T018,G052,Organizational resilience and crisis management,To be verified,2020,To be verified,,5,yes,needs_crossref_verification,Core resilience target.
 T018,G053,Resilience capabilities under uncertainty,To be verified,2020,To be verified,,4,yes,needs_crossref_verification,Strategy relevance target.
 T018,G054,Crisis response and firm performance,To be verified,2020,To be verified,,4,yes,needs_crossref_verification,Performance target.
-T019,G055,Customer journey and omnichannel retailing,To be verified,2020,To be verified,,5,yes,needs_crossref_verification,Core customer journey target.
+T019,G055,The omnichannel continuum: Integrating online and offline channels along the customer journey,Scott A. Neslin,2022,Journal of Retailing,10.1016/j.jretai.2022.02.003,5,yes,verified,Promoted from gold_candidate_review.csv because it is a DOI-backed journal article in the same field and an approved international A1 journal.
 T019,G056,Omnichannel touchpoints and customer experience,To be verified,2020,To be verified,,4,yes,needs_crossref_verification,Relevant retailing target.
 T019,G057,Digital retail channels and customer loyalty,To be verified,2020,To be verified,,4,yes,needs_crossref_verification,Marketing retail target.
 T020,G058,Business analytics capabilities and competitive advantage,To be verified,2020,To be verified,,5,yes,needs_crossref_verification,Core analytics capability target.

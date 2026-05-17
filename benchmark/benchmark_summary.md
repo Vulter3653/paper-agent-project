@@ -12,6 +12,7 @@ Current files:
 - `benchmark/keywords.csv`: compatibility keyword list expanded from 3 to 20 queries.
 - `benchmark/gold_relevant_papers.csv`: 60 seed gold relevance rows, 3 per task.
 - `benchmark/gold_relevant_papers.verified.csv`: first Crossref title-query verification pass.
+- `benchmark/gold_promotion_decisions.csv`: manual promotion decisions for high-confidence candidate rows.
 - `benchmark/gold_refinement_queue.csv`: non-verified seed rows that need exact-title replacement or manual review.
 - `benchmark/gold_crossref_candidates.csv`: Crossref candidate pool generated from task-level queries.
 - `benchmark/gold_candidate_review.csv`: scored candidate review file with allowlist, field, type, DOI, and priority labels.
@@ -28,13 +29,13 @@ The seed gold rows intentionally do not fabricate DOI values. Each DOI field is 
 doi_label_status=needs_crossref_verification
 ```
 
-The first Crossref title-query pass has been run. It produced:
+The first Crossref title-query pass has been run. After manual promotion of two high-confidence candidates, the current status is:
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
-| `verified` | 6 | Title match exceeded the automatic verification threshold. |
+| `verified` | 8 | Title match exceeded the automatic verification threshold or was manually promoted from strict candidate review. |
 | `ambiguous` | 17 | Crossref returned a possible DOI, but the title match is not strong enough for final gold use. |
-| `no_match` | 37 | No acceptable Crossref title candidate was found. |
+| `no_match` | 35 | No acceptable Crossref title candidate was found. |
 
 This confirms that the seed labels are useful as benchmark topics, but not yet strong enough as final DOI gold labels. Before computing final DOI Accuracy, the ambiguous and no-match rows need manual title refinement or replacement with exact known papers.
 
@@ -44,7 +45,7 @@ The first refinement queue has been generated:
 
 | File | Rows | Purpose |
 | --- | ---: | --- |
-| `benchmark/gold_refinement_queue.csv` | 54 | Non-verified gold rows requiring exact-title replacement or manual review. |
+| `benchmark/gold_refinement_queue.csv` | 52 | Non-verified gold rows requiring exact-title replacement or manual review. |
 | `benchmark/gold_crossref_candidates.csv` | 200 | Task-level Crossref candidates, 10 per task, marked `needs_manual_review`. |
 | `benchmark/gold_candidate_review.csv` | 200 | Candidate list sorted by task and review score, with automatic priority labels. |
 
@@ -59,6 +60,17 @@ The first candidate scoring pass produced:
 | `reject_low_priority` | 108 | Non-article, missing DOI, old, or otherwise weak candidate. |
 
 The two `promote_candidate` rows still require human relevance review before gold promotion.
+
+## Promotion Decisions
+
+Two `promote_candidate` rows have been reviewed and promoted:
+
+| Task | Gold ID | Title | Journal | DOI | Rank |
+| --- | --- | --- | --- | --- | --- |
+| T004 | G010 | The Role of Human Managers within Algorithmic Performance Management Systems: A Process Model of Employee Trust in Managers through Reflexivity | Academy of Management Review | 10.5465/amr.2022.0058 | 국제 S급 |
+| T019 | G055 | The omnichannel continuum: Integrating online and offline channels along the customer journey | Journal of Retailing | 10.1016/j.jretai.2022.02.003 | 국제 A1급 |
+
+The decisions are recorded in `benchmark/gold_promotion_decisions.csv`. The promoted rows replaced broad seed titles in both `benchmark/gold_relevant_papers.csv` and `benchmark/gold_relevant_papers.verified.csv`.
 
 ## Planned Baseline Comparison
 

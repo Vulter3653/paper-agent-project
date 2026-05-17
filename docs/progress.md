@@ -92,9 +92,13 @@ Current next implementation target:
     - `benchmark/gold_candidate_review.csv` scores 200 Crossref candidates.
     - Result distribution: `promote_candidate=2`, `topic_only_review=90`, `reject_low_priority=108`
     - Command: `npm run benchmark:score-gold`
-31. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
-32. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
-33. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
+31. The two strict `promote_candidate` rows have been promoted into the gold files.
+    - Decision log: `benchmark/gold_promotion_decisions.csv`
+    - Current verified gold distribution: `verified=8`, `ambiguous=17`, `no_match=35`
+    - Current refinement queue size: 52 rows
+32. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
+33. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
+34. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
 
 ## Current Status
 
@@ -158,6 +162,10 @@ The latest confirmed behavior is normal:
   - `benchmark/gold_candidate_review.csv` contains 200 scored candidates.
   - Strict automatic scoring found 2 `promote_candidate` rows, 90 `topic_only_review` rows, and 108 `reject_low_priority` rows.
   - `npm run benchmark:score-gold` regenerates the scored review file.
+- Two strict gold candidates have been manually promoted:
+  - T004/G010: Academy of Management Review, DOI `10.5465/amr.2022.0058`
+  - T019/G055: Journal of Retailing, DOI `10.1016/j.jretai.2022.02.003`
+  - `benchmark/gold_promotion_decisions.csv` records the promotion rationale.
 
 ## Agent Work Attribution
 

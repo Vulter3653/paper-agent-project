@@ -2,6 +2,38 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-17 - Benchmark Gold Candidate Promotion
+
+### Context
+
+The candidate scoring workflow produced two strict `promote_candidate` rows. The requested next step was to process item 1: review those candidates and decide whether they should be promoted into the gold set.
+
+### Reviewed Candidates
+
+| Task | Gold ID | Decision | Journal | DOI | Reason |
+| --- | --- | --- | --- | --- | --- |
+| T004 | G010 | promoted | Academy of Management Review | 10.5465/amr.2022.0058 | Same field, DOI present, journal article, approved international S journal, directly covers algorithmic performance management and employee trust. |
+| T019 | G055 | promoted | Journal of Retailing | 10.1016/j.jretai.2022.02.003 | Same field, DOI present, journal article, approved international A1 journal, directly covers omnichannel channels along the customer journey. |
+
+### Files Updated
+
+- Updated `benchmark/gold_relevant_papers.csv`.
+- Updated `benchmark/gold_relevant_papers.verified.csv`.
+- Removed promoted rows from `benchmark/gold_refinement_queue.csv`.
+- Added `benchmark/gold_promotion_decisions.csv`.
+
+### Verification Command
+
+```bash
+node -e "const fs=require('fs'); function parse(text){const lines=text.trim().split(/\n/); const header=lines.shift().split(','); const out=[]; for(const line of lines){const cols=[];let cur='',q=false; for(let i=0;i<line.length;i++){const ch=line[i]; if(ch==='\"'&&line[i+1]==='\"'){cur+='\"';i++;} else if(ch==='\"') q=!q; else if(ch===','&&!q){cols.push(cur);cur='';} else cur+=ch;} cols.push(cur); out.push(Object.fromEntries(header.map((h,i)=>[h,cols[i]||''])));} return out;} const rows=parse(fs.readFileSync('benchmark/gold_relevant_papers.verified.csv','utf8')); const counts={}; for(const r of rows) counts[r.doi_label_status]=(counts[r.doi_label_status]||0)+1; const queue=fs.readFileSync('benchmark/gold_refinement_queue.csv','utf8').trim().split(/\n/).length-1; console.log(JSON.stringify({goldRows:rows.length,counts,queueRows:queue}));"
+```
+
+Result:
+
+```json
+{"goldRows":60,"counts":{"ambiguous":17,"verified":8,"no_match":35},"queueRows":52}
+```
+
 ## 2026-05-17 - Benchmark Candidate Scoring Workflow
 
 ### Context

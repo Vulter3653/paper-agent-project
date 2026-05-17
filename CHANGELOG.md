@@ -22,6 +22,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-17 (codex)
 
+- Added: Implemented the final dashboard UI/UX routes `/dashboard/research`, `/dashboard/ops`, and `/dashboard/evaluation` from the three interactive HTML design references. (codex)
+- Added: Added separated dashboard mock data in `apps/web/src/dashboard/mockData.ts` for workflow stages, journal pools, agent status, tool logs, critic reviews, literature preview, and evaluation scenarios. (codex)
+- Infra: Added Cloudflare Pages SPA fallback `apps/web/public/_redirects` so direct dashboard route URLs resolve to the React app. (codex)
+- Docs: Recorded final dashboard route implementation and verification in `docs/progress.md` and `docs/debug-log.md`. (codex)
 - Added: Added `paper_agent_enhanced_report.md` as the submission-oriented enhanced planning source document. (codex)
 - Docs: Reflected `paper_agent_enhanced_report.md` into `docs/workflow.md`, `docs/benchmark.md`, `docs/mcp.md`, and `docs/progress.md` as the current submission-oriented workflow and roadmap. (codex)
 - Docs: Recorded previous work check results in `docs/progress.md`, including the current absence of referenced Gemini prototype files in the worktree. (codex)

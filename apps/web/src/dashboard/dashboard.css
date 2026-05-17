@@ -1,0 +1,714 @@
+.uxTopbar {
+  background: rgba(248, 250, 252, 0.9);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.uxTopbarInner {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1540px;
+  padding: 14px 24px;
+}
+
+.uxBrand {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.uxBrandMark {
+  align-items: center;
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+  border-radius: 8px;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-weight: 850;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.uxBrand strong,
+.uxBrand small {
+  display: block;
+}
+
+.uxBrand strong {
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.uxBrand small {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.uxNav {
+  background: #e9eef7;
+  border: 1px solid #dbe3ef;
+  border-radius: 999px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px;
+}
+
+.uxNav a {
+  border-radius: 999px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 850;
+  padding: 10px 15px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.uxNav a.active {
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  color: #2563eb;
+}
+
+.uxShell {
+  margin: 0 auto;
+  max-width: 1540px;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.uxHero {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  padding: 30px;
+  position: relative;
+}
+
+.uxHero::before {
+  background: linear-gradient(90deg, #2563eb, #60a5fa, #16a34a, #d97706);
+  content: "";
+  height: 6px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.uxHero.compact {
+  padding-right: min(30px, 4vw);
+}
+
+.uxHeroGrid {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) 420px;
+}
+
+.uxEyebrow {
+  align-items: center;
+  color: #2563eb;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 850;
+  gap: 8px;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.uxEyebrow.cyan {
+  color: #0891b2;
+}
+
+.uxEyebrow::before {
+  background: currentColor;
+  border-radius: 999px;
+  content: "";
+  height: 8px;
+  width: 8px;
+}
+
+.uxHero h1 {
+  color: #0f172a;
+  font-size: 42px;
+  line-height: 1.08;
+  max-width: 920px;
+}
+
+.uxHero p {
+  color: #526173;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-top: 16px;
+  max-width: 900px;
+}
+
+.uxHeroFlow {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 24px;
+}
+
+.uxFlowItem,
+.uxSearchSummary,
+.uxMiniCard,
+.uxStep,
+.uxScorePanel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.uxFlowItem {
+  min-height: 106px;
+  padding: 15px;
+}
+
+.uxFlowItem strong {
+  color: #1d4ed8;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+.uxFlowItem span {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.48;
+}
+
+.uxSearchSummary {
+  padding: 20px;
+}
+
+.uxSearchSummary h2,
+.uxPanelHead h2 {
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.uxSearchSummary p,
+.uxPanelHead p {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 5px;
+}
+
+.uxProgressTrack {
+  background: #e8eef6;
+  border-radius: 999px;
+  height: 10px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.uxProgressTrack span {
+  background: linear-gradient(90deg, #2563eb, #60a5fa, #16a34a);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.uxSnapshotGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.uxMetrics {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 20px;
+}
+
+.uxMetric {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  min-width: 0;
+  padding: 15px;
+}
+
+.uxMetric span,
+.uxMetric small {
+  color: #64748b;
+  display: block;
+  font-size: 12px;
+}
+
+.uxMetric strong {
+  display: block;
+  font-size: 22px;
+  margin: 8px 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uxMetric.green strong {
+  color: #16a34a;
+}
+
+.uxMetric.blue strong {
+  color: #2563eb;
+}
+
+.uxMetric.amber strong {
+  color: #d97706;
+}
+
+.uxMetric.purple strong {
+  color: #7c3aed;
+}
+
+.uxPanel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  padding: 18px;
+}
+
+.uxPanelHead {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.uxWorkflowPanel,
+.uxRouteBlock,
+.uxScenarioPanel {
+  margin-bottom: 20px;
+}
+
+.uxGrid2 {
+  align-items: start;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 430px;
+}
+
+.uxStack {
+  display: grid;
+  gap: 20px;
+}
+
+.uxSteps12 {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.uxStep {
+  min-height: 112px;
+  padding: 12px;
+}
+
+.uxStep span {
+  align-items: center;
+  background: #eef3f8;
+  border-radius: 999px;
+  color: #64748b;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  height: 26px;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 26px;
+}
+
+.uxStep strong,
+.uxStep small {
+  display: block;
+}
+
+.uxStep strong {
+  color: #0f172a;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.uxStep small {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.uxStep.done {
+  background: #f1fbf5;
+  border-color: #bbf7d0;
+}
+
+.uxStep.done span,
+.uxPill.green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.uxStep.running {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.uxStep.running span,
+.uxPill.blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.uxStep.review {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.uxStep.review span,
+.uxPill.amber {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.uxPill.gray {
+  background: #eef3f8;
+  color: #475569;
+}
+
+.uxPill {
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.uxSystemGrid,
+.uxPreviewGrid,
+.uxAgentGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.uxSystemGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.uxPreviewGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.uxAgentGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.uxSystemItem,
+.uxAgentCard,
+.uxMiniCard {
+  color: inherit;
+  text-align: left;
+}
+
+.uxSystemItem {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 86px;
+  padding: 13px;
+}
+
+.uxSystemItem strong,
+.uxSystemItem span,
+.uxSystemItem small {
+  display: block;
+}
+
+.uxSystemItem strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.uxSystemItem span {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 7px;
+}
+
+.uxSystemItem small {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.42;
+  margin-top: 6px;
+}
+
+.uxMiniCard {
+  min-height: 112px;
+  padding: 15px;
+}
+
+.uxMiniCard h3 {
+  color: #0f172a;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.uxMiniCard p {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.uxAgentCard {
+  cursor: pointer;
+}
+
+.uxAgentCard:hover,
+.uxSystemItem:hover,
+.uxMiniCard:hover {
+  border-color: #93c5fd;
+}
+
+.uxTerminal {
+  background: #07101f;
+  border-radius: 8px;
+  color: #d1fae5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  max-height: 360px;
+  min-height: 260px;
+  overflow: auto;
+  padding: 14px;
+}
+
+.uxTerminal span {
+  color: #67e8f9;
+}
+
+.uxTerminal .warn {
+  color: #fde68a;
+}
+
+.uxTerminal .muted {
+  color: #94a3b8;
+}
+
+.uxField,
+.uxFieldGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.uxField {
+  margin-top: 12px;
+}
+
+.uxFieldGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.uxField span {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.uxField input,
+.uxField select {
+  border: 1px solid #dbe3ed;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.uxButton,
+.uxSoftButton {
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+.uxButton {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.uxButton.green {
+  background: #16a34a;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.uxSoftButton {
+  background: #eef3f8;
+  color: #1f2937;
+}
+
+.uxActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.uxTableWrap {
+  overflow-x: auto;
+}
+
+.uxTable {
+  border-collapse: collapse;
+  min-width: 980px;
+  width: 100%;
+}
+
+.uxTable th,
+.uxTable td {
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+  padding: 12px 10px;
+  text-align: left;
+}
+
+.uxTable th {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.uxTable tr {
+  cursor: pointer;
+}
+
+.uxTable tr:hover {
+  background: #eff6ff;
+}
+
+.uxScoreHead,
+.uxBarItem div:first-child {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.uxScorePanel {
+  padding: 16px;
+}
+
+.uxScoreHead {
+  margin-bottom: 14px;
+}
+
+.uxScoreHead span {
+  color: #64748b;
+}
+
+.uxScoreHead strong {
+  color: #2563eb;
+  font-size: 28px;
+}
+
+.uxBarItem {
+  margin-top: 13px;
+}
+
+.uxBarItem div:first-child {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 750;
+  margin-bottom: 6px;
+}
+
+.uxBar {
+  background: #e8eef6;
+  border-radius: 999px;
+  height: 9px;
+  overflow: hidden;
+}
+
+.uxBar span {
+  background: linear-gradient(90deg, #16a34a, #60a5fa);
+  display: block;
+  height: 100%;
+}
+
+@media (max-width: 1180px) {
+  .uxHeroGrid,
+  .uxGrid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .uxMetrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .uxSteps12,
+  .uxAgentGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .uxTopbarInner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .uxShell {
+    padding: 16px;
+  }
+
+  .uxHero {
+    padding: 22px;
+  }
+
+  .uxHero h1 {
+    font-size: 30px;
+  }
+
+  .uxHeroFlow,
+  .uxMetrics,
+  .uxSnapshotGrid,
+  .uxSystemGrid,
+  .uxPreviewGrid,
+  .uxAgentGrid,
+  .uxSteps12,
+  .uxFieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .uxPanelHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Download, Eye, FileText, History, Play, RefreshCw, Search } from "lucide-react";
 import { BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS, type PaperSummary, type SearchJob } from "@paper-agent/shared";
+import { AgentOpsPage, DashboardNav, EvaluationDashboardPage, ResearchExperiencePanels, resolveDashboardRoute } from "./dashboard/DashboardPages";
 import "./styles.css";
 
 type JobResponse = {
@@ -103,6 +104,17 @@ const demoPapers: PaperSummary[] = [
 ];
 
 function App() {
+  const activeRoute = resolveDashboardRoute();
+
+  return (
+    <>
+      <DashboardNav activeRoute={activeRoute} />
+      {activeRoute === "ops" ? <AgentOpsPage /> : activeRoute === "evaluation" ? <EvaluationDashboardPage /> : <ResearchDashboard />}
+    </>
+  );
+}
+
+function ResearchDashboard() {
   const [keyword, setKeyword] = useState("AI interview employer branding");
   const [maxResults, setMaxResults] = useState("20");
   const [yearStart, setYearStart] = useState("2020");
@@ -335,6 +347,8 @@ function App() {
           </div>
         </div>
       </section>
+
+      <ResearchExperiencePanels isRunning={loading || (Boolean(job) && job?.status !== "completed" && job?.status !== "failed")} />
 
       <section className="statusBand">
         <Metric label="Status" value={job?.status ?? "demo"} tone={getStatusTone(job?.status)} />

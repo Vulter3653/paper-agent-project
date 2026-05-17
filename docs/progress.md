@@ -62,7 +62,10 @@ Current next implementation target:
 16. MCP protocol connectivity and read-only tool calls are verified with `npm run smoke:mcp`.
 17. Use `paper_agent_enhanced_report.md` as the current submission-oriented master plan.
 18. Use `docs/workflow.md` as the current source of truth for the integrated multi-agent target workflow.
-19. After Cloudflare Pages deploys the dashboard UI/UX refresh, verify the production page at `https://paper-agent-project.pages.dev/` across desktop and mobile widths.
+19. After Cloudflare Pages deploys the final dashboard route UI/UX refresh, verify these production routes across desktop and mobile widths:
+    - `https://paper-agent-project.pages.dev/dashboard/research`
+    - `https://paper-agent-project.pages.dev/dashboard/ops`
+    - `https://paper-agent-project.pages.dev/dashboard/evaluation`
 20. Dashboard `Run` no longer fails with `Web of Science request failed with 400`.
 21. Search option controls for `Max`, `From`, and `To` are implemented locally; after Cloudflare Pages deploy, verify they appear and that different settings change `sourceResultCount`.
 22. Keyword decomposition and source-title-aware WoS retrieval are implemented locally; after Cloudflare deploy, verify `sourceResultCount` and `allowedResultCount` improve for low-result queries.
@@ -76,6 +79,7 @@ Current next implementation target:
     - Compare rule-based, single-LLM, and proposed-agent outputs.
     - Generate `benchmark/benchmark_summary.md`.
 28. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
+29. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
 
 ## Current Status
 
@@ -116,6 +120,13 @@ The latest confirmed behavior is normal:
 - Result `Field / Rank` metadata is now derived from stored journal names and displayed in dashboard rows, paper details, CSV exports, and Markdown reports without a D1 schema migration.
 - `paper_agent_enhanced_report.md` has been reviewed and reflected into `docs/workflow.md`, `docs/benchmark.md`, and `docs/mcp.md`.
 - The enhanced report shifts the next major priority from feature-only work to submission evidence: benchmark expansion, baseline comparison, Critic Agent, agent traces, XLSX/PDF outputs, and demo-ready documentation.
+- The final dashboard UI/UX design references from `01_interactive_research_studio.html`, `02_interactive_agent_ops.html`, and `03_interactive_evaluation_dashboard.html` have been ported into React routes.
+- Dashboard routes are now:
+  - `/dashboard/research`: keeps the real Worker-backed search/run flow and adds the final 12-step workflow, Top Journal Pool, and literature review preview panels.
+  - `/dashboard/ops`: adds the Multi-Agent status board, tool call console, D1/R2/Google Drive/Vectorize/MCP status cards, and Critic Review.
+  - `/dashboard/evaluation`: adds evaluation scenario switching, baseline metrics, score breakdown, error analysis, and Rule-based vs Single LLM vs Proposed Multi-Agent comparison.
+- Static mock data for the new route UI is separated in `apps/web/src/dashboard/mockData.ts` so future API wiring can replace data sources without redesigning the components.
+- Cloudflare Pages direct route fallback is configured through `apps/web/public/_redirects`.
 
 ## Agent Work Attribution
 
@@ -192,6 +203,10 @@ Local manual Cloudflare deployment is not used. Deployment should happen in Clou
 - Paper Detail panel shows Score Breakdown for relevance, journal fit, Crossref verification, open access, citations, and recency.
 - System Checks panel calls `GET /api/diagnostics` to display D1 schema readiness and Worker environment variable presence.
 - Report Preview panel fetches `GET /api/search-jobs/:id/report.md` for completed jobs and displays the Markdown report in the dashboard before download.
+- Final route navigation is implemented in `apps/web/src/dashboard/DashboardPages.tsx`.
+- `/dashboard/research` includes the existing real Run workflow plus final-design research studio panels.
+- `/dashboard/ops` includes mock-backed agent operations, tool call console, infrastructure status, and critic review panels.
+- `/dashboard/evaluation` includes mock-backed scenario selection and baseline comparison panels.
 
 ### Worker API
 

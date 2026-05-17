@@ -2,6 +2,52 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-17 - Final Dashboard Route UI/UX Implementation
+
+### Context
+
+The three attached HTML files were provided as the final dashboard UI/UX design references:
+
+- `01_interactive_research_studio.html`
+- `02_interactive_agent_ops.html`
+- `03_interactive_evaluation_dashboard.html`
+
+The implementation needed to preserve the layout, color system, card/table structure, workflow visualization, console log behavior, detail panels, and evaluation scenario interaction while integrating with the existing React dashboard and deployed Worker API.
+
+### Code Changes Under Test
+
+- Added route detection and top navigation for:
+  - `/dashboard/research`
+  - `/dashboard/ops`
+  - `/dashboard/evaluation`
+- Kept the existing real dashboard `Run` flow on the research route.
+- Added a 12-step literature review workflow visualization.
+- Added Top Journal Pool, Q1/top-journal status, literature review preview, and final UI cards on the research route.
+- Added Multi-Agent status board, tool call console, D1/R2/Drive/Vectorize/MCP status cards, and Critic Review on the ops route.
+- Added baseline evaluation scenario switching and Rule-based vs Single LLM vs Proposed Multi-Agent comparison on the evaluation route.
+- Separated static dashboard mock data into `apps/web/src/dashboard/mockData.ts` for future API replacement.
+- Added `apps/web/public/_redirects` so Cloudflare Pages direct route loads fall back to `index.html`.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build:web
+test -f apps/web/dist/_redirects
+```
+
+All passed locally. Build output included `apps/web/dist/_redirects`, confirming the Cloudflare Pages SPA fallback file is copied into the deployment artifact.
+
+### Runtime Check
+
+After GitHub/Cloudflare deploys this commit, verify:
+
+- `https://paper-agent-project.pages.dev/dashboard/research`
+- `https://paper-agent-project.pages.dev/dashboard/ops`
+- `https://paper-agent-project.pages.dev/dashboard/evaluation`
+
+The research route should still call the deployed Worker API when `Run` is clicked. The ops and evaluation routes currently use separated static mock data and are ready for later API wiring.
+
 ## 2026-05-15 - Result Field And Rank Visibility
 
 ### Context

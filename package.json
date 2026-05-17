@@ -15,6 +15,7 @@
     "deploy:worker": "npm run deploy --workspace apps/worker",
     "deploy:mcp": "npm run deploy --workspace apps/mcp",
     "benchmark:refine-gold": "node benchmark/scripts/refine-gold-candidates.mjs",
+    "benchmark:score-gold": "node benchmark/scripts/score-gold-candidates.mjs",
     "benchmark:verify-gold": "node benchmark/scripts/verify-gold-crossref.mjs",
     "e2e:reports": "npm run e2e --workspace apps/mcp",
     "smoke:mcp": "npm run smoke --workspace apps/mcp",

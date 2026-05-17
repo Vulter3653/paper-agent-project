@@ -2,6 +2,56 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-17 - Benchmark Candidate Scoring Workflow
+
+### Context
+
+The Crossref candidate pool had 200 rows, but broad Crossref queries produced mixed result quality. The next step was to score candidates against the approved business-school journal universe so manual review can start from the strongest rows.
+
+### Code Changes Under Test
+
+- Added `benchmark/scripts/score-gold-candidates.mjs`.
+- Added root npm script `benchmark:score-gold`.
+- Generated `benchmark/gold_candidate_review.csv`.
+- Normalized benchmark `journal_category_id` values to match shared category ids:
+  - `strategy-international` -> `international-business`
+  - `accounting-finance` -> `accounting`
+  - `operations-supply-chain` -> `operations`
+
+The script scores each candidate by:
+
+- Crossref type is `journal-article`
+- DOI presence
+- approved business-school journal allowlist match
+- same-field category match
+- S/A1 rank
+- year >= 2020
+- Crossref score
+
+### Verification Commands
+
+```bash
+npm run benchmark:score-gold
+rg -n "promote_candidate" benchmark/gold_candidate_review.csv
+```
+
+Results:
+
+```json
+{
+  "candidates": 200,
+  "priorityCounts": {
+    "topic_only_review": 90,
+    "reject_low_priority": 108,
+    "promote_candidate": 2
+  }
+}
+```
+
+### Finding
+
+Only two rows are automatic promotion candidates by strict S/A1 same-field journal criteria. This confirms that final gold labels should not be auto-created from broad Crossref search. Manual relevance review and, where needed, WoS/source-title targeted search are still required.
+
 ## 2026-05-17 - Benchmark Gold Refinement Workflow
 
 ### Context

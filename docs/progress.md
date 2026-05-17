@@ -88,9 +88,13 @@ Current next implementation target:
     - `benchmark/gold_refinement_queue.csv` now lists 54 non-verified rows.
     - `benchmark/gold_crossref_candidates.csv` now lists 200 Crossref candidates for manual review.
     - Command: `npm run benchmark:refine-gold`
-30. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
-31. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
-32. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
+30. Candidate scoring workflow is available.
+    - `benchmark/gold_candidate_review.csv` scores 200 Crossref candidates.
+    - Result distribution: `promote_candidate=2`, `topic_only_review=90`, `reject_low_priority=108`
+    - Command: `npm run benchmark:score-gold`
+31. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
+32. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
+33. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
 
 ## Current Status
 
@@ -150,6 +154,10 @@ The latest confirmed behavior is normal:
   - `benchmark/gold_refinement_queue.csv` contains 54 rows requiring manual/exact-title cleanup.
   - `benchmark/gold_crossref_candidates.csv` contains 200 task-level Crossref candidates marked `needs_manual_review`.
   - `npm run benchmark:refine-gold` regenerates both files.
+- Candidate scoring workflow is now available:
+  - `benchmark/gold_candidate_review.csv` contains 200 scored candidates.
+  - Strict automatic scoring found 2 `promote_candidate` rows, 90 `topic_only_review` rows, and 108 `reject_low_priority` rows.
+  - `npm run benchmark:score-gold` regenerates the scored review file.
 
 ## Agent Work Attribution
 

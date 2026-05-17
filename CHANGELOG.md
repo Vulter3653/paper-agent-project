@@ -22,6 +22,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-17 (codex)
 
+- Benchmark: Added candidate scoring workflow and `benchmark/gold_candidate_review.csv` to prioritize Crossref candidates by journal allowlist, field match, DOI, type, recency, and Crossref score. (codex)
+- Fixed: Normalized benchmark task and candidate `journal_category_id` values to match the shared business-school journal category ids. (codex)
 - Benchmark: Added a gold refinement workflow that generates `benchmark/gold_refinement_queue.csv` and `benchmark/gold_crossref_candidates.csv` for manual DOI gold label cleanup. (codex)
 - Benchmark: Added a Crossref title-query verification script and `benchmark:verify-gold` npm script for gold DOI label generation. (codex)
 - Benchmark: Generated `benchmark/gold_relevant_papers.verified.csv` from the first Crossref pass and recorded the verified, ambiguous, and no-match distribution. (codex)

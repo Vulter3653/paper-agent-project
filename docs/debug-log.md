@@ -2,6 +2,50 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-17 - Benchmark Gold Refinement Workflow
+
+### Context
+
+The first Crossref DOI pass produced only 6 verified rows from 60 seed gold rows. The next requirement was to create a practical refinement workflow rather than manually scanning the full CSV.
+
+### Code Changes Under Test
+
+- Added `benchmark/scripts/refine-gold-candidates.mjs`.
+- Added root npm script `benchmark:refine-gold`.
+- Generated `benchmark/gold_refinement_queue.csv`.
+- Generated `benchmark/gold_crossref_candidates.csv`.
+
+The script:
+
+- reads `benchmark/tasks.jsonl`
+- reads `benchmark/gold_relevant_papers.verified.csv`
+- writes a queue of non-verified rows requiring exact-title replacement or manual review
+- queries Crossref once per task for task-level candidates
+- writes candidate rows with DOI, title, authors, journal, year, publisher, Crossref score, target field, and manual review status
+
+### Verification Commands
+
+```bash
+npm run benchmark:refine-gold -- --limit-tasks 1 --candidates-per-task 3 --delay-ms 200 --queue /tmp/gold_queue_sample.csv --candidates /tmp/gold_candidates_sample.csv
+npm run benchmark:refine-gold
+wc -l benchmark/gold_refinement_queue.csv benchmark/gold_crossref_candidates.csv benchmark/scripts/refine-gold-candidates.mjs
+```
+
+Results:
+
+```json
+{
+  "tasks": 20,
+  "refinementQueueRows": 54,
+  "queriedTasks": 20,
+  "candidateRows": 200
+}
+```
+
+### Finding
+
+The workflow now produces a manageable manual review queue. Candidate quality is intentionally not trusted automatically: Crossref broad queries return mixed materials such as non-top-journal articles, book chapters, dissertations, and adjacent-topic papers. The next step is to promote only valid candidates into the gold file, then rerun `npm run benchmark:verify-gold`.
+
 ## 2026-05-17 - Benchmark Gold Crossref Verification Pass
 
 ### Context

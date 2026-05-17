@@ -85,6 +85,9 @@ Current next implementation target:
     - Output: `benchmark/gold_relevant_papers.verified.csv`
     - Result distribution: `verified=6`, `ambiguous=17`, `no_match=37`
 29. Next benchmark step: refine ambiguous/no-match gold rows with exact paper titles and approved-journal targets, then rerun `npm run benchmark:verify-gold`.
+    - `benchmark/gold_refinement_queue.csv` now lists 54 non-verified rows.
+    - `benchmark/gold_crossref_candidates.csv` now lists 200 Crossref candidates for manual review.
+    - Command: `npm run benchmark:refine-gold`
 30. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
 31. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
 32. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
@@ -143,6 +146,10 @@ The latest confirmed behavior is normal:
   - Current status and next steps in `benchmark/benchmark_summary.md`.
 - The benchmark gold file intentionally tracks DOI values as `needs_crossref_verification` rather than storing unverified DOI strings. Crossref verification is the next required benchmark task.
 - A first Crossref verification pass has generated `benchmark/gold_relevant_papers.verified.csv`. The result distribution is `verified=6`, `ambiguous=17`, and `no_match=37`, so the gold set needs exact-title refinement before baseline scoring.
+- Gold refinement workflow files are now available:
+  - `benchmark/gold_refinement_queue.csv` contains 54 rows requiring manual/exact-title cleanup.
+  - `benchmark/gold_crossref_candidates.csv` contains 200 task-level Crossref candidates marked `needs_manual_review`.
+  - `npm run benchmark:refine-gold` regenerates both files.
 
 ## Agent Work Attribution
 

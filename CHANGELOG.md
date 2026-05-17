@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-17 (codex)
 
+- Benchmark: Added a gold refinement workflow that generates `benchmark/gold_refinement_queue.csv` and `benchmark/gold_crossref_candidates.csv` for manual DOI gold label cleanup. (codex)
 - Benchmark: Added a Crossref title-query verification script and `benchmark:verify-gold` npm script for gold DOI label generation. (codex)
 - Benchmark: Generated `benchmark/gold_relevant_papers.verified.csv` from the first Crossref pass and recorded the verified, ambiguous, and no-match distribution. (codex)
 - Benchmark: Expanded the benchmark fixture from 3 keywords to 20 tasks in `benchmark/keywords.csv` and `benchmark/tasks.jsonl`. (codex)

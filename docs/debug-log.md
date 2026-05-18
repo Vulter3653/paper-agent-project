@@ -2,6 +2,59 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-18 - Proposed Agent Benchmark Metric Calculation
+
+### Context
+
+The three-task Proposed Agent sample needed a repeatable metric calculation step before expanding to all 20 benchmark tasks.
+
+### Code Changes Under Test
+
+- Added `benchmark/scripts/evaluate-proposed-agent.mjs`.
+- Added npm script `benchmark:evaluate-proposed`.
+- Generated:
+  - `benchmark/proposed_agent_metrics.csv`
+  - `benchmark/proposed_agent_metrics_summary.json`
+
+### Verification Command
+
+```bash
+npm run benchmark:evaluate-proposed
+```
+
+Observed summary:
+
+```json
+{
+  "tasks": 3,
+  "results": 15,
+  "gold": 9,
+  "verifiedGold": 1,
+  "goldMatches": 0,
+  "doiMatches": 0,
+  "macroAverages": {
+    "precision_at_k": 0,
+    "ndcg_at_k": 0,
+    "gold_doi_hit_rate_at_k": 0,
+    "doi_accuracy_at_k": 1,
+    "paper_validity_rate_at_k": 1,
+    "top_journal_precision_at_k": 1,
+    "hallucination_rate_at_k": 0,
+    "oa_success_rate_at_k": 0
+  }
+}
+```
+
+### Troubleshooting Notes
+
+- Gold-overlap metrics are intentionally strict: exact DOI or normalized title match against task gold rows with `human_relevance >= 4`.
+- DOI hit rate uses only verified DOI gold labels. Across T001-T003 there is currently only one verified DOI gold row, so Precision@5 and NDCG@5 are not ready for final claims.
+- Worker validity metrics are separate from gold overlap. The sample produced Crossref-verified, approved top-journal papers, but they do not yet overlap with the incomplete gold labels.
+
+### Resolution
+
+Metric generation is working. The next benchmark quality step is to refine T001-T003 gold labels or add strict accepted-paper labels from the sample results, then rerun `npm run benchmark:evaluate-proposed`.
+
 ## 2026-05-18 - Proposed Agent Benchmark Three-Task Sample
 
 ### Context

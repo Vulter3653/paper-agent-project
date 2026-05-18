@@ -14,6 +14,7 @@
     "deploy:web": "npm run deploy --workspace apps/web",
     "deploy:worker": "npm run deploy --workspace apps/worker",
     "deploy:mcp": "npm run deploy --workspace apps/mcp",
+    "benchmark:evaluate-proposed": "node benchmark/scripts/evaluate-proposed-agent.mjs",
     "benchmark:refine-gold": "node benchmark/scripts/refine-gold-candidates.mjs",
     "benchmark:run-proposed": "node benchmark/scripts/run-proposed-agent.mjs",
     "benchmark:score-gold": "node benchmark/scripts/score-gold-candidates.mjs",

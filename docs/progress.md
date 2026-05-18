@@ -111,8 +111,14 @@ Current next implementation target:
     - T001 job: `job-e97a70f1-b041-492e-b54f-d60cc6cd8065`, `sourceResultCount=8`, `allowedResultCount=5`, `resultRows=5`.
     - T002 job: `job-b9fb9c4b-58d0-4774-9e38-6d5a99975b19`, `sourceResultCount=25`, `allowedResultCount=5`, `resultRows=5`.
     - T003 job: `job-700ef0e4-a2dd-450a-a785-c590f5e4bab3`, `sourceResultCount=25`, `allowedResultCount=5`, `resultRows=5`.
-37. Next benchmark execution step: compute overlap metrics for the three-task sample against the verified gold labels, then run all 20 tasks only when ready to spend WoS quota.
-38. Dashboard implementation status panels are implemented on all three final routes.
+37. Proposed Agent metric calculation is implemented and run for the three-task sample.
+    - Script: `benchmark/scripts/evaluate-proposed-agent.mjs`
+    - Command: `npm run benchmark:evaluate-proposed`
+    - Outputs: `benchmark/proposed_agent_metrics.csv` and `benchmark/proposed_agent_metrics_summary.json`
+    - Current sample macro metrics: `Precision@5=0.0000`, `NDCG@5=0.0000`, `Gold DOI Hit Rate@5=0.0000`, `DOI Accuracy@5=1.0000`, `Paper Validity@5=1.0000`, `Top Journal Precision@5=1.0000`, `Hallucination Rate@5=0.0000`, `OA Success@5=0.0000`.
+    - Interpretation: exact gold overlap is low because only one verified DOI gold label exists across T001-T003; continue gold refinement before final benchmark claims.
+38. Next benchmark execution step: refine T001-T003 gold labels or add strict accepted-paper labels from the Proposed Agent sample, then rerun `npm run benchmark:evaluate-proposed`.
+39. Dashboard implementation status panels are implemented on all three final routes.
     - `/dashboard/research` distinguishes live API features from mock workflow/top-journal/preview panels.
     - `/dashboard/ops` distinguishes live MCP/D1/R2 from mock Agent Status Board, Tool Console, Critic Review, and planned Vectorize/Drive work.
     - `/dashboard/evaluation` distinguishes live benchmark fixtures/runner from mock scenario metrics and planned baseline bindings.

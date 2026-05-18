@@ -127,6 +127,36 @@ benchmark/proposed_agent_jobs.csv
 benchmark/proposed_agent_results.csv
 ```
 
+## Proposed Agent Metrics
+
+The first metric pass has been generated from the three-task sample:
+
+```bash
+npm run benchmark:evaluate-proposed
+```
+
+Metric outputs:
+
+```text
+benchmark/proposed_agent_metrics.csv
+benchmark/proposed_agent_metrics_summary.json
+```
+
+Macro-average sample metrics:
+
+| Metric | Value | Interpretation |
+| --- | ---: | --- |
+| Precision@5 | 0.0000 | Exact DOI/title overlap against current gold labels. |
+| NDCG@5 | 0.0000 | Rank quality against current gold labels. |
+| Gold DOI Hit Rate@5 | 0.0000 | Exact DOI hits against verified DOI gold rows. |
+| DOI Accuracy@5 | 1.0000 | Returned DOI-bearing papers marked Crossref-verified by the Worker. |
+| Paper Validity@5 | 1.0000 | Returned papers with DOI, verified status, title match, and journal match. |
+| Top Journal Precision@5 | 1.0000 | Returned papers in approved international S/A1 journals. |
+| Hallucination Rate@5 | 0.0000 | One minus paper validity. |
+| OA Success@5 | 0.0000 | Returned papers with successful OA metadata or OA URLs. |
+
+Important interpretation: exact gold overlap is currently not meaningful as a final quality score because only one verified DOI gold label exists across T001-T003. Continue gold refinement before using Precision@5 and NDCG@5 as final evidence.
+
 The full run command should be executed only when ready to spend WoS quota:
 
 ```bash

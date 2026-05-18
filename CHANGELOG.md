@@ -22,6 +22,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-18 (codex)
 
+- Benchmark: Added Proposed Agent evaluation script `benchmark/scripts/evaluate-proposed-agent.mjs` with Precision@K, NDCG@K, gold DOI hit rate, DOI accuracy, validity, top-journal precision, hallucination, and OA success metrics. (codex)
+- Benchmark: Generated three-task Proposed Agent metric outputs in `benchmark/proposed_agent_metrics.csv` and `benchmark/proposed_agent_metrics_summary.json`. (codex)
 - Benchmark: Ran a quota-safe three-task Proposed Agent benchmark sample and recorded `benchmark/proposed_agent_jobs.csv` plus `benchmark/proposed_agent_results.csv`. (codex)
 - Docs: Recorded the three-task Proposed Agent benchmark sample results in `benchmark/benchmark_summary.md`, `docs/debug-log.md`, and `docs/progress.md`. (codex)
 - Added: Added route-level dashboard implementation status panels that distinguish live, partial, mock, and planned features across Research, Ops, and Evaluation pages. (codex)

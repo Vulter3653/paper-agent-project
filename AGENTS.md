@@ -64,7 +64,7 @@ Examples:
 ```text
 benchmark/jin23624-gold-t001-t003
 benchmark/juilie-proposed-review
-benchmark/seunghyeon-baseline-t001-t003
+benchmark/member-c-baseline-t001-t003
 benchmark/shonshinemin-metric-qa
 ```
 
@@ -74,9 +74,10 @@ Use the matching directory README for detailed instructions:
 
 | Agent directory | Primary assignment | Allowed write scope |
 | --- | --- | --- |
+| `seunghyeon_choi/` | Current maintainer and integration lead | source code, docs, benchmark scripts, `seunghyeon_choi/` |
 | `jin23624_cpu/` | Gold label refinement | `benchmark/gold_relevant_papers.csv`, `benchmark/gold_relevant_papers.verified.csv`, `jin23624_cpu/` |
 | `juilie_bot_hub/` | Proposed Agent manual review | `benchmark/manual_review_proposed.csv`, `juilie_bot_hub/` |
-| `seunghyeon_choi/` | Baseline result collection | `benchmark/baseline_rule_based_results.csv`, `benchmark/baseline_single_llm_results.csv`, `seunghyeon_choi/` |
+| `unassigned_member_c` | Baseline result collection | `benchmark/baseline_rule_based_results.csv`, `benchmark/baseline_single_llm_results.csv` |
 | `shonshinemin_cmd/` | Metric QA and reproducibility checks | `benchmark/proposed_agent_metrics.csv`, `benchmark/proposed_agent_metrics_summary.json`, `shonshinemin_cmd/` |
 | `integrated/` | Maintainer integration notes only | `integrated/`, docs, scripts, source code only when assigned |
 

@@ -130,6 +130,8 @@ Current next implementation target:
 41. Team-agent auto-start guidance is now defined for organization repository collaboration.
     - `AGENTS.md` is the root operating guide for any agent entering the repository.
     - `docs/agent-work-queue.md` defines current benchmark assignments and allowed file scopes.
+    - `seunghyeon_choi` is the current maintainer and integration lead.
+    - Baseline result collection is now marked as `unassigned_member_c` until a separate team member is assigned.
     - `jin23624_cpu/`, `juilie_bot_hub/`, `seunghyeon_choi/`, `shonshinemin_cmd/`, and `integrated/` each contain a role-specific README.
     - Benchmark collaboration templates are initialized: `benchmark/manual_review_proposed.csv`, `benchmark/baseline_rule_based_results.csv`, and `benchmark/baseline_single_llm_results.csv`.
     - `.github/pull_request_template.md` now asks contributors to confirm `AGENTS.md`, assignment scope, and benchmark verification.

@@ -2,6 +2,12 @@
 
 Role: Maintainer Integration Notes
 
+Current maintainer:
+
+```text
+seunghyeon_choi
+```
+
 Use this directory to record merge and integration notes after team PRs are reviewed.
 
 Integration checklist:

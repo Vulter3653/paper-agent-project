@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-18 (codex)
 
+- Docs: Corrected team-agent ownership so `seunghyeon_choi` is the current maintainer/integration lead and baseline collection is unassigned pending a separate team member. (codex)
 - Docs: Added `AGENTS.md`, `docs/agent-work-queue.md`, team-member README files, benchmark CSV templates, and PR checklist items so team agents can auto-start assigned benchmark work from the organization repository. (codex)
 - Docs: Added `docs/team-collaboration.md` for GitHub team repository setup, branch policy, benchmark file ownership, data rules, and PR checklist. (codex)
 - Benchmark: Added Proposed Agent evaluation script `benchmark/scripts/evaluate-proposed-agent.mjs` with Precision@K, NDCG@K, gold DOI hit rate, DOI accuracy, validity, top-journal precision, hallucination, and OA success metrics. (codex)

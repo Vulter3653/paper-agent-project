@@ -73,10 +73,10 @@ Recommended ownership:
 
 | Owner | Scope | Files |
 | --- | --- | --- |
-| Current maintainer | integration, scripts, Worker, dashboard, metrics | source code, docs, benchmark scripts |
+| seunghyeon_choi | current maintainer, integration, scripts, Worker, dashboard, metrics | source code, docs, benchmark scripts, `seunghyeon_choi/`, `integrated/` |
 | Member A | gold label refinement | `benchmark/gold_relevant_papers.csv`, `benchmark/gold_relevant_papers.verified.csv` |
 | Member B | Proposed Agent manual review | `benchmark/manual_review_proposed.csv` |
-| Member C | baseline result collection | `benchmark/baseline_rule_based_results.csv`, `benchmark/baseline_single_llm_results.csv` |
+| Unassigned Member C | baseline result collection | `benchmark/baseline_rule_based_results.csv`, `benchmark/baseline_single_llm_results.csv` |
 
 Do not modify unrelated files in a benchmark branch.
 

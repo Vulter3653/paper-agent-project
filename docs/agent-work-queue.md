@@ -119,13 +119,13 @@ Definition of done:
 Owner:
 
 ```text
-seunghyeon_choi
+unassigned_member_c
 ```
 
 Branch:
 
 ```text
-benchmark/seunghyeon-baseline-t001-t003
+benchmark/member-c-baseline-t001-t003
 ```
 
 Allowed files:
@@ -133,7 +133,7 @@ Allowed files:
 ```text
 benchmark/baseline_rule_based_results.csv
 benchmark/baseline_single_llm_results.csv
-seunghyeon_choi/
+<assigned_member_directory>/
 CHANGELOG.md
 docs/progress.md
 ```
@@ -149,13 +149,13 @@ Procedure:
 3. Keep columns compatible with `benchmark/proposed_agent_results.csv` where possible.
 4. Add `baseline_type` and `source_note`.
 5. Verify DOI when available.
-6. Add a short summary in `seunghyeon_choi/README.md`.
+6. Add a short summary in the assigned member directory README.
 
 Definition of done:
 
 - T001-T003 have baseline rows for at least one baseline type.
 - DOI and journal metadata are not fabricated.
-- `CHANGELOG.md` records the work with `(seunghyeon)`.
+- `CHANGELOG.md` records the work with the assigned member id.
 
 ## Assignment 4 - Metric QA
 
@@ -204,10 +204,10 @@ Definition of done:
 Owner:
 
 ```text
-integrated
+seunghyeon_choi
 ```
 
-Use this only after PR review.
+Use `integrated/` for integration notes after PR review.
 
 Maintainer integration steps:
 
@@ -217,3 +217,15 @@ Maintainer integration steps:
 4. If source code changed, run `npm run typecheck` and `npm run build:web`.
 5. Merge PR.
 6. Update `docs/progress.md` if the project state changed.
+
+Allowed maintainer files:
+
+```text
+source code
+docs/
+benchmark/scripts/
+benchmark/*metrics*
+integrated/
+seunghyeon_choi/
+CHANGELOG.md
+```

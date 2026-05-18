@@ -1,11 +1,11 @@
 # seunghyeon_choi Assignment
 
-Role: Baseline Result Collection
+Role: Current Maintainer And Integration Lead
 
 Branch:
 
 ```text
-benchmark/seunghyeon-baseline-t001-t003
+maintainer/seunghyeon-<short-task>
 ```
 
 Read first:
@@ -13,25 +13,29 @@ Read first:
 ```text
 AGENTS.md
 docs/agent-work-queue.md
-benchmark/tasks.jsonl
-benchmark/proposed_agent_results.csv
+docs/progress.md
+docs/debug-log.md
 ```
 
 Allowed files:
 
 ```text
-benchmark/baseline_rule_based_results.csv
-benchmark/baseline_single_llm_results.csv
+source code
+docs/
+benchmark/scripts/
+benchmark/*metrics*
+integrated/
 seunghyeon_choi/
 CHANGELOG.md
 docs/progress.md
+docs/debug-log.md
 ```
 
 Current task:
 
-Collect comparable Rule-based and Single-LLM baseline rows for T001-T003.
+Maintain the integrated project workflow, review team PRs, update benchmark scripts and metrics, and keep handoff documentation current.
 
-Do not fabricate DOI, journal, year, author, or ranking metadata.
+Baseline result collection is not assigned to `seunghyeon_choi`; it is currently marked as `unassigned_member_c` in `docs/agent-work-queue.md`.
 
 ## Work Summary
 

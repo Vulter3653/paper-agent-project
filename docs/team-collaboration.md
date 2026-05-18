@@ -24,6 +24,19 @@ git fetch origin
 git fetch team-origin
 ```
 
+## Agent Auto-Start Documents
+
+Any team agent that enters the repository must read these files before changing files:
+
+```text
+AGENTS.md
+docs/agent-work-queue.md
+docs/progress.md
+CHANGELOG.md
+```
+
+`AGENTS.md` defines the repository-wide operating rules. `docs/agent-work-queue.md` defines the current benchmark assignments and allowed file scopes.
+
 ## Branch Policy
 
 Do not commit directly to `main` for team-member benchmark edits.

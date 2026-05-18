@@ -2,10 +2,18 @@
 
 - 
 
+## Assignment
+
+- [ ] I read `AGENTS.md`
+- [ ] I read `docs/agent-work-queue.md`
+- [ ] Branch name matches the assigned task
+- [ ] Changed files stay within the assigned scope
+
 ## Verification
 
 - [ ] `npm run typecheck`
 - [ ] Relevant build, dry-run, or manual check completed
+- [ ] Benchmark-only changes: `npm run benchmark:evaluate-proposed`
 
 ## Strict Changelog Requirement
 

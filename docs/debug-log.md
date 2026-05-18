@@ -2,6 +2,44 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-18 - Team Agent Auto-Start Guidance Verification
+
+### Context
+
+The team collaboration repository is now synchronized, and the user requested repository-level instructions so organization agents can automatically continue assigned benchmark work.
+
+### Changes Under Test
+
+- Added root `AGENTS.md`.
+- Added `docs/agent-work-queue.md`.
+- Added role-specific README files under:
+  - `jin23624_cpu/`
+  - `juilie_bot_hub/`
+  - `seunghyeon_choi/`
+  - `shonshinemin_cmd/`
+  - `integrated/`
+- Added benchmark CSV templates for manual review and baseline collection.
+- Updated the pull request template with assignment and benchmark verification checks.
+
+### Verification
+
+Run:
+
+```bash
+npm run benchmark:evaluate-proposed
+```
+
+Expected result:
+
+- The existing Proposed Agent metric generation should still succeed.
+- Empty manual-review and baseline templates should not affect the current Proposed Agent metric calculation.
+
+Observed result:
+
+- Command passed.
+- Totals remained stable: `tasks=3`, `results=15`, `gold=9`, `verifiedGold=1`.
+- Macro averages remained stable: `DOI Accuracy@5=1.0000`, `Paper Validity@5=1.0000`, `Top Journal Precision@5=1.0000`, `Hallucination Rate@5=0.0000`.
+
 ## 2026-05-18 - Proposed Agent Benchmark Metric Calculation
 
 ### Context

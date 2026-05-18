@@ -2,6 +2,48 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-18 - Proposed Agent Benchmark Runner
+
+### Context
+
+After initializing benchmark tasks and gold-label cleanup workflows, the next recommended step was to collect Proposed Agent outputs from the real deployed Worker pipeline. The runner must preserve WoS quota by supporting partial runs.
+
+### Code Changes Under Test
+
+- Added `benchmark/scripts/run-proposed-agent.mjs`.
+- Added root npm script `benchmark:run-proposed`.
+
+The runner:
+
+- reads `benchmark/tasks.jsonl`
+- calls `POST /api/search-jobs`
+- polls `GET /api/search-jobs/:id` until `completed` or `failed`
+- writes job summaries to `benchmark/proposed_agent_jobs.csv` by default
+- writes paper rows to `benchmark/proposed_agent_results.csv` by default
+- supports `--limit`, `--start`, `--max-results`, `--poll-ms`, `--timeout-ms`, and custom output paths
+
+### Verification Commands
+
+```bash
+npm run benchmark:run-proposed -- --limit 0 --output /tmp/proposed_empty.csv --jobs-output /tmp/proposed_jobs_empty.csv
+npm run benchmark:run-proposed -- --limit 1 --max-results 5 --poll-ms 5000 --timeout-ms 300000 --output /tmp/proposed_smoke.csv --jobs-output /tmp/proposed_jobs_smoke.csv
+```
+
+Smoke result:
+
+```text
+task_id=T001
+job_id=job-768671a5-346d-4f0f-af54-6f29014ceb27
+status=completed
+source_result_count=8
+allowed_result_count=5
+paper_count=5
+```
+
+### Finding
+
+The deployed Worker benchmark path is operational. T001 returned 5 allowlisted Organization/HR results with Crossref verification metadata. The full 20-task run should be started only when ready to spend WoS quota and then committed as `benchmark/proposed_agent_jobs.csv` and `benchmark/proposed_agent_results.csv`.
+
 ## 2026-05-17 - Benchmark Gold Candidate Promotion
 
 ### Context

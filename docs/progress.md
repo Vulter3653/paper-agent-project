@@ -1,6 +1,6 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-17
+Updated: 2026-05-18
 
 ## Mandatory Session Handoff Rules
 
@@ -99,6 +99,13 @@ Current next implementation target:
 32. After enough DOI labels are verified, compare rule-based, single-LLM, and proposed-agent outputs.
 33. After benchmark scaffolding, implement Critic Agent and `agent_traces`, then XLSX output, then PDF output.
 34. Next dashboard integration target: replace static mock data in `apps/web/src/dashboard/mockData.ts` with real API responses while preserving the current route/component contracts.
+35. Proposed Agent benchmark runner is implemented.
+    - Script: `benchmark/scripts/run-proposed-agent.mjs`
+    - Command: `npm run benchmark:run-proposed`
+    - Default outputs: `benchmark/proposed_agent_jobs.csv` and `benchmark/proposed_agent_results.csv`
+    - Quota-safe smoke command verified T001 with `--limit 1 --max-results 5`.
+    - Smoke job: `job-768671a5-346d-4f0f-af54-6f29014ceb27`, `sourceResultCount=8`, `allowedResultCount=5`, `resultRows=5`.
+36. Next benchmark execution step: run `npm run benchmark:run-proposed` for all 20 tasks only when ready to spend WoS quota, then compute overlap against verified gold labels.
 
 ## Current Status
 
@@ -166,6 +173,7 @@ The latest confirmed behavior is normal:
   - T004/G010: Academy of Management Review, DOI `10.5465/amr.2022.0058`
   - T019/G055: Journal of Retailing, DOI `10.1016/j.jretai.2022.02.003`
   - `benchmark/gold_promotion_decisions.csv` records the promotion rationale.
+- Proposed Agent benchmark runner has been added and smoke-tested against the deployed Worker. T001 completed as `job-768671a5-346d-4f0f-af54-6f29014ceb27` with 5 allowlisted result rows.
 
 ## Agent Work Attribution
 

@@ -20,6 +20,12 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 - No unreleased changes.
 
+## 2026-05-18 (codex)
+
+- Benchmark: Added Proposed Agent benchmark runner `benchmark/scripts/run-proposed-agent.mjs` and `benchmark:run-proposed` to execute benchmark tasks against the deployed Worker API. (codex)
+- Benchmark: Verified the Proposed Agent runner with a quota-safe T001 smoke run that completed Worker job `job-768671a5-346d-4f0f-af54-6f29014ceb27` and returned 5 allowlisted results. (codex)
+- Docs: Recorded Proposed Agent runner usage and smoke verification in `benchmark/benchmark_summary.md`, `docs/debug-log.md`, and `docs/progress.md`. (codex)
+
 ## 2026-05-17 (codex)
 
 - Benchmark: Promoted two high-confidence gold candidates into the gold paper files and recorded the decisions in `benchmark/gold_promotion_decisions.csv`. (codex)

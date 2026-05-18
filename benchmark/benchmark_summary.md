@@ -20,6 +20,7 @@ Current files:
 - `benchmark/scripts/verify-gold-crossref.mjs`: local Crossref verification utility.
 - `benchmark/scripts/refine-gold-candidates.mjs`: local refinement queue and candidate generation utility.
 - `benchmark/scripts/score-gold-candidates.mjs`: local candidate scoring utility based on journal allowlist, field match, type, DOI, recency, and Crossref score.
+- `benchmark/scripts/run-proposed-agent.mjs`: deployed Worker runner for collecting Proposed Agent benchmark outputs.
 
 ## Important Constraint
 
@@ -90,6 +91,33 @@ Target metrics:
 - Hallucination Rate
 - OA PDF Success Rate
 - Report Completeness
+
+## Proposed Agent Runner
+
+The Proposed Agent runner is implemented and smoke-tested:
+
+```bash
+npm run benchmark:run-proposed -- --limit 1 --max-results 5 --poll-ms 5000 --timeout-ms 300000 --output /tmp/proposed_smoke.csv --jobs-output /tmp/proposed_jobs_smoke.csv
+```
+
+Smoke result:
+
+| Task | Job ID | Status | Source | Allowed | Result Rows |
+| --- | --- | --- | ---: | ---: | ---: |
+| T001 | `job-768671a5-346d-4f0f-af54-6f29014ceb27` | completed | 8 | 5 | 5 |
+
+The full run command should be executed only when ready to spend WoS quota:
+
+```bash
+npm run benchmark:run-proposed
+```
+
+Default outputs:
+
+```text
+benchmark/proposed_agent_jobs.csv
+benchmark/proposed_agent_results.csv
+```
 
 ## Next Step
 

@@ -106,6 +106,27 @@ Smoke result:
 | --- | --- | --- | ---: | ---: | ---: |
 | T001 | `job-768671a5-346d-4f0f-af54-6f29014ceb27` | completed | 8 | 5 | 5 |
 
+Quota-safe three-task sample:
+
+```bash
+npm run benchmark:run-proposed -- --limit 3 --max-results 5 --poll-ms 5000 --timeout-ms 300000
+```
+
+Sample result:
+
+| Task | Job ID | Status | Source | Allowed | Result Rows |
+| --- | --- | --- | ---: | ---: | ---: |
+| T001 | `job-e97a70f1-b041-492e-b54f-d60cc6cd8065` | completed | 8 | 5 | 5 |
+| T002 | `job-b9fb9c4b-58d0-4774-9e38-6d5a99975b19` | completed | 25 | 5 | 5 |
+| T003 | `job-700ef0e4-a2dd-450a-a785-c590f5e4bab3` | completed | 25 | 5 | 5 |
+
+Recorded outputs:
+
+```text
+benchmark/proposed_agent_jobs.csv
+benchmark/proposed_agent_results.csv
+```
+
 The full run command should be executed only when ready to spend WoS quota:
 
 ```bash

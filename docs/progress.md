@@ -105,8 +105,14 @@ Current next implementation target:
     - Default outputs: `benchmark/proposed_agent_jobs.csv` and `benchmark/proposed_agent_results.csv`
     - Quota-safe smoke command verified T001 with `--limit 1 --max-results 5`.
     - Smoke job: `job-768671a5-346d-4f0f-af54-6f29014ceb27`, `sourceResultCount=8`, `allowedResultCount=5`, `resultRows=5`.
-36. Next benchmark execution step: run `npm run benchmark:run-proposed` for all 20 tasks only when ready to spend WoS quota, then compute overlap against verified gold labels.
-37. Dashboard implementation status panels are implemented on all three final routes.
+36. A quota-safe three-task Proposed Agent benchmark sample has been run and recorded.
+    - Command: `npm run benchmark:run-proposed -- --limit 3 --max-results 5 --poll-ms 5000 --timeout-ms 300000`
+    - Outputs: `benchmark/proposed_agent_jobs.csv` and `benchmark/proposed_agent_results.csv`
+    - T001 job: `job-e97a70f1-b041-492e-b54f-d60cc6cd8065`, `sourceResultCount=8`, `allowedResultCount=5`, `resultRows=5`.
+    - T002 job: `job-b9fb9c4b-58d0-4774-9e38-6d5a99975b19`, `sourceResultCount=25`, `allowedResultCount=5`, `resultRows=5`.
+    - T003 job: `job-700ef0e4-a2dd-450a-a785-c590f5e4bab3`, `sourceResultCount=25`, `allowedResultCount=5`, `resultRows=5`.
+37. Next benchmark execution step: compute overlap metrics for the three-task sample against the verified gold labels, then run all 20 tasks only when ready to spend WoS quota.
+38. Dashboard implementation status panels are implemented on all three final routes.
     - `/dashboard/research` distinguishes live API features from mock workflow/top-journal/preview panels.
     - `/dashboard/ops` distinguishes live MCP/D1/R2 from mock Agent Status Board, Tool Console, Critic Review, and planned Vectorize/Drive work.
     - `/dashboard/evaluation` distinguishes live benchmark fixtures/runner from mock scenario metrics and planned baseline bindings.

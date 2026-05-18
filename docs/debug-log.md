@@ -2,6 +2,48 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-18 - Proposed Agent Benchmark Three-Task Sample
+
+### Context
+
+The user asked to resume the previously paused first benchmark execution step. To avoid unnecessary WoS quota consumption, the run was limited to the first three benchmark tasks and five saved results per task.
+
+### Verification Command
+
+```bash
+npm run benchmark:run-proposed -- --limit 3 --max-results 5 --poll-ms 5000 --timeout-ms 300000
+```
+
+Observed summary:
+
+```json
+{
+  "workerUrl": "https://paper-agent-project.shch3653.workers.dev",
+  "tasksRequested": 3,
+  "jobRows": 3,
+  "resultRows": 15,
+  "output": "benchmark/proposed_agent_results.csv",
+  "jobsOutput": "benchmark/proposed_agent_jobs.csv"
+}
+```
+
+### Job Results
+
+| Task | Job ID | Status | Source | Allowed | Papers |
+| --- | --- | --- | ---: | ---: | ---: |
+| T001 | `job-e97a70f1-b041-492e-b54f-d60cc6cd8065` | completed | 8 | 5 | 5 |
+| T002 | `job-b9fb9c4b-58d0-4774-9e38-6d5a99975b19` | completed | 25 | 5 | 5 |
+| T003 | `job-700ef0e4-a2dd-450a-a785-c590f5e4bab3` | completed | 25 | 5 | 5 |
+
+### Resolution
+
+The deployed Proposed Agent path completed the three-task sample without failed jobs. The output CSV files are now the benchmark evidence for the next overlap-metric step:
+
+```text
+benchmark/proposed_agent_jobs.csv
+benchmark/proposed_agent_results.csv
+```
+
 ## 2026-05-18 - Dashboard Implementation Status Panels
 
 ### Context

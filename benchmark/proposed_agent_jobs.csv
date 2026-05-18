@@ -1,0 +1,4 @@
+task_id,keyword,journal_category_id,job_id,status,current_step,source_result_count,allowed_result_count,paper_count,started_at,completed_at,error_message
+T001,AI interview employer branding,organization-hr,job-e97a70f1-b041-492e-b54f-d60cc6cd8065,completed,completed,8,5,5,2026-05-18T06:43:21.617Z,2026-05-18T06:43:38.147Z,
+T002,artificial intelligence recruitment applicant reaction,organization-hr,job-b9fb9c4b-58d0-4774-9e38-6d5a99975b19,completed,completed,25,5,5,2026-05-18T06:43:41.207Z,2026-05-18T06:43:49.805Z,
+T003,generative AI advertising effectiveness,marketing,job-700ef0e4-a2dd-450a-a785-c590f5e4bab3,completed,completed,25,5,5,2026-05-18T06:43:59.702Z,2026-05-18T06:44:11.274Z,

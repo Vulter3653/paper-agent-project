@@ -2,6 +2,38 @@
 
 This file records debugging and troubleshooting work that affects implementation, deployment, or verification. Update it whenever a defect is investigated or a verification run changes project confidence.
 
+## 2026-05-18 - Dashboard Implementation Status Panels
+
+### Context
+
+The user requested that the dashboard clearly distinguish implemented features from mock or unimplemented features. This is important because the final UI contains real Worker-backed functionality and design-complete panels that are not yet connected to live APIs.
+
+### Code Changes Under Test
+
+- Added structured implementation status data in `apps/web/src/dashboard/mockData.ts`.
+- Added `ImplementationStatusPanel` to `apps/web/src/dashboard/DashboardPages.tsx`.
+- Added status panels to:
+  - `/dashboard/research`
+  - `/dashboard/ops`
+  - `/dashboard/evaluation`
+- Added CSS for status chips and implementation cards in `apps/web/src/dashboard/dashboard.css`.
+
+Status categories:
+
+- `구현됨`: live Worker/D1/R2/API or deployed functionality.
+- `부분 구현`: partial real implementation with remaining API/UI integration.
+- `Mock`: static final UI data, not yet API-connected.
+- `미구현`: planned but not yet implemented.
+
+### Verification Commands
+
+```bash
+npm run typecheck
+npm run build:web
+```
+
+Both passed.
+
 ## 2026-05-18 - Proposed Agent Benchmark Runner
 
 ### Context

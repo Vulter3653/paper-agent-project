@@ -5,13 +5,19 @@ import {
   criticReviews,
   evaluationRubrics,
   evaluationScenarios,
+  evaluationImplementationStatus,
+  implementationLegend,
   literaturePreview,
   literatureWorkflowStages,
+  opsImplementationStatus,
+  researchImplementationStatus,
   systemStatuses,
   toolCallLogs,
   topJournalPool,
   type EvaluationScenario,
-  type EvaluationScenarioKey
+  type EvaluationScenarioKey,
+  type FeatureImplementationItem,
+  type FeatureImplementationStatus
 } from "./mockData";
 import "./dashboard.css";
 
@@ -86,6 +92,12 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           </aside>
         </div>
       </section>
+
+      <ImplementationStatusPanel
+        title="Research Route Implementation Status"
+        description="이 페이지는 실제 API 기능과 최종 UI mock 패널이 함께 있습니다."
+        items={researchImplementationStatus}
+      />
 
       <section className="uxPanel uxWorkflowPanel">
         <div className="uxPanelHead">
@@ -221,6 +233,12 @@ export function AgentOpsPage() {
         <MetricTile label="Vectorize" value={step >= 10 ? "Indexed" : "Waiting"} detail="abstract embeddings" tone="blue" />
       </section>
 
+      <ImplementationStatusPanel
+        title="Ops Route Implementation Status"
+        description="운영 화면은 현재 최종 UI와 상호작용을 검증하는 단계이며, agent trace/API 연결이 다음 단계입니다."
+        items={opsImplementationStatus}
+      />
+
       <section className="uxGrid2">
         <div className="uxStack">
           <section className="uxPanel">
@@ -350,6 +368,12 @@ export function EvaluationDashboardPage() {
         <MetricTile label="Report Completeness" value={scenario.metrics.reportCompleteness} detail="rubric score" tone="purple" />
         <MetricTile label="Avg Latency" value={scenario.metrics.avgLatency} detail="full workflow" tone="blue" />
       </section>
+
+      <ImplementationStatusPanel
+        title="Evaluation Route Implementation Status"
+        description="평가 화면은 현재 benchmark 구조와 mock scenario가 공존합니다. 실제 점수 연결은 benchmark full run 이후 진행합니다."
+        items={evaluationImplementationStatus}
+      />
 
       <section className="uxGrid2">
         <div className="uxStack">
@@ -482,6 +506,48 @@ function CriticReviewPanel({
       </div>
     </section>
   );
+}
+
+function ImplementationStatusPanel({ title, description, items }: { title: string; description: string; items: FeatureImplementationItem[] }) {
+  const counts = implementationLegend.map((legend) => ({
+    ...legend,
+    count: items.filter((item) => item.status === legend.status).length
+  }));
+
+  return (
+    <section className="uxPanel uxImplementationPanel">
+      <div className="uxPanelHead">
+        <div>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </div>
+        <div className="uxImplementationLegend" aria-label="Implementation status legend">
+          {counts.map((item) => (
+            <span key={item.status} className={`uxStatusChip ${item.status}`} title={item.detail}>
+              {item.label} {item.count}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="uxImplementationGrid">
+        {items.map((item) => (
+          <article key={item.feature} className={`uxImplementationItem ${item.status}`}>
+            <div>
+              <strong>{item.feature}</strong>
+              <StatusChip status={item.status} />
+            </div>
+            <p>{item.evidence}</p>
+            <small>{item.next}</small>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StatusChip({ status }: { status: FeatureImplementationStatus }) {
+  const label = implementationLegend.find((item) => item.status === status)?.label ?? status;
+  return <span className={`uxStatusChip ${status}`}>{label}</span>;
 }
 
 function MetricTile({ label, value, detail, tone }: { label: string; value: string; detail: string; tone: "green" | "blue" | "amber" | "purple" }) {

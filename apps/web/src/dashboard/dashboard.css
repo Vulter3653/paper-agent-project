@@ -300,8 +300,115 @@
 
 .uxWorkflowPanel,
 .uxRouteBlock,
-.uxScenarioPanel {
+.uxScenarioPanel,
+.uxImplementationPanel {
   margin-bottom: 20px;
+}
+
+.uxImplementationLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.uxStatusChip {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.uxStatusChip.live {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.uxStatusChip.partial {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.uxStatusChip.mock {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.uxStatusChip.planned {
+  background: #eef3f8;
+  border-color: #d8e1ea;
+  color: #475569;
+}
+
+.uxImplementationGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.uxImplementationItem {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  min-width: 0;
+  padding: 13px;
+}
+
+.uxImplementationItem.live {
+  background: #f1fbf5;
+  border-color: #bbf7d0;
+}
+
+.uxImplementationItem.partial {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.uxImplementationItem.mock {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.uxImplementationItem.planned {
+  background: #f8fafc;
+}
+
+.uxImplementationItem div {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.uxImplementationItem strong {
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.uxImplementationItem p,
+.uxImplementationItem small {
+  color: #64748b;
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.uxImplementationItem p {
+  margin-top: 9px;
+}
+
+.uxImplementationItem small {
+  border-top: 1px solid rgba(100, 116, 139, 0.18);
+  margin-top: 10px;
+  padding-top: 9px;
 }
 
 .uxGrid2 {
@@ -701,6 +808,7 @@
   .uxSnapshotGrid,
   .uxSystemGrid,
   .uxPreviewGrid,
+  .uxImplementationGrid,
   .uxAgentGrid,
   .uxSteps12,
   .uxFieldGrid {

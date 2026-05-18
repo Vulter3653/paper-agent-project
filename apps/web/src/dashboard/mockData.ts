@@ -68,6 +68,52 @@ export type EvaluationScenario = {
   bars: Array<{ label: string; value: number }>;
 };
 
+export type FeatureImplementationStatus = "live" | "partial" | "mock" | "planned";
+
+export type FeatureImplementationItem = {
+  feature: string;
+  status: FeatureImplementationStatus;
+  evidence: string;
+  next: string;
+};
+
+export const implementationLegend: Array<{ status: FeatureImplementationStatus; label: string; detail: string }> = [
+  { status: "live", label: "구현됨", detail: "실제 Worker/D1/R2/API 또는 배포된 기능과 연결됨" },
+  { status: "partial", label: "부분 구현", detail: "일부 실제 기능이 있으나 화면의 일부는 정적 데이터 또는 추가 연결 필요" },
+  { status: "mock", label: "Mock", detail: "최종 UI 기준의 정적 데이터이며 실제 API 연결 전" },
+  { status: "planned", label: "미구현", detail: "설계상 필요하지만 아직 코드/인프라 연결 전" }
+];
+
+export const researchImplementationStatus: FeatureImplementationItem[] = [
+  { feature: "Run / Search Job", status: "live", evidence: "POST /api/search-jobs, GET /api/search-jobs/:id polling", next: "Benchmark full-run 결과와 연결" },
+  { feature: "Ranked Papers", status: "live", evidence: "Worker 결과 papers 배열, D1 papers/evaluations 기반", next: "Gold overlap 지표 추가" },
+  { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "Critic note 저장 후 연결" },
+  { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "PDF/XLSX output 추가" },
+  { feature: "12-step Workflow Panel", status: "mock", evidence: "최종 UI 기준 정적 단계 데이터", next: "agent_traces table 연결" },
+  { feature: "Top Journal Pool Panel", status: "partial", evidence: "저널 allowlist는 실제 shared data, 화면 풀 표시는 축약 mock", next: "shared category 전체 표시" },
+  { feature: "Literature Review Preview Cards", status: "mock", evidence: "정적 preview 문구", next: "Report Agent section API 연결" }
+];
+
+export const opsImplementationStatus: FeatureImplementationItem[] = [
+  { feature: "MCP Worker", status: "live", evidence: "paper-agent-mcp /mcp read-only tools 배포 완료", next: "agent trace 조회 tool 추가" },
+  { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "화면 상태를 diagnostics/API로 연결" },
+  { feature: "Agent Status Board", status: "mock", evidence: "정적 agentStatuses 데이터", next: "agent_traces table과 연결" },
+  { feature: "Tool Call Console", status: "mock", evidence: "정적 toolCallLogs 및 클릭 이벤트", next: "실제 Worker step/tool log 저장" },
+  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보", next: "Vectorize index와 embedding relevance 구현" },
+  { feature: "Google Drive PDF Archive", status: "planned", evidence: "UI 위치만 확보", next: "OA PDF만 Drive 저장 및 drive_file_id 저장" },
+  { feature: "Critic Review", status: "mock", evidence: "정적 critic review cards", next: "Critic Agent flags/risk_level 저장" }
+];
+
+export const evaluationImplementationStatus: FeatureImplementationItem[] = [
+  { feature: "Benchmark Fixtures", status: "live", evidence: "20 tasks, 60 gold rows, verification/refinement scripts", next: "verified gold 40개 이상 확보" },
+  { feature: "Proposed Agent Runner", status: "live", evidence: "benchmark:run-proposed smoke run 완료", next: "20 task full run" },
+  { feature: "Baseline Evaluation UI", status: "mock", evidence: "정적 scenario 수치", next: "benchmark_summary 결과 JSON/API 연결" },
+  { feature: "Rule-based Baseline", status: "planned", evidence: "평가 설계만 존재", next: "baseline_results.csv 생성" },
+  { feature: "Single LLM Baseline", status: "planned", evidence: "평가 설계만 존재", next: "LLM 추천 결과와 hallucination 검증" },
+  { feature: "Precision@5 / DOI Accuracy", status: "partial", evidence: "지표 정의와 gold 검증 workflow 존재", next: "proposed_agent_results.csv와 gold overlap 계산" },
+  { feature: "Dashboard Metric Binding", status: "planned", evidence: "현재 mockData.ts 수치 사용", next: "실제 benchmark results loader/API 추가" }
+];
+
 export const literatureWorkflowStages: WorkflowStage[] = [
   { id: "planner", order: 1, title: "Planner", owner: "Planner Agent", status: "done", progress: 100, detail: "연구 질문을 키워드와 하위 질문으로 분해" },
   { id: "journal_selector", order: 2, title: "Journal Pool", owner: "Journal Selector", status: "done", progress: 100, detail: "경영대학 학술지 목록의 S/A1 우선순위 적용" },

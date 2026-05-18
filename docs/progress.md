@@ -106,6 +106,10 @@ Current next implementation target:
     - Quota-safe smoke command verified T001 with `--limit 1 --max-results 5`.
     - Smoke job: `job-768671a5-346d-4f0f-af54-6f29014ceb27`, `sourceResultCount=8`, `allowedResultCount=5`, `resultRows=5`.
 36. Next benchmark execution step: run `npm run benchmark:run-proposed` for all 20 tasks only when ready to spend WoS quota, then compute overlap against verified gold labels.
+37. Dashboard implementation status panels are implemented on all three final routes.
+    - `/dashboard/research` distinguishes live API features from mock workflow/top-journal/preview panels.
+    - `/dashboard/ops` distinguishes live MCP/D1/R2 from mock Agent Status Board, Tool Console, Critic Review, and planned Vectorize/Drive work.
+    - `/dashboard/evaluation` distinguishes live benchmark fixtures/runner from mock scenario metrics and planned baseline bindings.
 
 ## Current Status
 
@@ -174,6 +178,7 @@ The latest confirmed behavior is normal:
   - T019/G055: Journal of Retailing, DOI `10.1016/j.jretai.2022.02.003`
   - `benchmark/gold_promotion_decisions.csv` records the promotion rationale.
 - Proposed Agent benchmark runner has been added and smoke-tested against the deployed Worker. T001 completed as `job-768671a5-346d-4f0f-af54-6f29014ceb27` with 5 allowlisted result rows.
+- Dashboard now has visible implementation status panels on Research, Ops, and Evaluation routes, using `구현됨`, `부분 구현`, `Mock`, and `미구현` labels so users can distinguish real features from UI previews.
 
 ## Agent Work Attribution
 

@@ -141,6 +141,10 @@ Current next implementation target:
     - Only `.env.example` is tracked as an env-style file.
     - Secret-related documentation matches are placeholders or variable names.
     - Any token pasted into external chat should remain revoked/rotated because the repository audit cannot remove external exposure.
+43. Cloudflare organization repository migration settings are documented.
+    - Use `docs/cloudflare-org-repo-migration.md` to reconnect Worker Builds and Pages builds from `Vulter3653/paper-agent-project` to `mon-ai-team-project/team_project_test_public`.
+    - No D1, R2, Worker name, Pages project name, or runtime secret change is required.
+    - Actual Cloudflare dashboard Git connection changes still require Cloudflare account access.
 
 ## Current Status
 

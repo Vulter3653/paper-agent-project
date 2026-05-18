@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-18 (codex)
 
+- Docs: Added `docs/cloudflare-org-repo-migration.md` with Worker, Pages, and MCP settings for switching Cloudflare Git builds to the organization repository. (codex)
 - Security: Audited tracked files, Git history, and local workspace for GitHub PAT, Cloudflare token, OpenAlex key, private key, AWS, npm, and Slack token patterns; no actual token values were found. (codex)
 - Docs: Corrected team-agent ownership so `seunghyeon_choi` is the current maintainer/integration lead and baseline collection is unassigned pending a separate team member. (codex)
 - Docs: Added `AGENTS.md`, `docs/agent-work-queue.md`, team-member README files, benchmark CSV templates, and PR checklist items so team agents can auto-start assigned benchmark work from the organization repository. (codex)

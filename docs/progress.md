@@ -135,6 +135,10 @@ Current next implementation target:
     - `jin23624_cpu/`, `juilie_bot_hub/`, `seunghyeon_choi/`, `shonshinemin_cmd/`, and `integrated/` each contain a role-specific README.
     - Benchmark collaboration templates are initialized: `benchmark/manual_review_proposed.csv`, `benchmark/baseline_rule_based_results.csv`, and `benchmark/baseline_single_llm_results.csv`.
     - `.github/pull_request_template.md` now asks contributors to confirm `AGENTS.md`, assignment scope, and benchmark verification.
+42. Proposed Agent manual review for the `juilie_bot_hub` assignment is complete on branch `benchmark/juilie-proposed-review`.
+    - Benchmark: Filled all 15 T001-T003 rows in `benchmark/manual_review_proposed.csv` with `manual_relevance`, `manual_decision`, `failure_type`, `review_note`, and `reviewer`. (juilie)
+    - Docs: Reflected `paper_agent_enhanced_report.pdf` section 8 as the Paper-Agent-Bench evaluation basis in `juilie_bot_hub/README.md`. (juilie)
+    - Verification: Local PDF text extraction with `pdfjs-dist` confirmed section 8 covers REPRO-Bench-style Agent-level evaluation, human relevance labels, Precision@5/NDCG@5, DOI accuracy, top-journal precision, hallucination checks, and report completeness. (juilie)
 
 ## Current Status
 

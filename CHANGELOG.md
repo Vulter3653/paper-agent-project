@@ -22,6 +22,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-18 (codex)
 
+- Benchmark: Completed `benchmark/manual_review_proposed.csv` for all 15 T001-T003 Proposed Agent rows using REPRO-Bench-style human relevance review from `paper_agent_enhanced_report.pdf` section 8. (juilie)
+- Docs: Updated `juilie_bot_hub/README.md` with the manual review summary and Paper-Agent-Bench evaluation basis. (juilie)
 - Docs: Corrected team-agent ownership so `seunghyeon_choi` is the current maintainer/integration lead and baseline collection is unassigned pending a separate team member. (codex)
 - Docs: Added `AGENTS.md`, `docs/agent-work-queue.md`, team-member README files, benchmark CSV templates, and PR checklist items so team agents can auto-start assigned benchmark work from the organization repository. (codex)
 - Docs: Added `docs/team-collaboration.md` for GitHub team repository setup, branch policy, benchmark file ownership, data rules, and PR checklist. (codex)

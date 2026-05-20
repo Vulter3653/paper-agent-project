@@ -159,6 +159,12 @@ Current next implementation target:
     - Use `docs/cloudflare-org-repo-migration.md` to reconnect Worker Builds and Pages builds from `Vulter3653/paper-agent-project` to `mon-ai-team-project/team_project_test_public`.
     - No D1, R2, Worker name, Pages project name, or runtime secret change is required.
     - Actual Cloudflare dashboard Git connection changes still require Cloudflare account access.
+45. Personal and organization repository versions were synchronized.
+    - `origin/main` and `team-origin/main` both point to `c3c4b23` after the merged `juilie` review PR was fast-forwarded into the personal repository.
+46. Organization `main` protection policy is documented.
+    - `docs/github-main-protection.md` defines the required GitHub ruleset/branch protection settings.
+    - `main` should be restricted to maintainer-reviewed integration by `seunghyeon_choi`.
+    - Actual branch protection still needs GitHub UI or GitHub API repository administration access because the available GitHub MCP tools do not expose branch protection mutation.
 
 ## Current Status
 

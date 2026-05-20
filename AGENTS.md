@@ -53,6 +53,12 @@ git pull team-origin main
 
 Do not work directly on `main`.
 
+`main` is reserved for maintainer-reviewed integration. The current maintainer is:
+
+```text
+seunghyeon_choi
+```
+
 Create a branch for one assignment:
 
 ```bash

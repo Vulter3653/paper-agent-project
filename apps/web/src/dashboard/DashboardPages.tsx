@@ -79,15 +79,15 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           </div>
           <aside className="uxSearchSummary">
             <h2>Workflow Snapshot</h2>
-            <p>현재 실제 Run 버튼은 아래 검색 영역과 연결되어 있으며, 이 패널은 최종 UI 기준의 진행 시각화입니다.</p>
+            <p>현재 실제 Run 버튼은 아래 검색 영역과 연결되어 있습니다. 이 snapshot 수치는 미완성 Mock이며 실제 job 결과가 아닙니다.</p>
             <div className="uxProgressTrack">
               <span style={{ width: `${progress}%` }} />
             </div>
             <div className="uxSnapshotGrid">
-              <MetricTile label="Retrieved" value="128" detail="candidate papers" tone="blue" />
-              <MetricTile label="DOI Validity" value="96%" detail="Crossref matched" tone="green" />
-              <MetricTile label="Top Pool" value="18" detail="approved journals" tone="purple" />
-              <MetricTile label="Review" value="3" detail="critic flagged" tone="amber" />
+              <MetricTile label="Retrieved" value="미완성" detail="mock placeholder" tone="amber" />
+              <MetricTile label="DOI Validity" value="미완성" detail="mock placeholder" tone="amber" />
+              <MetricTile label="Top Pool" value="부분 구현" detail="allowlist exists" tone="purple" />
+              <MetricTile label="Review" value="미완성" detail="critic mock" tone="amber" />
             </div>
           </aside>
         </div>
@@ -95,7 +95,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
 
       <ImplementationStatusPanel
         title="Research Route Implementation Status"
-        description="이 페이지는 실제 API 기능과 최종 UI mock 패널이 함께 있습니다."
+        description="실제 API 기능과 미완성 Mock 패널을 분리 표시합니다. Mock 표시는 실제 결과가 아닙니다."
         items={researchImplementationStatus}
       />
 
@@ -103,9 +103,9 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
         <div className="uxPanelHead">
           <div>
             <h2>12-step Literature Review Workflow</h2>
-            <p>Planner부터 Delivery까지 agent별 담당 단계와 진행률을 시각화합니다.</p>
+            <p>미완성 Mock: 실제 agent_traces 연결 전의 단계 구조 preview입니다.</p>
           </div>
-          <span className={`uxPill ${isRunning ? "blue" : "green"}`}>{isRunning ? "Running" : "Ready"}</span>
+          <span className="uxPill amber">미완성 Mock</span>
         </div>
         <div className="uxProgressTrack">
           <span style={{ width: `${progress}%` }} />
@@ -126,7 +126,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>Top Journal Pool</h2>
-              <p>경영대학 학술지 목록을 검색 우선순위와 Q1 상태로 분리합니다.</p>
+              <p>부분 구현: allowlist는 실제 데이터 기반이고, Q1/외부 지표 표시는 아직 미연결입니다.</p>
             </div>
             <span className="uxPill blue">S then A1</span>
           </div>
@@ -145,7 +145,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>Literature Review Preview</h2>
-              <p>선택 논문과 job 결과를 기반으로 생성될 보고서 섹션 구조입니다.</p>
+              <p>미완성 Mock: 실제 Report Agent API 연결 전의 섹션 preview입니다.</p>
             </div>
             <FileText size={18} />
           </div>
@@ -192,7 +192,7 @@ export function AgentOpsPage() {
           <div>
             <span className="uxEyebrow cyan">Interactive Agent Ops</span>
             <h1>Multi-Agent 실행 상태와 tool call 흐름을 운영 관점에서 추적합니다.</h1>
-            <p>Launch 버튼은 agent card, 12단계 pipeline, console log, D1/R2/Drive/Vectorize 상태를 함께 갱신합니다.</p>
+            <p>미완성 Mock: Launch 버튼은 화면 상호작용 preview만 갱신하며 실제 Worker job을 실행하지 않습니다.</p>
           </div>
           <aside className="uxSearchSummary">
             <h2>Launch Agent Job</h2>
@@ -225,17 +225,17 @@ export function AgentOpsPage() {
       </section>
 
       <section className="uxMetrics">
-        <MetricTile label="Job" value={running ? "Running" : "Completed"} detail="job_id: preview" tone="green" />
-        <MetricTile label="Tool Calls" value={String(logs.length * 3 + 6)} detail="search / verify / export" tone="blue" />
-        <MetricTile label="Agents" value="12" detail="planner to report" tone="purple" />
-        <MetricTile label="Warnings" value="3" detail="critic review" tone="amber" />
-        <MetricTile label="Storage" value="Ready" detail="D1 / R2 / Drive" tone="green" />
-        <MetricTile label="Vectorize" value={step >= 10 ? "Indexed" : "Waiting"} detail="abstract embeddings" tone="blue" />
+        <MetricTile label="Job" value="미완성 Mock" detail="no real job created" tone="amber" />
+        <MetricTile label="Tool Calls" value="미완성" detail="mock console only" tone="amber" />
+        <MetricTile label="Agents" value="미완성" detail="agent traces pending" tone="purple" />
+        <MetricTile label="Warnings" value="미완성" detail="critic mock" tone="amber" />
+        <MetricTile label="Storage" value="부분 구현" detail="D1/R2 live, Drive pending" tone="amber" />
+        <MetricTile label="Vectorize" value="미완성" detail="embedding index pending" tone="blue" />
       </section>
 
       <ImplementationStatusPanel
         title="Ops Route Implementation Status"
-        description="운영 화면은 현재 최종 UI와 상호작용을 검증하는 단계이며, agent trace/API 연결이 다음 단계입니다."
+        description="운영 화면의 Agent board, console, critic 항목은 미완성 Mock입니다. 실제 agent trace/API 연결이 다음 단계입니다."
         items={opsImplementationStatus}
       />
 
@@ -247,7 +247,7 @@ export function AgentOpsPage() {
                 <h2>Multi-Agent Status Board</h2>
                 <p>Agent card를 클릭하면 해당 agent의 상태 로그가 console에 추가됩니다.</p>
               </div>
-              <span className={`uxPill ${running ? "blue" : "green"}`}>{running ? "Agents running" : "All core agents online"}</span>
+              <span className="uxPill amber">미완성 Mock</span>
             </div>
             <div className="uxAgentGrid">
               {agentStatuses.map((agent) => (
@@ -266,7 +266,7 @@ export function AgentOpsPage() {
                 <h2>Pipeline Execution</h2>
                 <p>12단계 문헌검토 workflow의 운영 상태입니다.</p>
               </div>
-              <span className={`uxPill ${running ? "blue" : "green"}`}>{progress}%</span>
+              <span className="uxPill amber">미완성 Mock</span>
             </div>
             <div className="uxProgressTrack">
               <span style={{ width: `${progress}%` }} />
@@ -288,7 +288,7 @@ export function AgentOpsPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>Tool Call Console</h2>
-                <p>Worker, MCP, 외부 API 호출 결과 로그입니다.</p>
+                <p>미완성 Mock: 실제 tool call 저장소 연결 전의 console preview입니다.</p>
               </div>
               <button className="uxSoftButton" type="button" onClick={() => setLogs([])}>Clear</button>
             </div>
@@ -331,7 +331,7 @@ export function EvaluationDashboardPage() {
   const [scenarioKey, setScenarioKey] = useState<EvaluationScenarioKey>("strict");
   const [message, setMessage] = useState({
     title: "핵심 주장",
-    body: "단일 LLM은 추천과 요약은 가능하지만 DOI 검증, 저널 품질 판정, PDF 저장, research gap 도출까지 안정적으로 처리하기 어렵습니다. Proposed Multi-Agent는 단계를 분리하고 검증하여 더 신뢰 가능한 문헌검토 자동화를 제공합니다."
+    body: "미완성 Mock: 현재 baseline 비교 수치는 실제 benchmark 결과와 연결되지 않았습니다. Rule-based, Single LLM, Proposed full-run 결과 연결 후 주장을 확정합니다."
   });
   const scenario = useMemo<EvaluationScenario>(() => evaluationScenarios.find((item) => item.key === scenarioKey) ?? evaluationScenarios[0], [scenarioKey]);
   const overall = Math.round(scenario.bars.reduce((sum, item) => sum + item.value, 0) / scenario.bars.length);
@@ -371,7 +371,7 @@ export function EvaluationDashboardPage() {
 
       <ImplementationStatusPanel
         title="Evaluation Route Implementation Status"
-        description="평가 화면은 현재 benchmark 구조와 mock scenario가 공존합니다. 실제 점수 연결은 benchmark full run 이후 진행합니다."
+        description="평가 화면의 scenario 수치는 미완성 Mock입니다. 실제 baseline/proposed benchmark 연결 후 수치를 표시합니다."
         items={evaluationImplementationStatus}
       />
 
@@ -381,9 +381,9 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>Baseline Evaluation Dashboard</h2>
-                <p>Rule-based vs Single LLM vs Proposed Multi-Agent 비교입니다.</p>
+                <p>미완성 Mock: baseline CSV와 proposed full-run 결과 연결 전입니다.</p>
               </div>
-              <span className="uxPill green">Proposed Agent Best</span>
+              <span className="uxPill amber">미완성 Mock</span>
             </div>
             <div className="uxTableWrap">
               <table className="uxTable">
@@ -398,7 +398,7 @@ export function EvaluationDashboardPage() {
                 </thead>
                 <tbody>
                   {scenario.rows.map((row) => (
-                    <tr key={row.metric} onClick={() => setMessage({ title: row.metric, body: `${row.finding} 따라서 proposed agent의 단계별 검증 구조가 평가상 핵심 강점입니다.` })}>
+                    <tr key={row.metric} onClick={() => setMessage({ title: row.metric, body: `${row.finding} 실제 비교는 baseline CSV와 proposed full-run metric 연결 후 확정됩니다.` })}>
                       <td>{row.metric}</td>
                       <td><span className="uxPill amber">{row.ruleBased}</span></td>
                       <td><span className="uxPill blue">{row.singleLlm}</span></td>
@@ -435,9 +435,9 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>Score Breakdown</h2>
-                <p>Proposed Agent의 종합 평가 점수입니다.</p>
+                <p>미완성 Mock: 실제 benchmark 결과 연결 전에는 0으로 표시합니다.</p>
               </div>
-              <span className="uxPill green">Overall {overall}%</span>
+              <span className="uxPill amber">미완성 Mock</span>
             </div>
             <div className="uxScorePanel">
               <div className="uxScoreHead">

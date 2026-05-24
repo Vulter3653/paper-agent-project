@@ -20,6 +20,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 - No unreleased changes.
 
+## 2026-05-24 (codex)
+
+- Changed: Replaced misleading dashboard mock metric/status values with explicit incomplete mock placeholders in final dashboard routes. (codex)
+
 ## 2026-05-22 (codex)
 
 - Changed: Added manual-review-informed subtopic relevance scoring in `apps/worker/src/index.ts` for T001-T003 benchmark queries. (codex)

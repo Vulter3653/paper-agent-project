@@ -1,6 +1,6 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-22 (codex subtopic relevance scoring)
+Updated: 2026-05-24 (codex dashboard mock clarity)
 
 ## shonshinemin — Benchmark QA Re-evaluation (2026-05-18)
 
@@ -73,6 +73,12 @@ Updated: 2026-05-22 (codex subtopic relevance scoring)
 - Changed: Updated `apps/worker/src/index.ts` so Worker relevance scoring includes subtopic-fit rules derived from `benchmark/manual_review_proposed.csv` failure patterns. (codex)
 - Changed: Added benchmark-focused rules for `AI interview employer branding`, `AI recruitment applicant reaction`, and `generative AI advertising effectiveness` so broad AI/top-journal matches are penalized when the specific subtopic is missing. (codex)
 - Changed: Ranking now uses persisted `paper.relevanceScore` when available instead of falling back only to `abstractScore`. (codex)
+- Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
+
+## codex - Dashboard Mock Clarity (2026-05-24)
+
+- Changed: Updated `apps/web/src/dashboard/mockData.ts` so mock-only evaluation metrics, tool logs, workflow details, Google Drive, Vectorize, and scenario data display as `미완성 Mock` or `미완성` instead of realistic placeholder performance values. (codex)
+- Changed: Updated `apps/web/src/dashboard/DashboardPages.tsx` panel descriptions, metric tiles, and status pills so users can distinguish live Worker/D1/R2 features from incomplete UI previews. (codex)
 - Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
 
 ## Mandatory Session Handoff Rules

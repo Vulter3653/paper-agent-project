@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-24 - Dashboard Mock Clarity
+
+- Context: The final dashboard routes displayed static mock numbers and statuses that could be mistaken for completed benchmark or agent execution results. (codex)
+- Change: Replaced mock performance values and mock operation states with explicit `미완성 Mock`, `미완성`, or `부분 구현` wording. (codex)
+- Expected effect: Users should no longer confuse evaluation scenario placeholders, agent console logs, Vectorize, Google Drive, Critic, or 12-step trace previews with live system output. (codex)
+- Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
+
+
 ## 2026-05-22 - Manual Review Informed Scoring
 
 - Context: `benchmark/manual_review_proposed.csv` shows repeated `wrong_subtopic` failures, especially broad AI papers that match approved journals but miss employer branding, applicant reaction, recruitment, or advertising-effectiveness specifics. (codex)

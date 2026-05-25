@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-25 (codex)
 
+- Docs: Added `docs/human-ai-work-split.md` to separate human-only Cloudflare/GitHub/secret decisions from AI-agent-safe repo, staging, verification, and handoff work. (codex)
 - Infra: Added staging/production separation scripts, Pages staging examples, and extended Worker smoke checks for CSV, Markdown, XLSX, and PDF endpoints. (codex)
 - Fixed: Ensured Output Artifacts always exposes CSV, Markdown, XLSX, and PDF download endpoints even when older jobs are missing job_outputs metadata rows. (codex)
 - Added: Exposed direct PDF report download actions in the Research dashboard table toolbar and Report Preview panel. (codex)

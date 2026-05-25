@@ -1,6 +1,12 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-25 (codex staging separation scripts)
+Updated: 2026-05-25 (codex human-ai work split)
+
+## codex - Human AI Work Split Document (2026-05-25)
+
+- Docs: Added `docs/human-ai-work-split.md` to distinguish human-only account, billing, secret, approval, and production-promotion tasks from AI-agent-safe repository, staging, verification, and documentation work. (codex)
+- Docs: Included staging setup and production promotion responsibility splits so future agents can continue without attempting account-level actions. (codex)
+- Verification: `git diff --check` passed and `docs/human-ai-work-split.md` was reviewed in this session. (codex)
 
 ## codex - Staging Separation Scripts (2026-05-25)
 

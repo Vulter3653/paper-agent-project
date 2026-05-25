@@ -68,7 +68,14 @@ Updated: 2026-05-24 (codex dashboard mock clarity)
 - Docs: Updated `jin23624_cpu/README.md`, `juilie_bot_hub/README.md`, `shonshinemin_cmd/README.md`, `unassigned_member_c/README.md`, and `seunghyeon_choi/README.md` with current status and next actions. (codex)
 - Status: `juilie_bot_hub` manual review is complete; `shonshinemin_cmd` metric QA output exists; `jin23624_cpu` gold refinement and `unassigned_member_c` baselines remain the next team priorities. (codex)
 
-## codex - Dashboard Artifact Visibility (2026-05-25)
+## codex - Dashboard Artifact Visibility (2026-05-25)## codex - XLSX Output Generation (2026-05-25)
+
+- Added: Worker now generates a minimal XLSX workbook from ranked paper rows without adding a package dependency. (codex)
+- Added: `GET /api/search-jobs/:id/papers.xlsx` serves the stored R2 workbook when available or generates it dynamically from D1. (codex)
+- Changed: `job_outputs` now records XLSX as `stored` or `generated`; PDF remains the only planned report artifact. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
+
+
 
 - Changed: Research dashboard now loads `GET /api/search-jobs/:id/critic-flags` and displays selected-paper critic flags in Paper Detail. (codex)
 - Changed: Research dashboard now loads `GET /api/search-jobs/:id/outputs` and shows CSV, Markdown, planned XLSX, and planned PDF artifacts with links where available. (codex)

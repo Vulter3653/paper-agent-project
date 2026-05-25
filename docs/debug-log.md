@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - XLSX Output Generation
+
+- Context: After Critic and output artifacts were visible in the dashboard, XLSX remained a planned artifact and was the next lowest-risk report output to implement before PDF. (codex)
+- Change: Added minimal OOXML XLSX generation in the Worker, R2 persistence, `/papers.xlsx` download endpoint, and output metadata status updates. (codex)
+- Expected effect: New completed jobs expose CSV, Markdown, and XLSX as generated/stored artifacts, leaving only PDF as planned. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
+
 ## 2026-05-25 - Dashboard Artifact Visibility
 
 - Context: After `critic_flags` and `job_outputs` were verified through direct API calls, the dashboard still lacked visible panels for those artifacts. (codex)

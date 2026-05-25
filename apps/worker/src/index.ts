@@ -469,6 +469,21 @@ export default {
       }
     }
 
+    const xlsxMatch = url.pathname.match(/^\/api\/search-jobs\/([^/]+)\/papers\.xlsx$/);
+    if (xlsxMatch && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const result = await getSearchResult(env.DB, xlsxMatch[1]);
+        if (!result) return json({ error: "Search job not found" }, 404);
+        const stored = await getStoredOutput(env.REPORTS, getXlsxOutputKey(result.job.id), getXlsxFileName(result));
+        if (stored) return stored;
+        return xlsx(result);
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
     return json({ error: "Not found" }, 404);
   }
 };
@@ -1275,7 +1290,7 @@ async function processSearchJob(
     await persistCriticFlags(db, completedJob.id, criticFlags);
     const outputRecords = await persistSearchOutputs(options.reports, { job: completedJob, papers: rankedPapers });
     await persistJobOutputs(db, completedJob.id, outputRecords);
-    await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV and Markdown report outputs and recorded XLSX/PDF as planned outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
+    await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, and XLSX outputs and recorded PDF as a planned output.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
     await recordAgentTrace(db, completedJob, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });
   } catch (error) {
     await saveSearchFailure(db, job, error);
@@ -2497,12 +2512,20 @@ async function persistSearchOutputs(reports: R2Bucket | undefined, result: Searc
     contentType: "text/markdown; charset=utf-8",
     detail: reports ? "Markdown report persisted to R2." : "Markdown report is generated dynamically from D1 when requested."
   };
+  const xlsxOutput: JobOutputRecord = {
+    outputType: "xlsx",
+    status: reports ? "stored" : "generated",
+    storage: reports ? "r2" : "dynamic",
+    key: getXlsxOutputKey(result.job.id),
+    urlPath: "/api/search-jobs/" + result.job.id + "/papers.xlsx",
+    contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    detail: reports ? "XLSX workbook persisted to R2." : "XLSX workbook is generated dynamically from D1 when requested."
+  };
   const plannedOutputs: JobOutputRecord[] = [
-    { outputType: "xlsx", status: "planned", storage: "planned", key: "", urlPath: "", contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", detail: "XLSX generation remains planned after full workflow skeleton completion." },
-    { outputType: "pdf", status: "planned", storage: "planned", key: "", urlPath: "", contentType: "application/pdf", detail: "PDF generation remains planned after full workflow skeleton completion." }
+    { outputType: "pdf", status: "planned", storage: "planned", key: "", urlPath: "", contentType: "application/pdf", detail: "PDF generation remains planned after XLSX output completion." }
   ];
 
-  if (!reports) return [csvOutput, markdownOutput, ...plannedOutputs];
+  if (!reports) return [csvOutput, markdownOutput, xlsxOutput, ...plannedOutputs];
 
   try {
     await Promise.all([
@@ -2517,15 +2540,22 @@ async function persistSearchOutputs(reports: R2Bucket | undefined, result: Searc
           contentType: markdownOutput.contentType,
           contentDisposition: `attachment; filename="${getMarkdownReportFileName(result)}"`
         }
+      }),
+      reports.put(xlsxOutput.key, getXlsxBody(result), {
+        httpMetadata: {
+          contentType: xlsxOutput.contentType,
+          contentDisposition: `attachment; filename="${getXlsxFileName(result)}"`
+        }
       })
     ]);
-    return [csvOutput, markdownOutput, ...plannedOutputs];
+    return [csvOutput, markdownOutput, xlsxOutput, ...plannedOutputs];
   } catch (error) {
     const detail = "R2 output persistence failed: " + getErrorMessage(error);
     console.warn("R2 output persistence failed for " + result.job.id + ": " + getErrorMessage(error));
     return [
       { ...csvOutput, status: "failed", detail },
       { ...markdownOutput, status: "failed", detail },
+      { ...xlsxOutput, status: "failed", detail },
       ...plannedOutputs
     ];
   }
@@ -2551,12 +2581,20 @@ function getMarkdownReportOutputKey(jobId: string): string {
   return `reports/${jobId}/report.md`;
 }
 
+function getXlsxOutputKey(jobId: string): string {
+  return `reports/${jobId}/papers.xlsx`;
+}
+
 function getCsvFileName(result: SearchResult): string {
   return `${sanitizeFileName(result.job.keyword)}-${result.job.id}.csv`;
 }
 
 function getMarkdownReportFileName(result: SearchResult): string {
   return `${sanitizeFileName(result.job.keyword)}-${result.job.id}-report.md`;
+}
+
+function getXlsxFileName(result: SearchResult): string {
+  return `${sanitizeFileName(result.job.keyword)}-${result.job.id}.xlsx`;
 }
 
 function csv(result: SearchResult): Response {
@@ -2571,7 +2609,11 @@ function csv(result: SearchResult): Response {
 }
 
 function getCsvBody(result: SearchResult): string {
-  const headers = [
+  return [getCsvHeaders(), ...getCsvRows(result)].map((row) => row.map(formatCsvCell).join(",")).join("\n");
+}
+
+function getCsvHeaders(): string[] {
+  return [
     "job_id",
     "keyword",
     "rank",
@@ -2611,7 +2653,10 @@ function getCsvBody(result: SearchResult): string {
     "include_status",
     "relevance_reason"
   ];
-  const rows = result.papers.map((paper) => [
+}
+
+function getCsvRows(result: SearchResult): Array<Array<string | number>> {
+  return result.papers.map((paper) => [
     result.job.id,
     result.job.keyword,
     paper.rank,
@@ -2651,7 +2696,170 @@ function getCsvBody(result: SearchResult): string {
     paper.includeStatus,
     paper.relevanceReason
   ]);
-  return [headers, ...rows].map((row) => row.map(formatCsvCell).join(",")).join("\n");
+}
+
+function xlsx(result: SearchResult): Response {
+  return new Response(getXlsxBody(result), {
+    headers: {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="${getXlsxFileName(result)}"`,
+      ...corsHeaders()
+    }
+  });
+}
+
+function getXlsxBody(result: SearchResult): Uint8Array {
+  const files: Array<{ name: string; body: string }> = [
+    { name: "[Content_Types].xml", body: getXlsxContentTypesXml() },
+    { name: "_rels/.rels", body: getXlsxRootRelsXml() },
+    { name: "xl/workbook.xml", body: getXlsxWorkbookXml() },
+    { name: "xl/_rels/workbook.xml.rels", body: getXlsxWorkbookRelsXml() },
+    { name: "xl/worksheets/sheet1.xml", body: getXlsxWorksheetXml(result) }
+  ];
+  return createZip(files);
+}
+
+function getXlsxContentTypesXml(): string {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+    '</Types>';
+}
+
+function getXlsxRootRelsXml(): string {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+    '</Relationships>';
+}
+
+function getXlsxWorkbookXml(): string {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<sheets><sheet name="Ranked Papers" sheetId="1" r:id="rId1"/></sheets></workbook>';
+}
+
+function getXlsxWorkbookRelsXml(): string {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+    '</Relationships>';
+}
+
+function getXlsxWorksheetXml(result: SearchResult): string {
+  const rows = [getCsvHeaders(), ...getCsvRows(result)];
+  const xmlRows = rows.map((row, rowIndex) => {
+    const cells = row.map((value, columnIndex) => {
+      const cellRef = columnName(columnIndex + 1) + String(rowIndex + 1);
+      return '<c r="' + cellRef + '" t="inlineStr"><is><t>' + escapeXml(String(value ?? '')) + '</t></is></c>';
+    }).join('');
+    return '<row r="' + String(rowIndex + 1) + '">' + cells + '</row>';
+  }).join('');
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetData>' + xmlRows + '</sheetData></worksheet>';
+}
+
+function columnName(index: number): string {
+  let name = "";
+  let current = index;
+  while (current > 0) {
+    current -= 1;
+    name = String.fromCharCode(65 + (current % 26)) + name;
+    current = Math.floor(current / 26);
+  }
+  return name;
+}
+
+function escapeXml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+
+function createZip(files: Array<{ name: string; body: string }>): Uint8Array {
+  const encoder = new TextEncoder();
+  const localParts: Uint8Array[] = [];
+  const centralParts: Uint8Array[] = [];
+  let offset = 0;
+
+  for (const file of files) {
+    const nameBytes = encoder.encode(file.name);
+    const bodyBytes = encoder.encode(file.body);
+    const crc = crc32(bodyBytes);
+    const localHeader = new Uint8Array(30 + nameBytes.length);
+    const localView = new DataView(localHeader.buffer);
+    localView.setUint32(0, 0x04034b50, true);
+    localView.setUint16(4, 20, true);
+    localView.setUint16(6, 0, true);
+    localView.setUint16(8, 0, true);
+    localView.setUint16(10, 0, true);
+    localView.setUint16(12, 0, true);
+    localView.setUint32(14, crc, true);
+    localView.setUint32(18, bodyBytes.length, true);
+    localView.setUint32(22, bodyBytes.length, true);
+    localView.setUint16(26, nameBytes.length, true);
+    localView.setUint16(28, 0, true);
+    localHeader.set(nameBytes, 30);
+    localParts.push(localHeader, bodyBytes);
+
+    const centralHeader = new Uint8Array(46 + nameBytes.length);
+    const centralView = new DataView(centralHeader.buffer);
+    centralView.setUint32(0, 0x02014b50, true);
+    centralView.setUint16(4, 20, true);
+    centralView.setUint16(6, 20, true);
+    centralView.setUint16(8, 0, true);
+    centralView.setUint16(10, 0, true);
+    centralView.setUint16(12, 0, true);
+    centralView.setUint16(14, 0, true);
+    centralView.setUint32(16, crc, true);
+    centralView.setUint32(20, bodyBytes.length, true);
+    centralView.setUint32(24, bodyBytes.length, true);
+    centralView.setUint16(28, nameBytes.length, true);
+    centralView.setUint16(30, 0, true);
+    centralView.setUint16(32, 0, true);
+    centralView.setUint16(34, 0, true);
+    centralView.setUint16(36, 0, true);
+    centralView.setUint32(38, 0, true);
+    centralView.setUint32(42, offset, true);
+    centralHeader.set(nameBytes, 46);
+    centralParts.push(centralHeader);
+    offset += localHeader.length + bodyBytes.length;
+  }
+
+  const centralSize = centralParts.reduce((total, part) => total + part.length, 0);
+  const endRecord = new Uint8Array(22);
+  const endView = new DataView(endRecord.buffer);
+  endView.setUint32(0, 0x06054b50, true);
+  endView.setUint16(8, files.length, true);
+  endView.setUint16(10, files.length, true);
+  endView.setUint32(12, centralSize, true);
+  endView.setUint32(16, offset, true);
+
+  return concatUint8Arrays([...localParts, ...centralParts, endRecord]);
+}
+
+function concatUint8Arrays(parts: Uint8Array[]): Uint8Array {
+  const length = parts.reduce((total, part) => total + part.length, 0);
+  const output = new Uint8Array(length);
+  let offset = 0;
+  for (const part of parts) {
+    output.set(part, offset);
+    offset += part.length;
+  }
+  return output;
+}
+
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let index = 0; index < 8; index += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
 }
 
 function markdownReport(result: SearchResult): Response {

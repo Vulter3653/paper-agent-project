@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-25 (codex)
 
+- Added: Implemented dynamic and R2-persisted XLSX workbook output at `GET /api/search-jobs/:id/papers.xlsx`, replacing the XLSX artifact state from planned to generated/stored. (codex)
 - Changed: Connected `critic_flags` and `job_outputs` APIs to dashboard UI panels for Paper Detail, Output Artifacts, Ops metrics, live Critic Review, and artifact download links. (codex)
 - Added: Implemented full workflow skeleton persistence with `critic_flags` and `job_outputs` D1 tables, Critic Agent rule-based flags, output metadata APIs, and completed fallback relevance trace status in `apps/worker/src/index.ts` and `apps/worker/schema.sql`. (codex)
 - Changed: Added dashboard trace metadata display for `enrichmentLimit`, processed counts, skipped counts, Crossref verification, Unpaywall OA, and Google Drive storage summaries in `apps/web/src/main.tsx` and `apps/web/src/dashboard/DashboardPages.tsx`. (codex)

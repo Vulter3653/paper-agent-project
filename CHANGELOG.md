@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-25 (codex)
 
+- Docs: Cleaned up 2026-05-25 progress/debug headings so PDF, XLSX, dashboard artifact visibility, skeleton persistence, and enrichment trace records are separated for handoff. (codex)
 - Added: Implemented text-based PDF report output at `GET /api/search-jobs/:id/report.pdf`, including R2 persistence and `job_outputs` generated/stored status. (codex)
 - Added: Implemented dynamic and R2-persisted XLSX workbook output at `GET /api/search-jobs/:id/papers.xlsx`, replacing the XLSX artifact state from planned to generated/stored. (codex)
 - Changed: Connected `critic_flags` and `job_outputs` APIs to dashboard UI panels for Paper Detail, Output Artifacts, Ops metrics, live Critic Review, and artifact download links. (codex)

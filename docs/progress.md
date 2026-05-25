@@ -68,38 +68,36 @@ Updated: 2026-05-24 (codex dashboard mock clarity)
 - Docs: Updated `jin23624_cpu/README.md`, `juilie_bot_hub/README.md`, `shonshinemin_cmd/README.md`, `unassigned_member_c/README.md`, and `seunghyeon_choi/README.md` with current status and next actions. (codex)
 - Status: `juilie_bot_hub` manual review is complete; `shonshinemin_cmd` metric QA output exists; `jin23624_cpu` gold refinement and `unassigned_member_c` baselines remain the next team priorities. (codex)
 
-## codex - Dashboard Artifact Visibility (2026-05-25)## codex - XLSX Output Generation (2026-05-25)## codex - PDF Report Output (2026-05-25)
+## codex - PDF Report Output (2026-05-25)
 
 - Added: Worker now generates a text-based PDF report from ranked paper metadata without adding a package dependency. (codex)
 - Added: `GET /api/search-jobs/:id/report.pdf` serves the stored R2 PDF when available or generates it dynamically from D1. (codex)
 - Changed: `job_outputs` now records PDF as `stored` or `generated`, so CSV, Markdown, XLSX, and PDF are all implemented report artifacts. (codex)
 - Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
 
-
+## codex - XLSX Output Generation (2026-05-25)
 
 - Added: Worker now generates a minimal XLSX workbook from ranked paper rows without adding a package dependency. (codex)
 - Added: `GET /api/search-jobs/:id/papers.xlsx` serves the stored R2 workbook when available or generates it dynamically from D1. (codex)
 - Changed: `job_outputs` now records XLSX as `stored` or `generated`; PDF remains the only planned report artifact. (codex)
 - Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
 
-
+## codex - Dashboard Artifact Visibility (2026-05-25)
 
 - Changed: Research dashboard now loads `GET /api/search-jobs/:id/critic-flags` and displays selected-paper critic flags in Paper Detail. (codex)
-- Changed: Research dashboard now loads `GET /api/search-jobs/:id/outputs` and shows CSV, Markdown, planned XLSX, and planned PDF artifacts with links where available. (codex)
+- Changed: Research dashboard now loads `GET /api/search-jobs/:id/outputs` and shows CSV, Markdown, XLSX, and PDF artifacts with links where available. (codex)
 - Changed: Ops dashboard now shows output artifact rows, live critic flag rows, and Critic Flags / Outputs metric tiles from D1-backed APIs. (codex)
 - Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
-
-## codex - Enrichment Trace Visibility (2026-05-25)
 
 ## codex - Full Workflow Skeleton Persistence (2026-05-25)
 
 - Added: D1 `critic_flags` table plus rule-based Critic Agent flag generation for missing DOI, incomplete Crossref verification, low relevance, non-include screening status, and missing access paths. (codex)
-- Added: D1 `job_outputs` table plus `GET /api/search-jobs/:id/outputs` so CSV, Markdown, planned XLSX, and planned PDF output states are queryable per job. (codex)
+- Added: D1 `job_outputs` table plus `GET /api/search-jobs/:id/outputs` so CSV, Markdown, XLSX, and PDF output states are queryable per job. (codex)
 - Added: `GET /api/search-jobs/:id/critic-flags` so dashboard/API consumers can inspect persisted paper-level critic risk flags. (codex)
 - Changed: Relevance Agent trace now records metadata-fallback completion instead of `skipped`; Vectorize embeddings remain explicitly planned. (codex)
 - Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
 
-
+## codex - Enrichment Trace Visibility (2026-05-25)
 
 - Changed: Main Agent Traces panel now displays compact metadata chips for `limit`, `input`, `processed`, `skipped`, Crossref verification counts, Unpaywall OA counts, and Google Drive upload/skip counts. (codex)
 - Changed: `/dashboard/ops` now includes an Enrichment metric tile and expands pipeline, agent board, and console summaries with the same processed/skipped trace metadata. (codex)

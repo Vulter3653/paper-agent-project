@@ -21,16 +21,14 @@
 - Expected effect: Users can verify Critic and Report/Delivery stages from the UI without manually opening API URLs. (codex)
 - Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
 
-## 2026-05-25 - Enrichment Trace Visibility
-
 ## 2026-05-25 - Full Workflow Skeleton Persistence
 
 - Context: The user decided to implement all workflow stages first and defer quality optimization/refinement until after end-to-end coverage exists. (codex)
 - Change: Added persistent Critic Agent flags, output metadata records, read APIs for both, and changed the Relevance Agent trace to completed metadata fallback while keeping Vectorize as a planned enhancement. (codex)
-- Expected effect: New jobs should no longer have Critic/Report/Delivery as purely conceptual stages; each stage now leaves a D1-backed audit artifact even where XLSX/PDF/Vectorize remain planned. (codex)
+- Expected effect: New jobs should no longer have Critic/Report/Delivery as purely conceptual stages; each stage now leaves a D1-backed audit artifact even where Vectorize remains planned. (codex)
 - Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
 
-
+## 2026-05-25 - Enrichment Trace Visibility
 
 - Context: The latest production run completed successfully with `enrichmentLimit: 10`, but the dashboard did not clearly explain why Crossref and Unpaywall processed 10 rows and skipped 10 rows. (codex)
 - Change: Added UI parsing of `agent_traces.detail` JSON so main trace cards, Ops metric tiles, pipeline cards, agent cards, and console logs show enrichment limits, processed counts, skipped counts, OA counts, and Drive upload/skip counts. (codex)

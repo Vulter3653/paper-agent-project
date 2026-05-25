@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - PDF Dashboard Download Actions
+
+- Context: PDF generation and the `/report.pdf` endpoint were implemented, but dashboard users had to find the artifact link or manually open the endpoint. (codex)
+- Change: Added direct PDF download actions beside Markdown/CSV controls and inside Report Preview. (codex)
+- Expected effect: Users can confirm and download the PDF report directly from the Research dashboard after loading or completing a job. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
+
 ## 2026-05-25 - Critic Review Summary Integration
 
 - Context: Critic Agent data existed as persisted paper-level flags, but Report Preview, Markdown/PDF reports, and Paper Detail lacked a concise human-readable review decision. (codex)

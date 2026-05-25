@@ -1,6 +1,12 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-25 (codex critic review summary integration)
+Updated: 2026-05-25 (codex PDF dashboard download actions)
+
+## codex - PDF Dashboard Download Actions (2026-05-25)
+
+- Added: Research dashboard now exposes direct PDF report download buttons from both Ranked Papers toolbar and Report Preview. (codex)
+- Context: The Worker PDF endpoint already existed, but the primary dashboard actions emphasized Markdown/CSV and made PDF less discoverable. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
 
 ## codex - Critic Review Summary Integration (2026-05-25)
 

@@ -272,6 +272,11 @@ function ResearchDashboard() {
     window.location.href = apiUrl(`/api/search-jobs/${job.id}/report.md`);
   }
 
+  function downloadPdfReport() {
+    if (!job) return;
+    window.location.href = apiUrl(`/api/search-jobs/${job.id}/report.pdf`);
+  }
+
   async function refreshAgentTraces(jobId = job?.id) {
     if (!jobId) return;
     setAgentTracesLoading(true);
@@ -490,6 +495,9 @@ function ResearchDashboard() {
                 <button className="iconButton" onClick={downloadReport} disabled={!job} aria-label="Download Markdown report" title="Download Markdown report">
                   <FileText size={18} />
                 </button>
+                <button className="iconButton" onClick={downloadPdfReport} disabled={!job} aria-label="Download PDF report" title="Download PDF report">
+                  <Download size={18} />
+                </button>
                 <button className="iconButton" onClick={downloadCsv} disabled={!job} aria-label="Download CSV" title="Download CSV">
                   <Download size={18} />
                 </button>
@@ -566,6 +574,7 @@ function ResearchDashboard() {
             errorMessage={reportPreviewError}
             onRefresh={() => refreshReportPreview()}
             onDownload={downloadReport}
+            onPdfDownload={downloadPdfReport}
           />
         </section>
 
@@ -946,7 +955,8 @@ function ReportPreviewPanel({
   loading,
   errorMessage,
   onRefresh,
-  onDownload
+  onDownload,
+  onPdfDownload
 }: {
   job: SearchJob | null;
   report: string;
@@ -954,6 +964,7 @@ function ReportPreviewPanel({
   errorMessage: string;
   onRefresh: () => void;
   onDownload: () => void;
+  onPdfDownload: () => void;
 }) {
   const sections = useMemo(() => extractReportSections(report), [report]);
   const canLoad = Boolean(job);
@@ -970,7 +981,10 @@ function ReportPreviewPanel({
           <button className="iconButton" onClick={onRefresh} disabled={!canLoad || loading} aria-label="Refresh report preview">
             <RefreshCw size={18} className={loading ? "spin" : undefined} />
           </button>
-          <button className="iconButton" onClick={onDownload} disabled={!canLoad} aria-label="Download Markdown report">
+          <button className="iconButton" onClick={onDownload} disabled={!canLoad} aria-label="Download Markdown report" title="Download Markdown report">
+            <FileText size={18} />
+          </button>
+          <button className="iconButton" onClick={onPdfDownload} disabled={!canLoad} aria-label="Download PDF report" title="Download PDF report">
             <Download size={18} />
           </button>
         </div>

@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - PDF Report Output
+
+- Context: CSV, Markdown, and XLSX were implemented; PDF remained the last planned report artifact. (codex)
+- Change: Added Worker-native PDF generation, R2 persistence, `/report.pdf` download endpoint, and output metadata status updates. (codex)
+- Expected effect: New completed jobs expose all four report artifacts as generated or stored: CSV, Markdown, XLSX, and PDF. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, and `npm run build` passed in this session. (codex)
+
 ## 2026-05-25 - XLSX Output Generation
 
 - Context: After Critic and output artifacts were visible in the dashboard, XLSX remained a planned artifact and was the next lowest-risk report output to implement before PDF. (codex)

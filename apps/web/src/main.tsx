@@ -683,7 +683,7 @@ function OutputArtifactsPanel({
             </div>
             <StatusBadge value={output.status} tone={getOutputTone(output.status)} />
           </article>
-        )) : <p className="emptyState">Completed jobs record CSV, Markdown, generated XLSX, and planned PDF outputs.</p>}
+        )) : <p className="emptyState">Completed jobs record CSV, Markdown, XLSX, and PDF outputs.</p>}
       </div>
     </section>
   );

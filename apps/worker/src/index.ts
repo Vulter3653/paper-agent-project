@@ -484,6 +484,21 @@ export default {
       }
     }
 
+    const pdfMatch = url.pathname.match(/^\/api\/search-jobs\/([^/]+)\/report\.pdf$/);
+    if (pdfMatch && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const result = await getSearchResult(env.DB, pdfMatch[1]);
+        if (!result) return json({ error: "Search job not found" }, 404);
+        const stored = await getStoredOutput(env.REPORTS, getPdfOutputKey(result.job.id), getPdfFileName(result));
+        if (stored) return stored;
+        return pdf(result);
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
     return json({ error: "Not found" }, 404);
   }
 };
@@ -1290,7 +1305,7 @@ async function processSearchJob(
     await persistCriticFlags(db, completedJob.id, criticFlags);
     const outputRecords = await persistSearchOutputs(options.reports, { job: completedJob, papers: rankedPapers });
     await persistJobOutputs(db, completedJob.id, outputRecords);
-    await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, and XLSX outputs and recorded PDF as a planned output.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
+    await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, XLSX, and PDF report outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
     await recordAgentTrace(db, completedJob, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });
   } catch (error) {
     await saveSearchFailure(db, job, error);
@@ -2521,11 +2536,17 @@ async function persistSearchOutputs(reports: R2Bucket | undefined, result: Searc
     contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     detail: reports ? "XLSX workbook persisted to R2." : "XLSX workbook is generated dynamically from D1 when requested."
   };
-  const plannedOutputs: JobOutputRecord[] = [
-    { outputType: "pdf", status: "planned", storage: "planned", key: "", urlPath: "", contentType: "application/pdf", detail: "PDF generation remains planned after XLSX output completion." }
-  ];
+  const pdfOutput: JobOutputRecord = {
+    outputType: "pdf",
+    status: reports ? "stored" : "generated",
+    storage: reports ? "r2" : "dynamic",
+    key: getPdfOutputKey(result.job.id),
+    urlPath: "/api/search-jobs/" + result.job.id + "/report.pdf",
+    contentType: "application/pdf",
+    detail: reports ? "PDF report persisted to R2." : "PDF report is generated dynamically from D1 when requested."
+  };
 
-  if (!reports) return [csvOutput, markdownOutput, xlsxOutput, ...plannedOutputs];
+  if (!reports) return [csvOutput, markdownOutput, xlsxOutput, pdfOutput];
 
   try {
     await Promise.all([
@@ -2546,9 +2567,15 @@ async function persistSearchOutputs(reports: R2Bucket | undefined, result: Searc
           contentType: xlsxOutput.contentType,
           contentDisposition: `attachment; filename="${getXlsxFileName(result)}"`
         }
+      }),
+      reports.put(pdfOutput.key, getPdfBody(result), {
+        httpMetadata: {
+          contentType: pdfOutput.contentType,
+          contentDisposition: `attachment; filename="${getPdfFileName(result)}"`
+        }
       })
     ]);
-    return [csvOutput, markdownOutput, xlsxOutput, ...plannedOutputs];
+    return [csvOutput, markdownOutput, xlsxOutput, pdfOutput];
   } catch (error) {
     const detail = "R2 output persistence failed: " + getErrorMessage(error);
     console.warn("R2 output persistence failed for " + result.job.id + ": " + getErrorMessage(error));
@@ -2556,7 +2583,7 @@ async function persistSearchOutputs(reports: R2Bucket | undefined, result: Searc
       { ...csvOutput, status: "failed", detail },
       { ...markdownOutput, status: "failed", detail },
       { ...xlsxOutput, status: "failed", detail },
-      ...plannedOutputs
+      { ...pdfOutput, status: "failed", detail }
     ];
   }
 }
@@ -2585,6 +2612,10 @@ function getXlsxOutputKey(jobId: string): string {
   return `reports/${jobId}/papers.xlsx`;
 }
 
+function getPdfOutputKey(jobId: string): string {
+  return `reports/${jobId}/report.pdf`;
+}
+
 function getCsvFileName(result: SearchResult): string {
   return `${sanitizeFileName(result.job.keyword)}-${result.job.id}.csv`;
 }
@@ -2595,6 +2626,10 @@ function getMarkdownReportFileName(result: SearchResult): string {
 
 function getXlsxFileName(result: SearchResult): string {
   return `${sanitizeFileName(result.job.keyword)}-${result.job.id}.xlsx`;
+}
+
+function getPdfFileName(result: SearchResult): string {
+  return `${sanitizeFileName(result.job.keyword)}-${result.job.id}-report.pdf`;
 }
 
 function csv(result: SearchResult): Response {
@@ -2696,6 +2731,127 @@ function getCsvRows(result: SearchResult): Array<Array<string | number>> {
     paper.includeStatus,
     paper.relevanceReason
   ]);
+}
+
+function pdf(result: SearchResult): Response {
+  return new Response(getPdfBody(result), {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${getPdfFileName(result)}"`,
+      ...corsHeaders()
+    }
+  });
+}
+
+function getPdfBody(result: SearchResult): Uint8Array {
+  const lines = getPdfReportLines(result);
+  const pages = paginatePdfLines(lines);
+  const objects: string[] = ["", "<< /Type /Catalog /Pages 2 0 R >>", "", "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"];
+  const pageObjectIds: number[] = [];
+
+  for (const pageLines of pages) {
+    const stream = getPdfPageStream(pageLines);
+    const contentObjectId = objects.length;
+    objects.push("<< /Length " + stream.length + " >>\nstream\n" + stream + "endstream");
+    const pageObjectId = objects.length;
+    objects.push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents " + contentObjectId + " 0 R >>");
+    pageObjectIds.push(pageObjectId);
+  }
+
+  objects[2] = "<< /Type /Pages /Kids [" + pageObjectIds.map((id) => id + " 0 R").join(" ") + "] /Count " + pageObjectIds.length + " >>";
+  return encodePdfObjects(objects);
+}
+
+function getPdfReportLines(result: SearchResult): string[] {
+  const summary = summarizeReport(result.papers);
+  const lines = [
+    "Paper Agent Report",
+    "Job ID: " + result.job.id,
+    "Keyword: " + result.job.keyword,
+    "Status: " + result.job.status,
+    "Generated at: " + new Date().toISOString(),
+    "Paper count: " + result.papers.length,
+    "Include / Review / Exclude: " + summary.includeCount + " / " + summary.reviewCount + " / " + summary.excludeCount,
+    "Open access with PDF: " + summary.oaPdfCount,
+    "Average final score: " + formatReportScore(summary.averageFinalScore),
+    "",
+    "Top Ranked Papers"
+  ];
+
+  for (const paper of result.papers.slice(0, 20)) {
+    lines.push(
+      "",
+      String(paper.rank) + ". " + paper.title,
+      "Authors: " + paper.authors,
+      "Year / Journal: " + (paper.year || "Unknown") + " / " + paper.journalName,
+      "Field / Rank: " + ([paper.journalField, paper.journalRank].filter(Boolean).join(" / ") || "Unmatched"),
+      "DOI: " + (paper.doi || "Not available"),
+      "Final score: " + formatReportScore(paper.finalScore) + " / " + paper.includeStatus,
+      "Verification: " + (paper.verificationStatus ?? "unverified") + " - " + (paper.verificationReason ?? "No verification recorded."),
+      "Access: " + (paper.oaPdfUrl || paper.oaLandingPageUrl || paper.driveWebUrl || "No direct access URL recorded."),
+      "Reason: " + paper.relevanceReason
+    );
+  }
+
+  return lines.flatMap((line) => wrapPdfLine(normalizePdfText(line), 92));
+}
+
+function paginatePdfLines(lines: string[]): string[][] {
+  const pageSize = 48;
+  const pages: string[][] = [];
+  for (let index = 0; index < lines.length; index += pageSize) pages.push(lines.slice(index, index + pageSize));
+  return pages.length ? pages : [["Paper Agent Report", "No content available."]];
+}
+
+function getPdfPageStream(lines: string[]): string {
+  const escapedLines = lines.map((line) => "(" + escapePdfString(line) + ") Tj T*").join("\n");
+  return "BT\n/F1 10 Tf\n14 TL\n54 738 Td\n" + escapedLines + "\nET\n";
+}
+
+function encodePdfObjects(objects: string[]): Uint8Array {
+  const encoder = new TextEncoder();
+  const parts: string[] = ["%PDF-1.4\n"];
+  const offsets: number[] = [0];
+  let length = encoder.encode(parts[0]).length;
+
+  for (let index = 1; index < objects.length; index += 1) {
+    offsets[index] = length;
+    const objectBody = index + " 0 obj\n" + objects[index] + "\nendobj\n";
+    parts.push(objectBody);
+    length += encoder.encode(objectBody).length;
+  }
+
+  const xrefOffset = length;
+  const xrefRows = offsets.slice(1).map((offset) => String(offset).padStart(10, "0") + " 00000 n ");
+  const trailer = "xref\n0 " + objects.length + "\n0000000000 65535 f \n" + xrefRows.join("\n") + "\ntrailer\n<< /Size " + objects.length + " /Root 1 0 R >>\nstartxref\n" + xrefOffset + "\n%%EOF\n";
+  parts.push(trailer);
+  return encoder.encode(parts.join(""));
+}
+
+function wrapPdfLine(line: string, width: number): string[] {
+  if (line.length <= width) return [line];
+  const words = line.split(/\s+/);
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? current + " " + word : word;
+    if (candidate.length > width && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
+function normalizePdfText(value: string): string {
+  return value.normalize("NFKD").replace(/[^\x20-\x7E]/g, "?");
+}
+
+function escapePdfString(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
 }
 
 function xlsx(result: SearchResult): Response {

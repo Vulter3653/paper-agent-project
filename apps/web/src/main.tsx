@@ -579,6 +579,7 @@ function ResearchDashboard() {
 }
 
 function PaperDetailPanel({ selected, criticFlags, errorMessage }: { selected?: PaperSummary; criticFlags: CriticFlag[]; errorMessage: string }) {
+  const criticReview = selected ? buildCriticReviewSummary(selected, criticFlags) : null;
   return (
     <section className="detailPanel">
       <div className="panelTitle">
@@ -595,6 +596,7 @@ function PaperDetailPanel({ selected, criticFlags, errorMessage }: { selected?: 
             <span className="scorePill">{selected.finalScore.toFixed(2)}</span>
           </div>
           <h3>{selected.title}</h3>
+          {criticReview ? <CriticReviewSummaryCard review={criticReview} /> : null}
           <ScoreBreakdown paper={selected} />
           <dl>
             <dt>Authors</dt>
@@ -644,6 +646,32 @@ function PaperDetailPanel({ selected, criticFlags, errorMessage }: { selected?: 
       ) : (
         <p className="emptyState">No allowed journal result selected.</p>
       )}
+    </section>
+  );
+}
+
+type CriticReviewSummary = {
+  riskLevel: CriticFlag["severity"] | "clear";
+  decision: string;
+  note: string;
+  evidence: string;
+  flagTypes: string;
+  actions: string[];
+};
+
+function CriticReviewSummaryCard({ review }: { review: CriticReviewSummary }) {
+  return (
+    <section className="criticReviewSummary">
+      <div>
+        <span>Critic Review</span>
+        <strong>{review.decision}</strong>
+      </div>
+      <StatusBadge value={review.riskLevel} tone={getCriticReviewTone(review.riskLevel)} />
+      <p>{review.note}</p>
+      <small>Flags: {review.flagTypes}</small>
+      <ul>
+        {review.actions.map((action) => <li key={action}>{action}</li>)}
+      </ul>
     </section>
   );
 }
@@ -1158,6 +1186,53 @@ function getTraceTone(status: AgentTrace["status"]): BadgeTone {
   if (status === "failed") return "danger";
   if (status === "skipped") return "warn";
   return "neutral";
+}
+
+function buildCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]): CriticReviewSummary {
+  const riskLevel = getCriticRiskLevel(flags);
+  const flagTypes = Array.from(new Set(flags.map((flag) => flag.flagType))).filter(Boolean);
+  const decision = riskLevel === "high"
+    ? "Manual review required"
+    : riskLevel === "medium"
+      ? "Use after targeted verification"
+      : riskLevel === "low"
+        ? "Usable with access caveat"
+        : "No critic issues detected";
+  const primaryIssue = flags[0]?.message ?? "No rule-based critic flags were generated for this paper.";
+  const evidence = flags[0]?.evidence ?? paper.relevanceReason;
+  const actions = flags.length
+    ? flags.slice(0, 3).map((flag) => getCriticAction(flag))
+    : ["Proceed to full-text reading and citation screening."];
+  return {
+    riskLevel,
+    decision,
+    note: decision + ". " + primaryIssue,
+    evidence,
+    flagTypes: flagTypes.length ? flagTypes.join(", ") : "none",
+    actions
+  };
+}
+
+function getCriticRiskLevel(flags: CriticFlag[]): CriticReviewSummary["riskLevel"] {
+  if (flags.some((flag) => flag.severity === "high")) return "high";
+  if (flags.some((flag) => flag.severity === "medium")) return "medium";
+  if (flags.some((flag) => flag.severity === "low")) return "low";
+  return "clear";
+}
+
+function getCriticAction(flag: CriticFlag): string {
+  if (flag.flagType === "missing_doi") return "Confirm DOI or publisher metadata before citation.";
+  if (flag.flagType === "crossref_verification") return "Compare Crossref metadata with the publisher record.";
+  if (flag.flagType === "low_relevance") return "Read abstract/introduction to confirm topic fit.";
+  if (flag.flagType === "screening_status") return "Manually decide include, review, or exclude before synthesis.";
+  if (flag.flagType === "access_path") return "Use DOI, library access, or institutional subscription for full text.";
+  return "Review this flag before using the paper.";
+}
+
+function getCriticReviewTone(riskLevel: CriticReviewSummary["riskLevel"]): BadgeTone {
+  if (riskLevel === "high") return "danger";
+  if (riskLevel === "medium" || riskLevel === "low") return "warn";
+  return "ok";
 }
 
 function getSeverityTone(severity: CriticFlag["severity"]): BadgeTone {

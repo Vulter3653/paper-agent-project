@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-25 (codex responsive research panels)
+Updated: 2026-05-25 (codex critic review summary integration)
+
+## codex - Critic Review Summary Integration (2026-05-25)
+
+- Changed: Report generation now summarizes Critic Agent flags in Markdown and PDF outputs with total severity counts, per-paper risk, decision notes, and recommended manual-review actions. (codex)
+- Changed: Research dashboard Paper Detail now displays a Critic Review summary card before score breakdown, using the selected paper's D1-backed critic flags. (codex)
+- Changed: Markdown/PDF endpoints now generate from D1 job and critic data dynamically so existing jobs can show current critic summaries instead of stale R2 report bodies. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
 
 ## codex - Responsive Research Panels (2026-05-25)
 

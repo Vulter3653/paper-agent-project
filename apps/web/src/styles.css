@@ -766,6 +766,54 @@ tbody tr.selected {
   padding: 12px 18px 8px;
 }
 
+
+.criticReviewSummary {
+  background: #fbfcfd;
+  border: 1px solid #d9e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin: 0 18px 10px;
+  padding: 12px;
+}
+
+.criticReviewSummary > div {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.criticReviewSummary span,
+.criticReviewSummary small {
+  color: #607080;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.criticReviewSummary strong {
+  color: #1d2b3a;
+  font-size: 14px;
+}
+
+.criticReviewSummary p {
+  color: #2c3947;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.criticReviewSummary ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.criticReviewSummary li {
+  color: #405060;
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
 .scoreBreakdown {
   border-bottom: 1px solid #e8edf2;
   margin: 0 18px 4px;

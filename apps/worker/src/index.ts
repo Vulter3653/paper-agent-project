@@ -459,10 +459,8 @@ export default {
       try {
         if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
         await ensureSchema(env.DB);
-        const result = await getSearchResult(env.DB, reportMatch[1]);
+        const result = await getSearchResultWithCriticFlags(env.DB, reportMatch[1]);
         if (!result) return json({ error: "Search job not found" }, 404);
-        const stored = await getStoredOutput(env.REPORTS, getMarkdownReportOutputKey(result.job.id), getMarkdownReportFileName(result));
-        if (stored) return stored;
         return markdownReport(result);
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
@@ -489,10 +487,8 @@ export default {
       try {
         if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
         await ensureSchema(env.DB);
-        const result = await getSearchResult(env.DB, pdfMatch[1]);
+        const result = await getSearchResultWithCriticFlags(env.DB, pdfMatch[1]);
         if (!result) return json({ error: "Search job not found" }, 404);
-        const stored = await getStoredOutput(env.REPORTS, getPdfOutputKey(result.job.id), getPdfFileName(result));
-        if (stored) return stored;
         return pdf(result);
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
@@ -1071,6 +1067,57 @@ function buildCriticFlags(papers: PaperRecord[]): CriticFlag[] {
   return flags;
 }
 
+function normalizeCriticSeverity(severity: string): CriticFlag["severity"] {
+  if (severity === "high" || severity === "medium" || severity === "low") return severity;
+  return "low";
+}
+
+function getCriticFlagsForPaper(result: SearchResult, paper: PaperSummary): CriticFlag[] {
+  return result.criticFlags?.filter((flag) => flag.paperRank === paper.rank) ?? [];
+}
+
+function getCriticRiskLevel(flags: CriticFlag[]): CriticFlag["severity"] | "clear" {
+  if (flags.some((flag) => flag.severity === "high")) return "high";
+  if (flags.some((flag) => flag.severity === "medium")) return "medium";
+  if (flags.some((flag) => flag.severity === "low")) return "low";
+  return "clear";
+}
+
+function buildCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]) {
+  const riskLevel = getCriticRiskLevel(flags);
+  const flagTypes = Array.from(new Set(flags.map((flag) => flag.flagType))).filter(Boolean);
+  const decision = riskLevel === "high"
+    ? "Manual review required before citation"
+    : riskLevel === "medium"
+      ? "Use after targeted verification"
+      : riskLevel === "low"
+        ? "Usable with access caveat"
+        : "No critic issues detected";
+  const primaryIssue = flags[0]?.message ?? "No rule-based critic flags were generated for this paper.";
+  const evidence = flags[0]?.evidence ?? paper.relevanceReason;
+  const actions = flags.length
+    ? flags.slice(0, 3).map((flag) => getCriticAction(flag))
+    : ["Proceed to full-text reading and citation screening."];
+  return {
+    riskLevel,
+    decision,
+    primaryIssue,
+    evidence,
+    flagTypes: flagTypes.length ? flagTypes.join(", ") : "none",
+    note: decision + ". " + primaryIssue,
+    actions
+  };
+}
+
+function getCriticAction(flag: CriticFlag): string {
+  if (flag.flagType === "missing_doi") return "Locate DOI or confirm bibliographic metadata from publisher page before citing.";
+  if (flag.flagType === "crossref_verification") return "Compare title, year, journal, authors, and DOI against Crossref or publisher metadata.";
+  if (flag.flagType === "low_relevance") return "Read abstract/introduction to confirm conceptual fit with the research question.";
+  if (flag.flagType === "screening_status") return "Treat ranking status as provisional and manually decide include, review, or exclude.";
+  if (flag.flagType === "access_path") return "Use DOI, library access, or institutional subscriptions because no direct OA path is recorded.";
+  return "Review this flag before using the paper in final synthesis.";
+}
+
 function summarizeCriticFlags(flags: CriticFlag[]) {
   return {
     total: flags.length,
@@ -1303,7 +1350,7 @@ async function processSearchJob(
     const completedJob = completeSearchJob(job);
     await saveSearchResult(db, completedJob, rankedPapers, { sourceResultCount: candidates.length, allowedResultCount: allowedPapers.length });
     await persistCriticFlags(db, completedJob.id, criticFlags);
-    const outputRecords = await persistSearchOutputs(options.reports, { job: completedJob, papers: rankedPapers });
+    const outputRecords = await persistSearchOutputs(options.reports, { job: completedJob, papers: rankedPapers, criticFlags });
     await persistJobOutputs(db, completedJob.id, outputRecords);
     await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, XLSX, and PDF report outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
     await recordAgentTrace(db, completedJob, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });
@@ -2324,7 +2371,13 @@ async function getSearchResult(db: D1Database, jobId: string): Promise<{ job: Se
   };
 }
 
-async function listCriticFlags(db: D1Database, jobId: string) {
+async function getSearchResultWithCriticFlags(db: D1Database, jobId: string): Promise<SearchResult | null> {
+  const result = await getSearchResult(db, jobId);
+  if (!result) return null;
+  return { ...result, criticFlags: await listCriticFlags(db, jobId) };
+}
+
+async function listCriticFlags(db: D1Database, jobId: string): Promise<CriticFlag[]> {
   const rows = await db
     .prepare(
       "SELECT id, job_id, paper_id, paper_rank, severity, flag_type, message, evidence, created_at " +
@@ -2349,7 +2402,7 @@ async function listCriticFlags(db: D1Database, jobId: string) {
     jobId: row.job_id,
     paperId: row.paper_id,
     paperRank: row.paper_rank,
-    severity: row.severity,
+    severity: normalizeCriticSeverity(row.severity),
     flagType: row.flag_type,
     message: row.message,
     evidence: row.evidence ?? "",
@@ -2506,7 +2559,7 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-type SearchResult = { job: SearchJob; papers: PaperSummary[] };
+type SearchResult = { job: SearchJob; papers: PaperSummary[]; criticFlags?: CriticFlag[] };
 
 async function persistSearchOutputs(reports: R2Bucket | undefined, result: SearchResult): Promise<JobOutputRecord[]> {
   const csvOutput: JobOutputRecord = {
@@ -2773,6 +2826,7 @@ function getPdfReportLines(result: SearchResult): string[] {
     "Paper count: " + result.papers.length,
     "Include / Review / Exclude: " + summary.includeCount + " / " + summary.reviewCount + " / " + summary.excludeCount,
     "Open access with PDF: " + summary.oaPdfCount,
+    "Critic flags: " + summarizeCriticFlags(result.criticFlags ?? []).total + " total (high " + summarizeCriticFlags(result.criticFlags ?? []).high + ", medium " + summarizeCriticFlags(result.criticFlags ?? []).medium + ", low " + summarizeCriticFlags(result.criticFlags ?? []).low + ")",
     "Average final score: " + formatReportScore(summary.averageFinalScore),
     "",
     "Top Ranked Papers"
@@ -2789,6 +2843,8 @@ function getPdfReportLines(result: SearchResult): string[] {
       "Final score: " + formatReportScore(paper.finalScore) + " / " + paper.includeStatus,
       "Verification: " + (paper.verificationStatus ?? "unverified") + " - " + (paper.verificationReason ?? "No verification recorded."),
       "Access: " + (paper.oaPdfUrl || paper.oaLandingPageUrl || paper.driveWebUrl || "No direct access URL recorded."),
+      "Critic: " + buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).note,
+      "Action: " + buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).actions[0],
       "Reason: " + paper.relevanceReason
     );
   }
@@ -3032,6 +3088,8 @@ function markdownReport(result: SearchResult): Response {
 function getMarkdownReportBody(result: SearchResult): string {
   const summary = summarizeReport(result.papers);
   const reportInsights = buildReportInsights(result.papers);
+  const criticSummary = summarizeCriticFlags(result.criticFlags ?? []);
+  const topCriticFlags = (result.criticFlags ?? []).filter((flag) => flag.severity === "high" || flag.severity === "medium").slice(0, 8);
   const lines = [
     `# Paper Agent Report`,
     "",
@@ -3054,6 +3112,7 @@ function getMarkdownReportBody(result: SearchResult): string {
     `This report contains ${result.papers.length} allowlisted journal result${result.papers.length === 1 ? "" : "s"} for the search keyword "${result.job.keyword}".`,
     `The highest ranked result is ${summary.topPaper ? `"${summary.topPaper.title}" with a final score of ${formatReportScore(summary.topPaper.finalScore)}.` : "not available because no papers were saved."}`,
     `Crossref verification found ${summary.verifiedCount} verified result${summary.verifiedCount === 1 ? "" : "s"}, and Unpaywall found ${summary.oaPdfCount} result${summary.oaPdfCount === 1 ? "" : "s"} with a direct PDF URL.`,
+    `The Critic Agent generated ${criticSummary.total} review flag${criticSummary.total === 1 ? "" : "s"}: high ${criticSummary.high}, medium ${criticSummary.medium}, low ${criticSummary.low}.`,
     `The corpus spans ${summary.yearRange} and includes ${summary.journalCount} distinct journal${summary.journalCount === 1 ? "" : "s"}.`,
     "",
     "## Key Findings",
@@ -3076,6 +3135,12 @@ function getMarkdownReportBody(result: SearchResult): string {
     "",
     ...formatNumberedList(reportInsights.readingOrder),
     "",
+    "## Critic Review Summary",
+    "",
+    `- Total flags: ${criticSummary.total}`,
+    `- Severity mix: high ${criticSummary.high}, medium ${criticSummary.medium}, low ${criticSummary.low}`,
+    ...formatBulletList(topCriticFlags.length ? topCriticFlags.map((flag) => `Rank ${flag.paperRank}: ${flag.severity} ${flag.flagType} - ${flag.message}`) : ["No high or medium critic flags were generated for this job."]),
+    "",
     "## Screening Notes",
     "",
     ...formatBulletList(reportInsights.screeningNotes),
@@ -3086,8 +3151,8 @@ function getMarkdownReportBody(result: SearchResult): string {
     "",
     "## Top Ranked Table",
     "",
-    "| Rank | Title | Year | Journal | Field | Rank Class | Final | Include | DOI | OA PDF |",
-    "| --- | --- | --- | --- | --- | --- | ---: | --- | --- | --- |",
+    "| Rank | Title | Year | Journal | Field | Rank Class | Final | Include | Critic | DOI | OA PDF |",
+    "| --- | --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |",
     ...result.papers.map((paper) =>
       [
         paper.rank,
@@ -3098,6 +3163,7 @@ function getMarkdownReportBody(result: SearchResult): string {
         escapeMarkdownTableCell(paper.journalRank ?? "Unmatched"),
         formatReportScore(paper.finalScore),
         paper.includeStatus,
+        buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).riskLevel,
         paper.doi ? escapeMarkdownTableCell(paper.doi) : "Not available",
         paper.oaPdfUrl ? "Yes" : "No"
       ].join(" | ")
@@ -3131,6 +3197,13 @@ function getMarkdownReportBody(result: SearchResult): string {
       `- OA landing page: ${paper.oaLandingPageUrl || "Not available"}`,
       `- Google Drive: ${paper.driveStatus ?? "skipped"} - ${paper.driveWebUrl || paper.driveReason || "No Google Drive upload recorded."}`,
       `- License: ${[paper.oaLicense, paper.oaHostType, paper.oaRepository].filter(Boolean).join(" / ") || "Not available"}`,
+      `- Critic review: ${buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).note}`,
+      `- Critic risk: ${buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).riskLevel}`,
+      `- Critic flag types: ${buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).flagTypes}`,
+      "",
+      "Critic recommended actions:",
+      "",
+      ...formatBulletList(buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).actions),
       "",
       "Score breakdown:",
       "",

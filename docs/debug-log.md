@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - Critic Review Summary Integration
+
+- Context: Critic Agent data existed as persisted paper-level flags, but Report Preview, Markdown/PDF reports, and Paper Detail lacked a concise human-readable review decision. (codex)
+- Change: Added rule-based critic review summaries that combine severity, flag types, primary issue, evidence, and recommended actions. Markdown/PDF report endpoints now use D1 + critic flags dynamically. (codex)
+- Expected effect: Users can see not only that a flag exists, but also how to handle the paper before citation or synthesis. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
+
 ## 2026-05-25 - Responsive Research Panels
 
 - Context: After separating Paper Detail from Ranked Papers, mobile users still had to drag a horizontal scrollbar to inspect the table and Report Preview was not optimized for narrow screens. (codex)

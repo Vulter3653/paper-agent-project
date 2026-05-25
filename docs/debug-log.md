@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - Staging Separation Scripts
+
+- Context: Staging resource guidance and Worker/MCP staging example configs existed, but routine commands for deploying/checking staging and Pages staging examples were incomplete. (codex)
+- Change: Added root and workspace staging scripts, dashboard staging env/config examples, documentation updates, and smoke-test coverage for XLSX/PDF report endpoints. (codex)
+- Expected effect: Future changes can be deployed to separate staging Worker, Pages, MCP, D1, and R2 resources before production promotion. (codex)
+- Verification: `npm run typecheck`, `npm run build:web:staging`, `node --check apps/worker/scripts/smoke-test.mjs`, `npm run build`, and `git diff --check` passed in this session. Remote staging smoke was not run because Cloudflare staging resources must be created/configured first. (codex)
+
 ## 2026-05-25 - Output Artifact PDF Fallback
 
 - Context: PDF generation endpoint worked, but the Output Artifacts panel depended on persisted `job_outputs` metadata. Existing jobs without a PDF metadata row showed no active PDF artifact. (codex)

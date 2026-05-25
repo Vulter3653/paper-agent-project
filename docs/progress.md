@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-25 (codex output artifact endpoint fallback)
+Updated: 2026-05-25 (codex staging separation scripts)
+
+## codex - Staging Separation Scripts (2026-05-25)
+
+- Infra: Added root staging scripts for Worker, MCP, and Pages deployment plus staging smoke checks through `npm run deploy:*:staging`, `npm run smoke:*:staging`, and `npm run staging:check`. (codex)
+- Infra: Added workspace staging scripts for Worker/MCP Wrangler staging configs and a Pages staging build/deploy path. (codex)
+- Infra: Added `apps/web/.env.staging.example` and `apps/web/wrangler.staging.example.toml` so the dashboard can target the staging Worker API without production variables. (codex)
+- Changed: Worker smoke search mode now checks CSV, Markdown, XLSX, and PDF endpoints. (codex)
+- Docs: Updated `docs/staging-testbed.md` with current staging resource names, commands, and promotion checks. (codex)
+- Verification: `npm run typecheck`, `npm run build:web:staging`, `node --check apps/worker/scripts/smoke-test.mjs`, `npm run build`, and `git diff --check` passed in this session. Remote staging smoke was not run because Cloudflare staging resources must be created/configured first. (codex)
 
 ## codex - Output Artifact Endpoint Fallback (2026-05-25)
 

@@ -22,6 +22,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-25 (codex)
 
+- Infra: Added staging/production separation scripts, Pages staging examples, and extended Worker smoke checks for CSV, Markdown, XLSX, and PDF endpoints. (codex)
 - Fixed: Ensured Output Artifacts always exposes CSV, Markdown, XLSX, and PDF download endpoints even when older jobs are missing job_outputs metadata rows. (codex)
 - Added: Exposed direct PDF report download actions in the Research dashboard table toolbar and Report Preview panel. (codex)
 - Changed: Integrated Critic Agent review summaries into dynamic Markdown/PDF reports and the Research dashboard Paper Detail panel with risk level, decision, evidence, and recommended actions. (codex)

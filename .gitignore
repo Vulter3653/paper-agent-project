@@ -13,3 +13,5 @@ AI_Agent_Development_Environment_Report.pdf
 .DS_Store
 apps/worker/wrangler.staging.toml
 apps/mcp/wrangler.staging.toml
+!.env.staging.example
+!apps/web/.env.staging.example

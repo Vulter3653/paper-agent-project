@@ -68,6 +68,12 @@ Updated: 2026-05-24 (codex dashboard mock clarity)
 - Docs: Updated `jin23624_cpu/README.md`, `juilie_bot_hub/README.md`, `shonshinemin_cmd/README.md`, `unassigned_member_c/README.md`, and `seunghyeon_choi/README.md` with current status and next actions. (codex)
 - Status: `juilie_bot_hub` manual review is complete; `shonshinemin_cmd` metric QA output exists; `jin23624_cpu` gold refinement and `unassigned_member_c` baselines remain the next team priorities. (codex)
 
+## codex - Enrichment Trace Visibility (2026-05-25)
+
+- Changed: Main Agent Traces panel now displays compact metadata chips for `limit`, `input`, `processed`, `skipped`, Crossref verification counts, Unpaywall OA counts, and Google Drive upload/skip counts. (codex)
+- Changed: `/dashboard/ops` now includes an Enrichment metric tile and expands pipeline, agent board, and console summaries with the same processed/skipped trace metadata. (codex)
+- Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
+
 ## codex - Manual Review Informed Relevance Scoring (2026-05-22)
 
 - Changed: Updated `apps/worker/src/index.ts` so Worker relevance scoring includes subtopic-fit rules derived from `benchmark/manual_review_proposed.csv` failure patterns. (codex)

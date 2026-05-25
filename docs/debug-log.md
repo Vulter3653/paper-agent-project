@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-25 - Enrichment Trace Visibility
+
+- Context: The latest production run completed successfully with `enrichmentLimit: 10`, but the dashboard did not clearly explain why Crossref and Unpaywall processed 10 rows and skipped 10 rows. (codex)
+- Change: Added UI parsing of `agent_traces.detail` JSON so main trace cards, Ops metric tiles, pipeline cards, agent cards, and console logs show enrichment limits, processed counts, skipped counts, OA counts, and Drive upload/skip counts. (codex)
+- Expected effect: Users can distinguish intentional subrequest-limit skipping from actual workflow failure directly in the dashboard. (codex)
+- Verification: `npm run typecheck` and `npm run build:web` passed in this session. (codex)
+
 ## 2026-05-24 - Enrichment Limit
 
 - Context: The deployed job confirmed Google Drive wiring, but Crossref plus Unpaywall calls over 50 results hit Cloudflare Worker subrequest limits. (codex)

@@ -888,4 +888,6 @@ dd {
 .traceItem div { display: grid; gap: 3px; min-width: 0; }
 .traceItem strong { font-size: 0.86rem; color: var(--text); }
 .traceItem span { color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
+.traceMeta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.traceMeta span { background: #eef3f8; border: 1px solid var(--line); border-radius: 999px; color: #405469; font-size: 0.7rem; font-weight: 700; line-height: 1.2; padding: 3px 7px; }
 .errorMessage.compact { margin: 10px 0 0; }

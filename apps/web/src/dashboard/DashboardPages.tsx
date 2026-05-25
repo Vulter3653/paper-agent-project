@@ -32,6 +32,8 @@ function apiUrl(path: string): string {
 
 type TraceResponse = { job: SearchJob; traces: AgentTrace[] };
 type JobsResponse = { jobs: SearchJob[] };
+type TraceDetail = Record<string, string | number | boolean | null>;
+type EnrichmentOverview = { limit: string; crossrefProcessed: string; crossrefSkipped: string; unpaywallProcessed: string; unpaywallSkipped: string };
 
 export function resolveDashboardRoute(pathname = window.location.pathname): DashboardRoute {
   if (pathname.includes("/dashboard/ops")) return "ops";
@@ -184,6 +186,7 @@ export function AgentOpsPage() {
   const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
   const liveStages = traces.length ? mapTracesToWorkflowStages(traces) : literatureWorkflowStages;
   const liveAgentCards = traces.length ? mapTracesToAgentCards(traces) : agentStatuses;
+  const enrichmentOverview = useMemo(() => summarizeEnrichmentTraces(traces), [traces]);
 
   useEffect(() => {
     void loadLatestJob();
@@ -218,7 +221,7 @@ export function AgentOpsPage() {
       const data = (await response.json()) as TraceResponse;
       setActiveJob(data.job);
       setTraces(data.traces);
-      setLogs(data.traces.map((trace) => ({ level: getTraceLogLevel(trace.status), message: `${trace.stepId}: ${trace.summary}` })));
+      setLogs(data.traces.map((trace) => ({ level: getTraceLogLevel(trace.status), message: formatTraceConsoleMessage(trace) })));
       if (data.job.status === "completed" || data.job.status === "failed") setRunning(false);
     } catch (error) {
       setTraceError(error instanceof Error ? error.message : "Failed to load agent traces");
@@ -248,7 +251,7 @@ export function AgentOpsPage() {
 
   function inspectAgent(name: string) {
     const trace = traces.find((item) => item.agentName === name);
-    setLogs((current) => [...current, { level: trace ? getTraceLogLevel(trace.status) : "muted", message: trace ? `${trace.agentName}.inspect ${trace.summary}` : `${name}.inspect no live trace loaded` }]);
+    setLogs((current) => [...current, { level: trace ? getTraceLogLevel(trace.status) : "muted", message: trace ? `${trace.agentName}.inspect ${formatTraceConsoleMessage(trace)}` : `${name}.inspect no live trace loaded` }]);
   }
 
   return (
@@ -295,6 +298,7 @@ export function AgentOpsPage() {
         <MetricTile label="Trace Steps" value={String(traces.length)} detail={`${completedTraceCount} completed/skipped`} tone="blue" />
         <MetricTile label="Agents" value={String(liveAgentCards.length)} detail="from D1 traces" tone="purple" />
         <MetricTile label="Warnings" value={String(traces.filter((trace) => trace.status === "skipped" || trace.status === "failed").length)} detail="skipped or failed" tone="amber" />
+        <MetricTile label="Enrichment" value={enrichmentOverview.limit} detail={`Crossref ${enrichmentOverview.crossrefProcessed}/skip ${enrichmentOverview.crossrefSkipped} · Unpaywall ${enrichmentOverview.unpaywallProcessed}/skip ${enrichmentOverview.unpaywallSkipped}`} tone="blue" />
         <MetricTile label="Storage" value={traces.some((trace) => trace.stepId === "drive_r2_storage" && trace.status === "completed") ? "R2 Ready" : "Pending"} detail="Drive uploads OA PDFs when configured" tone="green" />
         <MetricTile label="Vectorize" value={traces.some((trace) => trace.stepId === "vectorize_relevance" && trace.status === "skipped") ? "Skipped" : "Pending"} detail="embedding index pending" tone="blue" />
       </section>
@@ -401,14 +405,14 @@ function mapTracesToWorkflowStages(traces: AgentTrace[]) {
     owner: trace.agentName,
     status: trace.status === "completed" ? "done" as const : trace.status === "running" ? "running" as const : trace.status === "failed" || trace.status === "skipped" ? "review" as const : "idle" as const,
     progress: trace.status === "completed" || trace.status === "skipped" ? 100 : trace.status === "running" ? 50 : 0,
-    detail: trace.summary
+    detail: summarizeTraceForCard(trace)
   }));
 }
 
 function mapTracesToAgentCards(traces: AgentTrace[]) {
   return traces.map((trace) => ({
     name: trace.agentName,
-    role: trace.summary,
+    role: summarizeTraceForCard(trace),
     state: trace.status === "completed" ? "done" as const : trace.status === "running" ? "running" as const : trace.status === "failed" || trace.status === "skipped" ? "review" as const : "idle" as const,
     tool: trace.stepId
   }));
@@ -416,6 +420,83 @@ function mapTracesToAgentCards(traces: AgentTrace[]) {
 
 function titleFromTraceStep(stepId: string): string {
   return stepId.split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+function summarizeEnrichmentTraces(traces: AgentTrace[]): EnrichmentOverview {
+  const crossref = traces.find((trace) => trace.stepId === "crossref_enrichment");
+  const unpaywall = traces.find((trace) => trace.stepId === "unpaywall_check");
+  const crossrefDetail = parseTraceDetail(crossref?.detail);
+  const unpaywallDetail = parseTraceDetail(unpaywall?.detail);
+  const limit = formatTraceValue(crossrefDetail.enrichmentLimit) || formatTraceValue(unpaywallDetail.enrichmentLimit) || "not set";
+
+  return {
+    limit: limit === "not set" ? "No limit" : `limit ${limit}`,
+    crossrefProcessed: crossref?.outputCount !== undefined ? String(crossref.outputCount) : "0",
+    crossrefSkipped: formatTraceValue(crossrefDetail.skipped) || "0",
+    unpaywallProcessed: unpaywall?.outputCount !== undefined ? String(unpaywall.outputCount) : "0",
+    unpaywallSkipped: formatTraceValue(unpaywallDetail.skipped) || "0"
+  };
+}
+
+function summarizeTraceForCard(trace: AgentTrace): string {
+  const detail = parseTraceDetail(trace.detail);
+  const meta = buildTraceMetaItems(trace, detail);
+  return meta.length ? `${trace.summary} [${meta.join(" · ")}]` : trace.summary;
+}
+
+function formatTraceConsoleMessage(trace: AgentTrace): string {
+  const detail = parseTraceDetail(trace.detail);
+  const meta = buildTraceMetaItems(trace, detail);
+  return meta.length ? `${trace.stepId}: ${trace.summary} :: ${meta.join(" | ")}` : `${trace.stepId}: ${trace.summary}`;
+}
+
+function parseTraceDetail(detail?: string): TraceDetail {
+  if (!detail) return {};
+  try {
+    const parsed = JSON.parse(detail) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as TraceDetail : {};
+  } catch {
+    return {};
+  }
+}
+
+function buildTraceMetaItems(trace: AgentTrace, detail: TraceDetail): string[] {
+  const items: string[] = [];
+  const enrichmentLimit = formatTraceValue(detail.enrichmentLimit);
+  const skipped = formatTraceValue(detail.skipped);
+  if (enrichmentLimit) items.push(`limit ${enrichmentLimit}`);
+  if (trace.inputCount !== undefined) items.push(`input ${trace.inputCount}`);
+  if (trace.outputCount !== undefined) items.push(`processed ${trace.outputCount}`);
+  if (skipped) items.push(`skipped ${skipped}`);
+
+  if (trace.stepId === "crossref_enrichment") {
+    const verified = formatTraceValue(detail.verified);
+    const partial = formatTraceValue(detail.partial);
+    if (verified) items.push(`verified ${verified}`);
+    if (partial) items.push(`partial ${partial}`);
+  }
+
+  if (trace.stepId === "unpaywall_check") {
+    const pdfUrls = formatTraceValue(detail.pdfUrls);
+    const landingPages = formatTraceValue(detail.landingPages);
+    if (pdfUrls) items.push(`OA PDF ${pdfUrls}`);
+    if (landingPages) items.push(`landing ${landingPages}`);
+  }
+
+  if (trace.stepId === "drive_r2_storage") {
+    const uploaded = formatTraceValue(detail.driveUploaded);
+    const failed = formatTraceValue(detail.driveFailed);
+    const driveSkipped = formatTraceValue(detail.driveSkipped);
+    if (uploaded) items.push(`Drive uploaded ${uploaded}`);
+    if (failed) items.push(`Drive failed ${failed}`);
+    if (driveSkipped) items.push(`Drive skipped ${driveSkipped}`);
+  }
+
+  return items;
+}
+
+function formatTraceValue(value: TraceDetail[string]): string {
+  return typeof value === "number" || typeof value === "string" ? String(value) : "";
 }
 
 function getTraceLogLevel(status: AgentTrace["status"]): "ok" | "warn" | "muted" {

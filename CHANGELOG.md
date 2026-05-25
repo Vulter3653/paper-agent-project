@@ -20,6 +20,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 - No unreleased changes.
 
+## 2026-05-25 (codex)
+
+- Changed: Added dashboard trace metadata display for `enrichmentLimit`, processed counts, skipped counts, Crossref verification, Unpaywall OA, and Google Drive storage summaries in `apps/web/src/main.tsx` and `apps/web/src/dashboard/DashboardPages.tsx`. (codex)
+
 ## 2026-05-24 (codex)
 
 - Added: Introduced `enrichmentLimit` to cap Crossref and Unpaywall lookups per job, reducing Cloudflare Worker subrequest-limit failures while recording skipped rows explicitly. (codex)

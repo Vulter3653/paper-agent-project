@@ -52,6 +52,8 @@ type DiagnosticsResponse = {
   };
 };
 
+type TraceDetail = Record<string, string | number | boolean | null>;
+
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://paper-agent-project.shch3653.workers.dev").replace(/\/$/, "");
 
 function apiUrl(path: string): string {
@@ -599,6 +601,7 @@ function AgentTracePanel({
             <div>
               <strong>{trace.stepOrder}. {trace.agentName}</strong>
               <span>{trace.summary}</span>
+              <TraceMeta trace={trace} />
             </div>
             <StatusBadge value={trace.status} tone={getTraceTone(trace.status)} />
           </article>
@@ -607,6 +610,69 @@ function AgentTracePanel({
     </section>
   );
 }
+function TraceMeta({ trace }: { trace: AgentTrace }) {
+  const detail = parseTraceDetail(trace.detail);
+  const items = buildTraceMetaItems(trace, detail);
+  if (!items.length) return null;
+
+  return (
+    <div className="traceMeta">
+      {items.map((item) => (
+        <span key={item}>{item}</span>
+      ))}
+    </div>
+  );
+}
+
+function parseTraceDetail(detail?: string): TraceDetail {
+  if (!detail) return {};
+  try {
+    const parsed = JSON.parse(detail) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as TraceDetail : {};
+  } catch {
+    return {};
+  }
+}
+
+function buildTraceMetaItems(trace: AgentTrace, detail: TraceDetail): string[] {
+  const items: string[] = [];
+  const enrichmentLimit = formatTraceValue(detail.enrichmentLimit);
+  const skipped = formatTraceValue(detail.skipped);
+  if (enrichmentLimit) items.push(`limit ${enrichmentLimit}`);
+  if (trace.inputCount !== undefined) items.push(`input ${trace.inputCount}`);
+  if (trace.outputCount !== undefined) items.push(`processed ${trace.outputCount}`);
+  if (skipped) items.push(`skipped ${skipped}`);
+
+  if (trace.stepId === "crossref_enrichment") {
+    const verified = formatTraceValue(detail.verified);
+    const partial = formatTraceValue(detail.partial);
+    if (verified) items.push(`verified ${verified}`);
+    if (partial) items.push(`partial ${partial}`);
+  }
+
+  if (trace.stepId === "unpaywall_check") {
+    const pdfUrls = formatTraceValue(detail.pdfUrls);
+    const landingPages = formatTraceValue(detail.landingPages);
+    if (pdfUrls) items.push(`OA PDF ${pdfUrls}`);
+    if (landingPages) items.push(`landing ${landingPages}`);
+  }
+
+  if (trace.stepId === "drive_r2_storage") {
+    const uploaded = formatTraceValue(detail.driveUploaded);
+    const failed = formatTraceValue(detail.driveFailed);
+    const driveSkipped = formatTraceValue(detail.driveSkipped);
+    if (uploaded) items.push(`Drive uploaded ${uploaded}`);
+    if (failed) items.push(`Drive failed ${failed}`);
+    if (driveSkipped) items.push(`Drive skipped ${driveSkipped}`);
+  }
+
+  return items;
+}
+
+function formatTraceValue(value: TraceDetail[string]): string {
+  return typeof value === "number" || typeof value === "string" ? String(value) : "";
+}
+
 function DiagnosticsPanel({
   diagnostics,
   errorMessage,

@@ -57,6 +57,11 @@ import {
 } from "./enrichment";
 
 import {
+  getSemanticRelevance,
+  upsertPaperVectors
+} from "./vectorize";
+
+import {
   ensureSchema,
   getMissingColumns,
   getSearchResult,
@@ -77,6 +82,8 @@ import {
 export interface Env {
   DB?: D1Database;
   REPORTS?: R2Bucket;
+  AI?: any;
+  VECTOR_INDEX?: VectorizeIndex;
   SEARCH_PROVIDER?: string;
   WOS_API_KEY?: string;
   WOS_APIKEY?: string;
@@ -179,6 +186,8 @@ export default {
             crossrefEmail: env.CROSSREF_EMAIL ?? env.UNPAYWALL_EMAIL,
             unpaywallEmail: env.UNPAYWALL_EMAIL,
             reports: env.REPORTS,
+            ai: env.AI,
+            vectorIndex: env.VECTOR_INDEX,
             googleClientEmail: env.GOOGLE_CLIENT_EMAIL,
             googlePrivateKey: env.GOOGLE_PRIVATE_KEY,
             googleDriveFolderId: env.GOOGLE_DRIVE_FOLDER_ID,
@@ -424,6 +433,8 @@ async function processSearchJob(
     crossrefEmail?: string;
     unpaywallEmail?: string;
     reports?: R2Bucket;
+    ai?: any;
+    vectorIndex?: VectorizeIndex;
     googleClientEmail?: string;
     googlePrivateKey?: string;
     googleDriveFolderId?: string;
@@ -481,10 +492,32 @@ async function processSearchJob(
     });
 
     job = await updateSearchJobProgress(db, job, "ranking", "ranking");
-    const rankedPapers = rankPapers(driveEnriched);
-    await recordAgentTrace(db, job, { stepOrder: 7, stepId: "journal_evaluation", agentName: "Evaluation Agent", summary: "Calculated journal fit, verification, OA, citation, recency, and relevance scores.", inputCount: unpaywallEnriched.length, outputCount: rankedPapers.length });
-    await recordAgentTrace(db, job, { stepOrder: 8, stepId: "vectorize_relevance", agentName: "Relevance Agent", summary: "Computed fallback relevance from keyword, title, abstract, journal, and metadata scores; Vectorize embeddings remain planned.", detail: JSON.stringify({ mode: "metadata_fallback", vectorizeConnected: false }), inputCount: rankedPapers.length, outputCount: rankedPapers.length });
-    await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: unpaywallEnriched.length, outputCount: rankedPapers.length });
+    
+    let semanticScores: Record<string, number> | undefined = undefined;
+    if (options.ai && options.vectorIndex) {
+      try {
+        await upsertPaperVectors(options.vectorIndex, options.ai, driveEnriched);
+        semanticScores = await getSemanticRelevance(options.vectorIndex, options.ai, keyword, driveEnriched.map(p => p.id));
+        await recordAgentTrace(db, job, { 
+          stepOrder: 8, 
+          stepId: "vectorize_relevance", 
+          agentName: "Relevance Agent", 
+          summary: "Computed semantic relevance using Cloudflare Vectorize and Workers AI.", 
+          detail: JSON.stringify({ mode: "vector_semantic", vectorizeConnected: true, scoredCount: Object.keys(semanticScores).length }), 
+          inputCount: driveEnriched.length, 
+          outputCount: Object.keys(semanticScores).length 
+        });
+      } catch (error) {
+        console.error("Vectorize error:", error);
+        await recordAgentTrace(db, job, { stepOrder: 8, stepId: "vectorize_relevance", agentName: "Relevance Agent", status: "failed", summary: "Vectorize semantic relevance failed; falling back to metadata.", errorMessage: getErrorMessage(error) });
+      }
+    } else {
+      await recordAgentTrace(db, job, { stepOrder: 8, stepId: "vectorize_relevance", agentName: "Relevance Agent", summary: "Computed fallback relevance from keyword, title, abstract, journal, and metadata scores; Vectorize embeddings remain planned.", detail: JSON.stringify({ mode: "metadata_fallback", vectorizeConnected: false }), inputCount: driveEnriched.length, outputCount: driveEnriched.length });
+    }
+
+    const rankedPapers = rankPapers(driveEnriched, semanticScores);
+    await recordAgentTrace(db, job, { stepOrder: 7, stepId: "journal_evaluation", agentName: "Evaluation Agent", summary: "Calculated journal fit, verification, OA, citation, recency, and relevance scores.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
+    await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
     
     const criticFlags = buildCriticFlags(rankedPapers);
     await recordAgentTrace(db, job, { stepOrder: 10, stepId: "critic_review", agentName: "Critic Agent", summary: "Generated " + criticFlags.length + " rule-based critic flags for review risk visibility.", detail: JSON.stringify({}), inputCount: rankedPapers.length, outputCount: criticFlags.length });

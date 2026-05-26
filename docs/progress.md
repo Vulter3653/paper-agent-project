@@ -1,6 +1,14 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-26 (gemini worker refactor)
+Updated: 2026-05-26 (gemini vectorize & refactor)
+
+## gemini - Vectorize Semantic Relevance Integration (2026-05-26)
+
+- Added: Integrated Cloudflare Vectorize and Workers AI (`@cf/baai/bge-small-en-v1.5`) for semantic relevance scoring. (gemini)
+- Added: Created `apps/worker/src/vectorize.ts` to handle embedding generation, vector upsert, and semantic similarity queries. (gemini)
+- Changed: Updated `scoring.ts` to implement a hybrid ranking formula: `finalRelevance = 0.4 * keywordOverlap + 0.6 * semanticSimilarity`. (gemini)
+- Changed: Connected the real Vectorize logic to the `vectorize_relevance` workflow step in `index.ts`. (gemini)
+- Verification: `npm run typecheck` passed across all workspaces; semantic scoring logic verified through static analysis. (gemini)
 
 ## gemini - Worker Source Code Modularization (2026-05-26)
 

@@ -62,11 +62,15 @@ Do not edit source code, Cloudflare configuration, D1/R2 configuration, or deplo
 
 Follow `docs/agent-writing-rules.md`.
 
-1. **Strict Management:** Every rule modification or log update must be strictly managed and recorded.
+1. **Strict Management & Historical Preservation:** 
+   - **No Deletion:** Never delete, summarize, or overwrite existing historical records, especially attributions like `(codex)`, `(shonshinemin)`, or `(claude)`.
+   - **Full Integration:** New logs must be prepended to the top of historical files while preserving 100% of the previous content.
+   - **Tool Discipline:** Prefer `replace` for targeted updates. If using `write_file` for large files, Gemini MUST verify the total line count before and after to ensure zero data loss.
 2. **Mandatory Updates:**
    - Update `CHANGELOG.md` for meaningful changes.
    - Update `docs/progress.md` for handoff-affecting changes.
    - Update `docs/debug-log.md` for defects, verification, or troubleshooting (including refactoring errors).
+   - **Self-Correction:** Any mistake in file management or violation of these rules must be documented in `docs/debug-log.md` with a root-cause analysis and correction steps.
 
 ## Verification
 

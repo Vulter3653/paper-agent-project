@@ -159,13 +159,20 @@ export function calculateEvaluationScores(paper: PaperSummary): EvaluationScores
   };
 }
 
-export function rankPapers(papers: PaperRecord[]): PaperRecord[] {
+export function rankPapers(papers: PaperRecord[], semanticScores?: Record<string, number>): PaperRecord[] {
   return papers
     .map((paper) => {
       const scores = calculateEvaluationScores(paper);
+      const semanticScore = semanticScores?.[paper.id] ?? 0;
+      
+      // If we have a semantic score, it should heavily influence the relevance component
+      const finalRelevance = semanticScore > 0 
+        ? roundScore(0.4 * scores.relevanceScore + 0.6 * semanticScore)
+        : scores.relevanceScore;
+
       const finalScore = roundScore(
         calculateFinalScore({
-          relevance: scores.relevanceScore,
+          relevance: finalRelevance,
           journalFit: scores.journalFitScore,
           verification: scores.verificationScore,
           openAccess: scores.oaScore,
@@ -176,6 +183,7 @@ export function rankPapers(papers: PaperRecord[]): PaperRecord[] {
       return {
         ...paper,
         finalScore,
+        relevanceScore: finalRelevance,
         includeStatus: getIncludeStatus(finalScore, scores.verificationScore)
       };
     })

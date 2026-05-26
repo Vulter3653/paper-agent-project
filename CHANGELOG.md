@@ -18,8 +18,11 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- Added: Integrated Cloudflare Vectorize and Workers AI for semantic relevance scoring. (gemini)
+- Added: Created `apps/worker/src/vectorize.ts` for abstract embedding generation and semantic similarity search. (gemini)
+- Changed: Updated `scoring.ts` to combine semantic similarity scores (60% weight) with keyword overlap scores (40% weight). (gemini)
 - Changed: Modularized `apps/worker/src/index.ts` into specialized modules (`types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, `persistence.ts`) to improve maintainability and code clarity. (gemini)
-- Docs: Updated `CHANGELOG.md` and `docs/progress.md` with refactoring completion details. (gemini)
+- Docs: Updated `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md` with refactoring and Vectorize integration details. (gemini)
 
 - No unreleased changes.
 

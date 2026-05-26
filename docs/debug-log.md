@@ -1,5 +1,18 @@
 # Debug Log
 
+## 2026-05-26 - Vectorize Semantic Relevance Integration
+
+- Context: The project required a more robust way to measure paper relevance than simple keyword overlap. The goal was to use Cloudflare Vectorize to implement semantic similarity search. (gemini)
+- Change: 
+    - Updated `wrangler.toml` with `AI` and `VECTOR_INDEX` bindings.
+    - Created `apps/worker/src/vectorize.ts` for handling embeddings and vector queries.
+    - Integrated logic into `index.ts` to upsert vectors during search processing and fetch semantic scores.
+    - Modified `scoring.ts` to use a hybrid relevance formula (40% keyword, 60% semantic). (gemini)
+- Expected effect: Papers that are semantically related to the research question but use different terminology will now be correctly identified and ranked higher. (gemini)
+- Verification: 
+    - `npm run typecheck` passed for all modules.
+    - Verified `VectorizeVector` metadata structure against Cloudflare documentation. (gemini)
+
 ## 2026-05-26 - Gemini Worker Source Code Modularization
 
 - Context: The `index.ts` file in `apps/worker` had grown into a 100KB monolith, making it difficult to maintain and integrate new features. The goal was to separate concerns into specialized modules as recommended in the Gemini Handoff Blueprint. (gemini)

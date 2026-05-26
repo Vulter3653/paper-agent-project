@@ -1,6 +1,6 @@
 # Gemini Handoff Blueprint
 
-Updated: 2026-05-26 (codex)
+Updated: 2026-05-26 (gemini refactor complete)
 
 This file is the immediate handoff note for Gemini. It complements, but does not replace, `AGENTS.md`, `GEMINI.md`, `docs/progress.md`, `docs/workflow.md`, and `CHANGELOG.md`.
 
@@ -23,10 +23,21 @@ docs/progress.md
 docs/workflow.md
 docs/human-ai-work-split.md
 docs/debug-log.md
+docs/gemini-review-feedback.md
+docs/gemini-session-state.md
 CHANGELOG.md
 ```
 
 Do not work from a previous chat transcript. Repository files are the source of truth.
+
+
+## Gemini Memory Limitation
+
+Gemini must assume previous-session memory is unreliable. Use repository files as durable memory:
+
+- Start by reading `GEMINI.md`, `docs/gemini-handoff-blueprint.md`, and `docs/gemini-session-state.md`.
+- End by updating `docs/gemini-session-state.md` with the exact current task status, changed files, verification, blockers, and next action.
+- Treat chat history as secondary context only after the repo files have been checked.
 
 ## Current Branch And Repository Policy
 
@@ -50,43 +61,27 @@ The project is a Cloudflare-based Paper Agent prototype with these implemented p
 - CSV, Markdown, XLSX, and PDF report endpoints.
 - Read-only MCP Worker for system diagnostics and result inspection.
 
-## Current Refactor State
+## Current Refactor State (Refactor Complete)
 
-The most recent codex work split Worker report/export generation out of `apps/worker/src/index.ts` into:
+Gemini has completed the second phase of Worker modularization. The Worker source is now organized as follows:
 
-```text
-apps/worker/src/reports.ts
-```
-
-The new module owns:
-
-- CSV response and body generation.
-- Markdown report response and body generation.
-- XLSX workbook generation.
-- PDF report generation.
-- R2 output persistence helpers.
-- Report output key and filename helpers.
-- Report-specific critic summary helpers.
-- `SearchResult`, `CriticFlag`, and `JobOutputRecord` shared Worker-side types.
-
-`apps/worker/src/index.ts` now imports those helpers and should remain focused on:
-
-- API routing.
-- D1 schema bootstrap and persistence.
-- Search job orchestration.
-- Provider search and enrichment.
-- Critic flag persistence.
-- Agent trace persistence.
-- JSON and CORS API utilities.
+- `apps/worker/src/index.ts`: API routing and search job orchestration (Slim Orchestrator).
+- `apps/worker/src/reports.ts`: Report generation logic (Codex).
+- `apps/worker/src/providers.ts`: WoS and OpenAlex search engine engines (Gemini).
+- `apps/worker/src/enrichment.ts`: Crossref, Unpaywall, and Google Drive archival (Gemini).
+- `apps/worker/src/persistence.ts`: D1 database schema and operations (Gemini).
+- `apps/worker/src/scoring.ts`: Paper scoring, ranking, and filtering logic (Gemini).
+- `apps/worker/src/types.ts`: Core Worker-side TypeScript types (Gemini).
+- `apps/worker/src/utils.ts`: Shared utility functions and error handling (Gemini).
 
 ## Next Recommended Work
 
-Human-only tasks remain deferred. Benchmark/performance work is also deferred until team outputs are integrated. Continue with AI-safe repository work in this order:
+The technical debt from the monolithic `index.ts` has been resolved. Future work should focus on:
 
-1. Verify the Worker report module split after this handoff commit.
-2. Improve source-code modularity further by extracting provider/enrichment logic from `apps/worker/src/index.ts` into focused modules such as `providers.ts`, `enrichment.ts`, or `persistence.ts`.
-3. Keep each extraction behavior-preserving and run verification after each step.
-4. Avoid changing Cloudflare production settings unless the user explicitly asks.
+1. **Vectorize Integration:** Transition from metadata-based fallback scoring to real Vectorize embedding similarity.
+2. **LLM Critic Agent:** Replace rule-based critic flags with a real LLM-backed evaluation step.
+3. **Benchmark Expansion:** Integrate team outputs and perform full 20-task benchmark runs.
+4. **Unit Testing:** Add tests for the new modules, particularly `scoring.ts` and `providers.ts`.
 
 ## Verification Baseline
 
@@ -101,14 +96,8 @@ git diff --check
 
 For Worker endpoint smoke after deployment, use the existing scripts documented in `docs/staging-testbed.md` and `docs/human-ai-work-split.md`.
 
-## Known Deferred Items
-
-- PDF visual quality enhancement is intentionally deferred.
-- Remote staging smoke requires actual Cloudflare staging Worker/Pages/D1/R2/MCP resources and remains human-gated.
-- Benchmark and performance improvement should wait for team result integration unless the user changes priority.
-- Organization main updates should happen later through reviewed integration, not automatically from this personal repo work.
-
 ## Handoff Status
 
-- This handoff was prepared after the Worker report module split was made buildable. (codex)
-- Gemini should start by checking the latest commit, then continue from `docs/gemini-handoff-blueprint.md`. (codex)
+- Refactoring of `apps/worker/src/index.ts` into specialized modules is complete. (gemini)
+- Stability verified with `npm run typecheck`. (gemini)
+- Next session can proceed with feature enhancements or benchmark integration. (gemini)

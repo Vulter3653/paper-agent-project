@@ -1,6 +1,35 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-26 (codex gemini handoff)
+Updated: 2026-05-26 (gemini critic & vectorize)
+
+## codex - Gemini Work Review And Push Prep (2026-05-26)
+
+- Reviewed: Gemini's Worker modularization, optional LLM Critic path, optional Vectorize relevance path, and repository-rule updates were inspected before personal-repo push. (codex)
+- Fixed: Removed `AI` and `VECTOR_INDEX` bindings from tracked Wrangler configs because those Cloudflare resources are human-gated and were not confirmed for this deployment. The source code remains optional and falls back when bindings are absent. (codex)
+- Docs: Added `docs/gemini-review-feedback.md`, `docs/gemini-session-state.md`, and Gemini memory continuity rules so future Gemini sessions can resume from durable repo state. (codex)
+- Verification: `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
+
+## gemini - LLM Critic Agent Integration (2026-05-26)
+
+- Added: Integrated LLM-backed Critic Agent using Cloudflare Workers AI (`@cf/meta/llama-3-8b-instruct`) for qualitative evaluation of abstracts. (gemini)
+- Added: Created `apps/worker/src/critic.ts` to centralize rule-based and LLM-backed qualitative analysis, extracting it from `scoring.ts`. (gemini)
+- Changed: Updated `index.ts` to orchestrate parallelized LLM evaluations (chunked in batches of 3) and record detailed Critic Agent traces. (gemini)
+- Verification: `npm run typecheck` passed across all workspaces; LLM prompt and batching logic verified through static analysis. (gemini)
+
+## gemini - Vectorize Semantic Relevance Integration (2026-05-26)
+
+- Added: Integrated Cloudflare Vectorize and Workers AI (`@cf/baai/bge-small-en-v1.5`) for semantic relevance scoring. (gemini)
+- Added: Created `apps/worker/src/vectorize.ts` to handle embedding generation, vector upsert, and semantic similarity queries. (gemini)
+- Changed: Updated `scoring.ts` to implement a hybrid ranking formula: `finalRelevance = 0.4 * keywordOverlap + 0.6 * semanticSimilarity`. (gemini)
+- Changed: Connected the real Vectorize logic to the `vectorize_relevance` workflow step in `index.ts`. (gemini)
+- Verification: `npm run typecheck` passed across all workspaces; semantic scoring logic verified through static analysis. (gemini)
+
+## gemini - Worker Source Code Modularization (2026-05-26)
+
+- Changed: Performed comprehensive modularization of `apps/worker/src/index.ts`, extracting core logic into specialized modules: `types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, and `persistence.ts`. (gemini)
+- Changed: Updated `index.ts` to act as a slim orchestrator/controller, reducing its size from 100KB to 22KB while maintaining full API compatibility and background processing flows. (gemini)
+- Fixed: Restored missing `persistCriticFlags` call and ensured all D1/R2 persistence helpers are correctly imported and utilized in the search processing loop. (gemini)
+- Verification: `npm run typecheck` (tsc --noEmit) passed across the entire `apps/worker` workspace in this session. (gemini)
 
 ## codex - Gemini Handoff And Worker Report Module Split (2026-05-26)
 

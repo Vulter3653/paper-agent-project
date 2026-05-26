@@ -1,6 +1,6 @@
 # Gemini Operating Guide
 
-Updated: 2026-05-22
+Updated: 2026-05-26
 
 This file gives Gemini the same repository rules used by Codex and Claude. Gemini must follow this file before editing anything.
 
@@ -43,21 +43,12 @@ Example:
 
 Do not rewrite `(codex)`, `(claude)`, or any team-member attribution.
 
-## Repository Role
+## Repository & Push Protocol
 
-The personal repository is the current development source of truth:
-
-```text
-origin https://github.com/Vulter3653/paper-agent-project.git
-```
-
-The organization repository is used for team collaboration and later integration:
-
-```text
-team-origin https://github.com/mon-ai-team-project/team_project_test_public.git
-```
-
-Gemini must check the current remote state before merging or pushing.
+1. **Personal Repo Priority:** All development work and pushes are based on the personal repository (`origin`) by default.
+   - `origin https://github.com/Vulter3653/paper-agent-project.git`
+2. **Inquiry Before Push:** After completing any task, Gemini must summarize the changes and explicitly inquire: **"Where (which remote/branch) and what should be pushed?"**
+3. **No Automatic Push:** Never perform `git push` without explicit user confirmation of the target and content.
 
 ## Scope
 
@@ -67,23 +58,15 @@ Do not edit source code, Cloudflare configuration, D1/R2 configuration, or deplo
 
 `seunghyeon_choi/` is the current maintainer workspace. Do not edit it unless explicitly assigned.
 
-UI/UX experiments or prototypes should be isolated from production code unless the user explicitly asks Gemini to modify the production dashboard.
-
-Recommended prototype path:
-
-```text
-apps/web/src/test-prototype/
-```
-
-## Required Documentation
+## Required Documentation & Logging
 
 Follow `docs/agent-writing-rules.md`.
 
-At minimum:
-
-- Update `CHANGELOG.md` for meaningful changes.
-- Update `docs/progress.md` for handoff-affecting changes.
-- Update `docs/debug-log.md` for defects, verification, or troubleshooting.
+1. **Strict Management:** Every rule modification or log update must be strictly managed and recorded.
+2. **Mandatory Updates:**
+   - Update `CHANGELOG.md` for meaningful changes.
+   - Update `docs/progress.md` for handoff-affecting changes.
+   - Update `docs/debug-log.md` for defects, verification, or troubleshooting (including refactoring errors).
 
 ## Verification
 

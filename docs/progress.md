@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-26 (codex gemini handoff)
+Updated: 2026-05-26 (gemini worker refactor)
+
+## gemini - Worker Source Code Modularization (2026-05-26)
+
+- Changed: Performed comprehensive modularization of `apps/worker/src/index.ts`, extracting core logic into specialized modules: `types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, and `persistence.ts`. (gemini)
+- Changed: Updated `index.ts` to act as a slim orchestrator/controller, reducing its size from 100KB to 22KB while maintaining full API compatibility and background processing flows. (gemini)
+- Fixed: Restored missing `persistCriticFlags` call and ensured all D1/R2 persistence helpers are correctly imported and utilized in the search processing loop. (gemini)
+- Verification: `npm run typecheck` (tsc --noEmit) passed across the entire `apps/worker` workspace in this session. (gemini)
 
 ## codex - Gemini Handoff And Worker Report Module Split (2026-05-26)
 

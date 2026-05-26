@@ -18,6 +18,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- Changed: Modularized `apps/worker/src/index.ts` into specialized modules (`types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, `persistence.ts`) to improve maintainability and code clarity. (gemini)
+- Docs: Updated `CHANGELOG.md` and `docs/progress.md` with refactoring completion details. (gemini)
+
 - No unreleased changes.
 
 ## 2026-05-26 (codex)

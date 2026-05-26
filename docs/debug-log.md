@@ -1,5 +1,15 @@
 # Debug Log
 
+## 2026-05-26 - Gemini Worker Source Code Modularization
+
+- Context: The `index.ts` file in `apps/worker` had grown into a 100KB monolith, making it difficult to maintain and integrate new features. The goal was to separate concerns into specialized modules as recommended in the Gemini Handoff Blueprint. (gemini)
+- Change: Extracted core logic into `types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, and `persistence.ts`. Refactored `index.ts` to be a slim orchestrator importing these modules. (gemini)
+- Expected effect: Improved code readability, easier unit testing of individual components, and reduced merge conflict risk during team collaboration. (gemini)
+- Verification: 
+    - Initial `npm run typecheck` after refactoring failed with 11 errors due to missing helper functions (`getDiagnostics`, `processSearchJob`, etc.) and a typo in `persistJobOutputs`. (gemini)
+    - Fix: Restored orchestration logic and missing imports in `index.ts`, and fixed typo in `persistence.ts`. (gemini)
+    - Final `npm run typecheck --workspace=apps/worker` passed successfully. (gemini)
+
 ## 2026-05-26 - Gemini Handoff And Worker Report Module Split
 
 - Context: The user wants Gemini to take over due to token usage, while Codex remains available for later review. The in-progress Worker report/export extraction needed to be left in a stable, documented state before pushing to the personal repository. (codex)

@@ -15,6 +15,13 @@ Updated: 2026-05-27 (codex personal repo sync and jin23624 refinement)
 - Status: 9 rows `verified` with correct DOI and top-journal metadata.
 - Next: Move to T004-T006 refinement or start baseline collection for T001-T003. (jin23624)
 
+## codex - Benchmark Branch Review (2026-05-27)
+
+- Reviewed the organization benchmark branches against the current org-ready personal baseline. (codex)
+- Confirmed that the current jin23624, member-c, and juilie benchmark branches are not safe to merge directly because they are based on the older team-origin/main history. (codex)
+- Documented the safe next step as selective rebase or cherry-pick onto a fresh branch from the org-ready baseline. (codex)
+- Next: keep the current personal baseline as the merge target and reapply benchmark changes only after rebasing. (codex)
+
 ## codex - Gemini Work Review And Push Prep (2026-05-26)
 
 - Reviewed: Gemini's Worker modularization, optional LLM Critic path, optional Vectorize relevance path, and repository-rule updates were inspected before personal-repo push. (codex)

@@ -25,6 +25,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Docs: Recorded the personal-repo sync and organization PR merge that restored the org-ready baseline in `docs/progress.md` and `docs/debug-log.md`. (codex)
 - Docs: Added `docs/team-branch-evaluation-2026-05-27.md` with team-branch status, recommendations, and troubleshooting notes. (codex)
 
+## 2026-05-27 (codex)
+
+- Docs: Added docs/benchmark-branch-review-2026-05-27.md to record that the benchmark branches need rebase or cherry-pick before merging onto the current org-ready baseline. (codex)
+
 ## 2026-05-27 (jin23624)
 
 - Benchmark: Refined T001-T003 gold labels (G001-G009) with real DOI-backed, top-journal papers verified via Crossref. (jin23624)

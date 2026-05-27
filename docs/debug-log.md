@@ -8,6 +8,13 @@
 - Follow-up: Pushed the same sync branch to `origin` so the personal repo keeps the org-ready baseline, then prepared this branch for any local follow-up review. (codex)
 - Verification: Confirmed that `team-origin/main` advanced to commit `8c3a228` and that the matching sync branch exists on both remotes. (codex)
 
+## 2026-05-27 - Benchmark Branch Review
+
+- Context: The user asked to continue the next recommended task after the org-ready sync was completed. (codex)
+- Finding: Direct diff inspection showed that the benchmark branches are still based on the older team-origin/main history, so merging them now would reintroduce deletions against the newer personal baseline. (codex)
+- Fix: Added docs/benchmark-branch-review-2026-05-27.md to record the safe path: rebase or cherry-pick benchmark changes onto a fresh branch from the org-ready baseline. (codex)
+- Verification: Branch diffs and latest commits were checked for jin23624, member-c, and juilie before writing the review note. (codex)
+
 ## 2026-05-27 - T001-T003 Gold Label Verification (jin23624)
 
 - Context: Seed gold labels for T001-T003 were broad titles without DOI, leading to low precision/NDCG metrics in initial benchmark runs.

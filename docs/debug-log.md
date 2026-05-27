@@ -2,6 +2,13 @@
 
 ## 2026-05-27 - Root Wrangler Deploy Failure Check
 
+## 2026-05-27 - Personal Cloudflare Build Stale Commit Recheck
+
+- Context: Cloudflare Worker Builds still showed latest failed build for `Vulter3653/paper-agent-project` branch `main` at commit `0bfa894`. (codex)
+- Finding: `origin/main` is already at `4369a10`, and `0bfa894:wrangler.toml` still contains conflict markers while `origin/main:wrangler.toml` is clean. The displayed failed build is therefore tied to a stale commit. (codex)
+- Fix: Added this repository record and pushed a new personal `main` commit to force Cloudflare to pick up a fresh commit after the root Wrangler config fix. (codex)
+
+
 - Context: The user reported that the Cloudflare Worker build/deploy was failed. (codex)
 - Finding: The deployed Worker runtime was healthy at `/api/health`, and `/api/diagnostics` reported D1, WoS, Crossref, Unpaywall, R2, and Google Drive readiness. The failure was not reproduced as a runtime outage. (codex)
 - Root cause: The repository-root `wrangler.toml` contained committed conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) and stale unconfirmed `AI`/`VECTOR_INDEX` bindings. Cloudflare Worker Builds configured with root directory `/` and deploy command `npx wrangler deploy` read this file, so config parsing/deploy can fail even though `apps/worker/wrangler.toml` is valid. (codex)

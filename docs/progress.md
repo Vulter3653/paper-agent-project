@@ -4,6 +4,12 @@ Updated: 2026-05-27 (codex personal repo sync and jin23624 refinement)
 
 ## codex - Root Wrangler Deploy Fix (2026-05-27)
 
+## codex - Personal Cloudflare Build Retrigger (2026-05-27)
+
+- Cloudflare Worker Builds showed the failed personal-repo build targeting stale commit `0bfa894`; personal `origin/main` already contains the fixed root `wrangler.toml` at `4369a10`. (codex)
+- Added a fresh personal `main` commit to force Cloudflare Git Builds to clone a new fixed commit rather than retrying the stale build. (codex)
+
+
 - Found that the root `wrangler.toml` still contained merge-conflict markers plus unconfirmed AI/Vectorize bindings, which can break Cloudflare Worker Builds when the deploy command runs `npx wrangler deploy` from repository root. (codex)
 - Fixed root `wrangler.toml` to match the confirmed production Worker bindings: D1 `DB` and R2 `REPORTS`. (codex)
 - Verification: production `/api/health` and `/api/diagnostics` returned healthy responses; `npx wrangler deploy --dry-run`, `npm run build --workspace apps/worker`, and root `npm run build` passed locally. (codex)

@@ -21,6 +21,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - No unreleased changes.
 
 ## 2026-05-27 (codex)
+- Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
+
 
 - Fixed: Removed committed merge-conflict markers and unconfirmed AI/Vectorize bindings from root `wrangler.toml` so Cloudflare Worker deploys can parse the production Worker config. (codex)
 
@@ -30,11 +32,15 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Benchmark: Re-ran `npm run benchmark:evaluate-proposed` after selective reapply and updated proposed-agent metric outputs. (codex)
 
 ## 2026-05-27 (codex)
+- Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
+
 
 - Docs: Recorded the personal-repo sync and organization PR merge that restored the org-ready baseline in `docs/progress.md` and `docs/debug-log.md`. (codex)
 - Docs: Added `docs/team-branch-evaluation-2026-05-27.md` with team-branch status, recommendations, and troubleshooting notes. (codex)
 
 ## 2026-05-27 (codex)
+- Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
+
 
 - Docs: Added docs/benchmark-branch-review-2026-05-27.md to record that the benchmark branches need rebase or cherry-pick before merging onto the current org-ready baseline. (codex)
 
@@ -54,6 +60,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Docs: Updated project progress and debug logs with refactoring, Vectorize, and LLM Critic integration details. (gemini)
 
 ## 2026-05-27 (codex)
+- Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
+
 
 - Docs: Added `docs/gemini-latest-work-evaluation.md` with blocking findings and salvage guidance for the latest divergent Gemini local branch. (codex)
 

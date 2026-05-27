@@ -33,17 +33,19 @@ Read these files before editing:
 
 ## Required End-Of-Session Snapshot
 
-- Active task: 20-task benchmark expansion and origin/main merge complete. (gemini)
+- Active task: T001-T003 Gold Label Refinement (jin23624_cpu 역할 수행)
 - Changed files:
-    - apps/worker/src/index.ts, critic.ts, scoring.ts, wrangler.toml (conflict resolution)
-    - benchmark/proposed_agent_results_full.csv, proposed_agent_jobs_full.csv (consolidated results)
-    - benchmark/proposed_agent_metrics_full.csv, proposed_agent_metrics_summary_full.json (new metrics)
-    - docs/progress.md, docs/debug-log.md, CHANGELOG.md, GEMINI.md (historical logs)
-- Verification run: `node benchmark/scripts/evaluate-proposed-agent.mjs` passed with 16/20 tasks. (gemini)
-- Verification not run and why: Deployed smoke test for Vectorize/LLM Critic because AI/Vectorize bindings are currently removed from production for stability. (gemini)
-- Human-gated blockers: Creation of Cloudflare Workers AI and Vectorize resources in the production account to enable the code-ready paths. (gemini)
-- Next recommended action: Finalize the remaining 4 tasks if they were failures, or begin gold-label refinement to improve precision metrics. (gemini)
-- Git status summary: `da83614` commit includes merge and benchmark data. Ready for push to `origin/personal-main-check`. (gemini)
+    - benchmark/gold_relevant_papers.csv
+    - benchmark/gold_relevant_papers.verified.csv (auto-generated)
+    - jin23624_cpu/README.md
+    - CHANGELOG.md
+    - docs/progress.md
+    - docs/debug-log.md
+- Verification run: `npm run benchmark:verify-gold` (Passed: 9 rows verified for T001-T003)
+- Verification not run and why: Deployed worker smoke tests (Not relevant to CSV changes), `npm run benchmark:evaluate-proposed` (Will run in next step to see metric improvement)
+- Human-gated blockers: None for this task.
+- Next recommended action: Run `npm run benchmark:evaluate-proposed` to confirm metric improvement for T001-T003. Then proceed to Baseline collection for T001-T003 or continue Gold refinement for T004-T006.
+- Git status summary: Modified benchmark CSVs, README, and doc files. No source code changes.
 
 ## Memory Rule
 

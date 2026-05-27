@@ -7,20 +7,20 @@
   "totals": {
     "tasks": 3,
     "results": 15,
-    "gold": 10,
-    "verifiedGold": 2,
-    "goldMatches": 1,
-    "doiMatches": 1
+    "gold": 9,
+    "verifiedGold": 9,
+    "goldMatches": 5,
+    "doiMatches": 5
   },
   "macroAverages": {
-    "precision_at_k": 0.0667,
-    "ndcg_at_k": 0.1601,
-    "gold_doi_hit_rate_at_k": 0.3333,
-    "doi_accuracy_at_k": 1.0,
-    "paper_validity_rate_at_k": 1.0,
-    "top_journal_precision_at_k": 1.0,
-    "hallucination_rate_at_k": 0.0,
-    "oa_success_rate_at_k": 0.0
+    "precision_at_k": 0.3333,
+    "ndcg_at_k": 0.5649,
+    "gold_doi_hit_rate_at_k": 0.5556,
+    "doi_accuracy_at_k": 1,
+    "paper_validity_rate_at_k": 1,
+    "top_journal_precision_at_k": 1,
+    "hallucination_rate_at_k": 0,
+    "oa_success_rate_at_k": 0
   },
   "interpretation": {
     "precision_at_k": "Exact DOI/title overlap against task gold rows with human_relevance >= 4.",

@@ -139,6 +139,7 @@ type DiagnosticsResponse = {
     activeProviderReady: boolean;
   };
 };
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -319,6 +320,7 @@ export default {
     return json({ error: "Not found" }, 404);
   }
 };
+
 async function readJson<T extends object>(request: Request): Promise<Partial<T>> {
   try {
     return (await request.json()) as Partial<T>;
@@ -396,6 +398,7 @@ function completeSearchJob(job: SearchJob): SearchJob {
     completedAt: new Date().toISOString()
   };
 }
+
 async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
   if (env.DB) await ensureSchema(env.DB);
   const missingColumns = env.DB ? await getMissingColumns(env.DB) : [];
@@ -496,26 +499,12 @@ async function processSearchJob(
     });
 
     job = await updateSearchJobProgress(db, job, "ranking", "ranking");
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> origin/main
     let semanticScores: Record<string, number> | undefined = undefined;
     if (options.ai && options.vectorIndex) {
       try {
         await upsertPaperVectors(options.vectorIndex, options.ai, driveEnriched);
         semanticScores = await getSemanticRelevance(options.vectorIndex, options.ai, keyword, driveEnriched.map(p => p.id));
-<<<<<<< HEAD
-        await recordAgentTrace(db, job, { 
-          stepOrder: 8, 
-          stepId: "vectorize_relevance", 
-          agentName: "Relevance Agent", 
-          summary: "Computed semantic relevance using Cloudflare Vectorize and Workers AI.", 
-          detail: JSON.stringify({ mode: "vector_semantic", vectorizeConnected: true, scoredCount: Object.keys(semanticScores).length }), 
-          inputCount: driveEnriched.length, 
-          outputCount: Object.keys(semanticScores).length 
-=======
         await recordAgentTrace(db, job, {
           stepOrder: 8,
           stepId: "vectorize_relevance",
@@ -524,7 +513,6 @@ async function processSearchJob(
           detail: JSON.stringify({ mode: "vector_semantic", vectorizeConnected: true, scoredCount: Object.keys(semanticScores).length }),
           inputCount: driveEnriched.length,
           outputCount: Object.keys(semanticScores).length
->>>>>>> origin/main
         });
       } catch (error) {
         console.error("Vectorize error:", error);
@@ -537,25 +525,11 @@ async function processSearchJob(
     const rankedPapers = rankPapers(driveEnriched, semanticScores);
     await recordAgentTrace(db, job, { stepOrder: 7, stepId: "journal_evaluation", agentName: "Evaluation Agent", summary: "Calculated journal fit, verification, OA, citation, recency, and relevance scores.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
     await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> origin/main
     let criticFlags = buildCriticFlags(rankedPapers);
     if (options.ai) {
       try {
         criticFlags = await runLlmCritic(options.ai, keyword, rankedPapers, criticFlags);
-<<<<<<< HEAD
-        await recordAgentTrace(db, job, { 
-          stepOrder: 10, 
-          stepId: "critic_review", 
-          agentName: "Critic Agent", 
-          summary: "Generated " + criticFlags.length + " critic flags (including LLM qualitative analysis).", 
-          detail: JSON.stringify({ ruleBasedCount: buildCriticFlags(rankedPapers).length, llmCount: criticFlags.filter(f => f.flagType === 'llm_critique').length }), 
-          inputCount: rankedPapers.length, 
-          outputCount: criticFlags.length 
-=======
         await recordAgentTrace(db, job, {
           stepOrder: 10,
           stepId: "critic_review",
@@ -564,7 +538,6 @@ async function processSearchJob(
           detail: JSON.stringify({ ruleBasedCount: buildCriticFlags(rankedPapers).length, llmCount: criticFlags.filter(f => f.flagType === 'llm_critique').length }),
           inputCount: rankedPapers.length,
           outputCount: criticFlags.length
->>>>>>> origin/main
         });
       } catch (error) {
         console.error("LLM Critic Agent error:", error);
@@ -603,8 +576,4 @@ function corsHeaders(): HeadersInit {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Authorization"
   };
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

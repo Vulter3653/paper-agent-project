@@ -75,8 +75,95 @@ export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
 }
 
 export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) {
-  const completedCount = isRunning ? 7 : 10;
-  const progress = Math.round((completedCount / literatureWorkflowStages.length) * 100);
+  const [activeJob, setActiveJob] = useState<SearchJob | null>(null);
+  const [traces, setTraces] = useState<AgentTrace[]>([]);
+  const [report, setReport] = useState<string>("");
+  const [error, setError] = useState("");
+  const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
+  const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
+  const liveStages = traces.length ? mapTracesToWorkflowStages(traces) : literatureWorkflowStages;
+
+  // 리포트 마크다운에서 섹션 파싱
+  const livePreview = useMemo(() => {
+    if (!report) return literaturePreview;
+    
+    const sections = [
+      { title: "Summary", marker: "## Executive Summary", fallback: literaturePreview[0].body },
+      { title: "Commonality", marker: "### Common Themes", fallback: literaturePreview[1].body },
+      { title: "Difference", marker: "### Methodological Differences", fallback: literaturePreview[2].body },
+      { title: "Research Gap", marker: "### Identified Research Gaps", fallback: literaturePreview[3].body },
+      { title: "Critic Note", marker: "### Screening Notes", fallback: literaturePreview[4].body },
+      { title: "Use in Paper", marker: "### Suggested Reading Order", fallback: literaturePreview[5].body }
+    ];
+
+    return sections.map(sec => {
+      const startIdx = report.indexOf(sec.marker);
+      if (startIdx === -1) return { title: sec.title, body: sec.fallback };
+      
+      const contentStart = startIdx + sec.marker.length;
+      let nextHeaderIdx = report.indexOf("##", contentStart);
+      let subHeaderIdx = report.indexOf("###", contentStart);
+      
+      // 마커 자체가 포함된 경우 제외
+      if (nextHeaderIdx === startIdx) nextHeaderIdx = report.indexOf("##", contentStart + 1);
+      
+      const endIdx = nextHeaderIdx === -1 ? (subHeaderIdx === -1 ? report.length : subHeaderIdx) : (subHeaderIdx === -1 ? nextHeaderIdx : Math.min(nextHeaderIdx, subHeaderIdx));
+      
+      let body = report.substring(contentStart, endIdx).trim();
+      body = body.replace(/^\s*[\-\*]\s+/gm, "").split("\n")[0]; 
+      return { title: sec.title, body: body || sec.fallback };
+    });
+  }, [report]);
+
+  useEffect(() => {
+    void loadLatestJob();
+  }, []);
+
+  useEffect(() => {
+    if (!activeJob || activeJob.status === "completed" || activeJob.status === "failed") return;
+    const timer = window.setInterval(() => {
+      void loadJobTraces(activeJob.id);
+    }, 2500);
+    return () => window.clearInterval(timer);
+  }, [activeJob?.id, activeJob?.status]);
+
+  async function loadLatestJob() {
+    try {
+      const response = await fetch(apiUrl("/api/search-jobs?limit=1"));
+      if (!response.ok) return;
+      const data = (await response.json()) as JobsResponse;
+      const latest = data.jobs[0];
+      if (latest) {
+        await loadJobTraces(latest.id);
+        if (latest.status === "completed") await loadReport(latest.id);
+      }
+    } catch {
+      // Fail silently
+    }
+  }
+
+  async function loadJobTraces(jobId: string) {
+    try {
+      const response = await fetch(apiUrl(`/api/search-jobs/${jobId}/traces`));
+      if (!response.ok) return;
+      const data = (await response.json()) as TraceResponse;
+      setActiveJob(data.job);
+      setTraces(data.traces);
+      if (data.job.status === "completed" && !report) await loadReport(jobId);
+    } catch {
+      // Fail silently
+    }
+  }
+
+  async function loadReport(jobId: string) {
+    try {
+      const response = await fetch(apiUrl(`/api/search-jobs/${jobId}/report.md`));
+      if (!response.ok) return;
+      setReport(await response.text());
+    } catch {
+      // Fail silently
+    }
+  }
 
   return (
     <>
@@ -95,15 +182,15 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           </div>
           <aside className="uxSearchSummary">
             <h2>Workflow Snapshot</h2>
-            <p>현재 실제 Run 버튼은 아래 검색 영역과 연결되어 있습니다. 이 snapshot 수치는 미완성 Mock이며 실제 job 결과가 아닙니다.</p>
+            <p>{activeJob ? `Job ${activeJob.id} 실행 상태입니다.` : "최근 실행된 검색 작업이 없습니다. 아래에서 검색을 시작하세요."}</p>
             <div className="uxProgressTrack">
               <span style={{ width: `${progress}%` }} />
             </div>
             <div className="uxSnapshotGrid">
-              <MetricTile label="Retrieved" value="미완성" detail="mock placeholder" tone="amber" />
-              <MetricTile label="DOI Validity" value="미완성" detail="mock placeholder" tone="amber" />
+              <MetricTile label="Status" value={activeJob?.status || "Idle"} detail={activeJob?.currentStep || "ready"} tone="green" />
+              <MetricTile label="Steps" value={`${completedTraceCount}/12`} detail="completed" tone="blue" />
               <MetricTile label="Top Pool" value="부분 구현" detail="allowlist exists" tone="purple" />
-              <MetricTile label="Review" value="미완성" detail="critic mock" tone="amber" />
+              <MetricTile label="Review" value={activeJob?.status === "completed" ? "Ready" : "Pending"} detail="critic analysis" tone={activeJob?.status === "completed" ? "green" : "amber"} />
             </div>
           </aside>
         </div>
@@ -119,15 +206,15 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
         <div className="uxPanelHead">
           <div>
             <h2>12-step Literature Review Workflow</h2>
-            <p>미완성 Mock: 실제 agent_traces 연결 전의 단계 구조 preview입니다.</p>
+            <p>{traces.length ? "실제 D1 agent_traces 기반의 실시간 실행 단계입니다." : "미완성 Mock: 실제 agent_traces 연결 전의 단계 구조 preview입니다."}</p>
           </div>
-          <span className="uxPill amber">미완성 Mock</span>
+          <span className={`uxPill ${traces.length ? "green" : "amber"}`}>{traces.length ? "Live D1 traces" : "미완성 Mock"}</span>
         </div>
         <div className="uxProgressTrack">
           <span style={{ width: `${progress}%` }} />
         </div>
         <div className="uxSteps12">
-          {literatureWorkflowStages.map((stage) => (
+          {liveStages.map((stage) => (
             <article key={stage.id} className={`uxStep ${stage.status}`}>
               <span>{stage.order}</span>
               <strong>{stage.title}</strong>
@@ -161,12 +248,12 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>Literature Review Preview</h2>
-              <p>미완성 Mock: 실제 Report Agent API 연결 전의 섹션 preview입니다.</p>
+              <p>{report ? "실제 Report Agent가 생성한 섹션별 핵심 요약입니다." : "미완성 Mock: 실제 Report Agent API 연결 전의 섹션 preview입니다."}</p>
             </div>
             <FileText size={18} />
           </div>
           <div className="uxPreviewGrid">
-            {literaturePreview.map((item) => (
+            {livePreview.map((item) => (
               <article key={item.title} className="uxMiniCard">
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>

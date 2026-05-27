@@ -3,6 +3,8 @@
 ## 2026-05-27 - Root Wrangler Deploy Failure Check
 
 ## 2026-05-27 - Personal Cloudflare Build Stale Commit Recheck
+- Follow-up finding: Latest personal build commit `8f5dff6` still failed at submodule update because personal `origin/main` also tracked `.worktrees/agent-traces` as a gitlink without `.gitmodules`. (codex)
+- Follow-up fix: Removed the tracked `.worktrees/agent-traces` gitlink from personal `main`; `.gitignore` already excludes `.worktrees/`. (codex)
 
 - Context: Cloudflare Worker Builds still showed latest failed build for `Vulter3653/paper-agent-project` branch `main` at commit `0bfa894`. (codex)
 - Finding: `origin/main` is already at `4369a10`, and `0bfa894:wrangler.toml` still contains conflict markers while `origin/main:wrangler.toml` is clean. The displayed failed build is therefore tied to a stale commit. (codex)

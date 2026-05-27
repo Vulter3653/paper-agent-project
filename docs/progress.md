@@ -5,6 +5,7 @@ Updated: 2026-05-27 (codex personal repo sync and jin23624 refinement)
 ## codex - Root Wrangler Deploy Fix (2026-05-27)
 
 ## codex - Personal Cloudflare Build Retrigger (2026-05-27)
+- Latest personal build `8f5dff6` reached the current commit but failed during repository submodule update because personal `main` still contained the accidental `.worktrees/agent-traces` gitlink. Removed that gitlink and prepared a new build-triggering commit. (codex)
 
 - Cloudflare Worker Builds showed the failed personal-repo build targeting stale commit `0bfa894`; personal `origin/main` already contains the fixed root `wrangler.toml` at `4369a10`. (codex)
 - Added a fresh personal `main` commit to force Cloudflare Git Builds to clone a new fixed commit rather than retrying the stale build. (codex)

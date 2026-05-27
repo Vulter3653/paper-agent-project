@@ -21,6 +21,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - No unreleased changes.
 
 ## 2026-05-27 (codex)
+- Docs: Added `docs/cloudflare-worker-build-troubleshooting.md` with the resolved Worker build incident, root causes, verification commands, and recurrence-prevention checklist. (codex)
+
 - Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink from personal `main` so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
 
 - Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
@@ -34,6 +36,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Benchmark: Re-ran `npm run benchmark:evaluate-proposed` after selective reapply and updated proposed-agent metric outputs. (codex)
 
 ## 2026-05-27 (codex)
+- Docs: Added `docs/cloudflare-worker-build-troubleshooting.md` with the resolved Worker build incident, root causes, verification commands, and recurrence-prevention checklist. (codex)
+
 - Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink from personal `main` so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
 
 - Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
@@ -43,6 +47,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Docs: Added `docs/team-branch-evaluation-2026-05-27.md` with team-branch status, recommendations, and troubleshooting notes. (codex)
 
 ## 2026-05-27 (codex)
+- Docs: Added `docs/cloudflare-worker-build-troubleshooting.md` with the resolved Worker build incident, root causes, verification commands, and recurrence-prevention checklist. (codex)
+
 - Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink from personal `main` so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
 
 - Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
@@ -66,6 +72,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Docs: Updated project progress and debug logs with refactoring, Vectorize, and LLM Critic integration details. (gemini)
 
 ## 2026-05-27 (codex)
+- Docs: Added `docs/cloudflare-worker-build-troubleshooting.md` with the resolved Worker build incident, root causes, verification commands, and recurrence-prevention checklist. (codex)
+
 - Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink from personal `main` so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
 
 - Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)

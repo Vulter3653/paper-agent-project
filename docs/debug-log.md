@@ -3,6 +3,8 @@
 ## 2026-05-27 - Root Wrangler Deploy Failure Check
 
 ## 2026-05-27 - Personal Cloudflare Build Stale Commit Recheck
+- Resolution record: Added `docs/cloudflare-worker-build-troubleshooting.md` as the durable runbook for this incident, including the stale build SHA check, root `wrangler.toml` conflict-marker check, gitlink/submodule check, and artifact download route check. (codex)
+- Final status: The user confirmed the Worker is operating normally after the personal `main` gitlink fix; health, diagnostics, search jobs, CSV, Markdown, XLSX, and PDF outputs had been verified. (codex)
 - Follow-up finding: Latest personal build commit `8f5dff6` still failed at submodule update because personal `origin/main` also tracked `.worktrees/agent-traces` as a gitlink without `.gitmodules`. (codex)
 - Follow-up fix: Removed the tracked `.worktrees/agent-traces` gitlink from personal `main`; `.gitignore` already excludes `.worktrees/`. (codex)
 

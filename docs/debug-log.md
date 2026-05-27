@@ -73,3 +73,10 @@
 - Change: Added explicit local Worker dev/smoke scripts and `docs/local-worker-troubleshooting.md`. (codex)
 - Fix: Updated Worker smoke script so `REQUIRE_READY=false` allows local diagnostics with missing provider secrets while still checking D1 binding and schema columns. (codex)
 - Verification: production `npm run smoke:worker`, production minimal search smoke, local `npm run smoke:worker:local`, `npm run typecheck`, `npm run build:web`, `npm run build`, and `git diff --check` passed in this session. (codex)
+
+## 2026-05-27 - Vectorize Index Missing Build Failure (gemini)
+- Context: Worker build failed after adding AI and Vectorize bindings to `wrangler.toml`.
+- Finding: Cloudflare Build log showed `[ERROR] Vectorize binding 'VECTOR_INDEX' references index 'paper-abstract-index' which was not found.`
+- Root cause: `wrangler.toml` referenced a Vectorize index that had not been created in the Cloudflare account yet.
+- Action: Ran `npx wrangler vectorize create paper-abstract-index --dimensions=384 --metric=cosine` to create the missing index.
+- Status: Resolved. Deploy should now succeed upon retry. (gemini)

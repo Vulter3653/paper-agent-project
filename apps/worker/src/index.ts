@@ -139,6 +139,7 @@ type DiagnosticsResponse = {
     activeProviderReady: boolean;
   };
 };
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -319,6 +320,7 @@ export default {
     return json({ error: "Not found" }, 404);
   }
 };
+
 async function readJson<T extends object>(request: Request): Promise<Partial<T>> {
   try {
     return (await request.json()) as Partial<T>;
@@ -396,6 +398,7 @@ function completeSearchJob(job: SearchJob): SearchJob {
     completedAt: new Date().toISOString()
   };
 }
+
 async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
   if (env.DB) await ensureSchema(env.DB);
   const missingColumns = env.DB ? await getMissingColumns(env.DB) : [];
@@ -451,6 +454,7 @@ async function processSearchJob(
 ): Promise<void> {
   let job = initialJob;
   try {
+    // 1. Planner
     await recordAgentTrace(db, job, {
       stepOrder: 1,
       stepId: "planner",
@@ -460,6 +464,7 @@ async function processSearchJob(
       outputCount: 1
     });
 
+    // 2. Search
     job = await updateSearchJobProgress(db, job, "searching", getSearchStepId(options.searchProvider));
     const candidates =
       options.searchProvider === "openalex"
@@ -467,18 +472,23 @@ async function processSearchJob(
         : await searchWebOfScience(keyword, options);
     await recordAgentTrace(db, job, { stepOrder: 3, stepId: getSearchStepId(options.searchProvider), agentName: "Search/Retriever Agent", summary: "Retrieved " + candidates.length + " candidate papers from " + options.searchProvider + ".", inputCount: 1, outputCount: candidates.length });
 
+    // 3. Journal Filter
     job = await updateSearchJobProgress(db, job, "scoring", "journal_filter");
     const allowedPapers = filterAllowedBusinessSchoolJournals(candidates, options.journalCategoryId).slice(0, options.maxResults);
     await recordAgentTrace(db, job, { stepOrder: 2, stepId: "journal_selector", agentName: "Journal Selector Agent", summary: "Filtered candidates to " + allowedPapers.length + " approved business-school journal papers.", detail: JSON.stringify({ sourceCount: candidates.length, categoryId: options.journalCategoryId ?? "all" }), inputCount: candidates.length, outputCount: allowedPapers.length });
 
+    // 4. Crossref Enrichment
     job = await updateSearchJobProgress(db, job, "enriching_metadata", "crossref_enrichment");
     const crossrefEnriched = await enrichPapersWithCrossref(allowedPapers, options.crossrefEmail, options.enrichmentLimit);
     await recordAgentTrace(db, job, { stepOrder: 4, stepId: "crossref_enrichment", agentName: "Verifier Agent", summary: "Crossref verification completed for " + crossrefEnriched.length + " allowed papers.", detail: JSON.stringify({ enrichmentLimit: options.enrichmentLimit, verified: crossrefEnriched.filter((paper) => paper.verificationStatus === "verified").length, partial: crossrefEnriched.filter((paper) => paper.verificationStatus === "partial").length, skipped: crossrefEnriched.filter((paper) => paper.verificationReason.includes("Enrichment limit")).length }), inputCount: allowedPapers.length, outputCount: Math.min(allowedPapers.length, options.enrichmentLimit) });
 
+    // 5. Unpaywall Check
     job = await updateSearchJobProgress(db, job, "checking_oa", "unpaywall_check");
     const unpaywallEnriched = await enrichPapersWithUnpaywall(crossrefEnriched, options.unpaywallEmail, options.enrichmentLimit);
     await recordAgentTrace(db, job, { stepOrder: 5, stepId: "unpaywall_check", agentName: "Open Access Agent", summary: "Unpaywall lookup completed; " + unpaywallEnriched.filter((paper) => paper.oaPdfUrl).length + " OA PDF URLs found.", detail: JSON.stringify({ enrichmentLimit: options.enrichmentLimit, pdfUrls: unpaywallEnriched.filter((paper) => paper.oaPdfUrl).length, landingPages: unpaywallEnriched.filter((paper) => paper.oaLandingPageUrl).length, skipped: unpaywallEnriched.filter((paper) => paper.unpaywallReason.includes("Enrichment limit")).length }), inputCount: crossrefEnriched.length, outputCount: Math.min(crossrefEnriched.length, options.enrichmentLimit) });
 
+    // 6. Drive/R2 Storage
+    job = await updateSearchJobProgress(db, job, "checking_oa", "drive_r2_storage");
     const driveEnriched = await uploadOpenAccessPdfsToDrive(unpaywallEnriched, {
       clientEmail: options.googleClientEmail,
       privateKey: options.googlePrivateKey,
@@ -495,8 +505,8 @@ async function processSearchJob(
       outputCount: driveEnriched.filter((paper) => paper.driveStatus === "uploaded").length
     });
 
-    job = await updateSearchJobProgress(db, job, "ranking", "ranking");
-
+    // 7. Vectorize Relevance (Planned)
+    job = await updateSearchJobProgress(db, job, "ranking", "vectorize_relevance");
     let semanticScores: Record<string, number> | undefined = undefined;
     if (options.ai && options.vectorIndex) {
       try {
@@ -519,10 +529,16 @@ async function processSearchJob(
       await recordAgentTrace(db, job, { stepOrder: 8, stepId: "vectorize_relevance", agentName: "Relevance Agent", summary: "Computed fallback relevance from keyword, title, abstract, journal, and metadata scores; Vectorize embeddings remain planned.", detail: JSON.stringify({ mode: "metadata_fallback", vectorizeConnected: false }), inputCount: driveEnriched.length, outputCount: driveEnriched.length });
     }
 
+    // 8. Journal Evaluation & Ranking
+    job = await updateSearchJobProgress(db, job, "ranking", "journal_evaluation");
     const rankedPapers = rankPapers(driveEnriched, semanticScores);
     await recordAgentTrace(db, job, { stepOrder: 7, stepId: "journal_evaluation", agentName: "Evaluation Agent", summary: "Calculated journal fit, verification, OA, citation, recency, and relevance scores.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
+    
+    job = await updateSearchJobProgress(db, job, "ranking", "ranking");
     await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
 
+    // 9. Critic Review
+    job = await updateSearchJobProgress(db, job, "ranking", "critic_review");
     let criticFlags = buildCriticFlags(rankedPapers);
     if (options.ai) {
       try {
@@ -544,13 +560,18 @@ async function processSearchJob(
       await recordAgentTrace(db, job, { stepOrder: 10, stepId: "critic_review", agentName: "Critic Agent", summary: "Generated " + criticFlags.length + " rule-based critic flags; LLM analysis skipped (AI not bound).", detail: JSON.stringify({}), inputCount: rankedPapers.length, outputCount: criticFlags.length });
     }
 
-    const completedJob = completeSearchJob(job);
-    await saveSearchResult(db, completedJob, rankedPapers, { sourceResultCount: candidates.length, allowedResultCount: allowedPapers.length });
-    await persistCriticFlags(db, completedJob.id, criticFlags);
-    const outputRecords = await persistSearchOutputs(options.reports, { job: completedJob, papers: rankedPapers, criticFlags });
-    await persistJobOutputs(db, completedJob.id, outputRecords);
-    await recordAgentTrace(db, completedJob, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, XLSX, and PDF report outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
-    await recordAgentTrace(db, completedJob, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });
+    // 10. Report Generation
+    job = await updateSearchJobProgress(db, job, "generating_report", "report_generation");
+    const completedJobSnapshot = completeSearchJob(job);
+    await saveSearchResult(db, completedJobSnapshot, rankedPapers, { sourceResultCount: candidates.length, allowedResultCount: allowedPapers.length });
+    await persistCriticFlags(db, completedJobSnapshot.id, criticFlags);
+    const outputRecords = await persistSearchOutputs(options.reports, { job: completedJobSnapshot, papers: rankedPapers, criticFlags });
+    await persistJobOutputs(db, completedJobSnapshot.id, outputRecords);
+    await recordAgentTrace(db, completedJobSnapshot, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, XLSX, and PDF report outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
+    
+    // 11. Delivery
+    job = await updateSearchJobProgress(db, completedJobSnapshot, "completed", "delivery");
+    await recordAgentTrace(db, job, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });
   } catch (error) {
     await saveSearchFailure(db, job, error);
     await recordAgentTrace(db, job, { stepOrder: 12, stepId: "failure", agentName: "Worker Error Handler", status: "failed", summary: "Search job failed before completion.", errorMessage: getErrorMessage(error) });

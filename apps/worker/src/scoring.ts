@@ -164,7 +164,6 @@ export function rankPapers(papers: PaperRecord[], semanticScores?: Record<string
       const scores = calculateEvaluationScores(paper);
       const semanticScore = semanticScores?.[paper.id] ?? 0;
       
-      // If we have a semantic score, it should heavily influence the relevance component
       const finalRelevance = semanticScore > 0 
         ? roundScore(0.4 * scores.relevanceScore + 0.6 * semanticScore)
         : scores.relevanceScore;

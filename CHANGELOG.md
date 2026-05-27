@@ -20,6 +20,15 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 - No unreleased changes.
 
+## 2026-05-27 (codex)
+
+- Docs: Recorded the personal-repo sync and organization PR merge that restored the org-ready baseline in `docs/progress.md` and `docs/debug-log.md`. (codex)
+- Docs: Added `docs/team-branch-evaluation-2026-05-27.md` with team-branch status, recommendations, and troubleshooting notes. (codex)
+
+## 2026-05-27 (jin23624)
+
+- Benchmark: Refined T001-T003 gold labels (G001-G009) with real DOI-backed, top-journal papers verified via Crossref. (jin23624)
+
 ## 2026-05-26 (gemini)
 
 - Added: Integrated LLM-backed Critic Agent using Cloudflare Workers AI (`@cf/meta/llama-3-8b-instruct`) for qualitative evaluation of abstracts. (gemini)
@@ -120,7 +129,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Docs: Added `docs/team-collaboration.md` for GitHub team repository setup, branch policy, benchmark file ownership, data rules, and PR checklist. (codex)
 - Benchmark: Added Proposed Agent evaluation script `benchmark/scripts/evaluate-proposed-agent.mjs` with Precision@K, NDCG@K, gold DOI hit rate, DOI accuracy, validity, top-journal precision, hallucination, and OA success metrics. (codex)
 - Benchmark: Generated three-task Proposed Agent metric outputs in `benchmark/proposed_agent_metrics.csv` and `benchmark/proposed_agent_metrics_summary.json`. (codex)
-- Benchmark: Ran a quota-safe three-task Proposed Agent benchmark sample and recorded `benchmark/proposed_agent_jobs.csv` plus `benchmark/proposed_agent_results.csv`. (codex)
+- Benchmark: Ran a quota-safe three-task Proposed Agent benchmark sample and recorded `benchmark/proposed_agent_results.csv` plus `benchmark/proposed_agent_jobs.csv`. (codex)
 - Docs: Recorded the three-task Proposed Agent benchmark sample results in `benchmark/benchmark_summary.md`, `docs/debug-log.md`, and `docs/progress.md`. (codex)
 - Added: Added route-level dashboard implementation status panels that distinguish live, partial, mock, and planned features across Research, Ops, and Evaluation pages. (codex)
 - Docs: Recorded dashboard implementation status panel verification in `docs/debug-log.md` and `docs/progress.md`. (codex)

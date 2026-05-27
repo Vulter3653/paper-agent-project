@@ -38,15 +38,19 @@ Read these files before editing:
 
 ## Required End-Of-Session Snapshot
 
-Gemini must replace this section at the end of its next work session:
-
-- Active task:
+- Active task: T001-T003 Gold Label Refinement (jin23624_cpu 역할 수행)
 - Changed files:
-- Verification run:
-- Verification not run and why:
-- Human-gated blockers:
-- Next recommended action:
-- Git status summary:
+    - benchmark/gold_relevant_papers.csv
+    - benchmark/gold_relevant_papers.verified.csv (auto-generated)
+    - jin23624_cpu/README.md
+    - CHANGELOG.md
+    - docs/progress.md
+    - docs/debug-log.md
+- Verification run: `npm run benchmark:verify-gold` (Passed: 9 rows verified for T001-T003)
+- Verification not run and why: Deployed worker smoke tests (Not relevant to CSV changes), `npm run benchmark:evaluate-proposed` (Will run in next step to see metric improvement)
+- Human-gated blockers: None for this task.
+- Next recommended action: Run `npm run benchmark:evaluate-proposed` to confirm metric improvement for T001-T003. Then proceed to Baseline collection for T001-T003 or continue Gold refinement for T004-T006.
+- Git status summary: Modified benchmark CSVs, README, and doc files. No source code changes.
 
 ## Memory Rule
 

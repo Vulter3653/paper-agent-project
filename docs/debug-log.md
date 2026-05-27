@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-27 - Root Wrangler Deploy Failure Check
+
+- Context: The user reported that the Cloudflare Worker build/deploy was failed. (codex)
+- Finding: The deployed Worker runtime was healthy at `/api/health`, and `/api/diagnostics` reported D1, WoS, Crossref, Unpaywall, R2, and Google Drive readiness. The failure was not reproduced as a runtime outage. (codex)
+- Root cause: The repository-root `wrangler.toml` contained committed conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) and stale unconfirmed `AI`/`VECTOR_INDEX` bindings. Cloudflare Worker Builds configured with root directory `/` and deploy command `npx wrangler deploy` read this file, so config parsing/deploy can fail even though `apps/worker/wrangler.toml` is valid. (codex)
+- Fix: Cleaned root `wrangler.toml` to the confirmed production bindings only: D1 `DB` and R2 `REPORTS`. (codex)
+- Verification: `npx wrangler deploy --dry-run`, `npm run build --workspace apps/worker`, and root `npm run build` passed after the fix. Wrangler remote deployment listing could not be queried because this shell does not currently expose `CLOUDFLARE_API_TOKEN`. (codex)
+
 ## 2026-05-27 - Benchmark Work Queue Update
 
 - Context: After the selective team-output reapply reached personal `main`, the handoff queue still described the older T001-T003 startup state. (codex)

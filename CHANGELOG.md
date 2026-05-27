@@ -22,6 +22,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## 2026-05-27 (codex)
 
+- Fixed: Removed committed merge-conflict markers and unconfirmed AI/Vectorize bindings from root `wrangler.toml` so Cloudflare Worker deploys can parse the production Worker config. (codex)
+
 - Docs: Updated benchmark work queue and benchmark summary after integrating selected T001-T003 team outputs into personal main. (codex)
 
 - Benchmark: Reapplied selected team benchmark outputs onto the current personal baseline without merging outdated branch histories. (codex)

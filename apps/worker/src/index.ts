@@ -488,7 +488,7 @@ async function processSearchJob(
     await recordAgentTrace(db, job, { stepOrder: 5, stepId: "unpaywall_check", agentName: "Open Access Agent", summary: "Unpaywall lookup completed; " + unpaywallEnriched.filter((paper) => paper.oaPdfUrl).length + " OA PDF URLs found.", detail: JSON.stringify({ enrichmentLimit: options.enrichmentLimit, pdfUrls: unpaywallEnriched.filter((paper) => paper.oaPdfUrl).length, landingPages: unpaywallEnriched.filter((paper) => paper.oaLandingPageUrl).length, skipped: unpaywallEnriched.filter((paper) => paper.unpaywallReason.includes("Enrichment limit")).length }), inputCount: crossrefEnriched.length, outputCount: Math.min(crossrefEnriched.length, options.enrichmentLimit) });
 
     // 6. Drive/R2 Storage
-    job = await updateSearchJobProgress(db, job, "storing_results", "drive_r2_storage");
+    job = await updateSearchJobProgress(db, job, "checking_oa", "drive_r2_storage");
     const driveEnriched = await uploadOpenAccessPdfsToDrive(unpaywallEnriched, {
       clientEmail: options.googleClientEmail,
       privateKey: options.googlePrivateKey,
@@ -538,7 +538,7 @@ async function processSearchJob(
     await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
 
     // 9. Critic Review
-    job = await updateSearchJobProgress(db, job, "reviewing", "critic_review");
+    job = await updateSearchJobProgress(db, job, "ranking", "critic_review");
     let criticFlags = buildCriticFlags(rankedPapers);
     if (options.ai) {
       try {

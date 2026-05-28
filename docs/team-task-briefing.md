@@ -19,7 +19,7 @@ Current benchmark state:
 | Rule-based baseline | Complete for T001-T003, 15 rows. |
 | Single-LLM baseline | Complete for T001-T003, 15 fresh repository-grounded rows. |
 | member-c stale branch | Reviewed and rejected for direct reuse because it used older task topics/schema. |
-| Next maintainer task | Add baseline comparison metrics for Rule-based vs Single-LLM vs Proposed Agent. |
+| Next maintainer task | Maintain baseline comparison metrics after benchmark input changes. |
 
 Current metric snapshot for Proposed Agent T001-T003:
 
@@ -181,7 +181,7 @@ Definition of done:
 
 ## Assignment 4: shonshinemin_cmd
 
-Priority: high after maintainer adds baseline comparison script.
+Priority: high.
 
 Branch:
 
@@ -189,7 +189,7 @@ Branch:
 benchmark/shonshinemin-baseline-metric-qa
 ```
 
-Goal: QA the new Rule-based vs Single-LLM vs Proposed Agent comparison outputs after the maintainer adds `npm run benchmark:compare-baselines`.
+Goal: QA the new Rule-based vs Single-LLM vs Proposed Agent comparison outputs.
 
 Allowed files:
 
@@ -204,8 +204,7 @@ docs/progress.md
 
 Required steps:
 
-1. Wait until `benchmark/scripts/compare-baselines.mjs` and `npm run benchmark:compare-baselines` exist.
-2. Run:
+1. Run:
 
 ```bash
 npm run benchmark:audit-gold
@@ -213,9 +212,9 @@ npm run benchmark:evaluate-proposed
 npm run benchmark:compare-baselines
 ```
 
-3. Check whether method-level metric differences match the underlying row data.
-4. Record suspicious metric behavior, especially duplicate DOI effects and accepted gold-audit exceptions.
-5. Update `shonshinemin_cmd/README.md` with a reproducibility note.
+2. Check whether method-level metric differences match the underlying row data.
+3. Record suspicious metric behavior, especially duplicate DOI effects and accepted gold-audit exceptions.
+4. Update `shonshinemin_cmd/README.md` with a reproducibility note.
 
 Definition of done:
 
@@ -227,11 +226,10 @@ Definition of done:
 
 Current maintainer tasks:
 
-1. Add `benchmark/scripts/compare-baselines.mjs`.
-2. Add `npm run benchmark:compare-baselines`.
-3. Generate `benchmark/baseline_comparison_metrics.csv` and `benchmark/baseline_comparison_summary.json`.
-4. Keep personal `origin/main` as the active development source until these benchmark files stabilize.
-5. Sync to organization repo only through reviewed PR flow after local validation.
+1. Maintain `benchmark/scripts/compare-baselines.mjs` after benchmark input changes.
+2. Regenerate `benchmark/baseline_comparison_metrics.csv` and `benchmark/baseline_comparison_summary.json` with `npm run benchmark:compare-baselines`.
+3. Keep personal `origin/main` as the active development source until these benchmark files stabilize.
+4. Sync to organization repo only through reviewed PR flow after local validation.
 
 Required maintainer verification:
 

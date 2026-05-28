@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-28 - Baseline Comparison Script Implementation
+
+- Context: Gemini CLI repeatedly failed with `ioctl(2) failed, EBADF`, so Codex continued the local benchmark comparison task. (codex)
+- Action: Added `benchmark/scripts/compare-baselines.mjs`, `npm run benchmark:compare-baselines`, `benchmark/baseline_comparison_metrics.csv`, and `benchmark/baseline_comparison_summary.json`. (codex)
+- Finding: The first accepted-exception counter treated any slash-containing value as a task/gold id; DOI values such as `10.1016/j.chb.2022.107179` also contain slashes. (codex)
+- Fix: Restricted task/gold exception matching to `T###/G###`-style locations and then narrowed those matches to cases where the actual gold row appears in the ranked result set. (codex)
+- Verification: `npm run benchmark:audit-gold`, `npm run benchmark:evaluate-proposed`, `npm run benchmark:compare-baselines`, and `git diff --check` passed. (codex)
+
 ## 2026-05-28 - Baseline Comparison Input Review
 
 - Context: Prepared for baseline comparison between Rule-based, Single-LLM, and Proposed Agent models for T001-T003. (gemini)

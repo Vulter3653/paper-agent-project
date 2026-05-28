@@ -1,6 +1,6 @@
 # Gemini Session State
 
-Updated: 2026-05-28 (gemini baseline comparison prep)
+Updated: 2026-05-28 (codex baseline comparison follow-up)
 
 ## Current Source Of Truth
 - `AGENTS.md`
@@ -16,25 +16,26 @@ Updated: 2026-05-28 (gemini baseline comparison prep)
 ## Current Personal Repo State
 
 - Personal `origin/main` is the active working baseline.
-- Working branch: `benchmark/gemini-baseline-comparison-prep`.
+- Working branch: `benchmark/gemini-t004-t006-gold-refinement`.
 - Baseline input data (T001-T003) for Rule-based, Single-LLM, and Proposed Agent verified for consistency.
 
 ## Latest Reviewed State
 
 - Gold audit is complete (60 rows).
 - Fresh Single-LLM baseline rows (15 rows) exist for T001-T003.
-- Input CSVs reviewed; baseline CSVs found to be missing some metadata fields relative to proposed-agent schema.
+- Input CSVs reviewed; baseline schema differences are handled by `benchmark/scripts/compare-baselines.mjs`.
+- Baseline comparison outputs now exist at `benchmark/baseline_comparison_metrics.csv` and `benchmark/baseline_comparison_summary.json`.
 
 ## What Gemini Must Do Next
 
-Next maintainer task: Implement the baseline comparison script.
+Next task: QA and interpret the generated baseline comparison outputs.
 
 Required focus:
 
-1. Create `benchmark/scripts/compare-baselines.mjs`.
-2. Add `npm run benchmark:compare-baselines` to `package.json`.
-3. Ensure the script handles schema differences between baseline CSVs and proposed-agent CSVs.
-4. Generate `benchmark/baseline_comparison_metrics.csv` and `benchmark/baseline_comparison_summary.json`.
+1. Run `npm run benchmark:compare-baselines` after any benchmark input change.
+2. Review whether Single-LLM gains are inflated by repository-grounded gold overlap.
+3. Review accepted exception effects, especially `T001/G003` and duplicate DOI `10.1016/j.chb.2022.107179`.
+4. Do not modify Worker, Cloudflare, deployment, or dashboard files for this benchmark QA task.
 5. Update `CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`, and this file before ending the session.
 
 ## Gemini Constraints
@@ -48,13 +49,8 @@ Required focus:
 ```bash
 npm run benchmark:audit-gold
 npm run benchmark:evaluate-proposed
-git diff --check
-```
-
-If the maintainer adds a comparison script, then also run:
-
-```bash
 npm run benchmark:compare-baselines
+git diff --check
 ```
 
 ## Handoff Memory Rule

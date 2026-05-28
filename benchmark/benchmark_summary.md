@@ -1,6 +1,6 @@
 # Paper-Agent-Bench Summary
 
-Updated: 2026-05-27
+Updated: 2026-05-28
 
 ## Status
 
@@ -81,9 +81,9 @@ Two `promote_candidate` rows have been reviewed and promoted:
 
 The decisions are recorded in `benchmark/gold_promotion_decisions.csv`. The promoted rows replaced broad seed titles in both `benchmark/gold_relevant_papers.csv` and `benchmark/gold_relevant_papers.verified.csv`.
 
-## Planned Baseline Comparison
+## Baseline Comparison
 
-The benchmark will compare:
+The benchmark now compares:
 
 1. Rule-based scholarly search baseline
 2. Single LLM recommendation baseline
@@ -96,16 +96,28 @@ Current baseline rows:
 | Rule-based | 5 | 5 | 5 | 15 | Integrated from current proposed-agent candidate pool. |
 | Single-LLM | 5 | 5 | 5 | 15 | Fresh repository-grounded Codex single-pass baseline; not copied from stale member-c branch. |
 
-Target metrics:
+Generated outputs:
 
-- Precision@5
-- NDCG@5
-- Paper Validity Rate
-- DOI Accuracy
-- Top Journal Precision
-- Hallucination Rate
-- OA PDF Success Rate
-- Report Completeness
+```text
+benchmark/baseline_comparison_metrics.csv
+benchmark/baseline_comparison_summary.json
+```
+
+Run command:
+
+```bash
+npm run benchmark:compare-baselines
+```
+
+Current T001-T003 macro comparison:
+
+| Method | Precision@5 | NDCG@5 | Gold DOI Hit Rate@5 | DOI Presence@5 | Top Journal Precision@5 | Paper Validity@5 | Accepted Exceptions |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Proposed Agent | 0.1333 | 0.3579 | 0.1944 | 1.0000 | 1.0000 | 1.0000 | 0.0000 |
+| Rule-based | 0.1333 | 0.3579 | 0.1944 | 1.0000 | 1.0000 | 1.0000 | 0.0000 |
+| Single-LLM | 0.6667 | 0.9949 | 1.0000 | 1.0000 | 0.9333 | 1.0000 | 1.0000 |
+
+Interpretation caution: the Single-LLM baseline is repository-grounded and intentionally selected from DOI-backed gold/proposed metadata, so its high exact-overlap score should be treated as an upper-bound or controlled baseline until a formal external model-run protocol is defined.
 
 ## Proposed Agent Runner
 
@@ -195,7 +207,7 @@ Use the audited gold set as the benchmark control layer:
 
 1. Keep the 2 accepted warnings in `benchmark/gold_audit_allowlist.json` under review, especially if a stronger T001/G003 approved-journal replacement is found.
 2. Re-run `npm run benchmark:evaluate-proposed` after any gold-label or allowlist cleanup.
-3. Add or update baseline comparison metrics so Rule-based, Single-LLM, and Proposed Agent rows can be compared in one reproducible summary.
+3. Re-run `npm run benchmark:compare-baselines` after any baseline, proposed-agent, or gold-label input change.
 4. Run the full 20 tasks through the deployed Worker only when ready to spend WoS quota, then update:
 
 ```text

@@ -24,8 +24,8 @@ This file defines the current team-agent assignments. Agents should pick only th
 | Gold exception review | `jin23624_cpu` | 60 gold rows audited; 0 active warnings; 2 accepted warnings remain. | Review T001/G003 and duplicate DOI exception; reduce or reaffirm exceptions with evidence. |
 | Single-LLM manual review | `juilie_bot_hub` | Proposed Agent manual review is complete; Single-LLM baseline now has 15 fresh rows. | Create `benchmark/manual_review_single_llm.csv` and manually review all 15 rows. |
 | Baseline input QA | `unassigned_member_c` | Rule-based and Single-LLM baselines each have 15 rows. | QA both baseline CSV inputs and confirm no stale branch rows remain. |
-| Baseline metric QA | `shonshinemin_cmd` | Proposed Agent metrics are current; baseline comparison script is not implemented yet. | Wait for maintainer comparison script, then verify comparison metrics. |
-| Integration | `seunghyeon_choi` | Maintainer and integration lead. | Implement baseline comparison metrics and keep org sync PR-gated. |
+| Baseline metric QA | `shonshinemin_cmd` | Baseline comparison script and outputs exist. | Verify comparison metrics and document interpretation risks. |
+| Integration | `seunghyeon_choi` | Maintainer and integration lead. | Maintain comparison metrics and keep org sync PR-gated. |
 
 ## Assignment 1 - Gold Exception Review
 
@@ -202,12 +202,11 @@ docs/progress.md
 
 Goal:
 
-QA Rule-based vs Single-LLM vs Proposed Agent metric outputs after the maintainer adds baseline comparison script.
+QA Rule-based vs Single-LLM vs Proposed Agent metric outputs now that the comparison script exists.
 
 Procedure:
 
-1. Wait for `npm run benchmark:compare-baselines` to exist.
-2. Run:
+1. Run:
 
 ```bash
 npm run benchmark:audit-gold
@@ -215,8 +214,8 @@ npm run benchmark:evaluate-proposed
 npm run benchmark:compare-baselines
 ```
 
-3. Check metric consistency against source CSV rows.
-4. Record findings in `shonshinemin_cmd/README.md`.
+2. Check metric consistency against source CSV rows.
+3. Record findings in `shonshinemin_cmd/README.md`.
 
 Definition of done:
 
@@ -233,11 +232,7 @@ seunghyeon_choi
 
 Maintainer integration steps:
 
-1. Implement baseline comparison metrics:
-   - `benchmark/scripts/compare-baselines.mjs`
-   - `benchmark/baseline_comparison_metrics.csv`
-   - `benchmark/baseline_comparison_summary.json`
-   - `npm run benchmark:compare-baselines`
+1. Maintain baseline comparison metrics after input changes.
 2. Run:
 
 ```bash

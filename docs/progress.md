@@ -1,6 +1,14 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-28 (gemini baseline comparison prep)
+Updated: 2026-05-28 (codex baseline comparison implementation)
+
+## codex - Baseline Comparison Metrics (2026-05-28)
+
+- **Benchmark**: Implemented `benchmark/scripts/compare-baselines.mjs` and `npm run benchmark:compare-baselines` to compare Rule-based, Single-LLM, and Proposed Agent rows against the same audited gold labels. (codex)
+- **Benchmark**: Generated `benchmark/baseline_comparison_metrics.csv` and `benchmark/baseline_comparison_summary.json`. Current T001-T003 macro metrics are: Proposed Agent Precision@5 0.1333 / NDCG@5 0.3579, Rule-based Precision@5 0.1333 / NDCG@5 0.3579, Single-LLM Precision@5 0.6667 / NDCG@5 0.9949. (codex)
+- **Debug**: Corrected accepted-exception counting so DOI exception locations are not mistaken for task/gold ids and task/gold exceptions are counted only when the actual exception row appears in results. (codex)
+- **Docs**: Removed the accidental Gemini instruction block from the top of `README.md`; the durable Gemini instructions remain in `docs/gemini-session-state.md` and team briefing docs. (codex)
+
 
 ## gemini - Baseline Comparison Preparation (2026-05-28)
 

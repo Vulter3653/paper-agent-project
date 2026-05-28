@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-28 - Blueprint And Dashboard Connection Verification
+
+- Context: The user asked to confirm the project status against the professor evaluation blueprint and to verify dashboard connectivity. (codex)
+- Check: Cloudflare Pages root, Research, Ops, and Evaluation routes returned HTTP 200. (codex)
+- Check: Worker health and diagnostics returned ok, with `searchProvider: wos`, `db.missingColumns: []`, `r2Reports: true`, `googleDrive: true`, and `readiness.activeProviderReady: true`. (codex)
+- Check: Recent jobs returned completed 12-step jobs; latest checked job was `job-9d5a7b1d-4728-4e9c-863f-35eb5f855747` with `sourceResultCount: 50` and `allowedResultCount: 20`. (codex)
+- Check: Job detail, traces, outputs, critic flags, and benchmark metrics APIs returned data. GET downloads for CSV, Markdown, XLSX, and PDF returned HTTP 200. (codex)
+- Note: HEAD requests to artifact endpoints returned 404, but GET downloads are the relevant dashboard behavior and were verified. (codex)
+
 ## 2026-05-28 - History Integrity Validator
 
 - Context: The user asked whether strict record preservation and data integrity can be maintained, then requested an automated validation script. (codex)

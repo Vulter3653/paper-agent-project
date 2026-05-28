@@ -1,6 +1,14 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-28 (codex history integrity validator)
+Updated: 2026-05-28 (codex blueprint and dashboard verification)
+
+## codex - Blueprint And Dashboard Connection Verification (2026-05-28)
+
+- Checked: Compared `docs/workflow.md` course requirement blueprint, agent responsibility table, workflow stages, benchmark status, and remaining planned/partial stages against the current deployed system. (codex)
+- Verified: Cloudflare Pages routes `/`, `/dashboard/research`, `/dashboard/ops`, and `/dashboard/evaluation` returned HTTP 200. (codex)
+- Verified: Worker `/api/health`, `/api/diagnostics`, `/api/search-jobs?limit=3`, and `/api/benchmark-metrics` returned live data; diagnostics showed WoS, D1, R2, Crossref, Unpaywall, Google Drive, and active provider readiness. (codex)
+- Verified: Latest job `job-9d5a7b1d-4728-4e9c-863f-35eb5f855747` returned 20 papers, 12 traces, output metadata, critic flags, and CSV/Markdown/XLSX/PDF GET downloads with HTTP 200. (codex)
+- Finding: Artifact endpoints support GET downloads; HEAD requests returned 404 and should not be used as the dashboard download verification method. (codex)
 
 ## codex - History Integrity Validator (2026-05-28)
 

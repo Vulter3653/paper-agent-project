@@ -21,6 +21,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 _No unreleased changes._
 
 ## 2026-05-28 (codex)
+- Docs: Verified the course blueprint progress against deployed dashboard and Worker APIs, confirming Pages routes, diagnostics, recent jobs, traces, outputs, critic flags, benchmark metrics, and GET artifact downloads. (codex)
 - Added: Added `scripts/validate-history-integrity.mjs`, `npm run validate:history`, and CI enforcement to block deletion of protected history headings, attribution lines, empty sections, and unexpected log truncation. (codex)
 - Docs: Added docs/history-audit-2026-05-28.md with a full tracked-file history audit, verified core ledgers, and documented remaining changelog cleanup risks. (codex)
 - Docs: Reviewed Gemini local historical recovery, removed an accidental trailing marker from `docs/progress.md`, and verified core history files have no empty sections. (codex)

@@ -18,7 +18,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
-- No unreleased changes.
+- Benchmark: Added gold-label audit automation and generated benchmark/gold_audit_report.md plus JSON output; fixed five CSV rows with unquoted comma titles that broke column parsing. (codex)
 
 ## 2026-05-27 (codex)
 

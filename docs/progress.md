@@ -6,17 +6,19 @@ Updated: 2026-05-27 (gemini benchmark and dashboard integration)
 
 ## codex - 2026-05-28 Handoff Check
 
-- Current personal source of truth is `origin/main` at `953c7e7`; local working tree is clean on `benchmark/gemini-t004-t006-gold-refinement`. (codex)
+- Current personal source of truth before this audit change was `origin/main` at `3c42251`; local work continues on `benchmark/gemini-t004-t006-gold-refinement`. (codex)
 - Organization `team-origin/main` is behind the personal repo and should not be force-synced until benchmark audit and selective team-output review are complete. (codex)
 - New team work exists on `team-origin/benchmark/member-c-baseline-t001-t003`; it contains T001-T003 rule-based and single-LLM baseline rows, but the branch is stale relative to personal main and must be selectively reviewed rather than directly merged. (codex)
-- The next incomplete task is still 20-task gold-label audit automation: create `benchmark/scripts/audit-gold-labels.mjs`, generate `benchmark/gold_audit_report.md`, and use it to verify DOI/title/journal consistency before organization merge. (codex)
+- Completed the 20-task gold-label audit automation by adding `benchmark/scripts/audit-gold-labels.mjs`, `npm run benchmark:audit-gold`, and generated reports at `benchmark/gold_audit_report.md` and `benchmark/gold_audit_report.json`. The current audit covers 60 rows across 20 tasks with 0 errors and 3 warnings. (codex)
+- Fixed five benchmark CSV rows whose comma-containing titles were not quoted, which previously caused DOI/year/status columns to parse incorrectly. (codex)
+- Next incomplete benchmark task: review the 3 remaining non-blocking audit warnings, then decide whether to selectively incorporate the stale member-c Single-LLM baseline work or request a fresh branch from current personal main. (codex)
 
 
 
-- **Codex review correction**: Gemini work is conditionally salvageable but not organization-merge ready without audit. Codex corrected T012/T019 duplicate DOI mappings, changed evaluation dashboard wording from live D1 metrics to static benchmark snapshot, and recorded the review in `docs/gemini-work-feedback-2026-05-27.md`. Full 20-task gold-label audit remains required. (codex)
+- **Codex review correction**: Gemini work is conditionally salvageable. Codex corrected T012/T019 duplicate DOI mappings, changed evaluation dashboard wording from live D1 metrics to static benchmark snapshot, recorded the review in `docs/gemini-work-feedback-2026-05-27.md`, and completed the first 20-task internal gold-label audit with 0 errors. (codex)
 
 
-- **Benchmark**: Successfully refined gold labels for all 20 tasks (T001-T020). Replaced all weak seed rows with real DOI-backed, top-journal papers (AMJ, JAP, SMJ, MISQ, JAR, RAST, etc.) verified via Crossref. Total 61 verified gold rows established.
+- **Benchmark**: Successfully refined gold labels for all 20 tasks (T001-T020). Replaced weak seed rows with real DOI-backed papers verified through internal metadata evidence. Current audited total is 60 verified gold rows across 20 tasks, with 0 blocking audit errors.
 - **Dashboard**: Completed full live connection for all pages.
     - **Research/Ops**: Connected to live D1 traces and R2 artifacts.
     - **Evaluation**: Implemented `/api/benchmark-metrics` and connected frontend to display real-time macro averages.

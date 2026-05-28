@@ -9,6 +9,8 @@ The first benchmark fixture layer is now initialized from `paper_agent_enhanced_
 Current files:
 
 - `benchmark/tasks.jsonl`: 20 benchmark tasks covering organization/HR, marketing, strategy, accounting/finance, operations, and information systems.
+- `benchmark/scripts/audit-gold-labels.mjs`: internal consistency audit for gold labels, task coverage, DOI format, duplicate DOI/title cases, and CSV parsing issues.
+- `benchmark/gold_audit_report.md` and `benchmark/gold_audit_report.json`: latest generated gold-label audit outputs.
 - `benchmark/keywords.csv`: compatibility keyword list expanded from 3 to 20 queries.
 - `benchmark/gold_relevant_papers.csv`: 60 seed gold relevance rows, 3 per task.
 - `benchmark/gold_relevant_papers.verified.csv`: first Crossref title-query verification pass.
@@ -24,21 +26,26 @@ Current files:
 
 ## Important Constraint
 
-The seed gold rows intentionally do not fabricate DOI values. Each DOI field is blank and marked with:
+Earlier seed rows intentionally avoided fabricated DOI values and required Crossref/manual verification. After Gemini expansion and Codex correction, the current `benchmark/gold_relevant_papers.csv` has 60 DOI-backed rows across 20 tasks.
 
-```text
-doi_label_status=needs_crossref_verification
+The current internal audit command is:
+
+```bash
+npm run benchmark:audit-gold
 ```
 
-The first Crossref title-query pass has been run. After manual promotion and selected T001-T003 team-output reapply, the current status is:
+Latest audit result:
 
-| Status | Count | Meaning |
-| --- | ---: | --- |
-| `verified` | 17 | Title match exceeded the automatic verification threshold or was manually promoted from strict candidate review. |
-| `ambiguous` | 14 | Crossref returned a possible DOI, but the title match is not strong enough for final gold use. |
-| `no_match` | 30 | No acceptable Crossref title candidate was found. |
+| Metric | Value |
+| --- | ---: |
+| Gold rows | 60 |
+| Tasks covered | 20 / 20 |
+| Verified rows | 60 |
+| DOI-backed rows | 60 |
+| Errors | 0 |
+| Warnings | 3 |
 
-This confirms that the refined labels are improving benchmark quality, but the full 20-task gold set is not final. Before using exact-overlap metrics as final evidence, the ambiguous and no-match rows need manual title refinement or replacement with exact known papers.
+Remaining warnings are review items, not current blockers: one non-approved top-journal flag, one weak verification-note flag, and one duplicate DOI warning where the same paper is intentionally relevant to T001 and T002.
 
 ## Gold Refinement Queue
 
@@ -50,7 +57,7 @@ The first refinement queue has been generated:
 | `benchmark/gold_crossref_candidates.csv` | 200 | Task-level Crossref candidates, 10 per task, marked `needs_manual_review`. |
 | `benchmark/gold_candidate_review.csv` | 200 | Candidate list sorted by task and review score, with automatic priority labels. |
 
-T001-T003 now have integrated DOI-backed evidence. The next priority is T004-T006, then the remaining tasks that still lack three verified DOI gold labels. Crossref task-level candidates are intentionally not auto-accepted because many results are broad, non-top-journal, book-chapter, dissertation, or otherwise outside the approved journal universe.
+T001-T020 now have three DOI-backed rows per task. The immediate next priority is not adding more gold rows, but resolving or accepting the three audit warnings and then refreshing Proposed Agent/baseline comparisons against the audited gold set. Crossref task-level candidates are intentionally not auto-accepted because many results are broad, non-top-journal, book-chapter, dissertation, or otherwise outside the approved journal universe.
 
 The first candidate scoring pass produced:
 
@@ -176,25 +183,18 @@ As of 2026-05-27, selected T001-T003 team outputs have been reapplied onto the c
 
 ## Next Step
 
-Refine the gold set beyond T001-T003:
+Use the audited gold set as the benchmark control layer:
 
-1. Prioritize T004-T006 rows, especially promoted or near-promoted candidates, and keep only papers from the approved journal universe where possible.
-2. Start from `benchmark/gold_candidate_review.csv` rows marked `promote_candidate`.
-3. Use `benchmark/gold_crossref_candidates.csv` as a broader candidate list, but only promote rows that are:
-   - scholarly journal articles,
-   - relevant to the task research question,
-   - in or near the approved business-school journal universe,
-   - DOI-verifiable through Crossref.
-4. Replace `no_match` seed titles with exact paper titles from WoS/Crossref search.
-5. Re-run:
-
-```bash
-npm run benchmark:verify-gold
-```
-
-After enough DOI labels are verified, run the 20 tasks through the deployed Worker and record:
+1. Review the 3 non-blocking warnings in `benchmark/gold_audit_report.md`.
+2. Re-run `npm run benchmark:evaluate-proposed` after any warning cleanup.
+3. Decide whether to collect fresh Single-LLM baselines from current personal `main` or selectively reapply member-c rows from the stale organization branch.
+4. Run the full 20 tasks through the deployed Worker only when ready to spend WoS quota, then update:
 
 ```text
 benchmark/proposed_agent_results.csv
-benchmark/baseline_results.csv
+benchmark/proposed_agent_jobs.csv
+benchmark/proposed_agent_metrics.csv
+benchmark/proposed_agent_metrics_summary.json
 ```
+
+5. Keep `npm run benchmark:audit-gold` as a required pre-merge check before any organization-main synchronization involving gold-label changes.

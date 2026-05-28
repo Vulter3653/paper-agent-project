@@ -6,7 +6,8 @@ This file defines the current team-agent assignments. Agents should pick only th
 
 ## Global Rules
 
-- Work on a branch, not directly on `main`.
+- Personal repo work uses `origin/main` as the default branch and source of truth.
+- Organization repo work uses assignment branches and PRs; do not push directly to `team-origin/main`.
 - Keep changes small and reviewable.
 - Do not edit deployment configuration unless explicitly assigned.
 - Do not delete reference files or generated benchmark evidence.

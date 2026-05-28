@@ -2,6 +2,12 @@
 
 Updated: 2026-05-28 (codex dashboard ranking latency fix)
 
+## codex - Personal Repo Main Branch Rule (2026-05-28)
+
+- **Rule**: Personal repository work uses `origin/main` as the default branch and source of truth. Feature branches are temporary only; accepted personal-repo work should be merged or pushed back to `origin/main` unless the user explicitly requests branch-only work. (codex)
+- **Scope**: Organization repo work remains PR-gated through assignment branches and must not push directly to `team-origin/main`. (codex)
+- **Docs**: Recorded the rule in `AGENTS.md`, `docs/agent-work-queue.md`, and `docs/team-task-briefing.md`. (codex)
+
 ## codex - Fully Automated Benchmark Review Policy (2026-05-28)
 
 - **Policy**: Replaced human-only baseline review tasks with reproducible automated review. Future benchmark QA should be encoded as scripts, generated CSV/JSON outputs, and npm commands before any manual-only process is considered. (codex)

@@ -43,7 +43,17 @@ Team collaboration repository:
 team-origin https://github.com/mon-ai-team-project/team_project_test_public.git
 ```
 
-Team agents should work from `team-origin`:
+Personal-repo development should use `origin/main` as the default working branch and source of truth:
+
+```bash
+git fetch origin
+git checkout main
+git pull origin main
+```
+
+For the personal repository, do not treat a feature branch as the default branch. Temporary branches may be used for experiments, but accepted work must be merged or pushed back to `origin/main` unless the user explicitly says otherwise.
+
+Team agents working against the organization repository should use `team-origin` and PR branches:
 
 ```bash
 git fetch team-origin
@@ -53,15 +63,21 @@ git pull team-origin main
 
 ## Branch Rule
 
-Do not work directly on `main`.
+Personal repository rule:
 
-`main` is reserved for maintainer-reviewed integration. The current maintainer is:
+- `origin/main` is the default branch and active development baseline.
+- Push completed personal-repo work to `origin/main` unless the user explicitly requests a branch-only push.
+
+Organization repository rule:
+
+- Do not work directly on `team-origin/main`.
+- `team-origin/main` is reserved for maintainer-reviewed integration. The current maintainer is:
 
 ```text
 seunghyeon_choi
 ```
 
-Create a branch for one assignment:
+Create an organization PR branch for one assignment:
 
 ```bash
 git checkout -b benchmark/<agent-id>-<short-task>

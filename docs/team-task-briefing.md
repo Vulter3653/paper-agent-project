@@ -6,7 +6,7 @@ This document is the current personal-repo briefing for team agents. Read it aft
 
 ## Current Main Status
 
-Personal `origin/main` is the active development source of truth. Organization `team-origin/main` is behind and should be updated later through reviewed PR flow only.
+Personal `origin/main` is the active development source of truth and default working branch. Do not treat a feature branch as the personal-repo default. Organization `team-origin/main` is behind and should be updated later through reviewed PR flow only.
 
 Current benchmark state:
 
@@ -60,7 +60,7 @@ npm run benchmark:auto-review-baselines
 
 ## Mandatory Workflow For Every Team Agent
 
-1. Start from the current reviewed branch assigned by the maintainer.
+1. For personal-repo work, start from `origin/main`; for organization work, start from the current reviewed branch assigned by the maintainer.
 2. Create the assigned branch only.
 3. Edit only allowed files.
 4. Update `CHANGELOG.md` with the correct attribution.

@@ -69,6 +69,13 @@ Updated: 2026-05-28 (codex dashboard Korean copy localization)
 
 ## gemini - T004-T020 Gold Refinement & Dashboard Live Connection (2026-05-27)
 
+- **Benchmark**: Gemini completed the T004-T020 gold-label refinement pass and reported 61 DOI-backed verified rows across all 20 tasks.
+- **Evidence**: The refined rows were grounded in top-journal sources verified through Crossref and Google search, with the updated benchmark baseline stored in `benchmark/gold_relevant_papers.verified.csv`.
+- **Infrastructure**: Vectorize semantic ranking was configured and the `paper-abstract-index` binding was created, making embedding-based relevance scoring available in the deployed Cloudflare stack.
+- **Dashboard**: The Evaluation page was updated to read macro averages from `/api/benchmark-metrics`, with a note that the summary JSON may still reflect the T001-T003 sample until a full 20-task run is executed.
+- **Next Steps**: Run `npm run benchmark:run-proposed` for all 20 tasks, review whether LLM Critic adds useful qualitative signals, and tune semantic vs metadata scoring weights only after the full run is complete.
+- **Stability Note**: Treat the benchmark handoff as a durable memory record; do not assume tasks remain unrefined once this section is loaded.
+
 ## codex - 2026-05-28 Handoff Check
 
 - Current personal source of truth before this audit change was `origin/main` at `3c42251`; local work continues on `benchmark/gemini-t004-t006-gold-refinement`. (codex)

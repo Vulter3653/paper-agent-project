@@ -2,6 +2,13 @@
 
 Updated: 2026-05-28 (codex dashboard ranking latency fix)
 
+## codex - Dashboard Connection Refresh 1-3 (2026-05-28)
+
+- **Ops**: Connected Storage and Runtime cards to live `/api/diagnostics` values for D1 schema, provider readiness, WoS, Crossref, Unpaywall, R2, Drive, and OpenAlex fallback. (codex)
+- **Evaluation**: Added row-level automated baseline review table fed by `/api/benchmark-metrics.autoReview.rows`, covering all 30 Rule-based and Single-LLM baseline rows. (codex)
+- **Research**: Replaced brittle report preview substring logic with heading-aware Markdown section extraction for Summary, Commonality, Difference, Research Gap, Critic Note, and Use in Paper cards. (codex)
+- **Verification**: `npm run typecheck`, `npm run build --workspace apps/worker`, and `npm run build:web` passed. (codex)
+
 ## codex - Dashboard Benchmark Connection Refresh (2026-05-28)
 
 - **Worker**: Extended `/api/benchmark-metrics` so the static benchmark snapshot now includes Rule-based, Single-LLM, and Proposed Agent comparison data plus automated baseline review summary. (codex)

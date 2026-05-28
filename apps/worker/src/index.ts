@@ -120,6 +120,339 @@ type DiagnosticsColumnCheck = {
   ok: boolean;
 };
 
+const AUTO_REVIEW_ROWS = [
+  {
+    method: "rule_based",
+    taskId: "T001",
+    rank: 1,
+    title: "Exploring Cultural Differences in AI-Based Interviews: Innovativeness and Justice Perceptions Among Job Applicants in the United States and South Korea",
+    doi: "10.1002/hrm.22303",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G001"
+  },
+  {
+    method: "rule_based",
+    taskId: "T001",
+    rank: 2,
+    title: "WHEN AND HOW ARTIFICIAL INTELLIGENCE AUGMENTS EMPLOYEE CREATIVITY",
+    doi: "10.5465/amj.2022.0426",
+    decision: "reject",
+    relevance: 0,
+    failureType: "low_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T001",
+    rank: 3,
+    title: "Curse or Blessing: Investigating the Influence of Firms' Artificial Intelligence Adoption on Employee Job Satisfaction",
+    doi: "10.1111/joms.70004",
+    decision: "reject",
+    relevance: 0,
+    failureType: "low_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T001",
+    rank: 4,
+    title: "Can Legal and Professional Personnel Selection Principles be Met With Machine Learning (Artificial Intelligence)?",
+    doi: "10.1002/hrm.70025",
+    decision: "reject",
+    relevance: 0,
+    failureType: "low_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T001",
+    rank: 5,
+    title: "How Well Can an AI Chatbot Infer Personality? Examining Psychometric Properties of Machine-Inferred Personality Scores",
+    doi: "10.1037/apl0001082",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T002",
+    rank: 1,
+    title: "WHEN AND HOW ARTIFICIAL INTELLIGENCE AUGMENTS EMPLOYEE CREATIVITY",
+    doi: "10.5465/amj.2022.0426",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T002",
+    rank: 2,
+    title: "Artificial intelligence and the changing sources of competitive advantage",
+    doi: "10.1002/smj.3387",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T002",
+    rank: 3,
+    title: "The Janus face of artificial intelligence feedback: Deployment versus disclosure effects on employee performance",
+    doi: "10.1002/smj.3322",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T002",
+    rank: 4,
+    title: "ARTIFICIAL INTELLIGENCE AND MANAGEMENT: THE AUTOMATION-AUGMENTATION PARADOX",
+    doi: "10.5465/amr.2018.0072",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T002",
+    rank: 5,
+    title: "THE ROLE OF ARTIFICIAL INTELLIGENCE AND DATA NETWORK EFFECTS FOR CREATING USER VALUE",
+    doi: "10.5465/amr.2019.0178",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T003",
+    rank: 1,
+    title: "Frontiers: Generative AI and Personalized Video Advertisements",
+    doi: "10.1287/mksc.2023.0494",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G061"
+  },
+  {
+    method: "rule_based",
+    taskId: "T003",
+    rank: 2,
+    title: "AI Companions Reduce Loneliness",
+    doi: "10.1093/jcr/ucaf040",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T003",
+    rank: 3,
+    title: "AI-Human Hybrids for Marketing Research: Leveraging Large Language Models (LLMs) as Collaborators",
+    doi: "10.1177/00222429241276529",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T003",
+    rank: 4,
+    title: "The Caring Machine: Feeling AI for Customer Care",
+    doi: "10.1177/00222429231224748",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "rule_based",
+    taskId: "T003",
+    rank: 5,
+    title: "Unveiling the Mind of the Machine",
+    doi: "10.1093/jcr/ucad075",
+    decision: "reject",
+    relevance: 0,
+    failureType: "low_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "single_llm",
+    taskId: "T001",
+    rank: 1,
+    title: "Exploring Cultural Differences in AI-Based Interviews: Innovativeness and Justice Perceptions Among Job Applicants in the United States and South Korea",
+    doi: "10.1002/hrm.22303",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G001"
+  },
+  {
+    method: "single_llm",
+    taskId: "T001",
+    rank: 2,
+    title: "Allying with AI? Reactions toward human-based, AI/ML-based, and augmented hiring processes",
+    doi: "10.1016/j.chb.2022.107179",
+    decision: "include",
+    relevance: 4,
+    failureType: "none",
+    matchedGoldId: "G002"
+  },
+  {
+    method: "single_llm",
+    taskId: "T001",
+    rank: 3,
+    title: "Can I show my skills? Affective responses to artificial intelligence in the recruitment process",
+    doi: "10.1007/s11846-021-00514-4",
+    decision: "review_by_rule",
+    relevance: 4,
+    failureType: "not_top_journal",
+    matchedGoldId: "G003"
+  },
+  {
+    method: "single_llm",
+    taskId: "T001",
+    rank: 4,
+    title: "Can Legal and Professional Personnel Selection Principles be Met With Machine Learning (Artificial Intelligence)?",
+    doi: "10.1002/hrm.70025",
+    decision: "reject",
+    relevance: 0,
+    failureType: "low_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "single_llm",
+    taskId: "T001",
+    rank: 5,
+    title: "How Well Can an AI Chatbot Infer Personality? Examining Psychometric Properties of Machine-Inferred Personality Scores",
+    doi: "10.1037/apl0001082",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "single_llm",
+    taskId: "T002",
+    rank: 1,
+    title: "Applicants’ Fairness Perceptions of Algorithm-Driven Hiring Procedures",
+    doi: "10.1007/s10551-022-05320-w",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G004"
+  },
+  {
+    method: "single_llm",
+    taskId: "T002",
+    rank: 2,
+    title: "Allying with AI? Reactions toward human-based, AI/ML-based, and augmented hiring processes",
+    doi: "10.1016/j.chb.2022.107179",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G005"
+  },
+  {
+    method: "single_llm",
+    taskId: "T002",
+    rank: 3,
+    title: "The roles of outcome and race on applicant reactions to AI systems",
+    doi: "10.1016/j.chb.2023.107869",
+    decision: "include",
+    relevance: 4,
+    failureType: "none",
+    matchedGoldId: "G006"
+  },
+  {
+    method: "single_llm",
+    taskId: "T002",
+    rank: 4,
+    title: "The Janus face of artificial intelligence feedback: Deployment versus disclosure effects on employee performance",
+    doi: "10.1002/smj.3322",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "single_llm",
+    taskId: "T002",
+    rank: 5,
+    title: "ARTIFICIAL INTELLIGENCE AND MANAGEMENT: THE AUTOMATION-AUGMENTATION PARADOX",
+    doi: "10.5465/amr.2018.0072",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  },
+  {
+    method: "single_llm",
+    taskId: "T003",
+    rank: 1,
+    title: "The power of generative marketing: Can generative AI create superhuman visual marketing content?",
+    doi: "10.1016/j.ijresmar.2024.09.002",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G007"
+  },
+  {
+    method: "single_llm",
+    taskId: "T003",
+    rank: 2,
+    title: "Picture Perfect: Engaging Customers with Visual Generative AI",
+    doi: "10.1177/00222429251356993",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G008"
+  },
+  {
+    method: "single_llm",
+    taskId: "T003",
+    rank: 3,
+    title: "How generative AI Is shaping the future of marketing",
+    doi: "10.1007/s11747-024-01064-3",
+    decision: "include",
+    relevance: 4,
+    failureType: "none",
+    matchedGoldId: "G009"
+  },
+  {
+    method: "single_llm",
+    taskId: "T003",
+    rank: 4,
+    title: "Frontiers: Generative AI and Personalized Video Advertisements",
+    doi: "10.1287/mksc.2023.0494",
+    decision: "include",
+    relevance: 5,
+    failureType: "none",
+    matchedGoldId: "G061"
+  },
+  {
+    method: "single_llm",
+    taskId: "T003",
+    rank: 5,
+    title: "AI-Human Hybrids for Marketing Research: Leveraging Large Language Models (LLMs) as Collaborators",
+    doi: "10.1177/00222429241276529",
+    decision: "review_by_rule",
+    relevance: 3,
+    failureType: "partial_relevance",
+    matchedGoldId: ""
+  }
+];
+
 type DiagnosticsResponse = {
   ok: boolean;
   searchProvider: SearchProvider;
@@ -244,6 +577,7 @@ export default {
           },
           autoReview: {
             rowCount: 30,
+            rows: AUTO_REVIEW_ROWS,
             policy: "Fully automated rule-based review; no human manual review required.",
             byMethod: {
               rule_based: {

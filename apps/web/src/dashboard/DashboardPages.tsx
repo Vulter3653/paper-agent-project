@@ -39,6 +39,23 @@ type JobOutputsResponse = { job: SearchJob; outputs: JobOutput[] };
 type TraceDetail = Record<string, string | number | boolean | null>;
 type EnrichmentOverview = { limit: string; crossrefProcessed: string; crossrefSkipped: string; unpaywallProcessed: string; unpaywallSkipped: string };
 
+type DiagnosticsResponse = {
+  ok: boolean;
+  searchProvider: string;
+  db: { bound: boolean; missingColumns: Array<{ table: string; column: string; ok: boolean }> };
+  env: {
+    wosApiKey: boolean;
+    wosApiKeySource: string | null;
+    openAlexEmail: boolean;
+    openAlexApiKey: boolean;
+    crossrefEmail: boolean;
+    unpaywallEmail: boolean;
+    r2Reports: boolean;
+    googleDrive: boolean;
+  };
+  readiness: { activeProviderReady: boolean };
+};
+
 type BenchmarkMethodKey = "proposed_agent" | "rule_based" | "single_llm";
 
 type BenchmarkComparisonMethod = {
@@ -57,6 +74,18 @@ type BenchmarkComparisonMethod = {
   };
   matchedGoldIds: string[];
   acceptedExceptionLocations: string[];
+};
+
+type BenchmarkAutoReviewRow = {
+  method: "rule_based" | "single_llm";
+  taskId: string;
+  rank: number;
+  title: string;
+  doi: string;
+  decision: string;
+  relevance: number;
+  failureType: string;
+  matchedGoldId: string;
 };
 
 type BenchmarkAutoReviewMethod = {
@@ -96,6 +125,7 @@ type BenchmarkMetrics = {
   autoReview?: {
     rowCount: number;
     policy: string;
+    rows?: BenchmarkAutoReviewRow[];
     byMethod: Partial<Record<"rule_based" | "single_llm", BenchmarkAutoReviewMethod>>;
   };
 };
@@ -144,35 +174,21 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
   const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
   const liveStages = traces.length ? mapTracesToWorkflowStages(traces) : literatureWorkflowStages;
 
-  // 리포트 마크다운에서 섹션 파싱
   const livePreview = useMemo(() => {
     if (!report) return literaturePreview;
-    
+
     const sections = [
-      { title: "Summary", marker: "## Executive Summary", fallback: literaturePreview[0].body },
-      { title: "Commonality", marker: "### Common Themes", fallback: literaturePreview[1].body },
-      { title: "Difference", marker: "### Methodological Differences", fallback: literaturePreview[2].body },
-      { title: "Research Gap", marker: "### Identified Research Gaps", fallback: literaturePreview[3].body },
-      { title: "Critic Note", marker: "### Screening Notes", fallback: literaturePreview[4].body },
-      { title: "Use in Paper", marker: "### Suggested Reading Order", fallback: literaturePreview[5].body }
+      { title: "Summary", patterns: [/^##\s+Executive Summary/i, /^##\s+Summary/i], fallback: literaturePreview[0].body },
+      { title: "Commonality", patterns: [/^###\s+Common Themes/i, /^##\s+Commonality/i, /^###\s+Commonality/i], fallback: literaturePreview[1].body },
+      { title: "Difference", patterns: [/^###\s+Methodological Differences/i, /^##\s+Difference/i, /^###\s+Difference/i], fallback: literaturePreview[2].body },
+      { title: "Research Gap", patterns: [/^###\s+Identified Research Gaps/i, /^##\s+Research Gap/i, /^###\s+Research Gap/i], fallback: literaturePreview[3].body },
+      { title: "Critic Note", patterns: [/^###\s+Screening Notes/i, /^##\s+Critic/i, /^###\s+Critic/i], fallback: literaturePreview[4].body },
+      { title: "Use in Paper", patterns: [/^###\s+Suggested Reading Order/i, /^##\s+Use in Paper/i, /^###\s+Use in Paper/i], fallback: literaturePreview[5].body }
     ];
 
-    return sections.map(sec => {
-      const startIdx = report.indexOf(sec.marker);
-      if (startIdx === -1) return { title: sec.title, body: sec.fallback };
-      
-      const contentStart = startIdx + sec.marker.length;
-      let nextHeaderIdx = report.indexOf("##", contentStart);
-      let subHeaderIdx = report.indexOf("###", contentStart);
-      
-      // 마커 자체가 포함된 경우 제외
-      if (nextHeaderIdx === startIdx) nextHeaderIdx = report.indexOf("##", contentStart + 1);
-      
-      const endIdx = nextHeaderIdx === -1 ? (subHeaderIdx === -1 ? report.length : subHeaderIdx) : (subHeaderIdx === -1 ? nextHeaderIdx : Math.min(nextHeaderIdx, subHeaderIdx));
-      
-      let body = report.substring(contentStart, endIdx).trim();
-      body = body.replace(/^\s*[\-\*]\s+/gm, "").split("\n")[0]; 
-      return { title: sec.title, body: body || sec.fallback };
+    return sections.map((section) => {
+      const body = extractMarkdownSection(report, section.patterns);
+      return { title: section.title, body: body || section.fallback };
     });
   }, [report]);
 
@@ -336,6 +352,8 @@ export function AgentOpsPage() {
   const [artifactError, setArtifactError] = useState("");
   const [criticFlags, setCriticFlags] = useState<CriticFlag[]>([]);
   const [outputs, setOutputs] = useState<JobOutput[]>([]);
+  const [diagnostics, setDiagnostics] = useState<DiagnosticsResponse | null>(null);
+  const [diagnosticsError, setDiagnosticsError] = useState("");
   const [logs, setLogs] = useState(toolCallLogs);
   const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
   const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
@@ -343,9 +361,11 @@ export function AgentOpsPage() {
   const liveAgentCards = traces.length ? mapTracesToAgentCards(traces) : agentStatuses;
   const enrichmentOverview = useMemo(() => summarizeEnrichmentTraces(traces), [traces]);
   const criticSummary = useMemo(() => summarizeCriticFlags(criticFlags), [criticFlags]);
+  const diagnosticsItems = useMemo(() => getDiagnosticsItems(diagnostics), [diagnostics]);
 
   useEffect(() => {
     void loadLatestJob();
+    void loadDiagnostics();
   }, []);
 
   useEffect(() => {
@@ -405,6 +425,20 @@ export function AgentOpsPage() {
       setOutputs([]);
     }
   }
+
+  async function loadDiagnostics() {
+    setDiagnosticsError("");
+    try {
+      const response = await fetch(apiUrl("/api/diagnostics"));
+      if (!response.ok) throw new Error(await readDashboardError(response, "Failed to load diagnostics"));
+      const data = (await response.json()) as DiagnosticsResponse;
+      setDiagnostics(data);
+    } catch (error) {
+      setDiagnosticsError(error instanceof Error ? error.message : "Failed to load diagnostics");
+      setDiagnostics(null);
+    }
+  }
+
 
   async function launchJob() {
     setRunning(true);
@@ -476,10 +510,10 @@ export function AgentOpsPage() {
         <MetricTile label="Agents" value={String(liveAgentCards.length)} detail="from D1 traces" tone="purple" />
         <MetricTile label="Warnings" value={String(traces.filter((trace) => trace.status === "skipped" || trace.status === "failed").length)} detail="skipped or failed" tone="amber" />
         <MetricTile label="Enrichment" value={enrichmentOverview.limit} detail={`Crossref ${enrichmentOverview.crossrefProcessed}/skip ${enrichmentOverview.crossrefSkipped} · Unpaywall ${enrichmentOverview.unpaywallProcessed}/skip ${enrichmentOverview.unpaywallSkipped}`} tone="blue" />
-        <MetricTile label="Storage" value={traces.some((trace) => trace.stepId === "drive_r2_storage" && trace.status === "completed") ? "R2 Ready" : "Pending"} detail="Drive uploads OA PDFs when configured" tone="green" />
+        <MetricTile label="Storage" value={diagnostics?.env.r2Reports ? "R2 Ready" : "Pending"} detail={diagnostics?.env.googleDrive ? "Drive ready" : "Drive partial"} tone={diagnostics?.env.r2Reports ? "green" : "amber"} />
         <MetricTile label="Critic Flags" value={String(criticFlags.length)} detail={`high ${criticSummary.high} · medium ${criticSummary.medium} · low ${criticSummary.low}`} tone={criticSummary.high ? "amber" : "green"} />
         <MetricTile label="Outputs" value={String(outputs.length)} detail={outputs.length ? outputs.map((output) => output.outputType + ":" + output.status).join(" · ") : "no metadata"} tone="purple" />
-        <MetricTile label="Vectorize" value={traces.some((trace) => trace.stepId === "vectorize_relevance" && trace.status === "completed") ? "Fallback" : "Pending"} detail="metadata fallback; embeddings planned" tone="blue" />
+        <MetricTile label="Runtime" value={diagnostics?.readiness.activeProviderReady ? "Ready" : "Check"} detail={diagnostics ? `${diagnostics.searchProvider} provider` : "diagnostics loading"} tone={diagnostics?.readiness.activeProviderReady ? "green" : "amber"} />
       </section>
 
       <ImplementationStatusPanel
@@ -558,13 +592,14 @@ export function AgentOpsPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>Storage and Runtime</h2>
-                <p>D1, R2, Google Drive, Vectorize, MCP 상태입니다.</p>
+                <p>실제 /api/diagnostics 기준 D1, provider, Crossref, Unpaywall, R2, Drive 상태입니다.</p>
               </div>
-              <Cloud size={18} />
+              <button className="uxSoftButton" type="button" onClick={loadDiagnostics}><RefreshCw size={14} /></button>
             </div>
+            {diagnosticsError ? <p className="uxTinyError">{diagnosticsError}</p> : null}
             <div className="uxSystemGrid">
-              {systemStatuses.map((item) => (
-                <button key={item.name} className="uxSystemItem" type="button" onClick={() => setLogs((current) => [...current, { level: "ok", message: `${item.name}.status checked: ${item.status}` }])}>
+              {diagnosticsItems.map((item) => (
+                <button key={item.name} className="uxSystemItem" type="button" onClick={() => setLogs((current) => [...current, { level: item.tone === "amber" ? "warn" : "ok", message: `${item.name}.status checked: ${item.status} :: ${item.detail}` }])}>
                   <strong>{item.name}</strong>
                   <span>{item.status}</span>
                   <small>{item.detail}</small>
@@ -757,6 +792,49 @@ async function readDashboardError(response: Response, fallback: string): Promise
   } catch {
     return fallback;
   }
+}
+
+function extractMarkdownSection(markdown: string, headingPatterns: RegExp[]): string {
+  const lines = markdown.split(/\r?\n/);
+  const start = lines.findIndex((line) => headingPatterns.some((pattern) => pattern.test(line.trim())));
+  if (start < 0) return "";
+  const startLevel = (lines[start].match(/^#+/)?.[0].length ?? 2);
+  const content: string[] = [];
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    const heading = line.match(/^(#{1,6})\s+/);
+    if (heading && heading[1].length <= startLevel) break;
+    content.push(line);
+  }
+  return summarizeMarkdownText(content.join("\n"));
+}
+
+function summarizeMarkdownText(value: string): string {
+  return value
+    .replace(/\[[^\]]+\]\([^\)]+\)/g, (match) => match.replace(/\]\([^\)]+\)/, "" ).replace(/^\[/, ""))
+    .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\|.*\|\s*$/gm, "")
+    .replace(/^\s*[-:|]+\s*$/gm, "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(" ")
+    .slice(0, 280);
+}
+
+function getDiagnosticsItems(diagnostics: DiagnosticsResponse | null) {
+  if (!diagnostics) return systemStatuses;
+  return [
+    { name: "Cloudflare D1", status: diagnostics.db.bound ? "Connected" : "Missing", detail: diagnostics.db.missingColumns.length ? diagnostics.db.missingColumns.map((item) => item.table + "." + item.column).join(", ") : "schema ready", tone: diagnostics.db.bound && diagnostics.db.missingColumns.length === 0 ? "green" as const : "amber" as const },
+    { name: "Active Provider", status: diagnostics.searchProvider, detail: diagnostics.readiness.activeProviderReady ? "ready" : "not ready", tone: diagnostics.readiness.activeProviderReady ? "green" as const : "amber" as const },
+    { name: "WoS API", status: diagnostics.env.wosApiKey ? "Ready" : "Missing", detail: diagnostics.env.wosApiKeySource ?? "WOS_API_KEY", tone: diagnostics.env.wosApiKey ? "green" as const : "amber" as const },
+    { name: "Crossref", status: diagnostics.env.crossrefEmail ? "Ready" : "Missing", detail: "CROSSREF_EMAIL", tone: diagnostics.env.crossrefEmail ? "green" as const : "amber" as const },
+    { name: "Unpaywall", status: diagnostics.env.unpaywallEmail ? "Ready" : "Missing", detail: "UNPAYWALL_EMAIL", tone: diagnostics.env.unpaywallEmail ? "green" as const : "amber" as const },
+    { name: "Cloudflare R2", status: diagnostics.env.r2Reports ? "Ready" : "Missing", detail: "REPORTS binding", tone: diagnostics.env.r2Reports ? "green" as const : "amber" as const },
+    { name: "Google Drive", status: diagnostics.env.googleDrive ? "Ready" : "Partial", detail: "service-account archive path", tone: diagnostics.env.googleDrive ? "green" as const : "amber" as const },
+    { name: "OpenAlex Fallback", status: diagnostics.env.openAlexEmail ? "Ready" : "Partial", detail: diagnostics.env.openAlexApiKey ? "email + api key" : "email only or missing", tone: diagnostics.env.openAlexEmail ? "blue" as const : "amber" as const }
+  ];
 }
 
 function formatRate(value: number | undefined): string {
@@ -981,6 +1059,45 @@ export function EvaluationDashboardPage() {
                   <small>avg relevance {item.data?.averageAutoRelevance.toFixed(4)} · matched gold {(item.data?.matchedGoldIds ?? []).join(", ") || "none"}</small>
                 </button>
               ))}
+            </div>
+          </section>
+          <section className="uxPanel">
+            <div className="uxPanelHead">
+              <div>
+                <h2>Auto Review Rows</h2>
+                <p>{benchmarkMetrics?.autoReview?.rows ? `${benchmarkMetrics.autoReview.rows.length}개 자동 판정 row입니다.` : "row-level 자동 review 데이터를 기다리는 중입니다."}</p>
+              </div>
+              <span className={`uxPill ${benchmarkMetrics?.autoReview?.rows?.length ? "green" : "amber"}`}>row-level</span>
+            </div>
+            <div className="uxTableWrap">
+              <table className="uxTable">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Task</th>
+                    <th>Rank</th>
+                    <th>Decision</th>
+                    <th>Rel.</th>
+                    <th>Failure</th>
+                    <th>Matched Gold</th>
+                    <th>Title</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(benchmarkMetrics?.autoReview?.rows ?? []).map((row) => (
+                    <tr key={`${row.method}-${row.taskId}-${row.rank}`} onClick={() => setMessage({ title: row.title, body: `${methodLabel(row.method)} ${row.taskId} rank ${row.rank}: ${row.decision}, relevance ${row.relevance}, failure ${row.failureType || "none"}, DOI ${row.doi}` })}>
+                      <td>{methodLabel(row.method)}</td>
+                      <td>{row.taskId}</td>
+                      <td>{row.rank}</td>
+                      <td><span className={`uxPill ${row.decision === "include" ? "green" : row.decision === "reject" ? "amber" : "blue"}`}>{row.decision}</span></td>
+                      <td>{row.relevance}</td>
+                      <td>{row.failureType || "none"}</td>
+                      <td>{row.matchedGoldId || "-"}</td>
+                      <td>{row.title}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
           <section className="uxPanel">

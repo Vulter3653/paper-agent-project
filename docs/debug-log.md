@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-28 - Dashboard Failed To Fetch Resolution
+
+- Context: After the ranking-latency fast-path fix, the user reported `Failed to fetch` when running the deployed dashboard. (codex)
+- Finding: The Worker runtime was healthy. `GET /api/health`, CORS preflight for `OPTIONS /api/search-jobs`, and direct `POST /api/search-jobs` all succeeded against `https://paper-agent-project.shch3653.workers.dev`. (codex)
+- Finding: The deployed Pages site initially served an older JavaScript bundle that did not include `useSemanticRanking: false` and `useLlmCritic: false`, so the browser could still be running stale dashboard code even though the Worker API was reachable. (codex)
+- Fix: Pushed the current local HEAD directly to personal `origin/main` because local `main` was occupied by an existing worktree, then waited for Cloudflare Pages to publish the new asset bundle. (codex)
+- Verification: The deployed Pages bundle changed to `index-1DMiLZy2.js`, the bundle contained the fast-path request flags and the Worker API URL, Worker CORS preflight returned HTTP 200 with `Access-Control-Allow-Origin: *`, and direct remote `POST /api/search-jobs` created job `job-fe822584-c6ad-4629-8a19-ee01e7654432`. (codex)
+- Final status: The user confirmed that dashboard results now display normally. If the same symptom returns, first hard-refresh the Pages dashboard and then inspect DevTools Network for the actual `api/search-jobs` request URL/status before changing Worker code. (codex)
+
 ## 2026-05-28 - Dashboard Ranking Phase Latency
 
 - Context: The user reported that dashboard Run appeared to spend excessive time in `ranking`. (codex)

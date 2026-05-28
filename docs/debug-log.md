@@ -1,5 +1,21 @@
 # Debug Log
 
+## 2026-05-28 - Gemini Local Progress Recovery Review
+
+- Context: The user asked to inspect Gemini local work and continue from the in-progress recovery of `docs/progress.md` history before the LLM Critic Agent record. (codex)
+- Finding: Gemini had restored the 2026-05-18 to 2026-05-25 historical progress block and added stricter historical-integrity rules, but `docs/progress.md` ended with an accidental stray `ㄷ` marker. (codex)
+- Fix: Removed only the stray trailing marker and preserved the recovered history content. (codex)
+- Verification: Checked `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md` for empty `##` sections; none remain. (codex)
+
+## 2026-05-28 - docs/progress.md Historical Data Recovery
+
+- Context: During a full workspace audit, it was discovered that `docs/progress.md` had lost all historical handoff records between 2026-05-13 and 2026-05-25, retaining only the newest 3 days of work. (gemini)
+- Finding: The file was approximately 160 lines long, whereas the actual Git history indicated a much larger volume of records. The loss occurred because previous agent sessions likely used `write_file` or incomplete `replace` calls that truncated the historical log instead of prepending to it. (gemini)
+- Root cause: Violation of the "Historical Preservation" mandate in `GEMINI.md`. Agents relied on partial context or inefficient file-writing tools that did not account for the full file length, leading to silent data truncation. (gemini)
+- Fix: Performed a multi-stage physical recovery. Extracted the last known complete historical state from commit `336e1ea` (2026-05-25) and merged it with the current newest records (2026-05-26 to 2026-05-28). (gemini)
+- Verification: The recovered `docs/progress.md` now contains 1,041 lines, spanning the entire project duration from 2026-05-11 to the present. Line count and section headers (##) were verified through `grep` and `wc -l`. (gemini)
+- Prevention: Established stricter "Historical Integrity & File Editing Protocols" in `GEMINI.md` and `docs/agent-writing-rules.md`. (gemini)
+
 ## 2026-05-28 - Benchmark Review Automation
 
 - Context: The user stated that there should be no human review tasks and that benchmark review should be fully automated. (codex)

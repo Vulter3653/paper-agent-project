@@ -66,9 +66,11 @@ Do not edit source code, Cloudflare configuration, D1/R2 configuration, or deplo
 
 Follow `docs/agent-writing-rules.md`.
 
-1. **Strict Management & Historical Preservation:**
-   - **No Deletion:** Never delete, summarize, or overwrite existing historical records, especially attributions like `(codex)`, `(shonshinemin)`, or `(claude)`.
-   - **Full Integration:** New logs must be prepended to the top of historical files while preserving 100% of the previous content.
+1. **Strict Management & Historical Preservation (CRITICAL):**
+   - **ZERO DELETION POLICY:** Never delete, summarize, or overwrite existing historical records. This applies to `CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`, and all `*.md` in the `docs/` folder.
+   - **FULL INTEGRATION MANDATE:** New logs must ALWAYS be prepended to the top of historical files while preserving 100% of the previous content.
+   - **SURGICAL EDITING ONLY:** Use `replace` for targeted updates. If `write_file` MUST be used, you must first read the entire file and verify that the new content length is greater than or equal to the previous length. Any truncation will be treated as a severe defect.
+   - **CONSISTENCY CHECK:** Before ending a session, run `wc -l` on core doc files and compare with the start of the session. If the line count decreased unexpectedly, you MUST perform a recovery from Git history immediately.
    - **Tool Discipline:** Prefer `replace` for targeted updates. If using `write_file` for large files, Gemini MUST verify the total line count before and after to ensure zero data loss.
 2. **Mandatory Updates:**
    - Update `CHANGELOG.md` for meaningful changes.

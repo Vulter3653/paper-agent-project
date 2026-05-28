@@ -18,6 +18,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+- Docs: Reviewed Gemini local historical recovery, removed an accidental trailing marker from `docs/progress.md`, and verified core history files have no empty sections. (codex)
+- Docs: Recovered 1,041 lines of lost historical data in `docs/progress.md` from Git history (commit `336e1ea`) and established strict "Zero Deletion" and "Historical Integrity" protocols in `GEMINI.md` and `docs/agent-writing-rules.md`. (gemini)
 - Benchmark: Prepared for Rule-based vs Single-LLM vs Proposed Agent baseline comparison. Reviewed input CSV files for consistency and verified T001-T003 task coverage. (gemini)
 
 ## 2026-05-28 (codex)

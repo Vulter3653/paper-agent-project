@@ -5,30 +5,33 @@ const DEFAULT_GOLD_PATH = "benchmark/gold_relevant_papers.csv";
 const DEFAULT_TASKS_PATH = "benchmark/tasks.jsonl";
 const DEFAULT_MARKDOWN_PATH = "benchmark/gold_audit_report.md";
 const DEFAULT_JSON_PATH = "benchmark/gold_audit_report.json";
+const DEFAULT_ALLOWLIST_PATH = "benchmark/gold_audit_allowlist.json";
 
 const args = parseArgs(process.argv.slice(2));
 const goldPath = args.gold ?? DEFAULT_GOLD_PATH;
 const tasksPath = args.tasks ?? DEFAULT_TASKS_PATH;
 const markdownPath = args.markdown ?? DEFAULT_MARKDOWN_PATH;
 const jsonPath = args.json ?? DEFAULT_JSON_PATH;
+const allowlistPath = args.allowlist ?? DEFAULT_ALLOWLIST_PATH;
 
 const tasks = readTasks(tasksPath);
 const goldRows = parseCsv(fs.readFileSync(goldPath, "utf8"));
-const audit = auditGoldRows({ goldRows, tasks, goldPath, tasksPath });
+const allowlist = readAllowlist(allowlistPath);
+const audit = auditGoldRows({ goldRows, tasks, goldPath, tasksPath, allowlistPath, allowlist });
 
 fs.writeFileSync(markdownPath, renderMarkdown(audit), "utf8");
 fs.writeFileSync(jsonPath, `${JSON.stringify(audit, null, 2)}\n`, "utf8");
 
 console.log(`Gold audit complete: ${markdownPath}`);
 console.log(
-  `Rows=${audit.summary.goldRows}, tasks=${audit.summary.tasksCovered}/${audit.summary.expectedTasks}, errors=${audit.summary.errors}, warnings=${audit.summary.warnings}`,
+  `Rows=${audit.summary.goldRows}, tasks=${audit.summary.tasksCovered}/${audit.summary.expectedTasks}, errors=${audit.summary.errors}, warnings=${audit.summary.warnings}, accepted=${audit.summary.acceptedWarnings}`,
 );
 
 if (audit.summary.errors > 0 && !args.allowErrors) {
   process.exitCode = 1;
 }
 
-function auditGoldRows({ goldRows, tasks, goldPath, tasksPath }) {
+function auditGoldRows({ goldRows, tasks, goldPath, tasksPath, allowlistPath, allowlist }) {
   const issues = [];
   const taskIds = tasks.map((task) => task.task_id);
   const goldTaskIds = unique(goldRows.map((row) => row.task_id).filter(Boolean));
@@ -120,12 +123,15 @@ function auditGoldRows({ goldRows, tasks, goldPath, tasksPath }) {
     };
   });
 
-  const errors = issues.filter((issue) => issue.severity === "error");
-  const warnings = issues.filter((issue) => issue.severity === "warning");
+  const annotatedIssues = markAcceptedIssues(issues, allowlist);
+  const activeIssues = annotatedIssues.filter((issue) => !issue.accepted);
+  const acceptedWarnings = annotatedIssues.filter((issue) => issue.accepted && issue.severity === "warning");
+  const errors = activeIssues.filter((issue) => issue.severity === "error");
+  const warnings = activeIssues.filter((issue) => issue.severity === "warning");
 
   return {
     generatedAt: "reproducible-current-inputs",
-    inputs: { goldPath, tasksPath },
+    inputs: { goldPath, tasksPath, allowlistPath },
     summary: {
       goldRows: goldRows.length,
       expectedTasks: taskIds.length,
@@ -136,10 +142,13 @@ function auditGoldRows({ goldRows, tasks, goldPath, tasksPath }) {
       duplicateDoiGroups: byDoi.filter((group) => group.rows.length > 1).length,
       errors: errors.length,
       warnings: warnings.length,
+      acceptedWarnings: acceptedWarnings.length,
     },
     taskSummary,
-    issueCounts: countBy(issues, (issue) => `${issue.severity}:${issue.code}`),
-    issues,
+    issueCounts: countBy(activeIssues, (issue) => `${issue.severity}:${issue.code}`),
+    acceptedIssueCounts: countBy(acceptedWarnings, (issue) => `${issue.severity}:${issue.code}`),
+    issues: activeIssues,
+    acceptedIssues: acceptedWarnings,
   };
 }
 
@@ -148,7 +157,16 @@ function renderMarkdown(audit) {
     ? audit.issues
         .map((issue) => `| ${issue.severity} | ${issue.code} | ${escapeTable(issue.location)} | ${escapeTable(issue.message)} |`)
         .join("\n")
-    : "| none | none | none | No issues detected. |";
+    : "| none | none | none | No active issues detected. |";
+
+  const acceptedRows = audit.acceptedIssues.length
+    ? audit.acceptedIssues
+        .map(
+          (issue) =>
+            `| ${issue.severity} | ${issue.code} | ${escapeTable(issue.location)} | ${escapeTable(issue.acceptance?.decision)} | ${escapeTable(issue.acceptance?.reason)} |`,
+        )
+        .join("\n")
+    : "| none | none | none | none | No accepted issues recorded. |";
 
   const taskRows = audit.taskSummary
     .map(
@@ -162,11 +180,18 @@ function renderMarkdown(audit) {
     .map(([key, value]) => `| ${escapeTable(key)} | ${value} |`)
     .join("\n");
 
+  const acceptedIssueCountRows = Object.entries(audit.acceptedIssueCounts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `| ${escapeTable(key)} | ${value} |`)
+    .join("\n");
+
   return `# Gold Label Audit Report
 
 Generated: ${audit.generatedAt}
 
 This report checks internal consistency of \`${audit.inputs.goldPath}\` against \`${audit.inputs.tasksPath}\`. It does not replace external DOI, publisher, Crossref, or Web of Science verification.
+
+Accepted exceptions are loaded from \`${audit.inputs.allowlistPath}\` and separated from active issues.
 
 ## Summary
 
@@ -180,6 +205,7 @@ This report checks internal consistency of \`${audit.inputs.goldPath}\` against 
 | Duplicate DOI groups | ${audit.summary.duplicateDoiGroups} |
 | Errors | ${audit.summary.errors} |
 | Warnings | ${audit.summary.warnings} |
+| Accepted warnings | ${audit.summary.acceptedWarnings} |
 
 ## Task Coverage
 
@@ -187,23 +213,36 @@ This report checks internal consistency of \`${audit.inputs.goldPath}\` against 
 | --- | ---: | ---: | ---: | ---: |
 ${taskRows}
 
-## Issue Counts
+## Active Issue Counts
 
 | Issue | Count |
 | --- | ---: |
 ${issueCountRows || "| none | 0 |"}
 
-## Issues
+## Active Issues
 
 | Severity | Code | Location | Message |
 | --- | --- | --- | --- |
 ${issueRows}
 
+## Accepted Issue Counts
+
+| Issue | Count |
+| --- | ---: |
+${acceptedIssueCountRows || "| none | 0 |"}
+
+## Accepted Issues
+
+| Severity | Code | Location | Decision | Reason |
+| --- | --- | --- | --- | --- |
+${acceptedRows}
+
 ## Maintainer Notes
 
-- Treat \`error\` rows as blockers before organization-main synchronization.
-- Treat \`warning\` rows as review items. Some duplicate DOI warnings are acceptable when the same paper is intentionally relevant to multiple benchmark tasks.
-- Re-run with \`npm run benchmark:audit-gold\` after any gold-label edit.
+- Treat active \`error\` rows as blockers before organization-main synchronization.
+- Treat active \`warning\` rows as review items that still need a decision.
+- Accepted warnings are controlled exceptions; review them again when a stronger gold replacement or task split is available.
+- Re-run with \`npm run benchmark:audit-gold\` after any gold-label or allowlist edit.
 `;
 }
 
@@ -217,6 +256,18 @@ function readTasks(path) {
     .split(/\r?\n/)
     .filter(Boolean)
     .map((line) => JSON.parse(line));
+}
+
+function readAllowlist(path) {
+  if (!fs.existsSync(path)) return [];
+  return JSON.parse(fs.readFileSync(path, "utf8"));
+}
+
+function markAcceptedIssues(issues, allowlist) {
+  return issues.map((issue) => {
+    const acceptance = allowlist.find((entry) => entry.code === issue.code && entry.location === issue.location);
+    return acceptance ? { ...issue, accepted: true, acceptance } : { ...issue, accepted: false };
+  });
 }
 
 function parseArgs(rawArgs) {

@@ -168,7 +168,7 @@ export default {
         // Keep the source explicit so the dashboard does not overstate implementation status.
         return json({
           source: "static_snapshot",
-          note: "Committed 3-task proposed-agent benchmark snapshot. Full 20-task live aggregation is not implemented yet.",
+          note: "Committed T001-T003 benchmark snapshot with Rule-based, Single-LLM, Proposed Agent comparison and automated baseline review outputs. Full 20-task live aggregation is not implemented yet.",
           tasks: 3,
           results: 15,
           gold: 10,
@@ -184,6 +184,87 @@ export default {
             top_journal_precision_at_k: 1,
             hallucination_rate_at_k: 0,
             oa_success_rate_at_k: 0
+          },
+          comparison: {
+            k: 5,
+            methodOrder: ["proposed_agent", "rule_based", "single_llm"],
+            byMethod: {
+              proposed_agent: {
+                taskCount: 3,
+                resultCount: 15,
+                goldCount: 10,
+                verifiedGoldCount: 10,
+                macroAverages: {
+                  precision_at_5: 0.1333,
+                  ndcg_at_5: 0.3579,
+                  gold_doi_hit_rate_at_5: 0.1944,
+                  doi_presence_rate_at_5: 1,
+                  top_journal_precision_at_5: 1,
+                  paper_validity_rate_at_5: 1,
+                  accepted_exception_count: 0
+                },
+                matchedGoldIds: ["G001", "G061"],
+                acceptedExceptionLocations: []
+              },
+              rule_based: {
+                taskCount: 3,
+                resultCount: 15,
+                goldCount: 10,
+                verifiedGoldCount: 10,
+                macroAverages: {
+                  precision_at_5: 0.1333,
+                  ndcg_at_5: 0.3579,
+                  gold_doi_hit_rate_at_5: 0.1944,
+                  doi_presence_rate_at_5: 1,
+                  top_journal_precision_at_5: 1,
+                  paper_validity_rate_at_5: 1,
+                  accepted_exception_count: 0
+                },
+                matchedGoldIds: ["G001", "G061"],
+                acceptedExceptionLocations: []
+              },
+              single_llm: {
+                taskCount: 3,
+                resultCount: 15,
+                goldCount: 10,
+                verifiedGoldCount: 10,
+                macroAverages: {
+                  precision_at_5: 0.6667,
+                  ndcg_at_5: 0.9949,
+                  gold_doi_hit_rate_at_5: 1,
+                  doi_presence_rate_at_5: 1,
+                  top_journal_precision_at_5: 0.9333,
+                  paper_validity_rate_at_5: 1,
+                  accepted_exception_count: 1
+                },
+                matchedGoldIds: ["G001", "G002", "G003", "G004", "G005", "G006", "G007", "G008", "G009", "G061"],
+                acceptedExceptionLocations: ["10.1016/j.chb.2022.107179", "T001/G003"]
+              }
+            }
+          },
+          autoReview: {
+            rowCount: 30,
+            policy: "Fully automated rule-based review; no human manual review required.",
+            byMethod: {
+              rule_based: {
+                rowCount: 15,
+                includeCount: 2,
+                reviewByRuleCount: 9,
+                rejectCount: 4,
+                averageAutoRelevance: 2.4667,
+                failureTypes: { low_relevance: 4, none: 2, partial_relevance: 9 },
+                matchedGoldIds: ["G001", "G061"]
+              },
+              single_llm: {
+                rowCount: 15,
+                includeCount: 9,
+                reviewByRuleCount: 5,
+                rejectCount: 1,
+                averageAutoRelevance: 3.8667,
+                failureTypes: { low_relevance: 1, none: 9, not_top_journal: 1, partial_relevance: 4 },
+                matchedGoldIds: ["G001", "G002", "G003", "G004", "G005", "G006", "G007", "G008", "G009", "G061"]
+              }
+            }
           }
         });
       } catch (error) {

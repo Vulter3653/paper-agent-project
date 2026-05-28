@@ -39,6 +39,36 @@ type JobOutputsResponse = { job: SearchJob; outputs: JobOutput[] };
 type TraceDetail = Record<string, string | number | boolean | null>;
 type EnrichmentOverview = { limit: string; crossrefProcessed: string; crossrefSkipped: string; unpaywallProcessed: string; unpaywallSkipped: string };
 
+type BenchmarkMethodKey = "proposed_agent" | "rule_based" | "single_llm";
+
+type BenchmarkComparisonMethod = {
+  taskCount: number;
+  resultCount: number;
+  goldCount: number;
+  verifiedGoldCount: number;
+  macroAverages: {
+    precision_at_5: number;
+    ndcg_at_5: number;
+    gold_doi_hit_rate_at_5: number;
+    doi_presence_rate_at_5: number;
+    top_journal_precision_at_5: number;
+    paper_validity_rate_at_5: number;
+    accepted_exception_count: number;
+  };
+  matchedGoldIds: string[];
+  acceptedExceptionLocations: string[];
+};
+
+type BenchmarkAutoReviewMethod = {
+  rowCount: number;
+  includeCount: number;
+  reviewByRuleCount: number;
+  rejectCount: number;
+  averageAutoRelevance: number;
+  failureTypes: Record<string, number>;
+  matchedGoldIds: string[];
+};
+
 type BenchmarkMetrics = {
   source?: "static_snapshot" | "live" | string;
   note?: string;
@@ -57,6 +87,16 @@ type BenchmarkMetrics = {
     top_journal_precision_at_k: number;
     hallucination_rate_at_k: number;
     oa_success_rate_at_k: number;
+  };
+  comparison?: {
+    k: number;
+    methodOrder: BenchmarkMethodKey[];
+    byMethod: Partial<Record<BenchmarkMethodKey, BenchmarkComparisonMethod>>;
+  };
+  autoReview?: {
+    rowCount: number;
+    policy: string;
+    byMethod: Partial<Record<"rule_based" | "single_llm", BenchmarkAutoReviewMethod>>;
   };
 };
 
@@ -719,6 +759,54 @@ async function readDashboardError(response: Response, fallback: string): Promise
   }
 }
 
+function formatRate(value: number | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? value.toFixed(4) : "-";
+}
+
+function formatPercent(value: number | undefined): string {
+  return typeof value === "number" && Number.isFinite(value) ? (value * 100).toFixed(1) + "%" : "-";
+}
+
+function methodLabel(method: BenchmarkMethodKey): string {
+  if (method === "rule_based") return "Rule-based";
+  if (method === "single_llm") return "Single LLM";
+  return "Proposed Multi-Agent";
+}
+
+function metricFinding(metric: string, values: Record<BenchmarkMethodKey, string>): string {
+  if (metric === "Accepted Exceptions") return "자동 gold-audit 예외가 결과에 포함되는지 표시합니다.";
+  if (values.single_llm !== "-" && values.proposed_agent !== "-" && values.single_llm > values.proposed_agent) return "Single-LLM baseline은 repository-grounded upper-bound 성격이므로 과대 해석을 피해야 합니다.";
+  return "동일한 T001-T003 gold/control layer 기준 비교입니다.";
+}
+
+function buildComparisonRows(metrics: BenchmarkMetrics | null) {
+  const byMethod = metrics?.comparison?.byMethod;
+  if (!byMethod) return null;
+  const methods: BenchmarkMethodKey[] = ["rule_based", "single_llm", "proposed_agent"];
+  const rows = [
+    { label: "Precision@5", key: "precision_at_5", format: formatRate },
+    { label: "NDCG@5", key: "ndcg_at_5", format: formatRate },
+    { label: "Gold DOI Hit@5", key: "gold_doi_hit_rate_at_5", format: formatRate },
+    { label: "DOI Presence@5", key: "doi_presence_rate_at_5", format: formatPercent },
+    { label: "Top Journal Precision", key: "top_journal_precision_at_5", format: formatPercent },
+    { label: "Paper Validity", key: "paper_validity_rate_at_5", format: formatPercent },
+    { label: "Accepted Exceptions", key: "accepted_exception_count", format: (value: number | undefined) => typeof value === "number" ? value.toFixed(0) : "-" }
+  ].map((metric) => {
+    const values = Object.fromEntries(methods.map((method) => {
+      const methodMetric = byMethod[method]?.macroAverages[metric.key as keyof BenchmarkComparisonMethod["macroAverages"]];
+      return [method, metric.format(methodMetric)];
+    })) as Record<BenchmarkMethodKey, string>;
+    return { metric: metric.label, ...values, finding: metricFinding(metric.label, values) };
+  });
+  return rows;
+}
+
+function buildAutoReviewRows(metrics: BenchmarkMetrics | null) {
+  const byMethod = metrics?.autoReview?.byMethod;
+  if (!byMethod) return [];
+  return (["rule_based", "single_llm"] as const).map((method) => ({ method, label: methodLabel(method), data: byMethod[method] })).filter((item) => item.data);
+}
+
 export function EvaluationDashboardPage() {
   const [scenarioKey, setScenarioKey] = useState<EvaluationScenarioKey>("strict");
   const [benchmarkMetrics, setBenchmarkMetrics] = useState<BenchmarkMetrics | null>(null);
@@ -762,8 +850,10 @@ export function EvaluationDashboardPage() {
   const overall = Math.round(scenario.bars.reduce((sum, item) => sum + item.value, 0) / scenario.bars.length);
   const benchmarkSourceLabel = benchmarkMetrics?.source === "static_snapshot" ? "Static benchmark snapshot" : "Live benchmark metrics";
   const benchmarkDescription = benchmarkMetrics?.source === "static_snapshot"
-    ? "커밋된 3-task proposed-agent benchmark 스냅샷입니다. 20-task live aggregation은 아직 구현 전입니다."
+    ? "커밋된 T001-T003 benchmark snapshot입니다. Rule-based, Single-LLM, Proposed Agent 비교와 자동 baseline review를 포함합니다."
     : "실제 benchmark endpoint에서 반환된 metric 데이터입니다.";
+  const comparisonRows = buildComparisonRows(benchmarkMetrics);
+  const autoReviewRows = buildAutoReviewRows(benchmarkMetrics);
 
   useEffect(() => {
     void loadBenchmarkMetrics();
@@ -778,7 +868,7 @@ export function EvaluationDashboardPage() {
       setBenchmarkMetrics(data);
       setMessage({
         title: data.source === "static_snapshot" ? "정적 벤치마크 스냅샷 확인됨" : "벤치마크 결과 확인됨",
-        body: `${data.tasks}개 태스크, ${data.results}개 결과물 기준입니다. ${data.note ?? "Endpoint에서 반환된 metric을 표시합니다."}`
+        body: `${data.tasks}개 태스크, ${data.results}개 Proposed 결과물 기준입니다. ${data.note ?? "Endpoint에서 반환된 metric을 표시합니다."}`
       });
     } catch (error) {
       console.error(error);
@@ -795,15 +885,15 @@ export function EvaluationDashboardPage() {
     <main className="uxShell">
       <section className="uxHero compact">
         <span className="uxEyebrow">Interactive Evaluation Dashboard</span>
-        <h1>Baseline 대비 Proposed Multi-Agent의 성능과 실패 유형을 비교합니다.</h1>
-        <p>Scenario 버튼을 누르면 평가 수치, baseline 비교표, score breakdown, presentation message가 함께 변경됩니다.</p>
+        <h1>Rule-based, Single-LLM, Proposed Multi-Agent의 성능과 자동 review 결과를 비교합니다.</h1>
+        <p>Worker benchmark endpoint에서 최신 정적 스냅샷을 불러와 baseline comparison과 자동 review summary를 표시합니다.</p>
       </section>
 
       <section className="uxPanel uxScenarioPanel">
         <div className="uxPanelHead">
           <div>
             <h2>Evaluation Scenario</h2>
-            <p>발표와 검수 상황에 맞춰 strict, broad, fast mode를 전환합니다.</p>
+            <p>현재 연결된 benchmark snapshot은 T001-T003 기준입니다. broad/fast는 아직 planned 시나리오로 유지합니다.</p>
           </div>
           <div className="uxActions">
             {evaluationScenarios.map((item) => (
@@ -855,12 +945,18 @@ export function EvaluationDashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {scenario.rows.map((row) => (
-                    <tr key={row.metric} onClick={() => setMessage({ title: row.metric, body: `${row.finding} ${benchmarkMetrics ? benchmarkDescription : "실제 비교는 baseline CSV와 proposed full-run metric 연결 후 확정됩니다."}` })}>
+                  {(comparisonRows ?? scenario.rows.map((row) => ({
+                    metric: row.metric,
+                    rule_based: row.ruleBased,
+                    single_llm: row.singleLlm,
+                    proposed_agent: row.proposed,
+                    finding: row.finding
+                  }))).map((row) => (
+                    <tr key={row.metric} onClick={() => setMessage({ title: row.metric, body: `${row.finding} ${benchmarkMetrics ? benchmarkDescription : "실제 비교는 benchmark endpoint 연결 후 확정됩니다."}` })}>
                       <td>{row.metric}</td>
-                      <td><span className="uxPill amber">{row.ruleBased}</span></td>
-                      <td><span className="uxPill blue">{row.singleLlm}</span></td>
-                      <td><span className="uxPill green">{row.proposed}</span></td>
+                      <td><span className="uxPill amber">{row.rule_based}</span></td>
+                      <td><span className="uxPill blue">{row.single_llm}</span></td>
+                      <td><span className="uxPill green">{row.proposed_agent}</span></td>
                       <td>{row.finding}</td>
                     </tr>
                   ))}
@@ -869,6 +965,24 @@ export function EvaluationDashboardPage() {
             </div>
           </section>
 
+          <section className="uxPanel">
+            <div className="uxPanelHead">
+              <div>
+                <h2>Automated Baseline Review</h2>
+                <p>{benchmarkMetrics?.autoReview ? benchmarkMetrics.autoReview.policy : "자동 review summary를 기다리는 중입니다."}</p>
+              </div>
+              <span className={`uxPill ${autoReviewRows.length ? "green" : "amber"}`}>{autoReviewRows.length ? `${benchmarkMetrics?.autoReview?.rowCount ?? 0} rows` : "No data"}</span>
+            </div>
+            <div className="uxPreviewGrid">
+              {autoReviewRows.map((item) => (
+                <button key={item.method} className="uxMiniCard" type="button" onClick={() => setMessage({ title: item.label, body: `include ${item.data?.includeCount ?? 0}, review_by_rule ${item.data?.reviewByRuleCount ?? 0}, reject ${item.data?.rejectCount ?? 0}. Failure types: ${Object.entries(item.data?.failureTypes ?? {}).map(([key, value]) => key + " " + value).join(", ")}` })}>
+                  <h3>{item.label}</h3>
+                  <p>include {item.data?.includeCount ?? 0} · review_by_rule {item.data?.reviewByRuleCount ?? 0} · reject {item.data?.rejectCount ?? 0}</p>
+                  <small>avg relevance {item.data?.averageAutoRelevance.toFixed(4)} · matched gold {(item.data?.matchedGoldIds ?? []).join(", ") || "none"}</small>
+                </button>
+              ))}
+            </div>
+          </section>
           <section className="uxPanel">
             <div className="uxPanelHead">
               <div>

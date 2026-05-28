@@ -2,6 +2,12 @@
 
 Updated: 2026-05-28 (codex dashboard ranking latency fix)
 
+## codex - Dashboard Benchmark Connection Refresh (2026-05-28)
+
+- **Worker**: Extended `/api/benchmark-metrics` so the static benchmark snapshot now includes Rule-based, Single-LLM, and Proposed Agent comparison data plus automated baseline review summary. (codex)
+- **Dashboard**: Updated the Evaluation route to render comparison rows from the endpoint instead of relying on stale mock scenario table values. Added an Automated Baseline Review panel for include/review_by_rule/reject counts. (codex)
+- **Verification**: `npm run typecheck`, `npm run build --workspace apps/worker`, and `npm run build:web` passed. (codex)
+
 ## codex - Workflow Blueprint Refresh (2026-05-28)
 
 - **Docs**: Updated `docs/workflow.md` from the older 2026-05-25 snapshot to the current deployed prototype and benchmark automation state. (codex)

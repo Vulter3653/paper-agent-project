@@ -21,6 +21,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Benchmark: Prepared for Rule-based vs Single-LLM vs Proposed Agent baseline comparison. Reviewed input CSV files for consistency and verified T001-T003 task coverage. (gemini)
 
 ## 2026-05-28 (codex)
+- Changed: Connected the Evaluation dashboard to the latest benchmark comparison and automated baseline review snapshot returned by `/api/benchmark-metrics`. (codex)
 - Docs: Updated `docs/workflow.md` as the current system blueprint with personal-main policy, automated benchmark review, dashboard fast path, implemented outputs, and remaining partial stages. (codex)
 - Docs: Recorded that personal repository work must use `origin/main` as the default branch, while organization work remains PR-gated through assignment branches. (codex)
 - Benchmark: Added automated baseline review script and generated CSV/JSON outputs, replacing human-only Single-LLM manual review tasks with reproducible rule-based QA. (codex)

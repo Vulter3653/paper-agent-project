@@ -107,11 +107,12 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
 export const evaluationImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Benchmark Fixtures", status: "live", evidence: "20 tasks, 60 gold rows, verification/refinement scripts", next: "verified gold 40개 이상 확보" },
   { feature: "Proposed Agent Runner", status: "live", evidence: "benchmark:run-proposed smoke run 완료", next: "20 task full run" },
-  { feature: "Baseline Evaluation UI", status: "partial", evidence: "T001-T003 실제 지표 수동 연동 (strict scenario)", next: "benchmark_summary 결과 JSON/API 연결" },
-  { feature: "Rule-based Baseline", status: "planned", evidence: "평가 설계만 존재", next: "baseline_results.csv 생성" },
-  { feature: "Single LLM Baseline", status: "planned", evidence: "평가 설계만 존재", next: "LLM 추천 결과와 hallucination 검증" },
+  { feature: "Baseline Evaluation UI", status: "live", evidence: "/api/benchmark-metrics에서 T001-T003 comparison snapshot 로드", next: "20-task live aggregation 연결" },
+  { feature: "Rule-based Baseline", status: "live", evidence: "benchmark/baseline_rule_based_results.csv 및 comparison summary 반영", next: "20-task baseline 확장" },
+  { feature: "Single LLM Baseline", status: "live", evidence: "benchmark/baseline_single_llm_results.csv 및 auto-review summary 반영", next: "외부 model-run protocol 정의" },
+  { feature: "Automated Baseline Review", status: "live", evidence: "benchmark:auto-review-baselines CSV/JSON summary를 dashboard에 표시", next: "자동 rule 개선" },
   { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 골드 정제 후 실제 지표 산출 완료", next: "전체 20개 태스크 확장" },
-  { feature: "Dashboard Metric Binding", status: "planned", evidence: "미완성 Mock: mockData.ts 수치 제거, 실제 loader/API 필요", next: "실제 benchmark results loader/API 추가" }
+  { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics가 comparison 및 autoReview summary 반환", next: "실시간 D1/R2 aggregation 추가" }
 ];
 
 export const literatureWorkflowStages: WorkflowStage[] = [
@@ -183,7 +184,7 @@ export const toolCallLogs: ToolLog[] = [
   { level: "muted", message: "[미완성 Mock] JournalSelector trace placeholder" },
   { level: "muted", message: "[미완성 Mock] Crossref tool log placeholder" },
   { level: "muted", message: "[미완성 Mock] Unpaywall tool log placeholder" },
-  { level: "muted", message: "[미완성 Mock] PDF/XLSX export not implemented" }
+  { level: "ok", message: "ReportAgent.outputs csv/md/xlsx/pdf endpoints available" }
 ];
 
 export const systemStatuses: SystemStatus[] = [
@@ -192,11 +193,11 @@ export const systemStatuses: SystemStatus[] = [
   { name: "Google Drive", status: "부분 구현", detail: "OA PDF service-account upload path connected", tone: "amber" },
   { name: "Vectorize", status: "미완성", detail: "abstract embedding index 연결 전", tone: "blue" },
   { name: "Remote MCP", status: "Online", detail: "paper-agent-mcp /mcp", tone: "purple" },
-  { name: "Pages UI", status: "부분 구현", detail: "route shell 배포, 일부 패널은 미완성 Mock", tone: "amber" }
+  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route connected; 일부 planned 패널 유지", tone: "amber" }
 ];
 
 export const criticReviews: CriticReviewItem[] = [
-  { title: "Adjacent journal ambiguity", severity: "medium", note: "Top Journal Pool에는 없지만 Q1 인접 분야로 분류되어 수동 검토가 필요합니다." },
+  { title: "Adjacent journal ambiguity", severity: "medium", note: "Top Journal Pool에는 없지만 Q1 인접 분야로 분류되어 rule-based critic 확인이 필요합니다." },
   { title: "OA PDF unavailable", severity: "low", note: "PDF URL이 없으면 landing page와 metadata 기반 요약으로 대체합니다." },
   { title: "Metadata mismatch", severity: "high", note: "제목, 저자, 연도 불일치가 있으면 Crossref 재검증 후 제외 후보로 이동합니다." }
 ];

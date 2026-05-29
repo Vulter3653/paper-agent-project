@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
+(No unreleased changes)
 
 ## 2026-05-30 (gemini)
 - Features: Implemented opt-in Vectorize semantic relevance path. (gemini)

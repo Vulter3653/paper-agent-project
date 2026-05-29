@@ -1,6 +1,12 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (vectorize opt-in implementation complete)
+Updated: 2026-05-30 (sunday code freeze pre-audit complete)
+
+## 2026-05-30 (gemini) - Sunday Code Freeze Pre-Audit
+- **Audit Completion**: Performed a comprehensive pre-freeze architecture and repository audit. (gemini)
+- **Checklist Creation**: Created `docs/sunday-code-freeze-checklist.md` to document system status, claim boundaries, and demo readiness.
+- **Claim Hardening**: Verified that all AI features and expanded benchmark results are correctly labeled as opt-in/experimental or partial evidence.
+- **Integrity Check**: Confirmed that protected benchmark data and generated PDF/PPTX artifacts remain untouched.
 
 ## 2026-05-30 (gemini) - Vectorize Opt-in Relevance
 - **Feature Completion**: Completed the implementation of Vectorize embedding-based semantic relevance as an opt-in experimental feature. (gemini)

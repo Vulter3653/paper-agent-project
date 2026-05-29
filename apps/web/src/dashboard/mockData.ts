@@ -11,7 +11,7 @@ export type WorkflowStage = {
 export type JournalPoolGroup = {
   field: string;
   rank: "International S" | "International A1" | "Adjacent Q1";
-  q1Status: "Q1 verified" | "Q1 candidate" | "Manual review";
+  q1Status: "Q1 candidate (Static)" | "Manual review";
   journals: string[];
 };
 
@@ -87,10 +87,10 @@ export const implementationLegend: Array<{ status: FeatureImplementationStatus; 
 export const researchImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Run / Search Job", status: "live", evidence: "POST /api/search-jobs, GET /api/search-jobs/:id polling", next: "실제 벤치마크 태스크 실행 도구와 연동" },
   { feature: "Ranked Papers", status: "live", evidence: "Worker 결과 papers 배열, D1 papers/evaluations 기반", next: "Gold overlap 지표 표시 강화" },
-  { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "Critic 에이전트 상세 분석 연동" },
+  { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "현재 Rule-based 비평 한정" },
   { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "R2 저장 PDF/XLSX 다운로드 연동" },
   { feature: "12-step Workflow Panel", status: "live", evidence: "agent_traces API 실시간 연동 완료", next: "상세 로그 드릴다운 추가" },
-  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링은 구현됨 (S/A1급)", next: "외부 JCR/SCImago/Q1 API 실시간 연동 예정" },
+  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링은 구현됨 (S/A1급)", next: "Future: External JCR/SCImago bibliometric enrichment planned" },
   { feature: "Literature Review Preview Cards", status: "mock", evidence: "미완성 Mock: 실제 Report Agent section 연결 전", next: "Report Agent section API 연결" }
 ];
 
@@ -99,9 +99,9 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
   { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "실시간 스토리지 용량 모니터링" },
   { feature: "Agent Status Board", status: "live", evidence: "GET /api/search-jobs/:id/traces 기반 D1 trace 표시", next: "실시간 에이전트 상태 전이 감시" },
   { feature: "Tool Call Console", status: "partial", evidence: "agent_traces summary를 console log로 표시 (Raw 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장" },
-  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보 (Production 미적용)", next: "Vectorize index와 embedding relevance 구현" },
+  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보 (Production 미적용 / Opt-in)", next: "Vectorize index와 embedding relevance (Planned)" },
   { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
-  { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "LLM Critic 정성적 분석 내용 연동" }
+  { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "Future: Optional LLM qualitative peer review extension" }
 ];
 
 export const evaluationImplementationStatus: FeatureImplementationItem[] = [
@@ -123,9 +123,9 @@ export const literatureWorkflowStages: WorkflowStage[] = [
   { id: "download", order: 5, title: "OA PDF", owner: "Download Agent", status: "running", progress: 72, detail: "구현됨: Unpaywall 기반 합법적 PDF 경로 탐색" },
   { id: "storage", order: 6, title: "Drive / R2", owner: "Storage Worker", status: "running", progress: 68, detail: "구현됨: R2 저장 및 조건부 Google Drive 백업" },
   { id: "evaluation", order: 7, title: "Journal Eval", owner: "Evaluation Agent", status: "done", progress: 88, detail: "구현됨: 저널 품질 및 메타데이터 정량 스코어링" },
-  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "idle", progress: 42, detail: "미구현: Vectorize 기반 의미론적 유사도 계산 예정" },
+  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "idle", progress: 42, detail: "Planned: Opt-in Vectorize relevance (not production-default)" },
   { id: "ranking", order: 9, title: "Ranking", owner: "Ranking Agent", status: "idle", progress: 40, detail: "구현됨: 다중 지표 기반 가중 정렬" },
-  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "구현됨: Rule-based 리스크 플래그 생성" },
+  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "Live: Rule-based critic flags (LLM opt-in planned)" },
   { id: "report", order: 11, title: "Report", owner: "Report Agent", status: "idle", progress: 20, detail: "구현됨: Markdown 및 기본 PDF/XLSX 생성" },
   { id: "delivery", order: 12, title: "Delivery", owner: "Dashboard", status: "idle", progress: 10, detail: "구현됨: 인터랙티브 UI 기반 결과 인도" }
 ];
@@ -135,31 +135,31 @@ export const topJournalPool: JournalPoolGroup[] = [
   {
     field: "공통 / Strategy",
     rank: "International S",
-    q1Status: "Q1 verified",
+    q1Status: "Q1 candidate (Static)",
     journals: ["Academy of Management Journal", "Strategic Management Journal", "Administrative Science Quarterly"]
   },
   {
     field: "조직 인사",
     rank: "International S",
-    q1Status: "Q1 verified",
+    q1Status: "Q1 candidate (Static)",
     journals: ["Journal of Applied Psychology", "Personnel Psychology", "Organization Science"]
   },
   {
     field: "마케팅",
     rank: "International S",
-    q1Status: "Q1 verified",
+    q1Status: "Q1 candidate (Static)",
     journals: ["Journal of Marketing", "Journal of Marketing Research", "Marketing Science", "Journal of Consumer Research"]
   },
   {
     field: "경영정보",
     rank: "International A1",
-    q1Status: "Q1 verified",
+    q1Status: "Q1 candidate (Static)",
     journals: ["MIS Quarterly", "Information Systems Research", "Journal of Management Information Systems"]
   },
   {
     field: "회계 / 재무",
     rank: "International A1",
-    q1Status: "Q1 candidate",
+    q1Status: "Manual review",
     journals: ["The Accounting Review", "Journal of Finance", "Review of Financial Studies"]
   }
 ];

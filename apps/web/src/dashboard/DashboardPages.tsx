@@ -977,7 +977,7 @@ export function EvaluationDashboardPage() {
         <div className="uxPanelHead">
           <div>
             <h2>평가 시나리오</h2>
-            <p>현재 연결된 benchmark snapshot은 T001-T003 기준입니다. broad/fast는 아직 planned 시나리오로 유지합니다.</p>
+            <p>T001-T003: Controlled comparison layer. T001-T018: Partial expanded runtime evidence (T019-T020 failed due to resource limits). 18/20: Partial evidence only.</p>
           </div>
           <div className="uxActions">
             {evaluationScenarios.map((item) => (
@@ -1263,3 +1263,4 @@ function MiniFlow({ title, body }: { title: string; body: string }) {
     </article>
   );
 }
+

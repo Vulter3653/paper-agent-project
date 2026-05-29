@@ -53,16 +53,18 @@ The current deployed prototype includes:
 
 These components must be described as partial or planned, not as final completed claims:
 
-- **Full Quota Scaling**: The 20-task benchmark fixture and gold audit are complete, but the full 20-task Proposed Agent runtime collection remains pending because provider quotas require batch execution.
-- **Deep Semantic Vectorization**: Vectorize semantic ranking is available as an opt-in path, with keyword-metadata scoring as the current high-performance baseline.
-- **External Archival**: Google Drive upload is conditional on OA PDF availability.
+- **Full Runtime Evidence**: Current expanded runtime evidence covers 18 out of 20 tasks (90% success). Tasks T019 and T020 failed due to Cloudflare Worker resource limits (HTTP 503), not logical defects. This is labeled as "Partial Expanded Evidence."
+- **Deep Semantic Vectorization**: Vectorize semantic ranking is a Planned / Opt-in path, not part of the production-default relevance scoring. Metadata and keyword-based scoring is the default high-performance baseline.
+- **External Bibliometric Enrichment**: JCR/SCImago/CiteScore enrichment is Planned. Current journal filtering relies on an internal business-school approved allowlist.
+- **Advanced LLM Critic**: Optional qualitative peer review is a Future Extension. Default system review uses D1 rule-based critic flags.
 
 ## Benchmark Claim Boundary
 
 The safe benchmark claim is:
-1. **Architectural Verification**: The deployed system successfully executes the end-to-end workflow on live jobs, while the repository benchmark defines T001-T020 as the full evaluation fixture.
-2. **Controlled Comparison**: On the T001-T003 control layer, the Proposed Agent demonstrates strong metadata integrity and top-journal compliance, while the repository-grounded Single-LLM baseline has higher exact gold overlap.
-3. **Reproducibility**: All benchmark metrics are generated from repository-grounded artifacts, not "cherry-picked" LLM chat sessions.
+1. **Architectural Verification**: The deployed system successfully executes the end-to-end workflow on live jobs, while the repository benchmark defines T001-T020 as the target evaluation fixture.
+2. **Partial Expanded Evidence**: The system achieved a 90% completion rate (18/20 tasks) in isolated expansion tests. Failures were limited to infrastructure resource constraints.
+3. **Controlled Comparison**: On the T001-T003 control layer, the Proposed Agent demonstrates strong metadata integrity and top-journal compliance.
+4. **Reproducibility**: All benchmark metrics are generated from repository-grounded artifacts, not "cherry-picked" LLM chat sessions.
 
 Do not claim universal performance dominance; emphasize **traceability, reproducibility, and architectural robustness** as the primary wins.
 
@@ -85,7 +87,7 @@ The live demo should show:
 | Specific problem definition | High-friction, opaque, and fragmented business literature review process. |
 | Agent design justification | 12-stage "White-box" workflow providing error isolation and traceability. |
 | Baseline comparison | Automated scripts comparing Rule-based vs. Single-LLM vs. Multi-Agent outputs. |
-| Limitations and ethics | Disclosure of provider quotas, journal-list bias, and the use of AI for qualitative critic. |
+| Limitations and ethics | Disclosure of provider quotas, journal-list bias, and infrastructure limits. AI features (Vectorize/LLM Critic) are clearly labeled as opt-in/planned. |
 | Reproducibility | Monorepo with "One-Command" validation scripts and transparent D1 traces. |
 | Benchmark quality | DOI-backed gold labels verified via Crossref and automated audit scripts. |
 | Live demo | Deployed Cloudflare stack (Pages, Worker, D1, R2), with AI/Vectorize described only as opt-in/planned paths unless explicitly enabled for the demo. |

@@ -18,6 +18,13 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+### 2026-05-29 (gemini)
+- **Claim Boundary Hardening**: Audited and hardened dashboard UI and documentation wording. (gemini)
+- **Feature Labeling**: Labeled Vectorize and LLM Critic as "Planned / Opt-in / Not production-default" across all interfaces and blueprints. (gemini)
+- **Journal Quality**: Clarified the boundary between live internal allowlist filtering and planned external bibliometric enrichment (JCR/SCImago). (gemini)
+- **Benchmark Narrative**: Refined the 18/20 result framing as "Partial Expanded Evidence" and confirmed T019-T020 failures as infrastructure-related (HTTP 503). (gemini)
+
+
 - Benchmark: Enhanced `run-proposed-agent.mjs` with detailed error logging (HTTP status, body, elapsed time, attempts) and `logDebug` function to improve observability of failures. (gemini)
 - Benchmark: Added `benchmark:run-expanded-retry` script for safe, sequential retry of failed tasks (T009-T020) with increased delays and conservative settings. (gemini)
 - Benchmark: Attempted isolated expanded runtime evaluation for T001-T020; corrected the result to 8/20 completed tasks and 12/20 failed tasks after Codex verification. (gemini/codex)

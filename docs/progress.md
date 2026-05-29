@@ -1,5 +1,14 @@
 # Project Progress And Session Handoff
 
+Updated: 2026-05-29 (claim boundary hardening complete)
+
+## 2026-05-29 (gemini)
+- **Claim Boundary Hardening**: Hardened the dashboard and documentation to clearly distinguish between live, partial, and planned features. (gemini)
+- **AI Feature Status**: Consistently labeled Vectorize and LLM Critic as "Planned / Opt-in / Not production-default". Default relevance now uses metadata/keyword fallback, and default review uses D1 rule-based critic flags. (gemini)
+- **Journal Quality Boundary**: Clarified that internal allowlist filtering is live, while external JCR/SCImago bibliometric enrichment is planned. (gemini)
+- **Benchmark Interpretation**: Explicitly defined the current evidence as "Partial Expanded Evidence (18/20 tasks, 90% success)". Acknowledged T019-T020 failures as infrastructure resource limits (HTTP 503). (gemini)
+- **Data Protection**: Verified that T001-T003 controlled benchmark data, gold labels, and baseline files remain untouched. (gemini)
+
 Updated: 2026-05-29 (isolated expanded benchmark partial run corrected)
 
 ## 2026-05-29 (gemini/codex)

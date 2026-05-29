@@ -59,11 +59,11 @@ Implemented:
 
 Still planned or partial:
 
-- Vectorize or embedding-based semantic relevance; current default relevance uses metadata and keyword fallback.
-- Advanced LLM Critic claim review; current production-safe default is rule-based critic review.
+- Vectorize or embedding-based semantic relevance; Planned / Opt-in / Not production-default. Current default relevance uses metadata and keyword fallback.
+- Advanced LLM Critic qualitative peer review; Current production-safe default is rule-based critic flags (D1 `critic_flags`). LLM Critic is an opt-in future extension.
 - Richer Planner decomposition into sub-questions and query variants.
-- External JCR/SCImago/CiteScore enrichment when licensed API access is available.
-- Full 20-task Proposed Agent runtime collection, limited by WoS quota.
+- External JCR/SCImago/CiteScore enrichment when licensed API access is available; Internal business-school allowlist filtering is currently live.
+- Full 20-task Proposed Agent runtime collection (T001-T018 Partial Expanded Evidence available; T019-T020 limited by Cloudflare Worker resource limits).
 - More polished report PDF layout and richer narrative literature-review content.
 - Replacement of remaining dashboard mock/partial panels with live APIs or stricter planned-state display.
 

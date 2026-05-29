@@ -1,53 +1,72 @@
 # Gemini Session State
 
-Updated: 2026-05-29 (codex next Gemini prompt assigned)
+Updated: 2026-05-29 (gemini benchmark backup review evaluated by codex)
 
 ## Current Source Of Truth
-- `docs/final-submission-story.md` (Updated)
-- `paper/final-paper-draft.tex` (Updated)
-- `presentation/final-presentation-outline.md` (Updated)
-- `presentation/final-presentation-mcp.md` (Updated)
+- `docs/final-submission-story.md`
+- `paper/final-paper-draft.tex`
+- `presentation/final-presentation-outline.md`
+- `presentation/final-presentation-mcp.md`
+- `docs/gemini-next-prompt.md`
+- `docs/proposed-agent-bak-review-2026-05-29.md`
 - `docs/gemini-session-state.md`
 - `CHANGELOG.md`
 - `docs/progress.md`
-- `docs/gemini-next-prompt.md`
 
 ## Current Personal Repo State
 
-- Active branch: `task/final-evaluation-packaging`.
-- Aligned with `origin/main` (6b50ff5).
-- All packaging documentation tasks from the urgent handoff are completed.
+- Active branch at evaluation time: `task/final-evaluation-packaging`.
+- Personal repository default remains `origin/main`; accepted work must be pushed to `origin/main` unless the user explicitly requests otherwise.
+- Organization repository integration remains separate and PR-gated through `team-origin`.
 
 ## Latest Reviewed State
 
-- Paper and Slides now explicitly answer: problem, user, agent architecture rationale, benchmark interpretation, limitations/ethics, and reproducibility.
-- **Top-Journal Precision (100%)** identified as the Proposed Agent's key differentiator on the T001-T003 control layer.
-- **Traceability** via D1 `agent_traces` emphasized as the "White-box" advantage.
+- Final paper and presentation packaging were previously reviewed and pushed in `57c9270`.
+- `docs/gemini-next-prompt.md` was added and pushed in `bc754de` to prevent Gemini from relying on chat memory.
+- Gemini's latest local task reviewed the untracked benchmark `.bak` files and correctly identified them as T004-T005 Proposed Agent expansion candidates, not backups of the tracked T001-T003 benchmark files.
+- Codex review finding: Gemini's benchmark-backup judgment is usable, but the first rewrite of this session-state file was too destructive. This file now preserves the prior source-of-truth and handoff context while adding the T004-T005 finding.
+
+## Benchmark Backup Finding
+
+- `benchmark/proposed_agent_jobs.csv.bak` contains T004-T005 job rows.
+- `benchmark/proposed_agent_results.csv.bak` contains 32 T004-T005 result rows.
+- These files should not overwrite `benchmark/proposed_agent_jobs.csv` or `benchmark/proposed_agent_results.csv`, because the tracked benchmark layer is currently the controlled T001-T003 comparison set.
+- T004-T005 rows include useful expansion evidence, but some rows have `partial` verification and `Enrichment limit 10 reached; Crossref lookup skipped to stay within Worker subrequest limits.`
+- Future integration should use a separate expanded benchmark file or a rerun/cleanup process, not direct replacement of the current benchmark CSVs.
 
 ## What Gemini Must Do Next
 
-Gemini must follow `docs/gemini-next-prompt.md`. The task is final submission polishing and demo-script preparation only.
+Gemini must follow `docs/gemini-next-prompt.md` unless the user gives a newer explicit instruction. Current safe next work remains documentation and final-deliverable polishing only.
 
 Priority order:
 
 1. Polish `paper/final-paper-draft.tex` conservatively for grammar, clarity, and claim safety.
-2. Align `presentation/final-presentation-outline.md` and `presentation/final-presentation-mcp.md` with the paper narrative. Do not add time-limit constraints.
-3. Create `docs/final-demo-script.md` for the live demo flow and fallback job path.
+2. Align `presentation/final-presentation-outline.md` and `presentation/final-presentation-mcp.md` with the paper narrative.
+3. Create or refine `docs/final-demo-script.md` for the live demo flow and fallback job path if it is assigned.
 4. Audit final claims in `docs/final-submission-story.md`, `paper/final-paper-draft.tex`, and `presentation/*`.
 5. Update required records and run verification.
 
-Do not edit Worker, dashboard source, Cloudflare config, D1/R2 config, MCP server code, deployment files, or benchmark CSV/JSON files.
+Do not edit Worker, dashboard source, Cloudflare config, D1/R2 config, MCP server code, deployment files, or tracked benchmark CSV/JSON files unless the user explicitly reassigns that scope.
 
 ## Gemini Constraints
 
 - Do not modify Worker, Cloudflare, deployment, or dashboard files.
-- Ensure (gemini) attribution is used.
+- Do not overwrite the tracked T001-T003 benchmark CSVs with T004-T005 `.bak` data.
+- Ensure `(gemini)` attribution is used for Gemini-authored entries.
+- Do not erase prior history or compress source-of-truth files in a way that removes operational context.
 
 ## Required Verification Baseline
 
 ```bash
+git diff --check
+npm run validate:history
+npm run validate:agent-rules
 npm run benchmark:audit-gold
+```
+
+Additional benchmark checks when benchmark outputs are touched:
+
+```bash
 npm run benchmark:evaluate-proposed
 npm run benchmark:compare-baselines
-git diff --check
 ```

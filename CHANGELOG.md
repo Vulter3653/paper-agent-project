@@ -20,6 +20,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 _No unreleased changes._
 
 
+## 2026-05-29 (gemini)
+- Benchmark: Evaluated T004-T005 benchmark expansion candidates in `benchmark/proposed_agent_jobs.csv.bak` and `benchmark/proposed_agent_results.csv.bak`; preserved them as raw expansion evidence and documented why they must not overwrite the controlled T001-T003 benchmark CSVs. (gemini)
+- Docs: Added `docs/proposed-agent-bak-review-2026-05-29.md` and updated `docs/gemini-session-state.md` with the Codex-reviewed handoff decision. (gemini)
+
 ## 2026-05-29 (codex)
 - Docs: Added `docs/gemini-next-prompt.md` and linked it from Gemini startup/session state so the next Gemini task is limited to final paper, presentation, demo script, and claim-audit work. (codex)
 - Docs: Strengthened `docs/final-submission-story.md` with explicit pain points, agent-as-module design rationale, and professor-criteria evidence mapping while keeping optional and pending components labeled. (gemini)

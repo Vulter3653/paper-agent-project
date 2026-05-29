@@ -23,6 +23,7 @@ _No unreleased changes._
 ## 2026-05-29 (codex)
 - Docs: Converted remaining active benchmark review guidance from human-only manual review to reproducible automated review rules, outputs, and team assignments. (codex)
 - Benchmark: Updated the gold-refinement candidate script to emit automation-oriented review statuses for future Crossref candidate queues. (codex)
+- Docs: Updated docs/gemini-session-state.md with an urgent Gemini final-evaluation packaging command focused on problem definition, agent rationale, baseline interpretation, reproducibility, and limitations. (codex)
 
 
 ## 2026-05-28 (codex)

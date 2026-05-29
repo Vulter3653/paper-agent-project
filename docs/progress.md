@@ -7,6 +7,7 @@ Updated: 2026-05-29 (codex full benchmark automation cleanup)
 - Updated: Reassigned juilie_bot_hub from Proposed Agent manual review to automated baseline review QA while preserving the old manual-review record as historical evidence. (codex)
 - Updated: Clarified benchmark rubric language around audited relevance labels and added the automation command protocol to docs/benchmark.md and benchmark/evaluation_rubric.md. (codex)
 - Updated: Changed future Crossref candidate refinement statuses from `needs_manual_review` to `needs_automated_verification` in benchmark/scripts/refine-gold-candidates.mjs. (codex)
+- Updated: Set Gemini next work to final-evaluation packaging only: improve final story, paper draft, and presentation materials while forbidding Worker, dashboard, Cloudflare, D1/R2, MCP, deployment, and benchmark data edits. (codex)
 
 
 

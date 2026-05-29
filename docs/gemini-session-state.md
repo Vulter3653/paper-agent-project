@@ -1,6 +1,6 @@
 # Gemini Session State
 
-Updated: 2026-05-28 (codex baseline comparison follow-up)
+Updated: 2026-05-29 (codex urgent final-evaluation handoff)
 
 ## Current Source Of Truth
 - `AGENTS.md`
@@ -28,15 +28,37 @@ Updated: 2026-05-28 (codex baseline comparison follow-up)
 
 ## What Gemini Must Do Next
 
-Next task: QA and interpret the generated baseline comparison outputs.
+Urgent task: prepare the final evaluation package, not new product features. The highest-risk grading items are problem definition, agent-design justification, baseline comparison interpretation, reproducibility, and limitations/ethics.
+
+Gemini must work conservatively from personal `origin/main` and edit only final-deliverable documentation files.
 
 Required focus:
 
-1. Run `npm run benchmark:compare-baselines` after any benchmark input change.
-2. Review whether Single-LLM gains are inflated by repository-grounded gold overlap.
-3. Review accepted exception effects, especially `T001/G003` and duplicate DOI `10.1016/j.chb.2022.107179`.
-4. Do not modify Worker, Cloudflare, deployment, or dashboard files for this benchmark QA task.
-5. Update `CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`, and this file before ending the session.
+1. Strengthen `docs/final-submission-story.md` so it clearly maps the professor criteria to current evidence and claim boundaries.
+2. Strengthen `paper/final-paper-draft.tex` with a sharper problem definition, explicit multi-agent design rationale, benchmark table/interpretation, reproducibility paragraph, and limitations/ethics section.
+3. Strengthen `presentation/final-presentation-outline.md` and `presentation/final-presentation-mcp.md` so the 8-minute deck tells the same story as the paper.
+4. Do not claim that Proposed Agent outperforms all baselines. Current safe claim: the system is deployed, traceable, reproducible, and benchmark-ready; T001-T003 comparison is controlled evidence, while full 20-task Proposed Agent runtime evaluation remains pending.
+5. Do not modify Worker, dashboard, Cloudflare, D1/R2, MCP server, benchmark CSV/JSON, or deployment files for this task.
+6. Preserve all existing history and attribution entries.
+
+Suggested allowed files:
+
+```text
+docs/final-submission-story.md
+paper/final-paper-draft.tex
+presentation/final-presentation-outline.md
+presentation/final-presentation-mcp.md
+docs/gemini-session-state.md
+CHANGELOG.md
+docs/progress.md
+```
+
+Definition of done:
+
+- The paper and slides explicitly answer: problem, user, why agent architecture, baseline comparison, limitations/ethics, reproducibility, and live demo path.
+- Any partial/planned component is labeled partial, opt-in, or planned.
+- `CHANGELOG.md`, `docs/progress.md`, and this file are updated with `(gemini)` attribution for Gemini-authored work.
+- Verification commands below are run or explicitly marked not run with a reason.
 
 ## Gemini Constraints
 

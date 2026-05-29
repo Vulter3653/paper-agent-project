@@ -21,6 +21,10 @@ _No unreleased changes._
 
 
 ## 2026-05-29 (gemini)
+- Changed: Stabilized dashboard UI for pre-freeze phase by adding explicit "Live", "Partial", "Mock", and "Planned" labels across all major panels. (gemini)
+- Changed: Added an implementation legend to the dashboard footer to clearly distinguish between real API features and design placeholders. (gemini)
+- Changed: Refined the Research, Ops, and Evaluation dashboards to emphasize the claim boundary: trustworthiness and traceability over raw retrieval volume. (gemini)
+- Changed: Identified and verified a stable completed job (`job-48ca9200-a937-4793-89f7-1877e51d5899`) as a fallback path for demo resilience. (gemini)
 - Docs: Refined `docs/final-submission-story.md` to emphasize the 'Trust over Raw Precision' narrative and explicitly bounded claims as implemented, partial, or opt-in. (gemini)
 - Docs: Polished `paper/final-paper-draft.tex` to highlight the 12-stage white-box architecture, verified DOI integrity, and algorithmic gatekeeping limitations. (gemini)
 - Docs: Aligned `presentation/final-presentation-outline.md` and `presentation/final-presentation-mcp.md` with the trustworthiness narrative and removed strict 8-minute limitations. (gemini)

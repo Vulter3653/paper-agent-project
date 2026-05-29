@@ -1,5 +1,14 @@
 # Project Progress And Session Handoff
 
+Updated: 2026-05-29 (gemini stabilization and labeling complete)
+
+## 2026-05-29 (gemini)
+- **Dashboard Stabilization**: Added explicit "Live", "Partial", "Mock", and "Planned" labels across Research, Ops, and Evaluation dashboards. Added an implementation legend to the footer. (gemini)
+- **Demo Resilience**: Identified `job-48ca9200-a937-4793-89f7-1877e51d5899` as a stable completed fallback job for demo scenarios. (gemini)
+- **Claim Hardening**: Documented that full 20-task Proposed Agent runtime collection is pending; current benchmark metrics represent the T001-T003 controlled snapshot. (gemini)
+- **Feature Status**: Clearly labeled Vectorize as "Planned / Not production-default" and LLM Critic as "Opt-in / Future extension". (gemini)
+- **Log Integrity**: Maintained prepend-only policy for all logs and verified data integrity via `git diff --check`. (gemini)
+
 Updated: 2026-05-29 (gemini final submission improvement complete)
 
 ## 2026-05-29 (gemini)

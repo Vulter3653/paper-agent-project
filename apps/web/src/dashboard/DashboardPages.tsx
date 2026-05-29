@@ -266,8 +266,8 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
             <div className="uxSnapshotGrid">
               <MetricTile label="상태" value={activeJob?.status || "대기"} detail={activeJob?.currentStep || "준비됨"} tone="green" />
               <MetricTile label="단계" value={`${completedTraceCount}/12`} detail="완료/건너뜀" tone="blue" />
-              <MetricTile label="Top Pool" value="부분 구현" detail="allowlist 적용" tone="purple" />
-              <MetricTile label="Review" value={activeJob?.status === "completed" ? "준비됨" : "대기 중"} detail="critic 분석" tone={activeJob?.status === "completed" ? "green" : "amber"} />
+              <MetricTile label="Top Pool" value="부분 구현" detail="allowlist live" tone="purple" />
+              <MetricTile label="Review" value={activeJob?.status === "completed" ? "준비됨" : "대기 중"} detail={report ? "Live 리포트" : "Critic 분석 중"} tone={activeJob?.status === "completed" ? "green" : "amber"} />
             </div>
           </aside>
         </div>
@@ -279,13 +279,13 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
         items={researchImplementationStatus}
       />
 
-      <section className="uxPanel uxWorkflowPanel">
+        <section className="uxPanel uxWorkflowPanel">
         <div className="uxPanelHead">
           <div>
             <h2>12단계 Literature Review Workflow</h2>
-            <p>{traces.length ? "실제 D1 agent_traces 기반의 실시간 실행 단계입니다." : "미완성 Mock: 실제 agent_traces 연결 전의 단계 구조 preview입니다."}</p>
+            <p>{traces.length ? "실제 D1 agent_traces 기반의 실시간 실행 단계입니다." : "미완성 Mock Preview: 실제 agent_traces 연결 전의 단계 구조입니다."}</p>
           </div>
-          <span className={`uxPill ${traces.length ? "green" : "amber"}`}>{traces.length ? "D1 trace 연결됨" : "미완성 Mock"}</span>
+          <span className={`uxPill ${traces.length ? "green" : "amber"}`}>{traces.length ? "D1 trace 연결됨" : "미완성 Mock Preview"}</span>
         </div>
         <div className="uxProgressTrack">
           <span style={{ width: `${progress}%` }} />
@@ -306,9 +306,9 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>Top Journal Pool</h2>
-              <p>부분 구현: allowlist는 실제 데이터 기반이고, Q1/외부 지표 표시는 아직 미연결입니다.</p>
+              <p>Partial: allowlist live, external Q1/JCR/SCImago not connected.</p>
             </div>
-            <span className="uxPill blue">S then A1</span>
+            <span className="uxPill blue">Partial Connected</span>
           </div>
           <div className="uxSystemGrid">
             {topJournalPool.map((group) => (
@@ -325,9 +325,9 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>Literature Review 미리보기</h2>
-              <p>{report ? "실제 Report Agent가 생성한 섹션별 핵심 요약입니다." : "미완성 Mock: 실제 Report Agent API 연결 전의 섹션 preview입니다."}</p>
+              <p>{report ? "실제 Report Agent가 생성한 섹션별 핵심 요약입니다." : "미완성 Mock Preview: 실제 리포트 생성 전의 예시 데이터입니다."}</p>
             </div>
-            <FileText size={18} />
+            <span className={`uxPill ${report ? "green" : "amber"}`}>{report ? "Live Report" : "Mock Preview"}</span>
           </div>
           <div className="uxPreviewGrid">
             {livePreview.map((item) => (
@@ -571,7 +571,7 @@ export function AgentOpsPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>Tool Call Console</h2>
-                <p>{traces.length ? "D1 agent_traces에서 생성한 실행 로그입니다." : "Live trace가 없으면 placeholder log를 표시합니다."}</p>
+                <p>{traces.length ? "D1 agent_traces에서 생성한 실행 로그입니다. (Partial: trace summary, not raw API logs)" : "미완성 Mock Preview: Live trace가 없으면 placeholder log를 표시합니다."}</p>
               </div>
               <button className="uxSoftButton" type="button" onClick={() => setLogs([])}>지우기</button>
             </div>
@@ -606,6 +606,11 @@ export function AgentOpsPage() {
                 </button>
               ))}
             </div>
+            <div className="uxPanelNote">
+              <small>Google Drive PDF Archive (부분 구현): Unpaywall 확인된 OA PDF 한정 업로드.</small>
+              <br/>
+              <small>Vectorize Status (미구현): Production 미적용 / Planned.</small>
+            </div>
           </section>
 
           <CriticReviewPanel />
@@ -621,7 +626,7 @@ function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[];
       <div className="uxPanelHead">
         <div>
           <h2>Output Artifacts</h2>
-          <p>CSV, Markdown, XLSX, PDF 산출물의 실제 저장 상태입니다.</p>
+          <p>CSV, Markdown, XLSX, PDF 산출물의 실제 저장 상태입니다. (R2 또는 Dynamic Fallback)</p>
         </div>
         <FileText size={18} />
       </div>
@@ -648,7 +653,7 @@ function LiveCriticFlagsPanel({ flags, errorMessage }: { flags: CriticFlag[]; er
       <div className="uxPanelHead">
         <div>
           <h2>Critic Review</h2>
-          <p>실제 D1 critic_flags에서 읽은 paper-level risk flag입니다.</p>
+          <p>실제 D1 critic_flags 기반의 rule-based risk flag입니다. (LLM Critic 선택 사항)</p>
         </div>
         <ShieldCheck size={18} />
       </div>
@@ -668,6 +673,7 @@ function LiveCriticFlagsPanel({ flags, errorMessage }: { flags: CriticFlag[]; er
     </section>
   );
 }
+
 
 function summarizeCriticFlags(flags: CriticFlag[]) {
   return {

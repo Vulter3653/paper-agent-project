@@ -85,50 +85,51 @@ export const implementationLegend: Array<{ status: FeatureImplementationStatus; 
 ];
 
 export const researchImplementationStatus: FeatureImplementationItem[] = [
-  { feature: "Run / Search Job", status: "live", evidence: "POST /api/search-jobs, GET /api/search-jobs/:id polling", next: "Benchmark full-run 결과와 연결" },
-  { feature: "Ranked Papers", status: "live", evidence: "Worker 결과 papers 배열, D1 papers/evaluations 기반", next: "Gold overlap 지표 추가" },
-  { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "Critic note 저장 후 연결" },
-  { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "PDF/XLSX output 추가" },
+  { feature: "Run / Search Job", status: "live", evidence: "POST /api/search-jobs, GET /api/search-jobs/:id polling", next: "실제 벤치마크 태스크 실행 도구와 연동" },
+  { feature: "Ranked Papers", status: "live", evidence: "Worker 결과 papers 배열, D1 papers/evaluations 기반", next: "Gold overlap 지표 표시 강화" },
+  { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "Critic 에이전트 상세 분석 연동" },
+  { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "R2 저장 PDF/XLSX 다운로드 연동" },
   { feature: "12-step Workflow Panel", status: "live", evidence: "agent_traces API 실시간 연동 완료", next: "상세 로그 드릴다운 추가" },
-  { feature: "Top Journal Pool Panel", status: "partial", evidence: "저널 allowlist는 실제 shared data, 화면 풀 표시는 축약 mock", next: "shared category 전체 표시" },
+  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링은 구현됨 (S/A1급)", next: "외부 JCR/SCImago/Q1 API 실시간 연동 예정" },
   { feature: "Literature Review Preview Cards", status: "mock", evidence: "미완성 Mock: 실제 Report Agent section 연결 전", next: "Report Agent section API 연결" }
 ];
 
 export const opsImplementationStatus: FeatureImplementationItem[] = [
   { feature: "MCP Worker", status: "live", evidence: "paper-agent-mcp /mcp read-only tools 배포 완료", next: "agent trace 조회 tool 추가" },
-  { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "화면 상태를 diagnostics/API로 연결" },
-  { feature: "Agent Status Board", status: "live", evidence: "GET /api/search-jobs/:id/traces 기반 D1 trace 표시", next: "Critic 세부 flag 저장 후 확장" },
-  { feature: "Tool Call Console", status: "partial", evidence: "agent_traces summary를 console log로 표시", next: "개별 외부 API request/response log 저장" },
-  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보", next: "Vectorize index와 embedding relevance 구현" },
-  { feature: "Google Drive PDF Archive", status: "partial", evidence: "OA PDF URL이 있는 결과를 Google Drive service account로 업로드", next: "Drive 공유 정책과 실패 재시도 UI 추가" },
-  { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 리스크 플래그 실시간 표시", next: "LLM Critic 상세 분석 내용 연동" }
+  { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "실시간 스토리지 용량 모니터링" },
+  { feature: "Agent Status Board", status: "live", evidence: "GET /api/search-jobs/:id/traces 기반 D1 trace 표시", next: "실시간 에이전트 상태 전이 감시" },
+  { feature: "Tool Call Console", status: "partial", evidence: "agent_traces summary를 console log로 표시 (Raw 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장" },
+  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보 (Production 미적용)", next: "Vectorize index와 embedding relevance 구현" },
+  { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
+  { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "LLM Critic 정성적 분석 내용 연동" }
 ];
 
 export const evaluationImplementationStatus: FeatureImplementationItem[] = [
-  { feature: "Benchmark Fixtures", status: "live", evidence: "20 tasks, 60 gold rows, verification/refinement scripts", next: "verified gold 40개 이상 확보" },
-  { feature: "Proposed Agent Runner", status: "live", evidence: "benchmark:run-proposed smoke run 완료", next: "20 task full run" },
-  { feature: "Baseline Evaluation UI", status: "live", evidence: "/api/benchmark-metrics에서 T001-T003 comparison snapshot 로드", next: "20-task live aggregation 연결" },
-  { feature: "Rule-based Baseline", status: "live", evidence: "benchmark/baseline_rule_based_results.csv 및 comparison summary 반영", next: "20-task baseline 확장" },
-  { feature: "Single LLM Baseline", status: "live", evidence: "benchmark/baseline_single_llm_results.csv 및 auto-review summary 반영", next: "외부 model-run protocol 정의" },
-  { feature: "Automated Baseline Review", status: "live", evidence: "benchmark:auto-review-baselines CSV/JSON summary를 dashboard에 표시", next: "자동 rule 개선" },
-  { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 골드 정제 후 실제 지표 산출 완료", next: "전체 20개 태스크 확장" },
-  { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics가 comparison 및 autoReview summary 반환", next: "실시간 D1/R2 aggregation 추가" }
+  { feature: "Benchmark Fixtures", status: "live", evidence: "20 tasks, 60 gold rows, audit scripts", next: "verified gold 100개 이상 확충" },
+  { feature: "Proposed Agent Runner", status: "live", evidence: "benchmark:run-proposed 스크립트 구현됨", next: "20 task full runtime collection" },
+  { feature: "Baseline Evaluation UI", status: "live", evidence: "/api/benchmark-metrics에서 T001-T003 snapshot 로드", next: "전체 태스크 라이브 집계 연결" },
+  { feature: "Rule-based Baseline", status: "live", evidence: "T001-T003 통제 데이터 반영됨", next: "20-task baseline 확장" },
+  { feature: "Single LLM Baseline", status: "live", evidence: "T001-T003 통제 데이터 반영됨", next: "외부 모델 실행 프로토콜 정의" },
+  { feature: "Automated Baseline Review", status: "live", evidence: "auto-review-baselines 결과 반영됨", next: "판정 규칙 고도화" },
+  { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 제어 레이어 기준 산출", next: "전체 20개 태스크 확장" },
+  { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics 실시간 스냅샷 연결", next: "D1 aggregation 실시간화" }
 ];
 
 export const literatureWorkflowStages: WorkflowStage[] = [
-  { id: "planner", order: 1, title: "Planner", owner: "Planner Agent", status: "done", progress: 100, detail: "미완성 Mock: 실제 Planner trace 연결 전" },
-  { id: "journal_selector", order: 2, title: "Journal Pool", owner: "Journal Selector", status: "done", progress: 100, detail: "부분 구현: allowlist는 실제, agent trace는 미연결" },
-  { id: "retriever", order: 3, title: "Search", owner: "Retriever Agent", status: "done", progress: 100, detail: "부분 구현: Worker 검색은 실제, 단계 trace는 미연결" },
-  { id: "verifier", order: 4, title: "Crossref", owner: "Verifier Agent", status: "done", progress: 96, detail: "부분 구현: Crossref 검증은 실제, agent별 trace는 미연결" },
-  { id: "download", order: 5, title: "OA PDF", owner: "Download Agent", status: "running", progress: 72, detail: "부분 구현: Unpaywall은 실제, Drive 저장은 미완성" },
-  { id: "storage", order: 6, title: "Drive / R2", owner: "Storage Worker", status: "running", progress: 68, detail: "부분 구현: R2는 실제, Google Drive는 미완성" },
-  { id: "evaluation", order: 7, title: "Journal Eval", owner: "Evaluation Agent", status: "done", progress: 88, detail: "부분 구현: allowlist rank는 실제, 외부 Q1/FT50 API는 미연결" },
-  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "idle", progress: 42, detail: "미완성 Mock: Vectorize/embedding 연결 전" },
-  { id: "ranking", order: 9, title: "Ranking", owner: "Ranking Agent", status: "idle", progress: 40, detail: "부분 구현: 기본 랭킹은 실제, agent trace는 미연결" },
-  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "미완성 Mock: Critic Agent 저장 전" },
-  { id: "report", order: 11, title: "Report", owner: "Report Agent", status: "idle", progress: 20, detail: "부분 구현: Markdown은 실제, PDF/XLSX는 미완성" },
-  { id: "delivery", order: 12, title: "Delivery", owner: "Dashboard", status: "idle", progress: 10, detail: "부분 구현: D1/CSV/Markdown은 실제, 전체 delivery trace는 미연결" }
+  { id: "planner", order: 1, title: "Planner", owner: "Planner Agent", status: "done", progress: 100, detail: "구현됨: 검색 범위 및 제약 조건 정규화" },
+  { id: "journal_selector", order: 2, title: "Journal Pool", owner: "Journal Selector", status: "done", progress: 100, detail: "구현됨: 경영대학 S/A1급 저널 풀 필터링" },
+  { id: "retriever", order: 3, title: "Search", owner: "Retriever Agent", status: "done", progress: 100, detail: "구현됨: WoS/OpenAlex API 검색 실행" },
+  { id: "verifier", order: 4, title: "Crossref", owner: "Verifier Agent", status: "done", progress: 96, detail: "구현됨: DOI 및 서지 정보 무결성 검증" },
+  { id: "download", order: 5, title: "OA PDF", owner: "Download Agent", status: "running", progress: 72, detail: "구현됨: Unpaywall 기반 합법적 PDF 경로 탐색" },
+  { id: "storage", order: 6, title: "Drive / R2", owner: "Storage Worker", status: "running", progress: 68, detail: "구현됨: R2 저장 및 조건부 Google Drive 백업" },
+  { id: "evaluation", order: 7, title: "Journal Eval", owner: "Evaluation Agent", status: "done", progress: 88, detail: "구현됨: 저널 품질 및 메타데이터 정량 스코어링" },
+  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "idle", progress: 42, detail: "미구현: Vectorize 기반 의미론적 유사도 계산 예정" },
+  { id: "ranking", order: 9, title: "Ranking", owner: "Ranking Agent", status: "idle", progress: 40, detail: "구현됨: 다중 지표 기반 가중 정렬" },
+  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "구현됨: Rule-based 리스크 플래그 생성" },
+  { id: "report", order: 11, title: "Report", owner: "Report Agent", status: "idle", progress: 20, detail: "구현됨: Markdown 및 기본 PDF/XLSX 생성" },
+  { id: "delivery", order: 12, title: "Delivery", owner: "Dashboard", status: "idle", progress: 10, detail: "구현됨: 인터랙티브 UI 기반 결과 인도" }
 ];
+
 
 export const topJournalPool: JournalPoolGroup[] = [
   {

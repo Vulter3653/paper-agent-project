@@ -101,7 +101,7 @@ const demoPapers: PaperSummary[] = [
   {
     id: "demo-1",
     rank: 1,
-    title: "Automated Scholarly Paper Discovery with Agentic Workflows",
+    title: "[Demo/Mock] Automated Scholarly Paper Discovery with Agentic Workflows",
     authors: "Kim, Lee, Park",
     year: 2025,
     journalName: "Information Systems Research",
@@ -118,7 +118,7 @@ const demoPapers: PaperSummary[] = [
   {
     id: "demo-2",
     rank: 2,
-    title: "Large Language Models for Literature Review Automation",
+    title: "[Demo/Mock] Large Language Models for Literature Review Automation",
     authors: "Choi, Han",
     year: 2024,
     journalName: "Information Systems Review",
@@ -146,6 +146,12 @@ function App() {
     <>
       <DashboardNav activeRoute={activeRoute} />
       {activeRoute === "ops" ? <AgentOpsPage /> : activeRoute === "evaluation" ? <EvaluationDashboardPage /> : <ResearchDashboard />}
+      <footer className="uxFooterLegend">
+        <div className="legendItem"><span className="uxStatusChip live">구현됨</span> live API/DB-backed</div>
+        <div className="legendItem"><span className="uxStatusChip partial">부분 구현</span> partially connected or conditional</div>
+        <div className="legendItem"><span className="uxStatusChip mock">미완성 Mock</span> placeholder/demo data</div>
+        <div className="legendItem"><span className="uxStatusChip planned">미구현</span> planned but not connected</div>
+      </footer>
     </>
   );
 }
@@ -182,6 +188,7 @@ function ResearchDashboard() {
   const selectedCriticFlags = useMemo(() => criticFlags.filter((flag) => flag.paperRank === selected?.rank), [criticFlags, selected?.rank]);
   const includedCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "include").length, [papers]);
   const reviewCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "review").length, [papers]);
+  const isDemoMode = !job;
 
   useEffect(() => {
     void refreshDiagnostics();
@@ -467,8 +474,8 @@ function ResearchDashboard() {
       <ResearchExperiencePanels isRunning={loading || (Boolean(job) && job?.status !== "completed" && job?.status !== "failed")} />
 
       <section className="statusBand">
-        <Metric label="상태" value={job?.status ?? "demo"} tone={getStatusTone(job?.status)} />
-        <Metric label="단계" value={job?.currentStep ?? "ranking preview"} />
+        <Metric label="상태" value={job?.status ?? "Demo Data / Mock"} tone={getStatusTone(job?.status)} />
+        <Metric label="단계" value={job?.currentStep ?? "Demo Mode / Mock"} />
         <Metric label="원천 / 통과" value={job ? `${job.sourceResultCount ?? "-"} / ${job.allowedResultCount ?? "-"}` : "-"} />
         <Metric label="논문" value={String(papers.length)} detail={`${includedCount} include · ${reviewCount} review`} />
         <Metric label="최고 점수" value={papers[0] ? papers[0].finalScore.toFixed(2) : "-"} />
@@ -488,7 +495,7 @@ function ResearchDashboard() {
           <div className="tablePanel">
             <div className="panelTitle">
               <div>
-                <h2>Ranked Papers</h2>
+                <h2>Ranked Papers {isDemoMode ? <span className="uxPill amber">Demo Data / Mock</span> : null}</h2>
                 <p>{papers.length ? `${papers.length}개 allowlist 통과 결과` : "저장된 결과 없음"}</p>
               </div>
               <div className="panelActions">
@@ -579,7 +586,7 @@ function ResearchDashboard() {
         </section>
 
         <aside className="sideColumn">
-          <PaperDetailPanel selected={selected} criticFlags={selectedCriticFlags} errorMessage={criticFlagsError} />
+          <PaperDetailPanel selected={selected} criticFlags={selectedCriticFlags} errorMessage={criticFlagsError} isDemoMode={isDemoMode} />
           <RecentJobsPanel jobs={recentJobs} activeJobId={job?.id} loadingJobId={loadingJobId} errorMessage={recentJobsError} onLoad={loadSearchJob} onRefresh={refreshRecentJobs} />
         </aside>
       </section>
@@ -587,13 +594,13 @@ function ResearchDashboard() {
   );
 }
 
-function PaperDetailPanel({ selected, criticFlags, errorMessage }: { selected?: PaperSummary; criticFlags: CriticFlag[]; errorMessage: string }) {
+function PaperDetailPanel({ selected, criticFlags, errorMessage, isDemoMode }: { selected?: PaperSummary; criticFlags: CriticFlag[]; errorMessage: string; isDemoMode: boolean }) {
   const criticReview = selected ? buildCriticReviewSummary(selected, criticFlags) : null;
   return (
     <section className="detailPanel">
       <div className="panelTitle">
         <div>
-          <h2>Paper Detail</h2>
+          <h2>Paper Detail {isDemoMode ? <span className="uxPill amber">Demo Data / Mock</span> : null}</h2>
           <p>{selected ? `${selected.year || "연도 미상"} · ${selected.journalName}` : "선택 없음"}</p>
         </div>
         <FileText size={18} />

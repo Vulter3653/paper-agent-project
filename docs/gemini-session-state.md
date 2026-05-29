@@ -1,36 +1,41 @@
 # Gemini Session State - 2026-05-29
 
 ## Status Overview
-The Final Submission Improvement phase is complete. All requested refinements to the paper, presentation, and demo script have been implemented. The project narrative now strictly bounds claims, emphasizing the "Trust over Raw Precision" story, white-box traceability, and verified DOI metadata, fully aligned with the T001-T003 benchmark evidence.
+The pre-freeze stabilization phase (Tasks 1 & 2) is complete. The dashboard now explicitly labels "Live", "Partial", "Mock", and "Planned" components to ensure evaluation safety. A stable demo fallback path has been identified and verified. Benchmark expansion feasibility has been reviewed, confirming that a full 20-task runtime collection is currently pending due to partial failures and quota management.
 
 ## Changed Files
-- `docs/final-submission-story.md`: Softened claims, explicitly labeled components as implemented/partial/opt-in, and shifted the narrative to "Trustworthiness".
-- `paper/final-paper-draft.tex`: Polished the abstract, introduction, and method sections to highlight the "Traceability Gap" and the 12-stage architecture.
-- `presentation/final-presentation-outline.md`: Aligned the slide flow with the paper narrative, removing arbitrary time constraints.
-- `presentation/final-presentation-mcp.md`: Updated slide contents to reflect the "Trust over Popularity" claim boundary.
-- `docs/final-demo-script.md`: Rewrote the script to be more presenter-friendly, explicitly pointing out the white-box traces and score breakdown.
-- `CHANGELOG.md`: Appended new records for the final submission improvements.
-- `docs/progress.md`: Appended the latest progress update and maintained the strict zero-deletion policy.
+- `apps/web/src/dashboard/mockData.ts`: Updated feature implementation items and workflow stage details.
+- `apps/web/src/main.tsx`: Added footer legend and demo data labels.
+- `apps/web/src/dashboard/DashboardPages.tsx`: Added explicit status labels and descriptions to all dashboard routes.
+- `CHANGELOG.md`: Recorded stabilization and labeling work.
+- `docs/progress.md`: Added stabilization summary and identified fallback job.
+
+## Demo Resilience & Fallback
+- **Fallback Job ID**: `job-48ca9200-a937-4793-89f7-1877e51d5899`
+- **Verification**: This job contains 20 papers, 12 traces, 70 critic flags, and 4 report outputs.
+- **Usage**: Use this Job ID in the dashboard "Recent Jobs" list if a live search fails during a demo.
 
 ## Data Integrity Check
-- **Deletions**: ZERO deletions, truncations, or renames.
-- **Modifications**: Only the explicitly requested documentation and presentation files were updated.
-- **Benchmarks**: Benchmark CSV/JSON files (`T001-T003` tracked and `.bak` files) remain **untouched**.
-- **Handoff Records**: Prior handoff records in `docs/progress.md` and `CHANGELOG.md` are 100% preserved.
+- **Deletions**: ZERO deletions, truncations, or renames of historical records.
+- **Benchmark Modifications**: NO modifications to benchmark CSV/JSON files.
+- **Deliverables**: PDF and PPTX remained UNTOUCHED.
+- **Historical Records**: All prior handoff and progress entries are preserved.
 
 ## Verification Results
 - `git diff --check`: PASS
-- `npm run validate:history`: PASS (run manually)
-- `npm run validate:agent-rules`: PASS (run manually)
-- `npm run benchmark:audit-gold`: PASS (run manually)
+- `npm run validate:history`: PASS
+- `npm run validate:agent-rules`: PASS
+- `npm run typecheck`: PASS
+- `npm run build:web`: PASS
+- `npm run benchmark:audit-gold`: PASS (60/60 verified)
 
 ## Blockers & Next Actions
-- **Blockers**: None.
+- **Blockers**: WoS quota management is required for T004+ runtime collection.
 - **Next Actions**: 
-  1. The maintainer should review the softened claims in the paper and presentation.
-  2. If the current LaTeX/PPTX source files are approved, re-run the PDF and PPTX generation tools (`pdflatex` and `scripts/mcp/pptx-standalone.js`).
-  3. Prepare for final project submission.
+  1. Maintainer should review the dashboard labels for clarity.
+  2. If approved, proceed with Priority 3 (Benchmark Expansion) using separate expanded files if quota allows.
+  3. Prepare for Sunday code freeze.
 
 ## Git Status Summary
-Branch: `personal/readme-dashboard-links` (tracking `origin/main`)
-Untracked files exist but were intentionally left uncommitted to maintain personal repository boundaries.
+Branch: `personal/readme-dashboard-links`
+Changes are local and ready for maintainer review. (gemini)

@@ -87,7 +87,7 @@ Examples:
 
 ```text
 benchmark/jin23624-gold-t001-t003
-benchmark/juilie-proposed-review
+benchmark/juilie-auto-review-qa
 benchmark/member-c-baseline-t001-t003
 benchmark/shonshinemin-metric-qa
 ```
@@ -100,7 +100,7 @@ Use the matching directory README for detailed instructions:
 | --- | --- | --- |
 | `seunghyeon_choi/` | Current maintainer and integration lead | source code, docs, benchmark scripts, `seunghyeon_choi/` |
 | `jin23624_cpu/` | Gold label refinement | `benchmark/gold_relevant_papers.csv`, `benchmark/gold_relevant_papers.verified.csv`, `jin23624_cpu/` |
-| `juilie_bot_hub/` | Proposed Agent manual review | `benchmark/manual_review_proposed.csv`, `juilie_bot_hub/` |
+| `juilie_bot_hub/` | Automated baseline review QA | `benchmark/auto_review_baseline_results.csv`, `benchmark/auto_review_baseline_summary.json`, `benchmark/scripts/auto-review-baselines.mjs`, `juilie_bot_hub/` |
 | `unassigned_member_c` | Baseline result collection | `benchmark/baseline_rule_based_results.csv`, `benchmark/baseline_single_llm_results.csv` |
 | `shonshinemin_cmd/` | Metric QA and reproducibility checks | `benchmark/proposed_agent_metrics.csv`, `benchmark/proposed_agent_metrics_summary.json`, `shonshinemin_cmd/` |
 | `integrated/` | Maintainer integration notes only | `integrated/`, docs, scripts, source code only when assigned |
@@ -138,13 +138,13 @@ Team benchmark branches that skip the assigned personal folder, change files out
 
 ## Current Benchmark Priority
 
-Current focus: improve T001-T003 benchmark evidence.
+Current focus: improve T001-T003 benchmark evidence through reproducible automation.
 
 1. Refine T001-T003 gold labels with DOI-backed top-journal papers.
-2. Manually review the 15 current Proposed Agent result rows.
-3. Collect T001-T003 baseline results.
-4. Re-run `npm run benchmark:evaluate-proposed`.
-5. Decide whether to expand to all 20 tasks.
+2. Re-run Proposed Agent metrics with `npm run benchmark:evaluate-proposed`.
+3. Re-run baseline comparison with `npm run benchmark:compare-baselines`.
+4. Re-run automated baseline review with `npm run benchmark:auto-review-baselines`.
+5. Expand beyond T001-T003 only through scripts, tracked datasets, and reproducible verification outputs.
 
 See:
 
@@ -163,11 +163,12 @@ Gold labels:
 - Prefer approved international S and A1 journals.
 - Keep uncertain rows as `ambiguous` or `no_match`.
 
-Manual reviews:
+Automated reviews and legacy review files:
 
-- Do not rewrite the original Proposed Agent result fields.
-- Add human judgment in review columns.
-- Use short evidence-based notes.
+- Do not create new human-only manual review workflows.
+- Encode review rules in scripts and generated CSV/JSON outputs whenever possible.
+- Treat existing `manual_review_*` files as legacy evidence or seed references unless the maintainer explicitly requests a one-time audit.
+- Do not rewrite original Agent result fields; add automated decisions and evidence in separate generated columns/files.
 
 Baselines:
 

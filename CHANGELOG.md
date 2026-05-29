@@ -20,6 +20,11 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 _No unreleased changes._
 
+## 2026-05-29 (codex)
+- Docs: Converted remaining active benchmark review guidance from human-only manual review to reproducible automated review rules, outputs, and team assignments. (codex)
+- Benchmark: Updated the gold-refinement candidate script to emit automation-oriented review statuses for future Crossref candidate queues. (codex)
+
+
 ## 2026-05-28 (codex)
 - Docs: Recorded that the interrupted root rebase was aborted after safe local Gemini work had been selectively promoted to personal main. (codex)
 - Changed: Selectively promoted safe local Gemini work by strengthening rule-based Critic flags and adding narrative insight sections to generated PDF reports while keeping LLM Critic opt-in and rejecting destructive benchmark CSV changes. (codex)

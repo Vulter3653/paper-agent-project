@@ -1,4 +1,14 @@
 # Project Progress And Session Handoff
+Updated: 2026-05-29 (codex full benchmark automation cleanup)
+
+## codex - Full Benchmark Automation Cleanup (2026-05-29)
+
+- Updated: Converted remaining active benchmark instructions in AGENTS.md and docs/team-collaboration.md from manual review queues to reproducible automated review commands and outputs. (codex)
+- Updated: Reassigned juilie_bot_hub from Proposed Agent manual review to automated baseline review QA while preserving the old manual-review record as historical evidence. (codex)
+- Updated: Clarified benchmark rubric language around audited relevance labels and added the automation command protocol to docs/benchmark.md and benchmark/evaluation_rubric.md. (codex)
+- Updated: Changed future Crossref candidate refinement statuses from `needs_manual_review` to `needs_automated_verification` in benchmark/scripts/refine-gold-candidates.mjs. (codex)
+
+
 
 Updated: 2026-05-28 (codex blueprint and dashboard verification)
 Updated: 2026-05-29 (codex root rebase cleanup)

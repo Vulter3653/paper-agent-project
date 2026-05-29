@@ -1,6 +1,16 @@
 # Debug Log
+## 2026-05-29 - Full Benchmark Automation Cleanup
+
+- Context: The user directed that remaining benchmark and team-review work be organized as complete automation first. (codex)
+- Finding: Active policy files still contained stale human-only/manual-review wording even though the benchmark work queue and generated baseline QA already used automated scripts. (codex)
+- Fix: Updated active instructions, team ownership, juilie assignment guidance, benchmark rubric wording, and future Crossref candidate statuses to prefer scripted decisions and generated CSV/JSON outputs. (codex)
+- Guardrail: Existing `manual_review_*` files remain preserved as historical evidence; they should not be extended as the active workflow unless the maintainer requests a one-time audit. (codex)
+
+
 
 ## 2026-05-29 - Local Gemini/Rebase Work Evaluation
+- Note: This heading records the same local Gemini/rebase evaluation incident detailed immediately below under Root Rebase Cleanup; it is retained to preserve historical references and prevent an empty protected section. (codex)
+
 ## 2026-05-29 - Root Rebase Cleanup
 
 - Context: After selective promotion of safe local work, the root directory still held an interrupted rebase with conflict markers in protected history files. (codex)

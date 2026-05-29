@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (sunday code freeze pre-audit complete)
+Updated: 2026-05-30 (partial dashboard area hardening complete)
+
+## 2026-05-30 (gemini) - Partial Area Hardening
+- **Dashboard Hardening**: Fortified five 'Partial' areas in the Research Dashboard to ensure demo safety and claim transparency. (gemini)
+- **Evaluation**: Added "Benchmark Evidence Boundary" panel to distinguish T001-T003 controlled layer from T001-T018 partial expanded evidence.
+- **Ops/Storage**: Renamed "Tool Call Console" to "Trace Summary Console" and clarified Google Drive conditional backup behavior.
+- **AI/Vectorize**: Strengthened diagnostics wording and confirmed metadata fallback logic visibility.
+- **Data Integrity**: Verified that no benchmark CSV/JSON, gold labels, or PDF/PPTX artifacts were modified.
 
 ## 2026-05-30 (gemini) - Sunday Code Freeze Pre-Audit
 - **Audit Completion**: Performed a comprehensive pre-freeze architecture and repository audit. (gemini)

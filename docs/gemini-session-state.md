@@ -1,21 +1,24 @@
 # Gemini Session State - 2026-05-30
 
 ## Status Overview
-The **Sunday Code Freeze Pre-Audit** phase is complete. We have systematically verified the repository state, architecture status, claim boundaries, and benchmark integrity. A comprehensive checklist has been created in `docs/sunday-code-freeze-checklist.md`.
+The **Partial Dashboard Area Hardening** phase is complete. We have successfully fortified five critical components (Vectorize, Journal Pool, Google Drive, Trace Console, Evaluation) to ensure transparency regarding implementation status and evidence boundaries.
 
 ## Changed Files (Committable)
-- `docs/sunday-code-freeze-checklist.md`: New audit checklist and status classification.
-- `CHANGELOG.md`, `docs/progress.md`: Added additive records for the pre-freeze audit.
-- `docs/gemini-session-state.md`: Refreshed to show audit phase complete.
+- `apps/web/src/dashboard/DashboardPages.tsx`: UI hardening and new evidence panels.
+- `apps/web/src/dashboard/mockData.ts`: Consistent status labels and descriptions.
+- `docs/sunday-code-freeze-checklist.md`, `README.md`: Consistency patches.
+- `CHANGELOG.md`, `docs/progress.md`: Added additive records for area hardening.
 
-## Audit Summary
-- **Architecture**: Core pipeline (Research/Ops/Traces) is **Live**; AI features (Vectorize/LLM Critic) are **Partial/Opt-in**.
-- **Claims**: Hardened at 18/20 success (Partial Evidence) and Experimental Opt-in status.
-- **Benchmark**: T001-T003 controlled layer and T001-T018 evidence are verified and protected.
+## Hardening Summary
+- **Evaluation**: Clear boundary established between T001-T003 (Controlled) and T001-T018 (Expanded).
+- **Ops**: Trace Summary Console correctly labeled; D1 source transparency added.
+- **Storage**: Google Drive backup behavior marked as Conditional (OA PDF only).
+- **Journal Pool**: Internal allowlist (Live) vs. External API (Planned) distinguished.
+- **AI/Vectorize**: "Metadata fallback active" warning added for missing bindings.
 
 ## Data Integrity Check
 - **Files Protected**: NO benchmark CSV/JSON, gold labels, baseline files, or PDF/PPTX artifacts were modified.
-- **Validation**: All automated integrity and type-checking scripts passed.
+- **Jobs**: No benchmark jobs were rerun.
 
 ## Verification Results
 - `git diff --check`: PASS
@@ -28,11 +31,10 @@ The **Sunday Code Freeze Pre-Audit** phase is complete. We have systematically v
 ## Blockers & Next Actions
 - **Blockers**: None.
 - **Next Actions**:
-    1. Human-led visual polish of PDF and PPTX artifacts.
-    2. Final demo rehearsal based on the hardened claim boundaries.
-    3. Official release tagging upon final approval.
+    1. Maintainer review of the hardening branch `pre-freeze/partial-dashboard-hardening-2026-05-30`.
+    2. Merge to main upon approval for final Sunday Code Freeze.
 
 ## Git Status Summary
-Branch: `pre-freeze/sunday-code-freeze-audit-2026-05-30`
-Sunday Code Freeze audit complete; repository ready for final human polish. (gemini)2. If approved, merge to main and prepare for Sunday code freeze.
+Branch: `pre-freeze/partial-dashboard-hardening-2026-05-30`
+Dashboard fortified for demo safety and claim transparency. (gemini)2. If approved, merge to main and prepare for Sunday code freeze.
   3. Optional: Run a smoke job on a deployed environment with active bindings to verify semantic ranking quality.

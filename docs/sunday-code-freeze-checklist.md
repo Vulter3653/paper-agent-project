@@ -51,7 +51,7 @@
 ## 5. Demo Readiness Audit
 
 - **URL**: `https://paper-agent-project.shch3653.workers.dev` (Worker API)
-- **Routes**: `/dashboard`, `/ops`, `/evaluation` 경로가 모두 200 OK를 반환함을 확인.
+- **Routes**: `/dashboard/research`, `/dashboard/ops`, `/dashboard/evaluation` 경로가 모두 200 OK를 반환함을 확인.
 - **Fallback ID**: 유효한 결과가 이미 생성된 Job ID를 백업 데모용으로 확보함.
 - **Vectorize Toggle**: 바인딩 부재 시 비활성화 및 경고 문구가 정상 동작함.
 - **Metadata Fallback**: Vectorize 오류 시 메타데이터 기반으로 자동 전환됨을 코드 레벨에서 검증.
@@ -61,7 +61,7 @@
 - [ ] **PDF 시각적 폴리싱**: 레이아웃 및 폰트 최종 조정.
 - [ ] **PPTX 시각적 폴리싱**: 슬라이드 디자인 및 애니메이션 보정.
 - [ ] **최종 스크린샷 캡처**: 제출 보고서용 대시보드 및 결과 화면 캡처.
-- [ ] **데모 리허설**: 8분 시나리오에 따른 최종 동선 점검.
+- [ ] **데모 리허설**: Final demo rehearsal based on live path and fallback completed job path.
 - [ ] **릴리스 및 태그 생성**: `v1.0.0-final` 태그 생성.
 - [ ] **최종 제출**: 대학 시스템 및 GitHub 최종 업로드.
 

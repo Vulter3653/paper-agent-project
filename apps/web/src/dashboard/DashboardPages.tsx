@@ -311,8 +311,8 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
         <section className="uxPanel">
           <div className="uxPanelHead">
             <div>
-              <h2>Top Journal Pool</h2>
-              <p>Partial: allowlist live, external Q1/JCR/SCImago not connected.</p>
+              <h2>Top Journal Pool (Partial)</h2>
+              <p>Live: 내부 비즈니스 스쿨 allowlist 필터링 적용 중. (Planned: JCR/SCImago API 연동)</p>
             </div>
             <span className="uxPill blue">Partial Connected</span>
           </div>
@@ -510,11 +510,11 @@ export function AgentOpsPage() {
                   onChange={(e) => setUseSemanticRanking(e.target.checked)}
                   disabled={!diagnostics?.readiness.vectorizeReady}
                 />
-                Use Vectorize semantic relevance (experimental)
+                Use Vectorize semantic relevance (experimental opt-in)
               </label>
               {!diagnostics?.readiness.vectorizeReady && (
                 <small style={{ color: '#d97706', fontSize: '0.75rem', marginTop: '-0.25rem' }}>
-                  Unavailable: AI/VECTOR_INDEX binding missing.
+                  Unavailable: AI/VECTOR_INDEX binding missing; metadata fallback active.
                 </small>
               )}
 
@@ -604,10 +604,10 @@ export function AgentOpsPage() {
           <section className="uxPanel">
             <div className="uxPanelHead">
               <div>
-                <h2>Tool Call Console</h2>
-                <p>{traces.length ? "D1 agent_traces에서 생성한 실행 로그입니다. (Partial: trace summary, not raw API logs)" : "미완성 Mock Preview: Live trace가 없으면 placeholder log를 표시합니다."}</p>
+                <h2>Trace Summary Console (Partial)</h2>
+                <p>{traces.length ? "D1 agent_traces 기반의 실행 로그 요약입니다. (Planned: Raw API request/response logs)" : "미완성 Mock Preview: Live trace가 없으면 placeholder log를 표시합니다."}</p>
               </div>
-              <button className="uxSoftButton" type="button" onClick={() => setLogs([])}>지우기</button>
+              <button className="uxSoftButton" type="button" onClick={() => setLogs([])}> 지우기</button>
             </div>
             <div className="uxTerminal">
               {logs.map((log, index) => (
@@ -641,9 +641,9 @@ export function AgentOpsPage() {
               ))}
             </div>
             <div className="uxPanelNote">
-              <small>Google Drive PDF Archive (부분 구현): Unpaywall 확인된 OA PDF 한정 업로드.</small>
+              <small>Google Drive PDF Archive (Partial / Conditional): Unpaywall에서 확인된 합법적 OA PDF 한정 업로드.</small>
               <br/>
-              <small>Vectorize Status (미구현): Production 미적용 / Planned.</small>
+              <small>Vectorize Status (Partial / Opt-in): 실험적 기능으로 Production 미적용 상태입니다.</small>
             </div>
           </section>
 
@@ -1045,6 +1045,38 @@ export function EvaluationDashboardPage() {
 
       <section className="uxGrid2">
         <div className="uxStack">
+          <section className="uxPanel">
+            <div className="uxPanelHead">
+              <div>
+                <h2>Benchmark Evidence Boundary</h2>
+                <p>시스템은 T001-T003 통제 레이어 비교와 T001-T018 부분 확장 증거(90% 성공)를 제공합니다.</p>
+              </div>
+              <ShieldCheck size={18} className="blue" />
+            </div>
+            <div className="uxSystemGrid">
+              <div className="uxSystemItem">
+                <strong>통제 비교 레이어</strong>
+                <span>T001-T003</span>
+                <small>Gold Label 완전 검증 및 베이스라인 비교 완료</small>
+              </div>
+              <div className="uxSystemItem">
+                <strong>부분 확장 증거</strong>
+                <span>T001-T018 (90%)</span>
+                <small>실행 및 결과물 생성 성공 확인</small>
+              </div>
+              <div className="uxSystemItem">
+                <strong>인프라 제한</strong>
+                <span>T019-T020</span>
+                <small>Cloudflare Worker CPU/Memory 제한 (HTTP 503)</small>
+              </div>
+              <div className="uxSystemItem">
+                <strong>데이터 속성</strong>
+                <span>Partial Evidence</span>
+                <small>정적 스냅샷 + 부분 확장 실행 데이터 기반</small>
+              </div>
+            </div>
+          </section>
+
           <section className="uxPanel">
             <div className="uxPanelHead">
               <div>

@@ -90,7 +90,7 @@ export const researchImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "현재 Rule-based 비평 한정" },
   { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "R2 저장 PDF/XLSX 다운로드 연동" },
   { feature: "12-step Workflow Panel", status: "live", evidence: "agent_traces API 실시간 연동 완료", next: "상세 로그 드릴다운 추가" },
-  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링은 구현됨 (S/A1급)", next: "Future: External JCR/SCImago bibliometric enrichment planned" },
+  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링 (S/A1급) 구현됨", next: "Future: External JCR/SCImago bibliometric enrichment (Planned)" },
   { feature: "Literature Review Preview Cards", status: "mock", evidence: "미완성 Mock: 실제 Report Agent section 연결 전", next: "Report Agent section API 연결" }
 ];
 
@@ -98,9 +98,9 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
   { feature: "MCP Worker", status: "live", evidence: "paper-agent-mcp /mcp read-only tools 배포 완료", next: "agent trace 조회 tool 추가" },
   { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "실시간 스토리지 용량 모니터링" },
   { feature: "Agent Status Board", status: "live", evidence: "GET /api/search-jobs/:id/traces 기반 D1 trace 표시", next: "실시간 에이전트 상태 전이 감시" },
-  { feature: "Tool Call Console", status: "partial", evidence: "agent_traces summary를 console log로 표시 (Raw 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장" },
+  { feature: "Trace Summary Console", status: "partial", evidence: "D1 agent_traces 요약을 console log로 표시 (Raw API 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장 (Planned)" },
   { feature: "Vectorize Status", status: "partial", evidence: "Opt-in experimental path implemented; metadata fallback active.", next: "Production scaling and multi-index support" },
-  { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
+  { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 합법적 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
   { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "Future: Optional LLM qualitative peer review extension" }
 ];
 
@@ -125,7 +125,7 @@ export const literatureWorkflowStages: WorkflowStage[] = [
   { id: "evaluation", order: 7, title: "Journal Eval", owner: "Evaluation Agent", status: "done", progress: 88, detail: "구현됨: 저널 품질 및 메타데이터 정량 스코어링" },
   { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "review", progress: 100, detail: "Partial / Opt-in: Vectorize semantic relevance path available (Experimental)" },
   { id: "ranking", order: 9, title: "Ranking", owner: "Ranking Agent", status: "idle", progress: 40, detail: "구현됨: 다중 지표 기반 가중 정렬" },
-  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "Live: Rule-based critic flags (LLM opt-in planned)" },
+  { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "Live: Rule-based critic flags (LLM opt-in experimental)" },
   { id: "report", order: 11, title: "Report", owner: "Report Agent", status: "idle", progress: 20, detail: "구현됨: Markdown 및 기본 PDF/XLSX 생성" },
   { id: "delivery", order: 12, title: "Delivery", owner: "Dashboard", status: "idle", progress: 10, detail: "구현됨: 인터랙티브 UI 기반 결과 인도" }
 ];
@@ -191,10 +191,10 @@ export const toolCallLogs: ToolLog[] = [
 export const systemStatuses: SystemStatus[] = [
   { name: "Cloudflare D1", status: "연결됨", detail: "search_jobs / papers / evaluations", tone: "green" },
   { name: "Cloudflare R2", status: "준비됨", detail: "paper-agent-outputs bucket", tone: "green" },
-  { name: "Google Drive", status: "부분 구현", detail: "OA PDF service-account upload path 연결됨", tone: "amber" },
-  { name: "Vectorize", status: "미완성", detail: "abstract embedding index 연결 전", tone: "blue" },
+  { name: "Google Drive", status: "부분 구현", detail: "OA PDF (Unpaywall) 업로드 경로 연결됨", tone: "amber" },
+  { name: "Vectorize", status: "부분 구현", detail: "Opt-in experimental semantic ranking path", tone: "blue" },
   { name: "Remote MCP", status: "온라인", detail: "paper-agent-mcp /mcp", tone: "purple" },
-  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route 연결됨; 일부 planned 패널 유지", tone: "amber" }
+  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route; 18/20 partial evidence", tone: "amber" }
 ];
 
 export const criticReviews: CriticReviewItem[] = [
@@ -235,10 +235,10 @@ export const evaluationScenarios: EvaluationScenario[] = [
   },
   {
     key: "broad",
-    label: "확장 Q1 검색",
+    label: "확장 Q1 검색 (Partial)",
     metrics: { precisionAt5: "미완성", doiAccuracy: "미완성", topJournalPrecision: "미완성", hallucinationRate: "미완성", reportCompleteness: "미완성", avgLatency: "미완성" },
     rows: [
-      { metric: "Precision@5", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
+      { metric: "Precision@5", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "T001-T018 부분 확장 증거(90% 성공)가 존재하며, 라이브 집계는 준비 중입니다." },
       { metric: "Paper Validity Rate", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
       { metric: "DOI Accuracy", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
       { metric: "Top Journal Precision", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
@@ -255,10 +255,10 @@ export const evaluationScenarios: EvaluationScenario[] = [
   },
   {
     key: "fast",
-    label: "빠른 Demo Mode",
+    label: "빠른 Demo Mode (18/20)",
     metrics: { precisionAt5: "미완성", doiAccuracy: "미완성", topJournalPrecision: "미완성", hallucinationRate: "미완성", reportCompleteness: "미완성", avgLatency: "미완성" },
     rows: [
-      { metric: "Precision@5", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
+      { metric: "Precision@5", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "실제 배포 환경의 리소스 제한(T019-T020)을 고려한 18/20 데모 모드입니다." },
       { metric: "Paper Validity Rate", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
       { metric: "DOI Accuracy", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },
       { metric: "Top Journal Precision", ruleBased: "미완성", singleLlm: "미완성", proposed: "미완성", finding: "baseline CSV와 proposed full-run 결과 연결 전입니다." },

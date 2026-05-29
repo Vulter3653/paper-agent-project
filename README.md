@@ -17,7 +17,7 @@ apps/worker
   -> Cloudflare Workers API
   -> D1 metadata
   -> R2 reports
-  -> Vectorize abstract search
+  -> Vectorize opt-in semantic relevance; metadata scoring remains default.
   -> Google Drive / Web of Science / Crossref / Unpaywall tools
 
 apps/mcp

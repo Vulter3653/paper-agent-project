@@ -17,7 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
-- Docs: Completed Sunday Code Freeze pre-audit and created checklist. (gemini)
+- Web: Hardened partial dashboard components (Vectorize, Journal Pool, Google Drive, Tool Call Console, Evaluation). (gemini)
+- Docs: Updated Sunday Code Freeze checklist and README for consistency. (gemini)
 
 ## 2026-05-30 (gemini)
 - Features: Implemented opt-in Vectorize semantic relevance path. (gemini)

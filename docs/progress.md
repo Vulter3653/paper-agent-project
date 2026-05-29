@@ -1,6 +1,17 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-29 (paper and presentation claim alignment complete)
+Updated: 2026-05-30 (vectorize opt-in implementation complete)
+
+## 2026-05-30 (gemini) - Vectorize Opt-in Relevance
+- **Feature Completion**: Completed the implementation of Vectorize embedding-based semantic relevance as an opt-in experimental feature. (gemini)
+- **Backend Implementation**:
+  - Updated `/api/diagnostics` to expose AI and Vectorize binding availability.
+  - Fortified `processSearchJob` with resource-conscious embedding generation (limit 10) and graceful fallback to metadata-based relevance.
+  - Enhanced D1 agent traces to record Vectorize mode, connection status, and scored counts for transparency.
+- **Frontend Implementation**:
+  - Added an "experimental" toggle to the Research Dashboard, allowing users to opt-in to semantic ranking.
+  - Implemented dynamic UI controls that disable the toggle and show helpful warnings when backend bindings are unavailable.
+- **Integrity**: Maintained metadata-based scoring as the production default; no protected benchmark files or PDF/PPTX sources were modified. (gemini)
 
 ## 2026-05-29 (gemini) - Paper & Presentation Alignment
 - **Deliverable Alignment**: Synchronized `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with the verified claim boundary (18/20 success, opt-in AI features). (gemini)

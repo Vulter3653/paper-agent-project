@@ -1,31 +1,35 @@
-# Gemini Session State - 2026-05-29
+# Gemini Session State - 2026-05-30
 
 ## Status Overview
-The **paper and presentation claim alignment phase** is complete. We have successfully audited and updated the paper draft (`.tex`), presentation outlines (`.md`), and demo script to match the hardened claim boundaries established in commit `2dd073a`.
+The **Vectorize Embedding Relevance Opt-in** phase is complete. We have successfully implemented the backend path, diagnostics, and dashboard toggle for semantic relevance while preserving metadata-based scoring as the production default. The system now gracefully handles cases where AI/Vectorize bindings are missing.
 
 ## Changed Files (Committable)
-- `paper/final-paper-draft.tex`: Aligned 18/20 benchmark narrative and AI feature status.
-- `presentation/final-presentation-outline.md`: Refined slide content for transparency.
-- `presentation/final-presentation-mcp.md`: Aligned MCP slide content.
-- `docs/final-demo-script.md`: Updated narration for claim alignment.
-- `docs/progress.md`, `CHANGELOG.md`: Added additive records for document alignment.
+- `apps/worker/src/index.ts`: Updated diagnostics and `processSearchJob` with Vectorize logic and trace detail.
+- `apps/worker/src/vectorize.ts`: Added safety limits for batch embeddings and upserts.
+- `apps/web/src/dashboard/DashboardPages.tsx`: Added opt-in toggle and dynamic diagnostics display.
+- `apps/web/src/dashboard/mockData.ts`: Updated implementation labels and workflow stages.
+- `docs/workflow.md`: Moved Vectorize to "Implemented (Opt-in)".
+- `CHANGELOG.md`, `docs/progress.md`: Added additive records for Vectorize implementation.
 
-## Claim Alignment Summary
-- **Benchmark**: Consistently framed as "T001-T003 Controlled Layer" + "18/20 Partial Expanded Evidence".
-- **AI Features**: Vectorize and LLM Critic explicitly labeled as "Planned / Future opt-in".
-- **Journal Quality**: External enrichment API status set to "Planned".
-- **Human Authority**: Reaffirmed human review as the final gate.
+## Vectorize Implementation Details
+- **Opt-in Control**: `useSemanticRanking` flag passed from dashboard to `/api/search-jobs`.
+- **Resource Safety**: Embedding generation limited to top 10 papers per job to prevent CPU timeouts.
+- **Trace Transparency**: `vectorize_relevance` step records `mode`, `scoredCount`, `vectorizeConnected`, and `fallbackUsed`.
+- **Diagnostics**: Dashboard disables toggle and shows "Unavailable" if `AI` or `VECTOR_INDEX` bindings are missing.
 
 ## Data Integrity Check
 - **Files Protected**: T001-T003 benchmark files, gold labels, baseline files, and generated PDF/PPTX remain UNTOUCHED.
-- **Rerun**: No benchmark jobs were rerun.
+- **Scoring Default**: Metadata scoring remains the active default path.
 
 ## Verification Results
 - `git diff --check`: PASS
 - `npm run validate:history`: PASS
 - `npm run validate:agent-rules`: PASS
-- `npm run benchmark:audit-gold`: PASS
+- `npm run build:web`: PASS (Verified UI build)
 
-## Git Status Summary
-Branch: `pre-freeze/paper-presentation-claim-alignment-2026-05-29`
-Documents aligned with claim boundaries. (gemini)
+## Blockers & Next Actions
+- **Blockers**: None.
+- **Next Actions**:
+  1. Maintainer review of the opt-in branch `pre-freeze/vectorize-opt-in-relevance-2026-05-30`.
+  2. If approved, merge to main and prepare for Sunday code freeze.
+  3. Optional: Run a smoke job on a deployed environment with active bindings to verify semantic ranking quality.

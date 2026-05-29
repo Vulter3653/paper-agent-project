@@ -52,8 +52,14 @@ type DiagnosticsResponse = {
     unpaywallEmail: boolean;
     r2Reports: boolean;
     googleDrive: boolean;
+    aiBinding: boolean;
+    vectorIndex: boolean;
   };
-  readiness: { activeProviderReady: boolean };
+  readiness: {
+    activeProviderReady: boolean;
+    vectorizeReady: boolean;
+    semanticRankingDefault: boolean;
+  };
 };
 
 type BenchmarkMethodKey = "proposed_agent" | "rule_based" | "single_llm";
@@ -346,6 +352,8 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
 export function AgentOpsPage() {
   const [running, setRunning] = useState(false);
   const [keyword, setKeyword] = useState("AI interview employer branding");
+  const [useSemanticRanking, setUseSemanticRanking] = useState(false);
+  const [useLlmCritic, setUseLlmCritic] = useState(false);
   const [activeJob, setActiveJob] = useState<SearchJob | null>(null);
   const [traces, setTraces] = useState<AgentTrace[]>([]);
   const [traceError, setTraceError] = useState("");
@@ -443,12 +451,12 @@ export function AgentOpsPage() {
   async function launchJob() {
     setRunning(true);
     setTraceError("");
-    setLogs([{ level: "muted", message: `POST /api/search-jobs keyword="${keyword}"` }]);
+    setLogs([{ level: "muted", message: `POST /api/search-jobs keyword="${keyword}" useSemanticRanking=${useSemanticRanking} useLlmCritic=${useLlmCritic}` }]);
     try {
       const response = await fetch(apiUrl("/api/search-jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keyword, maxResults: 20, enrichmentLimit: 10, useSemanticRanking: false, useLlmCritic: false })
+        body: JSON.stringify({ keyword, maxResults: 20, enrichmentLimit: 10, useSemanticRanking, useLlmCritic })
       });
       if (!response.ok) throw new Error(await readDashboardError(response, "agent job 실행에 실패했습니다"));
       const data = (await response.json()) as { job: SearchJob };
@@ -492,6 +500,32 @@ export function AgentOpsPage() {
                 <select defaultValue="full" disabled>
                   <option value="full">전체 12단계 trace</option>
                 </select>
+              </label>
+            </div>
+            <div className="uxToggleGrid" style={{ marginTop: '0.75rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: diagnostics?.readiness.vectorizeReady ? 'pointer' : 'not-allowed', color: diagnostics?.readiness.vectorizeReady ? 'inherit' : '#999' }}>
+                <input
+                  type="checkbox"
+                  checked={useSemanticRanking}
+                  onChange={(e) => setUseSemanticRanking(e.target.checked)}
+                  disabled={!diagnostics?.readiness.vectorizeReady}
+                />
+                Use Vectorize semantic relevance (experimental)
+              </label>
+              {!diagnostics?.readiness.vectorizeReady && (
+                <small style={{ color: '#d97706', fontSize: '0.75rem', marginTop: '-0.25rem' }}>
+                  Unavailable: AI/VECTOR_INDEX binding missing.
+                </small>
+              )}
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: diagnostics?.env.aiBinding ? 'pointer' : 'not-allowed', color: diagnostics?.env.aiBinding ? 'inherit' : '#999' }}>
+                <input
+                  type="checkbox"
+                  checked={useLlmCritic}
+                  onChange={(e) => setUseLlmCritic(e.target.checked)}
+                  disabled={!diagnostics?.env.aiBinding}
+                />
+                Use LLM Critic (experimental)
               </label>
             </div>
             <button className="uxButton green" type="button" onClick={launchJob} disabled={running || !keyword.trim()}>
@@ -839,7 +873,9 @@ function getDiagnosticsItems(diagnostics: DiagnosticsResponse | null) {
     { name: "Unpaywall", status: diagnostics.env.unpaywallEmail ? "준비됨" : "누락", detail: "UNPAYWALL_EMAIL", tone: diagnostics.env.unpaywallEmail ? "green" as const : "amber" as const },
     { name: "Cloudflare R2", status: diagnostics.env.r2Reports ? "준비됨" : "누락", detail: "REPORTS binding", tone: diagnostics.env.r2Reports ? "green" as const : "amber" as const },
     { name: "Google Drive", status: diagnostics.env.googleDrive ? "준비됨" : "부분 연결", detail: "service-account 저장 경로", tone: diagnostics.env.googleDrive ? "green" as const : "amber" as const },
-    { name: "OpenAlex Fallback", status: diagnostics.env.openAlexEmail ? "준비됨" : "부분 연결", detail: diagnostics.env.openAlexApiKey ? "email + api key" : "email만 있거나 누락", tone: diagnostics.env.openAlexEmail ? "blue" as const : "amber" as const }
+    { name: "OpenAlex Fallback", status: diagnostics.env.openAlexEmail ? "준비됨" : "부분 연결", detail: diagnostics.env.openAlexApiKey ? "email + api key" : "email만 있거나 누락", tone: diagnostics.env.openAlexEmail ? "blue" as const : "amber" as const },
+    { name: "Workers AI", status: diagnostics.env.aiBinding ? "준비됨" : "누락", detail: "AI binding", tone: diagnostics.env.aiBinding ? "green" as const : "amber" as const },
+    { name: "Vectorize", status: diagnostics.env.vectorIndex ? "준비됨" : "누락", detail: "VECTOR_INDEX binding", tone: diagnostics.env.vectorIndex ? "green" as const : "amber" as const }
   ];
 }
 

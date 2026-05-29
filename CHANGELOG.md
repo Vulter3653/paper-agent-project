@@ -18,6 +18,15 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 
 ## Unreleased
 
+## 2026-05-30 (gemini)
+- Features: Implemented opt-in Vectorize semantic relevance path. (gemini)
+- Worker: Added AI and Vectorize diagnostics to `/api/diagnostics`. (gemini)
+- Worker: Enhanced `vectorize_relevance` trace with detailed metadata and fallback logic. (gemini)
+- Worker: Added resource limits (batch size 10) for embedding generation to prevent CPU timeouts. (gemini)
+- Web: Added "Use Vectorize semantic relevance (experimental)" toggle to Research Dashboard. (gemini)
+- Web: Dashboard now dynamically enables/disables AI features based on Worker diagnostics. (gemini)
+- Docs: Updated workflow and implementation status to reflect Vectorize as "Partial / Opt-in". (gemini)
+
 ### 2026-05-29 (gemini)
 - Docs: Aligned `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with verified claim boundaries (18/20 success, opt-in AI features). (gemini)
 - **Claim Boundary Hardening**: Audited and hardened dashboard UI and documentation wording. (gemini)

@@ -99,7 +99,7 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
   { feature: "D1 / R2 Runtime", status: "live", evidence: "search_jobs, papers, evaluations, R2 reports 저장", next: "실시간 스토리지 용량 모니터링" },
   { feature: "Agent Status Board", status: "live", evidence: "GET /api/search-jobs/:id/traces 기반 D1 trace 표시", next: "실시간 에이전트 상태 전이 감시" },
   { feature: "Tool Call Console", status: "partial", evidence: "agent_traces summary를 console log로 표시 (Raw 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장" },
-  { feature: "Vectorize Status", status: "planned", evidence: "UI 위치만 확보 (Production 미적용 / Opt-in)", next: "Vectorize index와 embedding relevance (Planned)" },
+  { feature: "Vectorize Status", status: "partial", evidence: "Opt-in experimental path implemented; metadata fallback active.", next: "Production scaling and multi-index support" },
   { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
   { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "Future: Optional LLM qualitative peer review extension" }
 ];
@@ -123,7 +123,7 @@ export const literatureWorkflowStages: WorkflowStage[] = [
   { id: "download", order: 5, title: "OA PDF", owner: "Download Agent", status: "running", progress: 72, detail: "구현됨: Unpaywall 기반 합법적 PDF 경로 탐색" },
   { id: "storage", order: 6, title: "Drive / R2", owner: "Storage Worker", status: "running", progress: 68, detail: "구현됨: R2 저장 및 조건부 Google Drive 백업" },
   { id: "evaluation", order: 7, title: "Journal Eval", owner: "Evaluation Agent", status: "done", progress: 88, detail: "구현됨: 저널 품질 및 메타데이터 정량 스코어링" },
-  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "idle", progress: 42, detail: "Planned: Opt-in Vectorize relevance (not production-default)" },
+  { id: "embedding", order: 8, title: "Vectorize", owner: "Relevance Agent", status: "review", progress: 100, detail: "Partial / Opt-in: Vectorize semantic relevance path available (Experimental)" },
   { id: "ranking", order: 9, title: "Ranking", owner: "Ranking Agent", status: "idle", progress: 40, detail: "구현됨: 다중 지표 기반 가중 정렬" },
   { id: "critic", order: 10, title: "Critic", owner: "Critic Agent", status: "review", progress: 34, detail: "Live: Rule-based critic flags (LLM opt-in planned)" },
   { id: "report", order: 11, title: "Report", owner: "Report Agent", status: "idle", progress: 20, detail: "구현됨: Markdown 및 기본 PDF/XLSX 생성" },

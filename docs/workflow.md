@@ -45,6 +45,7 @@ Implemented:
 - Cloudflare Pages dashboard with Research, Ops, and Evaluation routes.
 - Cloudflare Worker search API using WoS as active provider and OpenAlex fallback for testing/quota resilience.
 - Dashboard Run fast path that defaults semantic Vectorize scoring and LLM Critic to off unless explicitly requested.
+- Opt-in Vectorize semantic relevance path (experimental) available when bindings exist; metadata scoring remains the default.
 - Business-school approved journal filtering with field/category selection and `국제 S급` to `국제 A1급` priority.
 - D1 persistence for search jobs, papers, evaluations, agent traces, critic flags, and job outputs.
 - Crossref metadata enrichment and DOI verification fields.
@@ -59,7 +60,6 @@ Implemented:
 
 Still planned or partial:
 
-- Vectorize or embedding-based semantic relevance; Planned / Opt-in / Not production-default. Current default relevance uses metadata and keyword fallback.
 - Advanced LLM Critic qualitative peer review; Current production-safe default is rule-based critic flags (D1 `critic_flags`). LLM Critic is an opt-in future extension.
 - Richer Planner decomposition into sub-questions and query variants.
 - External JCR/SCImago/CiteScore enrichment when licensed API access is available; Internal business-school allowlist filtering is currently live.

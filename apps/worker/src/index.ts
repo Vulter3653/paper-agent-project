@@ -469,9 +469,13 @@ type DiagnosticsResponse = {
     unpaywallEmail: boolean;
     r2Reports: boolean;
     googleDrive: boolean;
+    aiBinding: boolean;
+    vectorIndex: boolean;
   };
   readiness: {
     activeProviderReady: boolean;
+    vectorizeReady: boolean;
+    semanticRankingDefault: boolean;
   };
 };
 
@@ -859,6 +863,7 @@ async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
   const searchProvider = normalizeSearchProvider(env.SEARCH_PROVIDER);
   const wosApiKey = getWosApiKey(env);
   const activeProviderReady = searchProvider === "openalex" ? Boolean(env.OPENALEX_EMAIL) : Boolean(wosApiKey.value);
+  const vectorizeReady = Boolean(env.AI && env.VECTOR_INDEX);
   return {
     ok: Boolean(env.DB) && missingColumns.length === 0 && activeProviderReady,
     searchProvider,
@@ -874,10 +879,14 @@ async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
       crossrefEmail: Boolean(env.CROSSREF_EMAIL),
       unpaywallEmail: Boolean(env.UNPAYWALL_EMAIL),
       r2Reports: Boolean(env.REPORTS),
-      googleDrive: Boolean(env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY && env.GOOGLE_DRIVE_FOLDER_ID)
+      googleDrive: Boolean(env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY && env.GOOGLE_DRIVE_FOLDER_ID),
+      aiBinding: Boolean(env.AI),
+      vectorIndex: Boolean(env.VECTOR_INDEX)
     },
     readiness: {
-      activeProviderReady
+      activeProviderReady,
+      vectorizeReady,
+      semanticRankingDefault: false
     }
   };
 }
@@ -961,25 +970,48 @@ async function processSearchJob(
       outputCount: driveEnriched.filter((paper) => paper.driveStatus === "uploaded").length
     });
 
-    // 7. Vectorize Relevance (Planned)
+    // 7. Vectorize Relevance (Opt-in)
     job = await updateSearchJobProgress(db, job, "scoring", "vectorize_relevance");
     let semanticScores: Record<string, number> | undefined = undefined;
     if (options.useSemanticRanking && options.ai && options.vectorIndex) {
       try {
-        await upsertPaperVectors(options.vectorIndex, options.ai, driveEnriched);
-        semanticScores = await getSemanticRelevance(options.vectorIndex, options.ai, keyword, driveEnriched.map(p => p.id));
+        const vectorizeLimit = Math.min(options.enrichmentLimit, 10);
+        const papersToVectorize = driveEnriched.slice(0, vectorizeLimit);
+        await upsertPaperVectors(options.vectorIndex, options.ai, papersToVectorize);
+        semanticScores = await getSemanticRelevance(options.vectorIndex, options.ai, keyword, papersToVectorize.map(p => p.id));
         await recordAgentTrace(db, job, {
           stepOrder: 8,
           stepId: "vectorize_relevance",
           agentName: "Relevance Agent",
           summary: "Computed semantic relevance using Cloudflare Vectorize and Workers AI.",
-          detail: JSON.stringify({ mode: "vector_semantic", vectorizeConnected: true, scoredCount: Object.keys(semanticScores).length }),
+          detail: JSON.stringify({
+            mode: "vector_semantic",
+            vectorizeConnected: true,
+            scoredCount: Object.keys(semanticScores).length,
+            candidateCount: papersToVectorize.length,
+            embeddingModel: "@cf/baai/bge-small-en-v1.5",
+            fallbackUsed: false,
+            vectorizeLimit
+          }),
           inputCount: driveEnriched.length,
           outputCount: Object.keys(semanticScores).length
         });
       } catch (error) {
         console.error("Vectorize error:", error);
-        await recordAgentTrace(db, job, { stepOrder: 8, stepId: "vectorize_relevance", agentName: "Relevance Agent", status: "failed", summary: "Vectorize semantic relevance failed; falling back to metadata.", errorMessage: getErrorMessage(error) });
+        await recordAgentTrace(db, job, {
+          stepOrder: 8,
+          stepId: "vectorize_relevance",
+          agentName: "Relevance Agent",
+          status: "failed",
+          summary: "Vectorize semantic relevance failed; falling back to metadata.",
+          detail: JSON.stringify({
+            mode: "metadata_fallback",
+            vectorizeConnected: true,
+            fallbackUsed: true,
+            reason: getErrorMessage(error)
+          }),
+          errorMessage: getErrorMessage(error)
+        });
       }
     } else {
       await recordAgentTrace(db, job, {
@@ -987,8 +1019,15 @@ async function processSearchJob(
         stepId: "vectorize_relevance",
         agentName: "Relevance Agent",
         status: "skipped",
-        summary: options.useSemanticRanking ? "Vectorize semantic relevance skipped because AI or Vectorize binding is unavailable; metadata scoring was used." : "Vectorize semantic relevance skipped for fast dashboard runs; metadata scoring was used.",
-        detail: JSON.stringify({ mode: "metadata_fallback", vectorizeConnected: Boolean(options.ai && options.vectorIndex), useSemanticRanking: options.useSemanticRanking }),
+        summary: options.useSemanticRanking
+          ? "Vectorize semantic relevance skipped because AI or Vectorize binding is unavailable; metadata scoring was used."
+          : "Vectorize semantic relevance skipped; metadata scoring default path was used.",
+        detail: JSON.stringify({
+          mode: options.useSemanticRanking ? "metadata_fallback" : "metadata_default",
+          vectorizeConnected: Boolean(options.ai && options.vectorIndex),
+          useSemanticRanking: options.useSemanticRanking,
+          fallbackUsed: options.useSemanticRanking
+        }),
         inputCount: driveEnriched.length,
         outputCount: driveEnriched.length
       });
@@ -998,7 +1037,7 @@ async function processSearchJob(
     job = await updateSearchJobProgress(db, job, "scoring", "journal_evaluation");
     const rankedPapers = rankPapers(driveEnriched, semanticScores);
     await recordAgentTrace(db, job, { stepOrder: 7, stepId: "journal_evaluation", agentName: "Evaluation Agent", summary: "Calculated journal fit, verification, OA, citation, recency, and relevance scores.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
-    
+
     job = await updateSearchJobProgress(db, job, "ranking", "ranking");
     await recordAgentTrace(db, job, { stepOrder: 9, stepId: "ranking", agentName: "Ranking Agent", summary: "Ranked " + rankedPapers.length + " papers by final score.", inputCount: driveEnriched.length, outputCount: rankedPapers.length });
 
@@ -1041,7 +1080,7 @@ async function processSearchJob(
     const outputRecords = await persistSearchOutputs(options.reports, { job: completedJobSnapshot, papers: rankedPapers, criticFlags });
     await persistJobOutputs(db, completedJobSnapshot.id, outputRecords);
     await recordAgentTrace(db, completedJobSnapshot, { stepOrder: 11, stepId: "report_generation", agentName: "Report Agent", summary: "Generated CSV, Markdown, XLSX, and PDF report outputs.", detail: JSON.stringify({ outputs: outputRecords.map((output) => ({ type: output.outputType, status: output.status, storage: output.storage })) }), inputCount: rankedPapers.length, outputCount: outputRecords.filter((output) => output.status === "generated" || output.status === "stored").length });
-    
+
     // 11. Delivery
     job = await updateSearchJobProgress(db, completedJobSnapshot, "completed", "delivery");
     await recordAgentTrace(db, job, { stepOrder: 12, stepId: "delivery", agentName: "Dashboard", summary: "Search job completed and is available through dashboard, CSV, Markdown, trace, critic flag, and output metadata APIs.", outputCount: rankedPapers.length });

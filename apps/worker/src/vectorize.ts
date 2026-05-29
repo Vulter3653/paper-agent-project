@@ -15,8 +15,11 @@ export async function createEmbedding(ai: any, text: string): Promise<number[]> 
 }
 
 export async function createEmbeddings(ai: any, texts: string[]): Promise<number[][]> {
+  if (texts.length === 0) return [];
+  // Workers AI bge-small-en-v1.5 batch limit varies, but we keep it safe at 10 for opt-in experiments.
+  const safeBatch = texts.slice(0, 10);
   const response = await ai.run("@cf/baai/bge-small-en-v1.5", {
-    text: texts
+    text: safeBatch
   });
   return response.data;
 }
@@ -26,7 +29,8 @@ export async function upsertPaperVectors(
   ai: any,
   papers: PaperRecord[]
 ): Promise<void> {
-  const papersToEmbed = papers.filter((p) => p.abstract || p.title);
+  // Only embed the top N allowed papers to stay within resource limits.
+  const papersToEmbed = papers.filter((p) => p.abstract || p.title).slice(0, 10);
   if (papersToEmbed.length === 0) return;
 
   const texts = papersToEmbed.map((p) => `${p.title}\n\n${p.abstract}`);

@@ -44,9 +44,10 @@ for (const [index, task] of tasks.entries()) {
     journalCategoryId: task.journal_category_id
   };
   const startedAt = new Date().toISOString();
+  console.log(`[${new Date().toISOString()}] Processing task ${task.task_id}: ${task.keyword}`);
   try {
-    const created = await postJson(`${workerUrl}/api/search-jobs`, payload);
-    const final = await waitForJob(created.job.id, workerUrl, pollMs, timeoutMs);
+    const created = await postJson(`${workerUrl}/api/search-jobs`, payload, task.task_id, task.keyword);
+    const final = await waitForJob(created.job.id, workerUrl, pollMs, timeoutMs, task.task_id, task.keyword);
     const job = final.job;
     const papers = Array.isArray(final.papers) ? final.papers : [];
 
@@ -92,6 +93,8 @@ for (const [index, task] of tasks.entries()) {
       });
     });
   } catch (error) {
+    const elapsed = Date.now() - new Date(startedAt).getTime();
+    console.error(`[${new Date().toISOString()}] Task ${task.task_id} failed after ${elapsed}ms: ${error.message}`);
     jobRows.push({
       task_id: task.task_id,
       keyword: task.keyword,
@@ -108,7 +111,10 @@ for (const [index, task] of tasks.entries()) {
     });
   }
 
-  if (index < tasks.length - 1) await sleep(delayMs);
+  if (index < tasks.length - 1) {
+    console.log(`Waiting ${delayMs}ms before next task...`);
+    await sleep(delayMs);
+  }
 }
 
 writeCsv(outputPath, resultRows, [
@@ -158,33 +164,73 @@ console.log(
       jobRows: jobRows.length,
       resultRows: resultRows.length,
       output: outputPath,
-      jobsOutput: jobsOutputPath
+      jobsOutput: jobsOutputPath,
+      debugLog: "benchmark/proposed_agent_debug.jsonl"
     },
     null,
     2
   )
 );
 
-async function postJson(url, payload) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!response.ok) throw new Error(await readResponseError(response, `POST ${url} failed`));
-  return response.json();
+async function postJson(url, payload, taskId, keyword) {
+  const start = Date.now();
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const elapsed = Date.now() - start;
+    if (!response.ok) {
+      const body = await response.text();
+      const msg = `POST ${url} failed [Status: ${response.status}] [Time: ${elapsed}ms]`;
+      logDebug({ type: "POST_FAILURE", url, taskId, keyword, status: response.status, body: body.slice(0, 1000), elapsed });
+      throw new Error(`${msg} [Body: ${body.slice(0, 200)}]`);
+    }
+    return response.json();
+  } catch (error) {
+    if (error.message.includes("failed")) throw error;
+    const elapsed = Date.now() - start;
+    logDebug({ type: "POST_NETWORK_ERROR", url, taskId, keyword, error: error.message, elapsed });
+    throw new Error(`POST ${url} network error: ${error.message} [Time: ${elapsed}ms]`);
+  }
 }
 
-async function waitForJob(jobId, baseUrl, pollIntervalMs, maxWaitMs) {
+async function waitForJob(jobId, baseUrl, pollIntervalMs, maxWaitMs, taskId, keyword) {
   const started = Date.now();
+  let attempt = 0;
   while (Date.now() - started < maxWaitMs) {
-    const response = await fetch(`${baseUrl}/api/search-jobs/${jobId}`);
-    if (!response.ok) throw new Error(await readResponseError(response, `GET job ${jobId} failed`));
-    const data = await response.json();
-    if (data.job?.status === "completed" || data.job?.status === "failed") return data;
+    attempt++;
+    const pollStart = Date.now();
+    try {
+      const response = await fetch(`${baseUrl}/api/search-jobs/${jobId}`);
+      const pollElapsed = Date.now() - pollStart;
+      if (!response.ok) {
+        const body = await response.text();
+        const msg = `GET job ${jobId} failed [Status: ${response.status}] [Time: ${pollElapsed}ms]`;
+        logDebug({ type: "GET_FAILURE", url: `${baseUrl}/api/search-jobs/${jobId}`, taskId, keyword, status: response.status, body: body.slice(0, 1000), elapsed: pollElapsed, attempt });
+        throw new Error(`${msg} [Body: ${body.slice(0, 200)}]`);
+      }
+      const data = await response.json();
+      if (data.job?.status === "completed" || data.job?.status === "failed") return data;
+    } catch (error) {
+      if (error.message.includes("failed")) throw error;
+      logDebug({ type: "GET_NETWORK_ERROR", taskId, keyword, error: error.message, attempt });
+    }
     await sleep(pollIntervalMs);
   }
-  throw new Error(`Timed out waiting for job ${jobId}`);
+  const totalElapsed = Date.now() - started;
+  logDebug({ type: "TIMEOUT", taskId, keyword, totalElapsed, attempt });
+  throw new Error(`Timed out waiting for job ${jobId} after ${totalElapsed}ms [Attempts: ${attempt}]`);
+}
+
+function logDebug(data) {
+  const debugPath = "benchmark/proposed_agent_debug.jsonl";
+  const entry = {
+    timestamp: new Date().toISOString(),
+    ...data
+  };
+  fs.appendFileSync(debugPath, JSON.stringify(entry) + "\n");
 }
 
 async function readResponseError(response, fallback) {

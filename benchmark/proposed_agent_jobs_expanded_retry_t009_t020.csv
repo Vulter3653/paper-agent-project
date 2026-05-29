@@ -1,0 +1,19 @@
+task_id,keyword,journal_category_id,job_id,status,current_step,source_result_count,allowed_result_count,paper_count,started_at,completed_at,error_message
+T009,digital transformation dynamic capabilities,international-business,job-eaf0fc49-d4bd-4a50-bbfc-12e7e4ad88d7,completed,delivery,50,10,10,2026-05-29T15:47:46.904Z,2026-05-29T15:48:11.401Z,
+T010,ESG disclosure firm value,accounting,job-a80bb4c2-ade8-43fd-b2f6-86f12a88c770,completed,delivery,50,10,10,2026-05-29T15:48:26.525Z,2026-05-29T15:48:44.581Z,
+T011,greenwashing consumer skepticism,marketing,job-0aa57374-bb19-443f-8663-58a109423237,completed,delivery,50,7,7,2026-05-29T15:49:03.305Z,2026-05-29T15:49:21.841Z,
+T012,social media influencer authenticity purchase intention,marketing,job-e4590058-e71d-4f69-8007-dd33941d36d4,completed,delivery,50,10,10,2026-05-29T15:49:40.608Z,2026-05-29T15:49:57.250Z,
+T013,privacy personalization tradeoff marketing,marketing,job-ecfbf30b-08b4-4e88-a6c0-bd1dc181e3ef,completed,delivery,36,10,10,2026-05-29T15:50:17.753Z,2026-05-29T15:50:38.357Z,
+T014,FinTech adoption trust risk,information-systems,job-46eed9d4-1914-4cb0-b026-407f0223c80a,completed,delivery,50,10,10,2026-05-29T15:50:54.793Z,2026-05-29T15:51:14.638Z,
+T015,blockchain supply chain transparency,operations,job-7a6bac09-5400-4b1d-97c9-c758de759a31,completed,delivery,50,10,10,2026-05-29T15:51:32.106Z,2026-05-29T15:51:49.400Z,
+T016,AI decision support managerial judgment,information-systems,job-5692cd4f-803f-42da-a240-0d96d694cdf2,completed,delivery,50,10,10,2026-05-29T15:52:09.449Z,2026-05-29T15:52:28.096Z,
+T017,diversity climate employee voice,organization-hr,job-8ec3130b-9e7a-42f1-b95d-eacf0501e529,completed,delivery,50,10,10,2026-05-29T15:52:46.774Z,2026-05-29T15:53:04.932Z,
+T018,organizational resilience crisis management,international-business,job-f5a5662a-034f-4389-b62e-6af861e9cccf,completed,delivery,50,10,10,2026-05-29T15:53:23.573Z,2026-05-29T15:53:41.706Z,
+T019,customer journey omnichannel retailing,marketing,,failed,benchmark_runner,,,0,2026-05-29T15:54:00.609Z,2026-05-29T15:54:28.881Z,"GET job job-0887e41a-7e45-46d0-a3c4-90fcb4827434 failed [Status: 503] [Time: 3498ms] [Body: <!DOCTYPE html>
+<!--[if lt IE 7]> <html class=""no-js ie6 oldie"" lang=""en-US""> <![endif]-->
+<!--[if IE 7]>    <html class=""no-js ie7 oldie"" lang=""en-US""> <![endif]-->
+<!--[if IE 8]>    <html class=""no-]"
+T020,business analytics competitive advantage,information-systems,,failed,benchmark_runner,,,0,2026-05-29T15:54:33.882Z,2026-05-29T15:54:36.857Z,"POST https://paper-agent-project.shch3653.workers.dev/api/search-jobs failed [Status: 503] [Time: 2973ms] [Body: <!DOCTYPE html>
+<!--[if lt IE 7]> <html class=""no-js ie6 oldie"" lang=""en-US""> <![endif]-->
+<!--[if IE 7]>    <html class=""no-js ie7 oldie"" lang=""en-US""> <![endif]-->
+<!--[if IE 8]>    <html class=""no-]"

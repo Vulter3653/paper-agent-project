@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-29 Benchmark Observability Enhancement
+- Context: T009 failed with polling error and T010-T020 failed with POST error during expanded benchmark run.
+- Hypothesis: T009 (4-min timeout), T010-T020 (Worker concurrency limit or WoS quota).
+- Action: Fortified `run-proposed-agent.mjs` to log HTTP status, response body, and timing per task.
+- Action: Added a JSONL debug log (`benchmark/proposed_agent_debug.jsonl`) for granular failure tracing.
+- Guardrail: Configured `benchmark:run-expanded-retry` script with sequential settings and unique output filenames to protect existing evidence. (gemini)
+
 ## 2026-05-29 Expanded Benchmark Claim Correction
 - Finding: Gemini reported 20/20 expanded benchmark completion, but `benchmark/proposed_agent_jobs_expanded.csv` shows only T001-T008 completed and T009-T020 failed. (codex)
 - Evidence: `benchmark/proposed_agent_metrics_summary_expanded.json` reports `totals.tasks=8`, matching metrics for T001-T008 only. (codex)

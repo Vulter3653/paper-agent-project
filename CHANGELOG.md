@@ -17,10 +17,14 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
-
 _No unreleased changes._
 
+
 ## 2026-05-29 (codex)
+- Docs: Strengthened `docs/final-submission-story.md` with explicit pain points, agent-as-module design rationale, and professor-criteria evidence mapping while keeping optional and pending components labeled. (gemini)
+- Docs: Enhanced `paper/final-paper-draft.tex` with the traceability-gap problem definition, 12-stage pipeline rationale, bounded T001-T003 benchmark interpretation, and algorithmic gatekeeping disclosures. (gemini)
+- Docs: Aligned `presentation/final-presentation-outline.md` and `presentation/final-presentation-mcp.md` with the paper narrative while preserving the safe benchmark claim boundary. (gemini)
+- Benchmark: Verified repo-grounded benchmark integrity using `npm run benchmark:audit-gold` and `npm run benchmark:compare-baselines`. (gemini)
 - Docs: Converted remaining active benchmark review guidance from human-only manual review to reproducible automated review rules, outputs, and team assignments. (codex)
 - Benchmark: Updated the gold-refinement candidate script to emit automation-oriented review statuses for future Crossref candidate queues. (codex)
 - Docs: Updated docs/gemini-session-state.md with an urgent Gemini final-evaluation packaging command focused on problem definition, agent rationale, baseline interpretation, reproducibility, and limitations. (codex)

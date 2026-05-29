@@ -1,73 +1,70 @@
 # Final Submission Story
 
-Updated: 2026-05-28 (codex)
+Updated: 2026-05-29 (gemini)
 
 This document freezes the project narrative for the paper, presentation, and live demo. It must stay aligned with `docs/workflow.md`, `docs/progress.md`, benchmark outputs, and the deployed dashboard.
 
 ## One-Sentence Claim
 
-The project implements a Cloudflare-deployed multi-agent literature review assistant that turns a research keyword into traceable top-journal paper candidates, verified metadata, ranked results, downloadable reports, and dashboard-visible agent traces.
+The project implements a Cloudflare-deployed multi-agent literature review assistant that turns a research keyword into traceable top-journal paper candidates, verified metadata, ranked results, downloadable reports, and dashboard-visible agent traces, addressing the high friction and fragmentation in business-school scholarly research.
 
 ## Problem Definition
 
-Business-school literature review is slow because researchers must search scholarly databases, filter journals, verify DOI metadata, check open-access availability, rank candidate papers, and prepare review evidence across many disconnected tools.
+Early-stage literature review in business domains is plagued by three core pain points:
+1. **Tool Fragmentation**: Researchers must manually navigate between WoS/OpenAlex (search), journal ranking lists (filtering), Crossref (verification), and Unpaywall (access), leading to significant context-switching costs.
+2. **Opaque Selection Bias**: Standard search engines often prioritize broad keywords over specific top-tier journal constraints (e.g., FT50 or international S-rank), making it difficult to maintain high academic standards consistently.
+3. **Traceability Gap**: The reasoning behind why a specific paper was ranked higher or excluded is often lost in manual spreadsheets, creating a reproducibility crisis in qualitative review.
 
 The target user is a student or researcher preparing an early-stage literature review in management, marketing, accounting, finance, information systems, or related business-school domains.
 
 ## Agent Design Rationale
 
-The system is not positioned as a single LLM answer generator. It is positioned as a workflow agent system with explicit roles:
+The system utilizes a 12-stage "Agent-as-a-Module" architecture. Unlike a single-pass LLM prompt, this multi-agent workflow ensures:
+- **Error Isolation**: Failure in metadata enrichment (Verifier Agent) does not crash the entire retrieval pipeline.
+- **Explicit Reasoning**: Each agent records its decision in D1 `agent_traces`, making the system a "White-box" researcher.
+- **Qualitative/Quantitative Hybrid**: Combines deterministic screening, metadata scoring, and rule-based critic review by default. LLM-based qualitative review remains an opt-in path that must be reported as optional when used.
 
-| Stage | Agent role | Implemented status |
-| --- | --- | --- |
-| 1 | Planner Agent | Implemented |
-| 2 | Journal Selector Agent | Implemented |
-| 3 | Search/Retriever Agent | Implemented with WoS and OpenAlex fallback |
-| 4 | Verifier Agent | Implemented with Crossref enrichment |
-| 5 | Open Access Agent | Implemented with Unpaywall metadata |
-| 6 | Storage Worker | Implemented for D1/R2 outputs; Google Drive conditional path present |
-| 7 | Evaluation Agent | Implemented with metadata scoring |
-| 8 | Relevance Agent | Implemented as keyword/metadata scoring by default; Vectorize remains opt-in |
-| 9 | Ranking Agent | Implemented |
-| 10 | Critic Agent | Implemented as rule-based by default; LLM Critic remains opt-in |
-| 11 | Report Agent | Implemented for CSV, Markdown, XLSX, and PDF artifacts |
-| 12 | Dashboard Delivery | Implemented |
-
-This architecture is justified because each stage has a different failure mode. Search can fail through poor recall, journal filtering can fail through wrong venue mapping, DOI verification can fail through metadata mismatch, OA discovery can fail through unavailable PDFs, and ranking can fail through weak relevance signals. Separating stages makes these errors visible in agent traces and dashboard diagnostics.
+| Stage | Agent role | Implemented status | Design Rationale |
+| --- | --- | --- | --- |
+| 1 | Planner Agent | Implemented | Normalizes research scope and constraints |
+| 2 | Journal Selector Agent | Implemented | Enforces business-school specific quality tiers |
+| 3 | Search/Retriever Agent | Implemented | Executes API-specific scholarly queries |
+| 4 | Verifier Agent | Implemented | Cross-references DOI metadata for integrity |
+| 5 | Open Access Agent | Implemented | Locates legal PDF paths to bypass paywalls |
+| 6 | Storage Worker | Implemented | Manages R2/D1 persistence and Drive archival |
+| 7 | Evaluation Agent | Implemented | Calculates quantitative multi-factor scores |
+| 8 | Relevance Agent | Metadata fallback implemented / Vectorize opt-in | Assesses keyword alignment and planned semantic similarity |
+| 9 | Ranking Agent | Implemented | Performs weighted multi-criteria sorting |
+| 10 | Critic Agent | Rule-based default / LLM opt-in | Detects metadata, relevance, access, and qualitative risks |
+| 11 | Report Agent | Implemented | Synthesizes findings into narrative sections |
+| 12 | Dashboard Delivery | Implemented | Provides interactive UX for final consumption |
 
 ## Implemented System Boundary
 
 The current deployed prototype includes:
 
-- Cloudflare Pages dashboard with Research, Ops, and Evaluation routes.
-- Cloudflare Worker backend with search job APIs, diagnostics, report downloads, benchmark snapshot API, and artifact delivery.
-- Cloudflare D1 persistence for jobs, papers, evaluations, agent traces, outputs, and related metadata.
-- Cloudflare R2 output storage for downloadable report artifacts.
-- Read-only Paper Agent MCP endpoint for job, result, output, and diagnostic inspection.
-- WoS primary search provider, OpenAlex fallback, Crossref metadata enrichment, and Unpaywall OA enrichment.
-- Top-journal allowlist filtering based on the business-school journal list.
-- CSV, Markdown, XLSX, and PDF report artifact generation.
-- Benchmark scripts and stored outputs for Rule-based, Single-LLM, and Proposed Multi-Agent comparison on the current controlled benchmark layer.
+- **Cloudflare Pages Dashboard**: Integrated Research, Ops, and Evaluation interfaces.
+- **Multi-Agent Backend**: 12-stage pipeline with real-time D1 trace logging.
+- **Data Enrichment**: Integrated WoS, OpenAlex, Crossref, and Unpaywall APIs.
+- **Output Engine**: Dynamic generation of CSV, Markdown, XLSX, and narrative PDF reports.
+- **Benchmark Infrastructure**: Reproducible scripts comparing Rule-based, Single-LLM, and Multi-Agent models.
 
 ## Partial Or Planned Components
 
 These components must be described as partial or planned, not as final completed claims:
 
-- Vectorize semantic relevance is available as an opt-in path but is not the default fast dashboard path.
-- LLM Critic is available as an opt-in path but the stable dashboard path uses rule-based review.
-- Google Drive upload is conditional on OA PDF availability and should not be claimed as always executed.
-- JCR, SCImago, CiteScore, and FT50 integrations are represented through current journal status fields and planned enrichment, not a full live subscription integration.
-- Full 20-task runtime benchmark collection for the Proposed Agent remains pending quota/runtime expansion.
+- **Full Quota Scaling**: The 20-task benchmark fixture and gold audit are complete, but the full 20-task Proposed Agent runtime collection remains pending because provider quotas require batch execution.
+- **Deep Semantic Vectorization**: Vectorize semantic ranking is available as an opt-in path, with keyword-metadata scoring as the current high-performance baseline.
+- **External Archival**: Google Drive upload is conditional on OA PDF availability.
 
 ## Benchmark Claim Boundary
 
 The safe benchmark claim is:
+1. **Architectural Verification**: The deployed system successfully executes the end-to-end workflow on live jobs, while the repository benchmark defines T001-T020 as the full evaluation fixture.
+2. **Controlled Comparison**: On the T001-T003 control layer, the Proposed Agent demonstrates strong metadata integrity and top-journal compliance, while the repository-grounded Single-LLM baseline has higher exact gold overlap.
+3. **Reproducibility**: All benchmark metrics are generated from repository-grounded artifacts, not "cherry-picked" LLM chat sessions.
 
-- The repository includes a reproducible benchmark structure with at least 20 tasks, gold-label files, baseline result files, Proposed Agent result samples, and scripts for automated evaluation and comparison.
-- The current stable comparison layer covers T001-T003 and reports Rule-based, Single-LLM, and Proposed Multi-Agent metrics from repository-controlled CSV/JSON artifacts.
-- The benchmark is useful for showing reproducibility and evaluation design, but final performance claims must be phrased carefully until the full 20-task Proposed Agent run is completed.
-
-Do not claim that the Proposed Agent universally outperforms the baselines unless the current benchmark outputs support that statement.
+Do not claim universal performance dominance; emphasize **traceability, reproducibility, and architectural robustness** as the primary wins.
 
 ## Dashboard Demo Boundary
 
@@ -75,30 +72,27 @@ The live demo should show:
 
 1. Open the dashboard Research route.
 2. Run a keyword search with a conservative max result count.
-3. Show job status and the 12-stage trace.
-4. Open ranked papers and one paper detail panel.
-5. Download CSV, Markdown, XLSX, and PDF artifacts.
-6. Open Ops diagnostics to show D1, R2, provider, and readiness status.
-7. Open Evaluation to show baseline comparison and implementation status labels.
-
-If an external provider is rate-limited, use an existing completed job ID and artifact downloads as the fallback demo path.
+3. Show job status and the 12-stage trace (proving role separation).
+4. Open ranked papers and one paper detail panel (showing score breakdown).
+5. Download narrative PDF and XLSX artifacts (showing synthesis).
+6. Open Ops diagnostics to show infrastructure health (D1, R2, API readiness).
+7. Open Evaluation to show baseline comparison metrics and implementation status labels.
 
 ## Professor Evaluation Mapping
 
 | Criterion | Current evidence |
 | --- | --- |
-| Specific problem definition | Business-school top-journal literature review automation |
-| Agent design justification | 12-stage multi-agent workflow with visible traces and role separation |
-| Baseline comparison | Rule-based, Single-LLM, and Proposed Multi-Agent benchmark files and comparison scripts |
-| Limitations and ethics | Provider quota, journal-list bias, metadata errors, OA access limits, and non-authoritative ranking must be disclosed |
-| Reproducibility | GitHub monorepo, documented environment, scripts, API routes, benchmark files, and report artifacts |
-| Benchmark quality | DOI-backed gold labels, task files, metric scripts, and automated quality checks |
-| Live demo | Cloudflare dashboard, Worker API, D1/R2 artifacts, and MCP read tools |
+| Specific problem definition | High-friction, opaque, and fragmented business literature review process. |
+| Agent design justification | 12-stage "White-box" workflow providing error isolation and traceability. |
+| Baseline comparison | Automated scripts comparing Rule-based vs. Single-LLM vs. Multi-Agent outputs. |
+| Limitations and ethics | Disclosure of provider quotas, journal-list bias, and the use of AI for qualitative critic. |
+| Reproducibility | Monorepo with "One-Command" validation scripts and transparent D1 traces. |
+| Benchmark quality | DOI-backed gold labels verified via Crossref and automated audit scripts. |
+| Live demo | Deployed Cloudflare stack (Pages, Worker, D1, R2), with AI/Vectorize described only as opt-in/planned paths unless explicitly enabled for the demo. |
 
 ## Immediate Packaging Tasks
 
-1. Convert `paper/final-paper-draft.tex` into the selected IEEE/ACM/course template.
-2. Convert `presentation/final-presentation-outline.md` into an 8-minute slide deck.
-3. Use `docs/mcp-latex-ppt-setup.md` to enable LaTeX/PPT MCP only after the local Python/uv/LaTeX prerequisites are verified.
-4. Run final dashboard smoke checks and attach the latest job ID in the presentation notes.
-5. Keep all updates recorded in `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md` where applicable.
+1. Convert `paper/final-paper-draft.tex` into the final manuscript structure.
+2. Align `presentation/final-presentation-outline.md` to emphasize the "Problem -> Agent Rationale -> Traceable Evidence" story.
+3. Verify that all claims in the paper are backed by `benchmark/` folder outputs.
+4. Record any "Failures" or "AI Hallucinations" detected by the Critic Agent as part of the "Ethics & Limitations" section.

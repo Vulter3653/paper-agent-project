@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-29 - Local Gemini/Rebase Work Evaluation
+
+- Context: The user requested that all locally progressed work be evaluated and reflected into the personal repository. (codex)
+- Finding: The root worktree was in an interrupted rebase with unresolved conflicts in `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md`; it also staged benchmark CSV changes that deleted existing proposed-agent result rows. (codex)
+- Decision: Do not continue or push the root rebase as-is. Use the clean `.worktrees/agent-traces` personal-main worktree and selectively reimplement only safe improvements. (codex)
+- Fix: Promoted rule-based Critic quality checks and PDF narrative report sections without enabling LLM Critic by default and without importing destructive benchmark CSV changes. (codex)
+- Verification: Source and history validators were run after the selective promotion. (codex)
+
 ## codex - LaTeX MCP Install Troubleshooting (2026-05-28)
 
 - Symptom: `uv tool install -e .` for Yeok-c/latex-mcp-server failed after uv selected Python 3.14 and then again with Python 3.11 because setuptools license validation could not import a compatible packaging license module. (codex)

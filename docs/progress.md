@@ -1,6 +1,16 @@
 # Project Progress And Session Handoff
 
 Updated: 2026-05-28 (codex blueprint and dashboard verification)
+Updated: 2026-05-29 (codex local work evaluation)
+
+## codex - Local Work Evaluation And Selective Promotion (2026-05-29)
+
+- Evaluated: Reviewed the interrupted root rebase work from Gemini and found useful PDF/Critic ideas mixed with unsafe default LLM Critic activation, benchmark CSV deletion, and unresolved history-file conflicts. (codex)
+- Promoted: Reimplemented only the safe source improvements on the stable personal-main worktree: rule-based Critic now flags metadata mismatch, journal-pool fit, low relevance, screening status, low impact, and missing access paths. (codex)
+- Promoted: PDF reports now include executive summary, key findings, common themes, research gaps, top ranked papers, critic actions, and limitations using existing report insight helpers. (codex)
+- Rejected: Did not promote root rebase benchmark CSV changes because they removed existing proposed-agent result rows and mixed failed task rows into current benchmark outputs. (codex)
+- Preserved: Kept LLM Critic as opt-in to avoid reintroducing dashboard run latency and fetch instability. (codex)
+
 
 ## codex - Local LaTeX/PPTX MCP Installation (2026-05-28)
 

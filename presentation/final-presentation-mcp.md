@@ -3,6 +3,7 @@ discipline: AI Agent 기반 도메인 문제 해결 프로젝트
 type: lecture
 module: "Final Team Project"
 lesson: "Paper Agent: From Black-Box AI to Traceable and Trustworthy Research"
+attribution: "(gemini)"
 ---
 
 ## [plan] 발표 구성
@@ -49,13 +50,13 @@ Business-school literature review는 고도의 엄밀성이 요구되나, 현재
 
 ## [content] Deployed Rigor (Cloudflare Stack)
 
-| Component | Role |
-| --- | --- |
-| Cloudflare Pages | Interactive Research Studio UI |
-| Cloudflare Worker | 12-stage Multi-Agent Pipeline |
-| Cloudflare D1 | Job Traces & Metadata Persistence |
-| Cloudflare R2 | Narrative Report (PDF/XLSX) Storage |
-| AI / Vectorize | Opt-in semantic scoring and qualitative critic paths |
+| Component | Role | Status |
+| --- | --- | --- |
+| Cloudflare Pages | Interactive Research Studio UI | Live |
+| Cloudflare Worker | 12-stage Multi-Agent Pipeline | Live |
+| Cloudflare D1 | Job Traces & Metadata Persistence | Live |
+| Cloudflare R2 | Narrative Report Artifact Storage | Live |
+| AI / Vectorize | Opt-in semantic scoring & critic paths | **Planned / Future** |
 
 ## [divider] 4. Demo Sequence
 
@@ -64,29 +65,30 @@ Business-school literature review는 고도의 엄밀성이 요구되나, 현재
 1. **Research Studio**: 검색어 입력 및 실시간 진행 확인
 2. **Agent Board**: 12단계 에이전트의 실행 로그(Trace) 감시
 3. **Paper Detail**: 점수 산출 근거(Score Breakdown) 확인
-4. **Final Synthesis**: Findings, Themes, Gaps가 포함된 서사적 리포트 다운로드
+4. **Final Synthesis**: 서사적 리포트 미리보기 및 저장 상태 확인
 
 ## [divider] 5. Evaluation & Results
 
 ## [content] Paper-Agent-Bench
 
-- **Reproduction**: 저장소 기반의 엄격한 벤치마크 (20 Tasks)
+- **Primary**: T001-T003 Controlled Comparison Layer (High fidelity)
+- **Expanded**: T001-T018 **Partial Expanded Evidence** (90% success)
+- **Failure**: T019-T020 Resource limit (Cloudflare 503)
 - **Integrity**: DOI 기반 Gold Label 매칭 및 자동 감사 스크립트 실행
-- **Metrics**: Precision@5, NDCG@5, **Top-Journal Precision**
 
 ## [content] Results: Proposed vs Single-LLM
 
 T001-T003 제어 레이어 결과:
 - **Proposed Agent**: **100% Top-Journal Precision**, 100% DOI Presence
 - **Single-LLM**: 높은 Overlap을 보이나 품질 준수율(93%) 및 실시간 검색 실행력 부재
-- **Core Claim**: 본 시스템은 단순한 타이틀 나열이 아니라, **검증 가능한 학술 워크플로우를 기록하고 집행**합니다.
+- **Core Claim**: 본 시스템은 18/20 수준의 확장성을 증명함과 동시에, **검증 가능한 학술 워크플로우를 기록하고 강제**합니다.
 
 ## [divider] 6. Limitations And Ethics
 
 ## [content] Algorithmic Gatekeeping
 
 - **Selection Bias**: 승인된 저널 리스트(Allowlist) 외부의 신규/학간 연구 배제 가능성
-- **AI Critic Bias**: 정성적 평가 에이전트의 판단 기준에 대한 지속적 모니터링 필요
+- **Planned Enrichment**: JCR/SCImago 등 외부 서지 지표 연동은 현재 **미구현 (Planned)**
 - **Ethical Guideline**: 본 도구는 의사결정 지원 도구이며, 인간의 비판적 읽기를 대체할 수 없음.
 
 ## [divider] 7. Conclusion

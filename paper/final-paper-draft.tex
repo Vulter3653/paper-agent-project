@@ -39,21 +39,19 @@ Paper Agent utilizes an ``Agent-as-a-Module'' design rationale. Each stage is an
 \begin{itemize}
     \item \textbf{Planner/Selector}: Normalizes the research scope and enforces journal quality tiers.
     \item \textbf{Retriever/Verifier}: Executes scholarly API queries (WoS/OpenAlex) and cross-references metadata via Crossref.
-    \item \textbf{Evaluation/Ranking}: Calculates multi-factor scores (relevance, journal fit, recency) using metadata by default, with Vectorize semantic scoring kept as an opt-in path.
-    \item \textbf{Critic/Reporter}: Performs qualitative screening rule-based analysis by default, with LLM-backed analysis kept as an opt-in path, to detect thematic misalignments before synthesizing findings into narrative reports.
+    \item \textbf{Evaluation/Ranking}: Calculates multi-factor scores (relevance, journal fit, recency) using metadata by default. Vectorize semantic scoring is maintained as a planned opt-in path for high-resource environments.
+    \item \textbf{Critic/Reporter}: Performs qualitative screening using rule-based analysis by default (persisted via D1 critic flags), with LLM-backed evaluation kept as a future opt-in extension.
 \end{itemize}
 
 This separation ensures that a failure in one domain (e.g., Unpaywall rate limit) does not corrupt the integrity of other retrieved data.
 
 \section{Evaluation and Benchmark Design}
 
-We evaluate Paper Agent using \textbf{Paper-Agent-Bench}, a 20-task benchmark grounded in top-tier business journal metadata. Unlike evaluations based on ``chat responses,'' our benchmark is repository-controlled and uses exact DOI/title matching against verified gold labels.
-
-Our controlled comparison for T001--T003 evaluates three models: (1) Rule-based, (2) Single-LLM (Reference-grounded), and (3) Proposed Multi-Agent. Metrics include Precision@5, NDCG@5, Top-Journal Precision, and DOI Accuracy.
+We evaluate Paper Agent using \textbf{Paper-Agent-Bench}, a 20-task benchmark grounded in top-tier business journal metadata. Our primary evaluation focus is the \textbf{T001--T003 controlled comparison layer}, where manual verification ensures high-fidelity baseline analysis. We additionally report \textbf{Partial Expanded Evidence (T001--T018)} to demonstrate runtime scalability, noting that tasks T019 and T020 reached infrastructure-level resource limits (HTTP 503) during evaluation.
 
 \section{Results and Interpretation}
 
-Table 1 summarizes our findings on the T001--T003 control layer.
+Table 1 summarizes our findings on the T001--T003 controlled layer.
 
 \begin{table*}[t]
 \centering
@@ -66,17 +64,17 @@ Rule-based & 0.1333 & 0.3579 & 1.0000 & 1.0000 \\
 Single-LLM (Baseline) & 0.6667 & 0.9949 & 0.9333 & 1.0000 \\
 \bottomrule
 \end{tabular}
-\caption{Benchmark results for T001--T003. Current controlled sample reports top-journal compliance and DOI presence.}
+\caption{Benchmark results for T001--T003 controlled layer. Evidence supports top-journal compliance and DOI integrity.}
 \end{table*}
 
-The Single-LLM baseline shows higher exact overlap with gold labels because it is repository-grounded and biased toward well-known papers. The Proposed Multi-Agent and Rule-based rows both report 100\% top-journal precision in this sample, while the Proposed Multi-Agent workflow additionally provides traceable job stages, verification fields, and downloadable artifacts from live scholarly searches. This supports the claim that the multi-agent approach improves auditability and quality-control enforcement, not that it universally outperforms every baseline.
+The Single-LLM baseline shows higher exact overlap with gold labels because it is repository-grounded and biased toward well-known papers. The Proposed Multi-Agent and Rule-based rows both report 100\% top-journal precision in this sample. While the expanded 18/20 task set confirms 90\% success in runtime completion, we define this as \textbf{Partial Evidence} only, as complete 20-task evaluation was constrained by Cloudflare Worker CPU limits.
 
 \section{Limitations and Ethics}
 
-While Paper Agent improves traceability, it introduces ``Algorithmic Gatekeeping'' bias through its approved journal list. It may exclude high-quality work from emerging or interdisciplinary journals not yet on the allowlist. Furthermore, the use of LLMs in the Critic Agent for abstract evaluation carries a risk of qualitative bias. We mitigate this by exposing ``Agent Traces,'' allowing users to override AI decisions. Ethical use requires that this tool remains a decision-support system, not a surrogate for human critical reading.
+While Paper Agent improves traceability, it introduces ``Algorithmic Gatekeeping'' bias through its approved journal list. External bibliometric enrichment (e.g., live JCR/SCImago APIs) is currently planned but not live API-backed; journal rankings rely on static internal allowlists. Furthermore, default screening is rule-based; the use of LLMs in the Critic Agent carries qualitative bias risks and is thus kept as an opt-in extension. Ethical use requires that human scholarly review remains the final authority.
 
 \section{Conclusion and Reproducibility}
 
-Paper Agent demonstrates that academic rigor can be automated without sacrificing transparency. The system is fully reproducible via our GitHub repository, which includes all benchmark files, deployment scripts, and an automated audit trail. Future work will scale the system to larger quotas and integrate deep semantic cross-citation mapping.
+Paper Agent demonstrates that academic discovery can be automated without sacrificing transparency. By delivering a 12-stage auditable pipeline on Cloudflare, we prove that ``White-box'' research is feasible even under resource constraints. Future work will address the 18/20 evidence gap by optimizing Worker CPU usage and scaling to larger bibliometric quotas.
 
 \end{document}

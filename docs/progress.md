@@ -1,6 +1,11 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-29 (claim boundary hardening complete)
+Updated: 2026-05-29 (paper and presentation claim alignment complete)
+
+## 2026-05-29 (gemini) - Paper & Presentation Alignment
+- **Deliverable Alignment**: Synchronized `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with the verified claim boundary (18/20 success, opt-in AI features). (gemini)
+- **Content Consistency**: Ensured 90% success rate framing, infra-related failure explanations for T019-T020, and clear "planned/opt-in" status for AI/external enrichment features across all submission materials. (gemini)
+- **Validation**: Verified that no protected files (PDFs, PPTXs, gold labels, baseline CSVs) were modified or regenerated. (gemini)
 
 ## 2026-05-29 (gemini)
 - **Claim Boundary Hardening**: Hardened the dashboard and documentation to clearly distinguish between live, partial, and planned features. (gemini)

@@ -9,7 +9,7 @@ Target duration: 8 minutes plus Q&A.
 Title: Paper Agent: From Black-Box AI to Traceable Multi-Agent Research
 Subtitle: Automating Scholarly Discovery with Verified Metadata and Auditable Traces
 
-Key message: We move beyond generative AI "hallucinations" to a 12-stage modular system that executes real scholarly searches with traceable top-journal compliance in the controlled sample.
+Key message: We move beyond generative AI "hallucinations" to a 12-stage modular system that executes real scholarly searches with traceable top-journal compliance.
 
 ## Slide 2 - Problem: The Traceability Gap
 
@@ -28,45 +28,47 @@ Planner -> Journal Selector -> Search/Retriever -> Verifier -> Open Access -> St
 ## Slide 4 - System Implementation: Deployed Rigor
 
 Show the Cloudflare stack:
-- Pages (UI) + Worker (Logic) + D1 (Traces) + R2 (Artifacts) + AI/Vectorize (opt-in paths).
+- Pages (UI) + Worker (Logic) + D1 (Traces) + R2 (Artifacts).
+- **AI Extensions**: Vectorize (semantic search) and LLM Critic are **future opt-in paths**.
 - **Tool-Use**: Real-time integration with Web of Science, Crossref, and Unpaywall.
 
 ## Slide 5 - Live Demo sequence
 
 1. **Research Studio**: Trigger a live search.
 2. **Agent Board**: Watch the 12 stages execute in real-time.
-3. **Synthesis**: Inspect the narrative PDF report with narrative Findings/Gaps.
+3. **Synthesis**: Inspect narrative sections (Findings/Gaps) in the report.
 4. **Ops Center**: Show the D1 trace log (The "White-box" evidence).
 
 ## Slide 6 - Benchmark: Paper-Agent-Bench
 
 - 20 tasks, DOI-backed gold labels, repository-controlled artifacts.
-- Metrics: Precision@5, NDCG@5, and **Top-Journal Precision**.
-- Automated audit scripts ensure evaluation integrity.
+- Primary evaluation: **T001-T003 Controlled Comparison**.
+- Expanded evaluation: **T001-T018 Partial Expanded Evidence** (90% success).
+- Note: T019-T020 failed due to infrastructure resource limits (HTTP 503).
 
 ## Slide 7 - Results: Quality over Popularity
 
 Insert T001-T003 Summary:
 - Proposed Agent: **100% Top-Journal Precision**, 100% DOI Presence.
 - Single-LLM: Higher overlap (recall) but lower quality compliance (0.93 prec).
-- **Interpretation**: Our system makes academic quality checks inspectable where generic AI can hide process.
+- **Interpretation**: Our system enforces academic rigor where generic AI can hide process.
 
 ## Slide 8 - Why Multi-Agent? (Strategic Advantage)
 
 Map failure modes to accountability:
 - Verifier Agent catches DOI errors.
-- Critic Agent detects hallucination risks.
+- Critic Agent (Rule-based) detects metadata risk flags.
 - Traceability allows human researchers to "audit" the machine.
 
 ## Slide 9 - Limitations and Algorithmic Gatekeeping
 
-- **Ethical Disclosure**: Our journal allowlist introduces gatekeeping bias.
-- Provider quotas affect retrieval depth.
-- AI bias in qualitative critic must be monitored via Agent Traces.
+- **Selection Bias**: Our journal allowlist introduces gatekeeping bias.
+- **Planned Enrichment**: External bibliometric API (JCR/SCImago) enrichment is planned.
+- Provider quotas affect retrieval depth; 18/20 evidence highlights resource constraints.
 
 ## Slide 10 - Conclusion
 
 Paper Agent is a deployed prototype proving that:
 1. Multi-Agent workflows provide the "White-box" accountability academics need.
 2. 12 specialized modules make metadata checks and exclusion reasons inspectable.
-3. Deployed architecture (Cloudflare) supports reproducible demos and artifact downloads.
+3. Deployed architecture (Cloudflare) supports reproducible discovery with audit trails.

@@ -19,6 +19,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 ## Unreleased
 
 ### 2026-05-29 (gemini)
+- Docs: Aligned `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with verified claim boundaries (18/20 success, opt-in AI features). (gemini)
 - **Claim Boundary Hardening**: Audited and hardened dashboard UI and documentation wording. (gemini)
 - **Feature Labeling**: Labeled Vectorize and LLM Critic as "Planned / Opt-in / Not production-default" across all interfaces and blueprints. (gemini)
 - **Journal Quality**: Clarified the boundary between live internal allowlist filtering and planned external bibliometric enrichment (JCR/SCImago). (gemini)

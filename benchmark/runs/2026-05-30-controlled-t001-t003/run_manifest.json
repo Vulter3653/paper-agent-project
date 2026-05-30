@@ -8,8 +8,8 @@
     "single_llm",
     "proposed_agent"
   ],
-  "source_commit": "7ad437554ef26a7b4e012a37be65b928baba0fad",
-  "created_at": "2026-05-30T18:59:37.623Z",
+  "source_commit": "75f3475cede2eab2544c644eb11ed507070f8c38",
+  "created_at": "2026-05-30T19:12:02.620Z",
   "gold_file": "benchmark/gold_relevant_papers.verified.csv",
   "gold_version": "verified",
   "scripts_used": [

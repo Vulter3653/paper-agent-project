@@ -1,5 +1,23 @@
 # Debug Log
 
+## 2026-05-30 - Korean Report Output Hotfix
+- **Incident**: The generated Markdown report (`report.md`) was completely in English, causing a discrepancy with the Korean dashboard UI and reducing usability for Korean stakeholders.
+- **Resolution**:
+  - Translated all section headers, status mappings, metadata labels, critic actions, and summary texts to Korean in `apps/worker/src/reports.ts`.
+  - Added helper functions (`formatKoreanJobStatus`, `formatKoreanStep`, etc.) to map raw string values to localized terms.
+  - Kept CSV and XLSX data generation in English to maintain compatibility with data analysis tools.
+  - Added a disclaimer to the PDF output advising users to rely on the Markdown version, as the current PDF generator is restricted to ASCII encoding and cannot handle Korean characters.
+- **Verification**: `npm run typecheck` and `npm run build:web` passed successfully.
+
+## 2026-05-30 - Search Execution Reliability Hotfix
+- **Incident**: Executing searches from the dashboard with the default `maxResults: 20` frequently caused Cloudflare Worker CPU timeouts. Furthermore, jobs resulting in 0 allowed papers lacked clear feedback.
+- **Resolution**:
+  - Lowered the default `maxResults` and `enrichmentLimit` to 5 in the dashboard UI and added a "Safe Execution Mode" disclaimer.
+  - Implemented an automated fallback from Web of Science to OpenAlex within the worker if the primary search API fails or rate-limits.
+  - Updated the journal filtering logic so that jobs with 0 allowed papers do not fail outright but instead retain candidates in "review" status and record a `journal_filter_no_match_fallback` trace.
+  - Improved the UI to surface specific error messages and suggested actions for failed jobs.
+- **Verification**: Local validation suite passed. Tested the new limits and fallback mechanism via direct API invocations.
+
 ## 2026-05-30 - Korean Dashboard Usability & Status Clarity Patch
 - **Incident**: The dashboard contained numerous English terms and developer-centric jargon that hindered usability for Korean users. Additionally, the distinction between feature implementation status and runtime job execution status was ambiguous, and clicking Evaluation scenarios lacked clear interactive feedback.
 - **Resolution**:

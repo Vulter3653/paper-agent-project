@@ -1,6 +1,18 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Korean dashboard usability and status clarity patch applied)
+Updated: 2026-05-30 (Korean report output and search reliability hotfixes applied)
+
+## 2026-05-30 (gemini) - Korean Report Output Hotfix
+- **Report Localization**: Updated `apps/worker/src/reports.ts` to output the Markdown report (`report.md`) in Korean. Translated section headers, metadata labels, status values, critic actions, and narrative text.
+- **Data Integrity**: Maintained the original English logic for the CSV and XLSX data exports to avoid schema and downstream analysis issues.
+- **PDF Constraint**: Added an explicit disclaimer in the PDF output noting that Korean text requires font embedding and directed users to the Markdown report for the full Korean text, as the current PDF generator is constrained to ASCII.
+- **Dashboard Consistency**: Eliminated the discrepancy between the Korean dashboard UI and the generated English reports, providing a seamless localized experience for users.
+
+## 2026-05-30 (gemini) - Search Execution Reliability Hotfix
+- **Search Size**: Reduced the default dashboard `maxResults` and `enrichmentLimit` to 5 and added a "Safe Execution Mode" explanation to avoid Cloudflare Worker CPU timeouts during standard searches.
+- **Provider Fallback**: Implemented an automated fallback to OpenAlex in `apps/worker/src/index.ts` if the primary Web of Science search fails, ensuring greater reliability. This is recorded in the trace as `search_provider_fallback`.
+- **Zero Result Handling**: Improved the journal filter to not fail the job when 0 papers are allowed. Instead, the top 5 candidates are kept in "review" status, the trace records a `journal_filter_no_match_fallback` mode, and the UI displays an appropriate message.
+- **UI Error Visibility**: Enhanced the Ops Dashboard to prominently display the failure reason and suggested actions when a job fails.
 
 ## 2026-05-30 (gemini) - Korean Dashboard Usability & Status Clarity Patch
 - **Dashboard Localization**: Translated key English terminology and developer jargon into Korean across Research, Ops, and Evaluation routes to improve usability for Korean users.

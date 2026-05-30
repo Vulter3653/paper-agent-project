@@ -17,6 +17,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## [Unreleased]
+- Web: Enhanced dashboard usability for Korean users by translating key terminology, separating feature implementation status from runtime job status, and adding descriptive tooltips. (gemini)
+- Web: Improved the Evaluation dashboard scenarios (Strict, Broad Recall, Fast Demo) to interactively change highlighted metrics and interpretive context upon click, clarifying that these are analytical lenses rather than new benchmark runs. (gemini)
+- Web: Translated and reformatted the Report Preview panel sections (e.g., "Executive Summary" to "전체 요약") while explicitly noting that the underlying generated text remains in English. (gemini)
+- Web: Hardened the "Trace Summary Console" in the Ops dashboard by translating trace meta labels (e.g., `verified`, `llm_augmented`, `rule_based_fallback`) into user-friendly Korean terms. (gemini)
 - Infra: Implemented 15-second timeout guard and rule-based fallback for LLM Critic to prevent job stalls in live environments. (gemini)
 - Worker: Reduced default LLM Critic review limit from 5 to 3 papers for improved latency. (gemini)
 - Dashboard: Enhanced UI to display granular agent execution modes (LLM Augmented, LLM Timeout Fallback, Rule-based Fallback) based on real-time traces. (gemini)

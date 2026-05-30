@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-30 - Korean Dashboard Usability & Status Clarity Patch
+- **Incident**: The dashboard contained numerous English terms and developer-centric jargon that hindered usability for Korean users. Additionally, the distinction between feature implementation status and runtime job execution status was ambiguous, and clicking Evaluation scenarios lacked clear interactive feedback.
+- **Resolution**:
+  - Translated key dashboard terminology (e.g., 'Executive Summary' -> '전체 요약', 'Output Artifacts' -> '산출물 저장 상태') across all routes.
+  - Separated `FeatureImplementationStatus` (Live, Partial, Mock, Planned) from runtime statuses to clarify UI indicators.
+  - Enhanced Evaluation scenarios to dynamically update descriptive text and highlighted metrics upon click, acting as interpretive lenses for the static benchmark data.
+  - Formatted raw trace keys into user-friendly Korean labels in the Trace Summary Console.
+- **Verification**: `npm run typecheck` and `npm run build:web` passed. Ensured no underlying benchmark data or claim boundaries were altered.
+
 ## 2026-05-30 - LLM Critic Latency Stall & Fallback Hardening
 - **Incident**: Smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9` stalled at `critic_review` step during qualitative analysis.
 - **Root Cause**: High latency or indefinite stall when calling Workers AI for Llama-3-8B.

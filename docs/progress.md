@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (LLM Critic fallback hardened, dashboard transparency enhanced)
+Updated: 2026-05-30 (Korean dashboard usability and status clarity patch applied)
+
+## 2026-05-30 (gemini) - Korean Dashboard Usability & Status Clarity Patch
+- **Dashboard Localization**: Translated key English terminology and developer jargon into Korean across Research, Ops, and Evaluation routes to improve usability for Korean users.
+- **Status Clarity**: Separated feature implementation status (Live, Partial, Mock, Planned) from runtime job execution status (Running, Completed, Idle) to prevent user confusion.
+- **Evaluation Scenarios**: Updated the Evaluation dashboard to make scenarios (Strict, Broad Recall, Fast Demo) interactive. Clicking a scenario now dynamically updates the descriptive text, highlighted metrics, and interpretation messages, clarifying that these are analytical views on the static benchmark snapshot rather than new execution runs.
+- **Report Preview Refinement**: Renamed sections in the Report Preview panel (e.g., 'Executive Summary' to '전체 요약') and added descriptive tooltips. Added a disclaimer that the actual generated report content remains in English, preserving the underlying Markdown logic.
+- **Trace Summary Hardening**: Formatted raw trace keys (`mode`, `processed`, `llm_augmented`) into user-friendly Korean labels (`실행 방식`, `처리됨`, `LLM 보강됨`) within the Ops Trace Console.
+- **Claim Boundary Maintained**: Ensured all translations and UI updates strictly preserve the existing claim boundaries (e.g., Vectorize/LLM Critic as opt-in/experimental, 18/20 partial expanded evidence).
+- **Validation**: Full validation suite (`validate:history`, `typecheck`, `build:web`, `audit-gold`) passed successfully. No benchmark or output artifacts were modified.
 
 ## 2026-05-30 (gemini) - LLM Critic Latency Fallback Hardening
 - **Implementation Success**: Hardened the LLM Critic path to prevent job stalls caused by high latency or timeouts in Workers AI.

@@ -1,5 +1,16 @@
 # Debug Log
 
+## 2026-05-30 - AI Opt-in Runtime Verification & Dashboard Integration
+- **Issue**: `apps/web/src/main.tsx` 파일이 너무 커서 전체 `replace` 시 출력이 중단되거나 트렁케이션 위험이 발생함. (gemini)
+- **Resolution**: 
+  - 대규모 파일 편집 시 전체 파일을 다시 쓰지 않고 소규모의 타겟 패치(targeted patches) 방식을 도입하여 안정성 확보.
+  - `DiagnosticsResponse` 타입 정의에 `vectorizeReady` 및 `llmCriticReady` 필드를 추가하여 타입 체크 오류 해결.
+  - 대시보드 Metric 섹션에 실제 실행 모드를 보여주는 "Ranking" 및 "Critic" 타일 추가.
+- **Verification**:
+  - `npm run typecheck` 및 `npm run build:web` 성공.
+  - 워커의 트레이스 메타데이터(`requested`, `aiBound`) 강화 확인.
+  - 모든 기록이 prepend-only 정책에 따라 무결하게 유지됨을 `validate:history`로 검증.
+
 ## 2026-05-30 - LLM Critic Opt-in Logic & Fallback Validation
 - **Context**: Task 7 requires a minimal, safe, opt-in LLM Critic smoke test path with graceful fallback.
 - **Implementation Check**:

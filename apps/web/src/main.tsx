@@ -77,6 +77,8 @@ type DiagnosticsResponse = {
   };
   readiness: {
     activeProviderReady: boolean;
+    vectorizeReady: boolean;
+    llmCriticReady: boolean;
   };
 };
 
@@ -163,6 +165,8 @@ function ResearchDashboard() {
   const [yearStart, setYearStart] = useState("2020");
   const [yearEnd, setYearEnd] = useState("");
   const [journalCategoryId, setJournalCategoryId] = useState("");
+  const [useSemanticRanking, setUseSemanticRanking] = useState(false);
+  const [useLlmCritic, setUseLlmCritic] = useState(false);
   const [job, setJob] = useState<SearchJob | null>(null);
   const [papers, setPapers] = useState<PaperSummary[]>(demoPapers);
   const [selectedId, setSelectedId] = useState<string>(demoPapers[0].id);
@@ -189,6 +193,26 @@ function ResearchDashboard() {
   const includedCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "include").length, [papers]);
   const reviewCount = useMemo(() => papers.filter((paper) => paper.includeStatus === "review").length, [papers]);
   const isDemoMode = !job;
+
+  const rankingMode = useMemo(() => {
+    if (isDemoMode) return "Mock";
+    const trace = agentTraces.find(t => t.stepId === "vectorize_relevance");
+    if (!trace) return "대기 중";
+    const detail = parseTraceDetail(trace.detail);
+    if (detail.mode === "vector_semantic") return "Vectorize Active";
+    if (detail.mode === "metadata_fallback") return "Metadata Fallback";
+    return "Metadata (Default)";
+  }, [agentTraces, isDemoMode]);
+
+  const criticMode = useMemo(() => {
+    if (isDemoMode) return "Mock";
+    const trace = agentTraces.find(t => t.stepId === "critic_review");
+    if (!trace) return "대기 중";
+    const detail = parseTraceDetail(trace.detail);
+    if (detail.mode === "llm_augmented") return "LLM Augmented";
+    if (detail.mode === "rule_based_fallback") return "Rule-based Fallback";
+    return "Rule-based (Default)";
+  }, [agentTraces, isDemoMode]);
 
   useEffect(() => {
     void refreshDiagnostics();
@@ -254,7 +278,7 @@ function ResearchDashboard() {
       const response = await fetch(apiUrl("/api/search-jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildSearchPayload(keyword, maxResults, enrichmentLimit, yearStart, yearEnd, journalCategoryId))
+        body: JSON.stringify(buildSearchPayload(keyword, maxResults, enrichmentLimit, yearStart, yearEnd, journalCategoryId, useSemanticRanking, useLlmCritic))
       });
       if (!response.ok) throw new Error(await readApiError(response, "search job 생성에 실패했습니다"));
       const data = (await response.json()) as JobResponse;
@@ -464,6 +488,26 @@ function ResearchDashboard() {
               />
             </label>
           </div>
+          <div className="searchOptions aiOptions" style={{ marginTop: '0.5rem', borderTop: '1px solid #eee', paddingTop: '0.5rem' }}>
+            <label style={{ cursor: diagnostics?.readiness.vectorizeReady ? 'pointer' : 'not-allowed', color: diagnostics?.readiness.vectorizeReady ? 'inherit' : '#999' }}>
+              <input
+                type="checkbox"
+                checked={useSemanticRanking}
+                onChange={(e) => setUseSemanticRanking(e.target.checked)}
+                disabled={!diagnostics?.readiness.vectorizeReady}
+              />
+              <span>Vectorize (Experimental)</span>
+            </label>
+            <label style={{ cursor: diagnostics?.readiness.llmCriticReady ? 'pointer' : 'not-allowed', color: diagnostics?.readiness.llmCriticReady ? 'inherit' : '#999' }}>
+              <input
+                type="checkbox"
+                checked={useLlmCritic}
+                onChange={(e) => setUseLlmCritic(e.target.checked)}
+                disabled={!diagnostics?.readiness.llmCriticReady}
+              />
+              <span>LLM Critic (Experimental)</span>
+            </label>
+          </div>
           <div className="runMeta">
             <StatusBadge value={diagnostics?.searchProvider ?? "wos"} tone="neutral" />
             <StatusBadge value={diagnostics?.readiness.activeProviderReady ? "준비됨" : "확인 필요"} tone={diagnostics?.readiness.activeProviderReady ? "ok" : "warn"} />
@@ -478,6 +522,8 @@ function ResearchDashboard() {
         <Metric label="단계" value={job?.currentStep ?? "Demo Mode / Mock"} />
         <Metric label="원천 / 통과" value={job ? `${job.sourceResultCount ?? "-"} / ${job.allowedResultCount ?? "-"}` : "-"} />
         <Metric label="논문" value={String(papers.length)} detail={`${includedCount} include · ${reviewCount} review`} />
+        <Metric label="Ranking" value={rankingMode} tone={rankingMode.includes("Vectorize") ? "ok" : rankingMode.includes("Fallback") ? "warn" : "neutral"} />
+        <Metric label="Critic" value={criticMode} tone={criticMode.includes("LLM") ? "ok" : criticMode.includes("Fallback") ? "warn" : "neutral"} />
         <Metric label="최고 점수" value={papers[0] ? papers[0].finalScore.toFixed(2) : "-"} />
       </section>
 
@@ -1180,14 +1226,14 @@ function formatDateTime(value: string): string {
   return date.toLocaleString();
 }
 
-function buildSearchPayload(keyword: string, maxResults: string, enrichmentLimit: string, yearStart: string, yearEnd: string, journalCategoryId: string) {
+function buildSearchPayload(keyword: string, maxResults: string, enrichmentLimit: string, yearStart: string, yearEnd: string, journalCategoryId: string, useSemanticRanking: boolean, useLlmCritic: boolean) {
   const parsedMaxResults = parseLimitedMaxResults(maxResults);
   const payload: { keyword: string; maxResults: number; enrichmentLimit: number; useSemanticRanking: boolean; useLlmCritic: boolean; yearStart?: number; yearEnd?: number; journalCategoryId?: string } = {
     keyword: keyword.trim(),
     maxResults: parsedMaxResults,
     enrichmentLimit: parseLimitedEnrichmentLimit(enrichmentLimit, parsedMaxResults),
-    useSemanticRanking: false,
-    useLlmCritic: false
+    useSemanticRanking,
+    useLlmCritic
   };
   const start = parseOptionalYear(yearStart);
   const end = parseOptionalYear(yearEnd);

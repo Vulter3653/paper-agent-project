@@ -17,6 +17,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
+- Feature: AI Opt-in (Vectorize, LLM Critic) runtime verification and dashboard integration. (gemini)
+- Worker: Strengthened trace metadata for semantic ranking and critic analysis execution transparency. (gemini)
+- Web: Added experimental toggles and real-time execution mode display from traces. (gemini)
 - Worker: Implemented opt-in LLM Critic smoke path with top-5 limit and graceful fallback. (gemini)
 - Web: Integrated LLM Critic opt-in toggle and diagnostic transparency in dashboard. (gemini)
 - Web: Hardened partial dashboard components (Vectorize, Journal Pool, Google Drive, Tool Call Console, Evaluation). (gemini)

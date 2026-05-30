@@ -990,6 +990,8 @@ async function processSearchJob(
           summary: "Computed semantic relevance using Cloudflare Vectorize and Workers AI.",
           detail: JSON.stringify({
             mode: "vector_semantic",
+            requested: true,
+            aiBound: true,
             vectorizeConnected: true,
             scoredCount: Object.keys(semanticScores).length,
             candidateCount: papersToVectorize.length,
@@ -1010,6 +1012,8 @@ async function processSearchJob(
           summary: "Vectorize semantic relevance failed; falling back to metadata.",
           detail: JSON.stringify({
             mode: "metadata_fallback",
+            requested: true,
+            aiBound: true,
             vectorizeConnected: true,
             fallbackUsed: true,
             reason: getErrorMessage(error)
@@ -1028,6 +1032,8 @@ async function processSearchJob(
           : "Vectorize semantic relevance skipped; metadata scoring default path was used.",
         detail: JSON.stringify({
           mode: options.useSemanticRanking ? "metadata_fallback" : "metadata_default",
+          requested: options.useSemanticRanking,
+          aiBound: Boolean(options.ai && options.vectorIndex),
           vectorizeConnected: Boolean(options.ai && options.vectorIndex),
           useSemanticRanking: options.useSemanticRanking,
           fallbackUsed: options.useSemanticRanking
@@ -1061,6 +1067,7 @@ async function processSearchJob(
           summary: `Generated ${criticFlags.length} critic flags (Rule-based + LLM qualitative analysis for top ${reviewedPaperCount} papers).`,
           detail: JSON.stringify({
             mode: "llm_augmented",
+            requested: true,
             aiBound: true,
             ruleBasedCount: ruleBasedFlags.length,
             llmCount: criticFlags.length - ruleBasedFlags.length,
@@ -1079,6 +1086,7 @@ async function processSearchJob(
           summary: `Generated ${criticFlags.length} rule-based critic flags; LLM analysis failed.`,
           detail: JSON.stringify({
             mode: "rule_based_fallback",
+            requested: true,
             aiBound: true,
             fallbackUsed: true,
             reason: getErrorMessage(error),
@@ -1100,6 +1108,7 @@ async function processSearchJob(
         summary,
         detail: JSON.stringify({
           mode: options.useLlmCritic ? "rule_based_fallback" : "rule_based_only",
+          requested: options.useLlmCritic,
           aiBound: Boolean(options.ai),
           useLlmCritic: options.useLlmCritic,
           fallbackUsed: options.useLlmCritic && !options.ai,

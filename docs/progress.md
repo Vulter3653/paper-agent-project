@@ -1,6 +1,21 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (opt-in LLM Critic smoke path complete)
+Updated: 2026-05-30 (AI opt-in runtime verification and dashboard integration complete)
+
+## 2026-05-30 (gemini) - AI Opt-in Runtime Verification & Integration
+- **Feature Completion**: Verified and strengthened the runtime integration of opt-in AI features (Vectorize and LLM Critic). (gemini)
+- **Trace Evidence Hardening**:
+  - Strengthened Planner trace to record `useSemanticRanking` and `useLlmCritic` flags.
+  - Enhanced `vectorize_relevance` and `critic_review` traces with `requested` and `aiBound` indicators to clearly distinguish between user intent and binding availability.
+  - Implemented real-time derivation of AI execution modes from traces in the dashboard.
+- **Frontend Integration**:
+  - Added experimental toggles for Vectorize and LLM Critic in the Research Dashboard.
+  - Integrated dynamic status metrics ("Ranking" and "Critic") that show the actual mode used (e.g., "Vectorize Active", "LLM Augmented", or "Fallback").
+  - Fixed `DiagnosticsResponse` type mismatch to support AI readiness flags.
+- **Verification**:
+  - Confirmed full type safety across `apps/web` and `apps/worker`.
+  - Verified trace metadata consistency via local dry-run simulation.
+  - Maintained metadata-based ranking and rule-based critic as defaults.
 
 ## 2026-05-30 (gemini) - LLM Critic Opt-in Smoke Path
 - **Feature Completion**: Implemented a safe, opt-in LLM Critic smoke test path to augment rule-based flags. (gemini)

@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Korean report output and search reliability hotfixes applied)
+Updated: 2026-05-30 (English PDF output and Korean Markdown report logic separated)
+
+## 2026-05-30 (gemini) - Keep PDF Export Active With English Output
+- **Language Separation**: Refactored `apps/worker/src/reports.ts` to separate report generation logic for Korean (Markdown) and English (PDF).
+- **PDF ASCII Safety**: Ensured the PDF output uses only ASCII-safe English text for section headers, metadata labels, and narrative insights to prevent '????' (mojibake) caused by the Helvetica font constraint.
+- **Korean Markdown Continuity**: Maintained the full Korean localization for the Markdown report (`report.md`) to serve Korean dashboard users.
+- **Dashboard Information**: Updated the Research Dashboard to clearly state that Markdown reports are in Korean while PDF reports remain in English due to technical constraints.
+- **Enhanced Mapping**: Improved the Korean mapping for various status values (`unpaywallStatus`, `driveStatus`) to provide a more complete localized experience in the Markdown report.
 
 ## 2026-05-30 (gemini) - Korean Report Output Hotfix
 - **Report Localization**: Updated `apps/worker/src/reports.ts` to output the Markdown report (`report.md`) in Korean. Translated section headers, metadata labels, status values, critic actions, and narrative text.

@@ -41,7 +41,7 @@ function getCriticRiskLevel(flags: CriticFlag[]): CriticFlag["severity"] | "clea
   return "clear";
 }
 
-function buildCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]) {
+function buildKoreanCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]) {
   const riskLevel = getCriticRiskLevel(flags);
   const flagTypes = Array.from(new Set(flags.map((flag) => flag.flagType))).filter(Boolean);
   const decision = riskLevel === "high"
@@ -52,22 +52,44 @@ function buildCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]) {
         ? "접근 경로 확인 후 사용 가능"
         : "검토상 주요 문제 없음";
   const primaryIssue = flags[0]?.message ?? "이 논문에는 rule-based critic flag가 생성되지 않았습니다.";
-  const evidence = flags[0]?.evidence ?? paper.relevanceReason;
   const actions = flags.length
-    ? flags.slice(0, 3).map((flag) => getCriticAction(flag))
+    ? flags.slice(0, 3).map((flag) => getKoreanCriticAction(flag))
     : ["전문을 읽고 인용 가능성을 최종 검토하세요."];
   return {
     riskLevel,
     decision,
     primaryIssue,
-    evidence,
     flagTypes: flagTypes.length ? flagTypes.join(", ") : "none",
     note: decision + ". " + primaryIssue,
     actions
   };
 }
 
-function getCriticAction(flag: CriticFlag): string {
+function buildEnglishCriticReviewSummary(paper: PaperSummary, flags: CriticFlag[]) {
+  const riskLevel = getCriticRiskLevel(flags);
+  const flagTypes = Array.from(new Set(flags.map((flag) => flag.flagType))).filter(Boolean);
+  const decision = riskLevel === "high"
+    ? "Manual review required before citation"
+    : riskLevel === "medium"
+      ? "Use after targeted verification"
+      : riskLevel === "low"
+        ? "Usable with access caveat"
+        : "No critic issues detected";
+  const primaryIssue = flags[0]?.message ?? "No rule-based critic flags were generated for this paper.";
+  const actions = flags.length
+    ? flags.slice(0, 3).map((flag) => getEnglishCriticAction(flag))
+    : ["Proceed to full-text reading and citation screening."];
+  return {
+    riskLevel,
+    decision,
+    primaryIssue,
+    flagTypes: flagTypes.length ? flagTypes.join(", ") : "none",
+    note: decision + ". " + primaryIssue,
+    actions
+  };
+}
+
+function getKoreanCriticAction(flag: CriticFlag): string {
   if (flag.flagType === "missing_doi") return "DOI 또는 출판사 페이지에서 서지정보를 확인하세요.";
   if (flag.flagType === "hallucination_risk") return "제목, DOI, 저널, 연도, 저자 정보를 Crossref 또는 출판사 메타데이터와 대조하세요.";
   if (flag.flagType === "journal_quality") return "해당 저널이 승인된 S/A1 저널 목록에 포함되는지 확인하세요.";
@@ -77,6 +99,18 @@ function getCriticAction(flag: CriticFlag): string {
   if (flag.flagType === "low_impact_risk") return "인용 영향력이 낮으므로 최신 논문, 이론 논문, 특수 맥락 논문인지 확인하세요.";
   if (flag.flagType === "access_path") return "직접 OA 경로가 없으므로 DOI, 기관 구독, 도서관 접근을 사용하세요.";
   return "최종 문헌 종합에 사용하기 전 해당 검토 항목을 확인하세요.";
+}
+
+function getEnglishCriticAction(flag: CriticFlag): string {
+  if (flag.flagType === "missing_doi") return "Locate DOI or confirm bibliographic metadata from publisher page before citing.";
+  if (flag.flagType === "hallucination_risk") return "Verify title, DOI, journal, year, and authors against Crossref and publisher metadata.";
+  if (flag.flagType === "journal_quality") return "Confirm whether this venue belongs to the approved S/A1 journal pool.";
+  if (flag.flagType === "crossref_verification") return "Compare title, year, journal, authors, and DOI against Crossref or publisher metadata.";
+  if (flag.flagType === "low_relevance") return "Read abstract/introduction to confirm conceptual fit with the research question.";
+  if (flag.flagType === "screening_status") return "Treat ranking status as provisional and manually decide include, review, or exclude.";
+  if (flag.flagType === "low_impact_risk") return "Treat citation impact as weak and check whether the paper is recent or theoretical.";
+  if (flag.flagType === "access_path") return "Use DOI, library access, or institutional subscriptions because no direct OA path is recorded.";
+  return "Review this flag before using the paper in final synthesis.";
 }
 
 export function summarizeCriticFlags(flags: CriticFlag[]) {
@@ -230,7 +264,7 @@ export function csv(result: SearchResult): Response {
 }
 
 function getCsvBody(result: SearchResult): string {
-  return [getCsvHeaders(), ...getCsvRows(result)].map((row) => row.map(formatCsvCell).join(",")).join("\n");
+  return [getCsvHeaders(), ...getCsvBodyRows(result)].map((row) => row.map(formatCsvCell).join(",")).join("\n");
 }
 
 function getCsvHeaders(): string[] {
@@ -276,7 +310,7 @@ function getCsvHeaders(): string[] {
   ];
 }
 
-function getCsvRows(result: SearchResult): Array<Array<string | number>> {
+function getCsvBodyRows(result: SearchResult): Array<Array<string | number>> {
   return result.papers.map((paper) => [
     result.job.id,
     result.job.keyword,
@@ -350,10 +384,10 @@ function getPdfBody(result: SearchResult): Uint8Array {
 
 function getPdfReportLines(result: SearchResult): string[] {
   const summary = summarizeReport(result.papers);
-  const reportInsights = buildReportInsights(result.papers);
+  const reportInsights = buildEnglishReportInsights(result.papers);
   const criticSummary = summarizeCriticFlags(result.criticFlags ?? []);
   const lines = [
-    "Paper Agent Report [PDF Korean output requires font embedding. Please use the Markdown report for full Korean text.]",
+    "Paper Agent Report [English Output Version]",
     "==================",
     "Job ID: " + result.job.id,
     "Keyword: " + result.job.keyword,
@@ -386,7 +420,7 @@ function getPdfReportLines(result: SearchResult): string[] {
   ];
 
   for (const paper of result.papers.slice(0, 20)) {
-    const critic = buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper));
+    const critic = buildEnglishCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper));
     lines.push(
       "",
       String(paper.rank) + ". " + paper.title,
@@ -516,7 +550,7 @@ function getXlsxWorkbookRelsXml(): string {
 }
 
 function getXlsxWorksheetXml(result: SearchResult): string {
-  const rows = [getCsvHeaders(), ...getCsvRows(result)];
+  const rows = [getCsvHeaders(), ...getCsvBodyRows(result)];
   const xmlRows = rows.map((row, rowIndex) => {
     const cells = row.map((value, columnIndex) => {
       const cellRef = columnName(columnIndex + 1) + String(rowIndex + 1);
@@ -598,6 +632,8 @@ function createZip(files: Array<{ name: string; body: string }>): Uint8Array {
   const endRecord = new Uint8Array(22);
   const endView = new DataView(endRecord.buffer);
   endView.setUint32(0, 0x06054b50, true);
+  endView.setUint16(4, 0, true);
+  endView.setUint16(6, 0, true);
   endView.setUint16(8, files.length, true);
   endView.setUint16(10, files.length, true);
   endView.setUint32(12, centralSize, true);
@@ -710,9 +746,24 @@ function formatKoreanBoolean(value: boolean | string | undefined): string {
   return String(value);
 }
 
+function formatKoreanOutputStatus(status: string | undefined): string {
+  if (!status) return "알 수 없음";
+  const map: Record<string, string> = {
+    "stored": "저장됨",
+    "generated": "생성됨",
+    "success": "성공",
+    "found": "확인됨",
+    "not_found": "확인 불가",
+    "failed": "실패",
+    "skipped": "건너뜀",
+    "planned": "예정"
+  };
+  return map[status] ?? status;
+}
+
 function getMarkdownReportBody(result: SearchResult): string {
   const summary = summarizeReport(result.papers);
-  const reportInsights = buildReportInsights(result.papers);
+  const reportInsights = buildKoreanReportInsights(result.papers);
   const criticSummary = summarizeCriticFlags(result.criticFlags ?? []);
   const topCriticFlags = (result.criticFlags ?? []).filter((flag) => flag.severity === "high" || flag.severity === "medium").slice(0, 8);
   const lines = [
@@ -788,7 +839,7 @@ function getMarkdownReportBody(result: SearchResult): string {
         escapeMarkdownTableCell(paper.journalRank ?? "매칭 없음"),
         formatReportScore(paper.finalScore),
         formatKoreanIncludeStatus(paper.includeStatus),
-        formatKoreanRiskLevel(buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).riskLevel),
+        formatKoreanRiskLevel(buildKoreanCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).riskLevel),
         paper.doi ? escapeMarkdownTableCell(paper.doi) : "확인 불가",
         paper.oaPdfUrl ? "있음" : "없음"
       ].join(" | ")
@@ -803,6 +854,7 @@ function getMarkdownReportBody(result: SearchResult): string {
   }
 
   for (const paper of result.papers) {
+    const critic = buildKoreanCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper));
     lines.push(
       `### ${paper.rank}. ${paper.title}`,
       "",
@@ -817,18 +869,18 @@ function getMarkdownReportBody(result: SearchResult): string {
       `- 인용 수: ${paper.citedByCount ?? 0}`,
       `- 출판사: ${formatKoreanAvailability(paper.publisher)}`,
       `- 검증 상태: ${formatKoreanVerificationStatus(paper.verificationStatus)} - ${paper.verificationReason ?? "기록된 검증 내용이 없습니다."}`,
-      `- Unpaywall 확인: ${paper.unpaywallStatus ?? "건너뜀"} - ${paper.unpaywallReason ?? "기록된 Unpaywall 조회가 없습니다."}`,
+      `- Unpaywall 확인: ${formatKoreanOutputStatus(paper.unpaywallStatus)} - ${paper.unpaywallReason ?? "기록된 Unpaywall 조회가 없습니다."}`,
       `- OA PDF: ${formatKoreanAvailability(paper.oaPdfUrl)}`,
       `- OA landing page: ${formatKoreanAvailability(paper.oaLandingPageUrl)}`,
-      `- Google Drive: ${paper.driveStatus ?? "건너뜀"} - ${paper.driveWebUrl || paper.driveReason || "Google Drive 업로드 기록이 없습니다."}`,
+      `- Google Drive: ${formatKoreanOutputStatus(paper.driveStatus)} - ${paper.driveWebUrl || paper.driveReason || "Google Drive 업로드 기록이 없습니다."}`,
       `- 라이선스: ${[paper.oaLicense, paper.oaHostType, paper.oaRepository].filter(Boolean).join(" / ") || "확인 불가"}`,
-      `- 검토 요약: ${buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).note}`,
-      `- 검토 위험: ${formatKoreanRiskLevel(buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).riskLevel)}`,
-      `- 검토 유형: ${buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).flagTypes}`,
+      `- 검토 요약: ${critic.note}`,
+      `- 검토 위험: ${formatKoreanRiskLevel(critic.riskLevel)}`,
+      `- 검토 유형: ${critic.flagTypes}`,
       "",
       "검토 권장 조치:",
       "",
-      ...formatBulletList(buildCriticReviewSummary(paper, getCriticFlagsForPaper(result, paper)).actions),
+      ...formatBulletList(critic.actions),
       "",
       "점수 구성:",
       "",
@@ -846,6 +898,7 @@ function getMarkdownReportBody(result: SearchResult): string {
 
   return `${lines.join("\n")}\n`;
 }
+
 
 function summarizeReport(papers: PaperSummary[]) {
   const includeCount = papers.filter((paper) => paper.includeStatus === "include").length;
@@ -870,7 +923,7 @@ function summarizeReport(papers: PaperSummary[]) {
   };
 }
 
-function buildReportInsights(papers: PaperSummary[]) {
+function buildKoreanReportInsights(papers: PaperSummary[]) {
   if (!papers.length) {
     return {
       keyFindings: ["허용된 저널 목록을 통과한 논문이 없어 실질적인 종합 요약을 제공할 수 없습니다."],
@@ -905,7 +958,7 @@ function buildReportInsights(papers: PaperSummary[]) {
     ],
     commonThemes: [
       topicTerms.length
-        ? `제목에서 자주 등장하는 키워드는 ${formatInlineList(topicTerms)} 등이며, 이는 유지된 문헌들의 주요 주제적 군집을 시사합니다.`
+        ? `제목에서 자주 등장하는 키워드는 ${formatInlineList(topicTerms, "ko")} 등이며, 이는 유지된 문헌들의 주요 주제적 군집을 시사합니다.`
         : "유지된 제목들에서 신뢰할 만한 주제 흐름을 유추할 만큼 반복되는 키워드가 충분하지 않습니다.",
       journals.length
         ? `가장 빈번하게 등장한 저널 출처는 ${journals.map((item) => `${item.label} (${item.count}건)`).join(", ")}입니다.`
@@ -937,6 +990,77 @@ function buildReportInsights(papers: PaperSummary[]) {
       "현재 OpenAlex를 기반으로 한 테스트 실행은 Web of Science API 승인이 보류 중인 동안 워크플로우를 검증하기 위한 것입니다.",
       "저널 Allowlist 필터링은 목록에 없는 출처를 의도적으로 배제합니다. 이는 품질 관리에 유리하지만 관련성 높은 타 분야 융합 연구가 누락될 수 있습니다.",
       "이 보고서는 아직 초록이나 전문에서 구체적인 내러티브 주장을 직접 추출하여 요약하지 않으며, 해당 기능은 추후 추가될 예정입니다."
+    ]
+  };
+}
+
+function buildEnglishReportInsights(papers: PaperSummary[]) {
+  if (!papers.length) {
+    return {
+      keyFindings: ["No allowlisted journal results were saved, so substantive synthesis is not available."],
+      commonThemes: ["No recurring themes can be inferred from an empty result set."],
+      differences: ["No method or context differences can be compared from an empty result set."],
+      researchGaps: ["Repeat the search with broader terms, adjusted years, or a different source provider."],
+      readingOrder: ["Run a search that returns allowlisted journal results before using the reading order."],
+      screeningNotes: ["All downstream interpretation is blocked because no papers passed the journal allowlist."],
+      limitations: ["This report is generated from metadata and simple scoring rules, not a full-text qualitative review."]
+    };
+  }
+
+  const topPapers = papers.slice(0, 5);
+  const includePapers = papers.filter((paper) => paper.includeStatus === "include");
+  const reviewPapers = papers.filter((paper) => paper.includeStatus === "review");
+  const verifiedShare = papers.filter((paper) => paper.verificationStatus === "verified").length / papers.length;
+  const oaPdfPapers = papers.filter((paper) => Boolean(paper.oaPdfUrl));
+  const journals = getTopCounts(papers.map((paper) => paper.journalName).filter(Boolean), 5);
+  const years = papers.map((paper) => paper.year).filter((year) => year > 0);
+  const newestYear = years.length ? Math.max(...years) : null;
+  const oldestYear = years.length ? Math.min(...years) : null;
+  const topicTerms = getTopTopicTerms(papers, 8);
+
+  return {
+    keyFindings: [
+      `${papers.length} allowlisted result${papers.length === 1 ? "" : "s"} were retained after source search, journal filtering, metadata enrichment, and ranking.`,
+      `${includePapers.length} paper${includePapers.length === 1 ? "" : "s"} met the automatic include threshold; ${reviewPapers.length} require manual review before final use.`,
+      `${Math.round(verifiedShare * 100)}% of retained results were verified by Crossref at the metadata level.`,
+      oaPdfPapers.length
+        ? `${oaPdfPapers.length} result${oaPdfPapers.length === 1 ? "" : "s"} include a direct open-access PDF URL for immediate reading.`
+        : "No retained result currently has a direct open-access PDF URL; use DOI or landing pages for access checks."
+    ],
+    commonThemes: [
+      topicTerms.length
+        ? `Recurring title terms include ${formatInlineList(topicTerms, "en")}, suggesting the dominant topical clusters in the retained set.`
+        : "The retained titles do not provide enough repeated terms for a reliable theme signal.",
+      journals.length
+        ? `The most frequent journal source${journals.length === 1 ? " is" : "s are"} ${journals.map((item) => `${item.label} (${item.count})`).join(", ")}.`
+        : "Journal concentration could not be assessed.",
+      "The ranked set is restricted to the approved business school journal list, so the themes should be interpreted as top-journal signals rather than a complete field map."
+    ],
+    differences: [
+      newestYear && oldestYear
+        ? `Publication years range from ${oldestYear} to ${newestYear}, so older high-citation papers and newer emerging papers should be interpreted separately.`
+        : "Publication year coverage is incomplete.",
+      "Citation score and recency score may favor different papers; prioritize papers that are strong on both when selecting core readings.",
+      "Open-access availability differs across papers, so download readiness should not be treated as evidence quality."
+    ],
+    researchGaps: [
+      reviewPapers.length
+        ? `${reviewPapers.length} result${reviewPapers.length === 1 ? "" : "s"} remain in review status; manual screening should check conceptual fit, empirical context, and method relevance.`
+        : "No papers remain in review status, but manual screening is still required before final inclusion.",
+      "The current relevance score is metadata-based. Full abstract or full-text embedding review should be added before final literature synthesis.",
+      "Provider differences remain a known gap: OpenAlex is currently used for testing, and final quality checks must be repeated after switching to Web of Science."
+    ],
+    readingOrder: topPapers.map((paper) => `${paper.title} (${paper.year || "unknown year"}) - final score ${formatReportScore(paper.finalScore)}, ${paper.includeStatus}.`),
+    screeningNotes: [
+      "Use include status as a triage signal, not as a final acceptance decision.",
+      "Check Crossref verification reason for title, year, and journal mismatches before citing a paper.",
+      "Prioritize papers with direct OA PDF links for fast first-pass reading, then use DOI landing pages for closed-access papers."
+    ],
+    limitations: [
+      "This report is generated from bibliographic metadata, ranking features, and OA checks; it is not a substitute for full-text expert review.",
+      "Current OpenAlex-based test runs are for workflow validation while WoS API approval is pending.",
+      "Journal allowlist filtering intentionally excludes non-allowlisted venues, which improves scope control but may omit relevant interdisciplinary work.",
+      "The report does not yet generate narrative claims from abstracts or full texts; those should be added with a future summarization or embedding stage."
     ]
   };
 }
@@ -980,8 +1104,12 @@ function getTopTopicTerms(papers: PaperSummary[], limit: number): string[] {
   return getTopCounts(terms, limit).map((item) => item.label);
 }
 
-function formatInlineList(values: string[]): string {
+function formatInlineList(values: string[], lang: "ko" | "en" = "en"): string {
   if (values.length <= 1) return values[0] ?? "";
+  if (lang === "ko") {
+    if (values.length === 2) return `${values[0]} 및 ${values[1]}`;
+    return `${values.slice(0, -1).join(", ")}, 그리고 ${values[values.length - 1]}`;
+  }
   if (values.length === 2) return `${values[0]} and ${values[1]}`;
   return `${values.slice(0, -1).join(", ")}, and ${values[values.length - 1]}`;
 }

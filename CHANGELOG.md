@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## [Unreleased]
+- Worker: Fixed PDF report output to remain in English, avoiding mojibake caused by ASCII-only PDF engine while keeping the Markdown report localized in Korean. Separated insight and critic summary logic by language. (gemini)
 - Worker: Localized the generated Markdown and PDF reports to Korean, including section headers, status values, critic actions, and summary messages, to resolve the discrepancy between the Korean dashboard and the English report output. (gemini)
 - Web & Worker: Implemented Search Execution Reliability Hotfix. Reduced default dashboard search size to 5 and added a "Safe Execution Mode" toggle to prevent Cloudflare Worker CPU timeouts. Added OpenAlex fallback upon Web of Science API failure, and improved handling and UI display of jobs with zero results after journal filtering. (gemini)
 - Web: Enhanced dashboard usability for Korean users by translating key terminology, separating feature implementation status from runtime job status, and adding descriptive tooltips. (gemini)

@@ -186,12 +186,12 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
     if (!report) return literaturePreview;
 
     const sections = [
-      { title: "전체 요약", patterns: [/^##\s+Executive Summary/i, /^##\s+Summary/i], fallback: literaturePreview[0].body, desc: "검색된 논문들이 전체적으로 어떤 연구 흐름을 이루는지 요약합니다." },
-      { title: "공통 연구 흐름", patterns: [/^###\s+Common Themes/i, /^##\s+Commonality/i, /^###\s+Commonality/i], fallback: literaturePreview[1].body, desc: "여러 논문에서 반복적으로 나타나는 핵심 주제입니다." },
-      { title: "방법론 차이", patterns: [/^###\s+Methodological Differences/i, /^##\s+Difference/i, /^###\s+Difference/i], fallback: literaturePreview[2].body, desc: "논문들이 사용하는 데이터, 분석 방법, 연구 설계의 차이입니다." },
-      { title: "연구 공백", patterns: [/^###\s+Identified Research Gaps/i, /^##\s+Research Gap/i, /^###\s+Research Gap/i], fallback: literaturePreview[3].body, desc: "아직 충분히 설명되지 않았거나 후속 연구가 필요한 부분입니다." },
-      { title: "검토 필요 사항", patterns: [/^###\s+Screening Notes/i, /^##\s+Critic/i, /^###\s+Critic/i], fallback: literaturePreview[4].body, desc: "DOI, 저널, 관련성, 과대해석 가능성을 재검토해야 하는 부분입니다." },
-      { title: "논문 활용 순서", patterns: [/^###\s+Suggested Reading Order/i, /^##\s+Use in Paper/i, /^###\s+Use in Paper/i], fallback: literaturePreview[5].body, desc: "발표문, 논문, 이론적 배경에 어떤 순서로 활용할지 제안합니다." }
+      { title: "전체 요약", patterns: [/^##\s+전체 요약/i, /^##\s+Executive Summary/i, /^##\s+Summary/i], fallback: literaturePreview[0].body, desc: "검색된 논문들이 전체적으로 어떤 연구 흐름을 이루는지 요약합니다." },
+      { title: "공통 연구 흐름", patterns: [/^##\s+공통 연구 흐름/i, /^###\s+Common Themes/i, /^##\s+Commonality/i, /^###\s+Commonality/i], fallback: literaturePreview[1].body, desc: "여러 논문에서 반복적으로 나타나는 핵심 주제입니다." },
+      { title: "방법론 차이", patterns: [/^##\s+방법론 및 맥락 차이/i, /^###\s+Methodological Differences/i, /^##\s+Difference/i, /^###\s+Difference/i], fallback: literaturePreview[2].body, desc: "논문들이 사용하는 데이터, 분석 방법, 연구 설계의 차이입니다." },
+      { title: "연구 공백", patterns: [/^##\s+연구 공백/i, /^###\s+Identified Research Gaps/i, /^##\s+Research Gap/i, /^###\s+Research Gap/i], fallback: literaturePreview[3].body, desc: "아직 충분히 설명되지 않았거나 후속 연구가 필요한 부분입니다." },
+      { title: "검토 필요 사항", patterns: [/^##\s+검토 필요 항목 요약/i, /^###\s+Screening Notes/i, /^##\s+Critic/i, /^###\s+Critic/i], fallback: literaturePreview[4].body, desc: "DOI, 저널, 관련성, 과대해석 가능성을 재검토해야 하는 부분입니다." },
+      { title: "논문 활용 순서", patterns: [/^##\s+추천 읽기 순서/i, /^###\s+Suggested Reading Order/i, /^##\s+Use in Paper/i, /^###\s+Use in Paper/i], fallback: literaturePreview[5].body, desc: "발표문, 논문, 이론적 배경에 어떤 순서로 활용할지 제안합니다." }
     ];
 
     return sections.map((section) => {
@@ -333,7 +333,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
           <div className="uxPanelHead">
             <div>
               <h2>문헌 검토 보고서 미리보기</h2>
-              <p>{report ? "실제 Report Agent가 생성한 영문 원문 보고서의 핵심 요약입니다." : "예시 데이터(Mock): 실제 리포트 생성 전의 한글 요약 예시입니다."}</p>
+              <p>{report ? "실제 Report Agent가 생성한 보고서의 요약 발췌본입니다." : "예시 데이터(Mock): 실제 리포트 생성 전의 한글 요약 예시입니다."}</p>
             </div>
             <span className={`uxPill ${report ? "green" : "amber"}`}>{report ? "원문 보고서 발췌" : "예시 데이터"}</span>
           </div>
@@ -346,7 +346,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
               </article>
             ))}
           </div>
-          {report && <small className="uxPanelNote">현재 Report Agent 원문은 영어로 생성되며, 본 화면은 해석을 돕기 위해 섹션명만 한글화하여 제공합니다.</small>}
+          {report && <small className="uxPanelNote">Markdown 보고서는 한글로 제공되며, PDF 보고서는 현재 기술 제약으로 영어로 제공됩니다.</small>}
         </section>
       </section>
     </>

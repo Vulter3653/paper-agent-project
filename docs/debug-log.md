@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-30 - Keep PDF Export Active With English Output
+- **Incident**: After localizing the Markdown report to Korean, the PDF report output also shared the same Korean strings, causing the Helvetica/ASCII-constrained PDF engine to output '?????' (mojibake) for all Korean characters.
+- **Resolution**:
+  - Refactored `apps/worker/src/reports.ts` to separate the generation logic for Markdown (Korean) and PDF (English).
+  - Created dual versions of insight and critic summary generators (`buildKoreanReportInsights` vs `buildEnglishReportInsights`, etc.).
+  - Fixed `getPdfReportLines` to use strictly English section names and metadata labels.
+  - Added a UI notice in the dashboard explaining the language difference between Markdown and PDF artifacts.
+- **Verification**: Verified via local smoke test that `report.pdf` is strictly English and `report.md` is strictly Korean.
+
 ## 2026-05-30 - Korean Report Output Hotfix
 - **Incident**: The generated Markdown report (`report.md`) was completely in English, causing a discrepancy with the Korean dashboard UI and reducing usability for Korean stakeholders.
 - **Resolution**:

@@ -1,23 +1,27 @@
 # Gemini Session State
 
-Updated: 2026-05-30 (Documentation State Consistency Reconciliation)
+Updated: 2026-05-30 (Benchmark binding audited and hardened)
 
 ## Current Context
-- **Latest Commit**: `84b4b58d79ddeec7a829612017bf8edac8dcf265`
-- **Active Branch**: `pre-freeze/docs-state-consistency-2026-05-30`
-- **Current Task**: Synchronize documentation state with current main after Report Output Language Guide merge.
+- **Latest Commit**: (In-progress: Audit and Fix applied)
+- **Active Branch**: `pre-freeze/actual-benchmark-evaluation-binding-2026-05-30`
+- **Current Task**: Actual Benchmark Evaluation Binding Audit & Fix.
 
 ## Completed Actions
-1. **Report Output Language Guide Merge**: Successfully merged and pushed the localization guide to `main`.
-2. **Artifact Labeling**: Explicitly labeled Markdown as "한글 보고서" (Korean Report) and PDF as "영문 PDF" (English PDF) in the dashboard.
-3. **Artifact Purpose Definition**: Defined CSV/XLSX as raw analysis source files with English schemas.
-4. **Language Policy UI**: Implemented an "Output Language Policy" card in the artifact panel for user transparency.
-5. **PDF Continuity**: Confirmed PDF functionality remains active with strictly English ASCII-safe content to prevent mojibake.
-6. **Live Verification**: Verified bifurcated output (KO Markdown, EN PDF) on the deployed environment.
+1. **Benchmark Audit**: Verified that Rule-based and Proposed Agent metrics (P@5: 0.1333, NDCG@5: 0.3579) are mathematically correct for the T001-T003 controlled subset. Identified root cause as identical Rank-1 hits.
+2. **Worker API Update**: Updated `/api/benchmark-metrics` to use `actual_controlled_snapshot` and added audit metadata (`generatedAt`, `inputFiles`).
+3. **Dashboard UI Update**: Added "Quantitative Metric Parity" warning guide and **Functional Capability Comparison** table to highlight Multi-Agent architectural advantages.
+4. **Verification**: Recalculated metrics from raw CSVs; results matched snapshot exactly. Full validation suite passed.
+5. **Docs Reconciliation**: Updated `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md` with audit and fix details.
 
 ## Pending Actions
-1. **Documentation Reconciliation Merge**: Merge the current consistency branch into `main` and push to `origin`.
-2. **Feature Development**: Continue feature implementation based on project roadmap and user directives.
+1. **Maintainer Review**: Request merge of `pre-freeze/actual-benchmark-evaluation-binding-2026-05-30` into `main`.
+2. **Feature Development**: Continue implementation based on the Sunday Code Freeze checklist.
+
+## Current Metrics (T001-T003 Controlled Subset)
+- **Precision@5**: Rule-based: 0.1333, Proposed Agent: 0.1333, Single LLM: 0.6667
+- **NDCG@5**: Rule-based: 0.3579, Proposed Agent: 0.3579, Single LLM: 0.9949
+- **Top Journal Precision**: Rule-based: 100%, Proposed Agent: 100%, Single LLM: 93.3%
 
 ## Blockers
-- None. Documentation is being aligned with the verified system state.
+- None. Audit confirmed that identical values correctly reflect the current task subset.

@@ -17,6 +17,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-30 (gemini)
+- Web: Added Functional Capability Comparison table to Evaluation Dashboard to highlight qualitative differences (traceability, verification, OA, critic) between models. (gemini)
+- Web: Implemented guidance for identical Rule-based and Proposed metrics in controlled benchmarks. (gemini)
+- Worker: Audited and updated /api/benchmark-metrics to use actual_controlled_snapshot source, verifying T001-T003 result file integrity. (gemini)
 - Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
 - Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)
 - Docs: Marked earlier English-report-preview wording as superseded by the later Korean Markdown / English PDF split. (gemini)

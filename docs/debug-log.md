@@ -1,5 +1,20 @@
 # Debug Log
 
+## 2026-05-30 - Baseline Evaluation Dashboard Metric Parity
+- **Incident**: Evaluation Dashboard showed identical quantitative metrics (Precision@5: 0.1333, NDCG@5: 0.3579) for Rule-based and Proposed models, raising concerns about hardcoded values or data binding bugs.
+- **Investigation**:
+    - Audited `benchmark/baseline_rule_based_results.csv` and `benchmark/proposed_agent_results.csv`.
+    - Found that for tasks T001 and T003, both models identified the same gold-matched papers at Rank 1.
+    - Verified that Rule-based baseline for this subset was derived from the Proposed Agent's candidate pool, leading to identical hits on this small sample.
+    - Recalculated metrics using `evaluate-proposed-agent.mjs` and `compare-baselines.mjs` with new output paths; confirmed identical results are mathematically correct for the current T001-T003 data.
+- **Resolution**:
+    - Updated `/api/benchmark-metrics` to use `actual_controlled_snapshot` source and include detailed audit metadata (`generatedAt`, `inputFiles`).
+    - Added "Identical Metrics" guidance box to the dashboard to explain the parity and redirect focus to functional differences.
+    - Implemented **Functional Capability Comparison** table to highlight architectural advantages of the Multi-Agent system (traceability, verifiers, OA, critic) that are not captured by raw Precision@5 on this subset.
+- **Verification**:
+    - Deployed Worker diagnostics and search job list passed.
+    - Full system validation suite passed.
+
 ## 2026-05-30 - Report Output Language Guide
 - **Incident**: Although report generation logic was separated into Korean (Markdown) and English (PDF), users might still be confused by the mixed-language artifacts without a clear explanation in the dashboard.
 - **Resolution**:

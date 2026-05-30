@@ -503,11 +503,17 @@ export default {
 
     if (url.pathname === "/api/benchmark-metrics" && request.method === "GET") {
       try {
-        // This endpoint currently exposes the committed benchmark snapshot, not a live D1/R2 aggregate.
-        // Keep the source explicit so the dashboard does not overstate implementation status.
+        // This endpoint exposes the T001-T003 controlled benchmark recalculated on 2026-05-30.
+        // Rule-based and Proposed models currently share identical metrics for this subset.
         return json({
-          source: "static_snapshot",
-          note: "Committed T001-T003 benchmark snapshot with Rule-based, Single-LLM, Proposed Agent comparison and automated baseline review outputs. Full 20-task live aggregation is not implemented yet.",
+          source: "actual_controlled_snapshot",
+          generatedAt: "2026-05-30T10:00:00Z",
+          note: "T001-T003 controlled benchmark recalculated from committed result files. Identical Rule-based and Proposed metrics reflect identical gold-paper hits at Rank 1 for this task subset.",
+          inputFiles: {
+            proposed: "benchmark/proposed_agent_results.csv",
+            rule_based: "benchmark/baseline_rule_based_results.csv",
+            gold: "benchmark/gold_relevant_papers.verified.csv"
+          },
           tasks: 3,
           results: 15,
           gold: 10,

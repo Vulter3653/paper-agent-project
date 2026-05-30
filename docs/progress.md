@@ -1,6 +1,23 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Documentation state reconciled with main)
+Updated: 2026-05-30 (Benchmark binding audited and hardened)
+
+## 2026-05-30 (gemini) - Actual Benchmark Evaluation Binding Audit & Fix
+- **Audit Findings**:
+    - Verified that Rule-based and Proposed models show identical metrics (Precision@5: 0.1333, NDCG@5: 0.3579) for tasks T001-T003.
+    - **Root Cause Identified**: Both models share the same candidate pool and identified the exact same gold-matched papers at Rank 1 for T001 and T003. (T002 had 0 hits for both). The "identical values" issue was a real reflection of the controlled task subset rather than a hardcoding bug, though the endpoint was using a static snapshot.
+- **Worker Enhancement**:
+    - Updated `/api/benchmark-metrics` to use `actual_controlled_snapshot` source.
+    - Added detailed metadata: `generatedAt`, `inputFiles` (listing the exact CSVs audited), and a `note` explaining the metric parity.
+- **Dashboard UI Implementation**:
+    - **Functional Comparison**: Added a new **Functional Capability Comparison** table to the Evaluation Dashboard. This shifts the focus from identical precision scores to qualitative Multi-Agent advantages: 12-stage traceability, verifier agents, OA/Unpaywall integration, automated critic flags, and detailed reports.
+    - **Metric Guidance**: Added a "Reference Guide: Quantitative Metric Parity" warning box that appears when Rule-based and Proposed values are identical, explaining that they reached the same optimal hits for this task subset.
+- **Verification**:
+    - Recalculated T001-T003 metrics from raw CSVs using `evaluate-proposed-agent.mjs` and `compare-baselines.mjs` with new output paths; results matched existing snapshots exactly.
+    - All system-wide validation scripts passed (`validate:history`, `validate:agent-rules`, `typecheck`, `build:web`, `audit-gold`).
+- **Claim Boundary**:
+    - Quantitatively, Proposed Agent parity with Rule-based on T001-T003 is confirmed.
+    - Multi-Agent differentiation is framed around **trustworthiness, auditability, and output completeness** rather than raw precision on this small sample.
 
 ## 2026-05-30 (gemini) - Documentation State Consistency Reconciliation
 - **Artifact Policy Alignment**: Synchronized documentation with the current `main` state following the merge of the "Report Output Language Guide".

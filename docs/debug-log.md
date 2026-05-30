@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-30 - Vectorize returnMetadata JSON Parsing Error Fix
+- **Issue**: Live Worker hit `VECTOR_QUERY_ERROR (40026)`: "Failed to parse request body as JSON: returnMetadata".
+- **Root Cause**: The Cloudflare Vectorize SDK (or service) for the current compatibility date expects `returnMetadata` to be an enum ("none" | "all" | "indexed") rather than a boolean in some runtime contexts, or strictly rejects boolean `false` if it expects a string.
+- **Resolution**: Updated `apps/worker/src/vectorize.ts` to use `returnMetadata: "none"` instead of `false`. This complies with the newer API specification and should resolve the parsing error in the live environment.
+- **Verification**: `npm run typecheck` and `npm run build:web` passed. Live verification pending deployment.
+
 ## 2026-05-30 - AI Opt-in Runtime Verification & Dashboard Integration
 - **Issue**: `apps/web/src/main.tsx` 파일이 너무 커서 전체 `replace` 시 출력이 중단되거나 트렁케이션 위험이 발생함. (gemini)
 - **Resolution**: 

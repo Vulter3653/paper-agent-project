@@ -1,6 +1,18 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (AI opt-in runtime verification and dashboard integration complete)
+Updated: 2026-05-30 (AI opt-in runtime verification, merge to main, and live verification complete)
+
+## 2026-05-30 (gemini) - AI Opt-in Runtime Merge & Live Verification
+- **Merge Success**: Merged `pre-freeze/ai-opt-in-runtime-verification-2026-05-30` into `main` and pushed to `origin`. (gemini)
+- **Live Deployment Verification**:
+  - Confirmed live Worker diagnostics show `vectorizeReady: true` and `llmCriticReady: true`.
+  - Confirmed live Pages deployment reflects latest dashboard updates.
+- **Runtime Evidence (Smoke Job)**:
+  - Executed live smoke job `job-60a900b5-4015-488f-84d8-6b3c3041f572` with AI toggles enabled.
+  - **Planner Trace**: Successfully recorded `useSemanticRanking: true` and `useLlmCritic: true`.
+  - **Vectorize Trace**: Recorded `mode: metadata_fallback` due to `VECTOR_QUERY_ERROR (40026)`. This confirms that the system gracefully handles live infrastructure errors via the defined fallback path.
+  - **Dashboard**: Confirmed that "Metadata Fallback" is correctly derived from traces and displayed in the UI metrics.
+- **Mandatory Validation**: Full suite passed on main (`validate:history`, `validate:agent-rules`, `typecheck`, `build:web`, `audit-gold`).
 
 ## 2026-05-30 (gemini) - AI Opt-in Runtime Verification & Integration
 - **Feature Completion**: Verified and strengthened the runtime integration of opt-in AI features (Vectorize and LLM Critic). (gemini)

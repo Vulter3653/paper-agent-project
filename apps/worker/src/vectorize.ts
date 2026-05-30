@@ -64,7 +64,7 @@ export async function getSemanticRelevance(
   
   const matches = await vectorIndex.query(queryVector, {
     topK: 50, // Match more to ensure we cover our candidates
-    returnMetadata: false
+    returnMetadata: "none"
   });
 
   const scores: Record<string, number> = {};

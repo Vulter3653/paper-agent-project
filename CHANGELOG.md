@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
+
+## 2026-05-30 (gemini)
 - Feature: AI Opt-in (Vectorize, LLM Critic) runtime verification and dashboard integration. (gemini)
 - Worker: Strengthened trace metadata for semantic ranking and critic analysis execution transparency. (gemini)
 - Web: Added experimental toggles and real-time execution mode display from traces. (gemini)
@@ -25,8 +27,6 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Web: Hardened partial dashboard components (Vectorize, Journal Pool, Google Drive, Tool Call Console, Evaluation). (gemini)
 - Docs: Updated Sunday Code Freeze checklist and README for consistency. (gemini)
 - Docs: Completed Sunday Code Freeze pre-audit and created checklist. (gemini)
-
-## 2026-05-30 (gemini)
 - Features: Implemented opt-in Vectorize semantic relevance path. (gemini)
 - Worker: Added AI and Vectorize diagnostics to `/api/diagnostics`. (gemini)
 - Worker: Enhanced `vectorize_relevance` trace with detailed metadata and fallback logic. (gemini)

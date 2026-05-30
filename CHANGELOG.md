@@ -17,27 +17,28 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
+- None.
 
 ## 2026-05-30 (gemini)
-- Fix: Corrected independent benchmark runner (`run-independent-benchmark.mjs`) regex escaping and CSV parsing logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
-- Benchmark: Updated `insert_run.sql` generator to use `INSERT OR REPLACE` for repeatable seeding. (gemini)
-- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. Implemented `/api/benchmark-runs/:id` and enhanced `:id/metrics` endpoints. (gemini)
+- Fix: Corrected independent benchmark runner (run-independent-benchmark.mjs) regex escaping and CSV parsing logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
+- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. Implemented /api/benchmark-runs/:id and enhanced :id/metrics endpoints. (gemini)
 - Web: Bound Evaluation Dashboard run selector to actual selected benchmark run metrics endpoint and improved UI feedback for D1 vs Legacy fallback status. (gemini)
 - Docs: Clarified that Production D1 seeding is required before D1 benchmark run source appears in the deployed dashboard. (gemini)
-- Worker: Fixed `apps/worker/src/index.ts` truncation issues and ensured all benchmark helper imports are present. (gemini)
+- Worker: Fixed apps/worker/src/index.ts truncation issues and ensured all benchmark helper imports are present. (gemini)
 - Feat: Implemented Independent Benchmark Evaluation Pipeline separating the static evaluation metrics from live runtime aggregation. (gemini)
-- Worker: Expanded D1 database schema in `schema.sql` and created migration `0006_add_benchmark_tables.sql` to include benchmark persistence tables (`benchmark_runs`, `benchmark_run_tasks`, etc.). (gemini)
-- Worker: Added robust benchmark helper methods in `persistence.ts` to support runtime retrieval of `benchmark_runs` and `benchmark_run_metrics`. (gemini)
-- Worker: Updated `/api/benchmark-metrics` endpoint to intelligently serve latest completed benchmark run from D1, gracefully falling back to a `legacy_static_snapshot`. Added new endpoint `/api/benchmark-runs`. (gemini)
-- Scripts: Added `run-independent-benchmark.mjs` to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive `benchmark/runs/` architecture and generating D1 SQL inserts. (gemini)
-- Web: Upgraded Evaluation Dashboard `DashboardPages.tsx` to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
+- Worker: Expanded D1 database schema in schema.sql and created migration 0006_add_benchmark_tables.sql to include benchmark persistence tables (benchmark_runs, benchmark_run_tasks, etc.). (gemini)
+- Worker: Added robust benchmark helper methods in persistence.ts to support runtime retrieval of benchmark_runs and benchmark_run_metrics. (gemini)
+- Worker: Updated /api/benchmark-metrics endpoint to intelligently serve latest completed benchmark run from D1, gracefully falling back to a legacy_static_snapshot. Added new endpoint /api/benchmark-runs. (gemini)
+- Scripts: Added run-independent-benchmark.mjs to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive benchmark/runs/ architecture and generating D1 SQL inserts. (gemini)
+- Web: Upgraded Evaluation Dashboard DashboardPages.tsx to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
 - Web: Added an interactive "Run Selector" to the Evaluation Dashboard to toggle between distinct evaluation runs natively. (gemini)
+- Benchmark: Updated insert_run.sql generator to use INSERT OR REPLACE for repeatable seeding. (gemini)
 - Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
 - Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)
 - Docs: Marked earlier English-report-preview wording as superseded by the later Korean Markdown / English PDF split. (gemini)
 - Web: Implemented Report Output Language Guide. Added detailed labels and descriptions for all output artifacts (Markdown, PDF, CSV, XLSX) to the Research Dashboard. Added an "Output Language Policy" card to explain why different formats have different languages (KO vs EN) and their intended use cases. (gemini)
 - Worker: Fixed PDF report output to remain in English, avoiding mojibake caused by ASCII-only PDF engine while keeping the Markdown report localized in Korean. Separated insight and critic summary logic by language. (gemini)
-- Worker: Localized the generated Markdown and PDF reports to Korean, including section headers, status mappings, metadata labels, critic actions, and summary texts to Korean in `apps/worker/src/reports.ts`. (gemini)
+- Worker: Localized the generated Markdown and PDF reports to Korean, including section headers, status values, critic actions, and summary messages, to resolve the discrepancy between the Korean dashboard and the English report output. (gemini)
 - Web & Worker: Implemented Search Execution Reliability Hotfix. Reduced default dashboard search size to 5 and added a "Safe Execution Mode" toggle to prevent Cloudflare Worker CPU timeouts. Added OpenAlex fallback upon Web of Science API failure, and improved handling and UI display of jobs with zero results after journal filtering. (gemini)
 - Web: Enhanced dashboard usability for Korean users by translating key terminology, separating feature implementation status from runtime job status, and adding descriptive tooltips. (gemini)
 - Web: Improved the Evaluation dashboard scenarios (Strict, Broad Recall, Fast Demo) to interactively change highlighted metrics and interpretive context upon click, clarifying that these are analytical lenses rather than new benchmark runs. (gemini)
@@ -47,6 +48,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Worker: Reduced default LLM Critic review limit from 5 to 3 papers for improved latency. (gemini)
 - Dashboard: Enhanced UI to display granular agent execution modes (LLM Augmented, LLM Timeout Fallback, Rule-based Fallback) based on real-time traces. (gemini)
 - Docs: Completed initial LLM Critic latency research and fallback implementation for Sunday Code Freeze. (gemini)
+
+## 2026-05-30 (gemini)
 - Fixed: Resolved `VECTOR_QUERY_ERROR (40026)` by changing `returnMetadata` to `"none"` in `apps/worker/src/vectorize.ts`. (gemini)
 - Infra: Verified Vectorize semantic relevance fix in live deployment via smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9`. (gemini)
 - Feature: AI Opt-in (Vectorize, LLM Critic) runtime verification and dashboard integration. (gemini)
@@ -226,6 +229,82 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink from personal `main` so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
 
 - Infra: Triggered a fresh Cloudflare Git Build from personal `main` after confirming the failed build targeted stale commit `0bfa894` instead of fixed commit `4369a10`. (codex)
+
+
+- Docs: Added `docs/gemini-latest-work-evaluation.md` with blocking findings and salvage guidance for the latest divergent Gemini local branch. (codex)
+
+## 2026-05-26 (codex)
+
+- Docs: Added `docs/gemini-debug-handoff.md` and strict Worker debug discipline for Gemini so local/production Worker findings are transferred without relying on memory. (codex)
+- Fixed: Relaxed local Worker smoke diagnostics readiness when `REQUIRE_READY=false` so local runs without provider secrets can still verify health, schema, and recent-job routes. (codex)
+- Docs: Added `docs/local-worker-troubleshooting.md` and explicit local Worker dev/smoke scripts after verifying production and local Worker behavior. (codex)
+- Docs: Added `docs/gemini-session-state.md` and Gemini memory-continuity rules so Gemini can resume from repository state instead of unreliable session memory. (codex)
+- Fixed: Sanitized LLM Critic severity values before adding AI-generated critic flags. (codex)
+- Fixed: Reviewed Gemini Worker modularization, removed unverified Cloudflare AI/Vectorize deployment bindings from tracked Wrangler configs, and added `.gitignore` safeguards for local reference artifacts. (codex)
+- Docs: Added `docs/gemini-review-feedback.md` with accepted work, corrections, and future Gemini guidance. (codex)
+- Changed: Split Worker report/export generation into `apps/worker/src/reports.ts` while keeping Worker routing and search orchestration in `apps/worker/src/index.ts`. (codex)
+- Docs: Added `docs/gemini-handoff-blueprint.md` so Gemini can continue from the current architecture, repository policy, verification baseline, and deferred-task list. (codex)
+
+## 2026-05-25 (codex)
+
+- Docs: Added `docs/human-ai-work-split.md` to separate human-only Cloudflare/GitHub/secret decisions from AI-agent-safe repo, staging, verification, and handoff work. (codex)
+- Infra: Added staging/production separation scripts, Pages staging examples, and extended Worker smoke checks for CSV, Markdown, XLSX, and PDF endpoints. (codex)
+- Fixed: Ensured Output Artifacts always exposes CSV, Markdown, XLSX, and PDF download endpoints even when older jobs are missing job_outputs metadata rows. (codex)
+- Added: Exposed direct PDF report download actions in the Research dashboard table toolbar and Report Preview panel. (codex)
+- Changed: Integrated Critic Agent review summaries into dynamic Markdown/PDF reports and the Research dashboard Paper Detail panel with risk level, decision, evidence, and recommended actions. (codex)
+- Fixed: Made Ranked Papers and Report Preview responsive on mobile by converting the ranked table to labeled stacked rows and tightening report preview wrapping, height, and panel actions. (codex)
+- Fixed: Moved the Research dashboard Paper Detail area below the Ranked Papers table so it can no longer obscure the right-side Score column. (codex)
+- Docs: Updated `docs/workflow.md` as the current full blueprint, reflecting D1 traces, critic flags, R2 CSV/Markdown/XLSX/PDF outputs, and conditional Google Drive OA PDF archival. (codex)
+- Fixed: Adjusted the Research dashboard Ranked Papers table sizing, column widths, and responsive stacking so the Status, OA, and Score columns remain visible through horizontal scrolling. (codex)
+- Docs: Cleaned up 2026-05-25 progress/debug headings so PDF, XLSX, dashboard artifact visibility, skeleton persistence, and enrichment trace records are separated for handoff. (codex)
+- Added: Implemented text-based PDF report output at `GET /api/search-jobs/:id/report.pdf`, including R2 persistence and `job_outputs` generated/stored status. (codex)
+- Added: Implemented dynamic and R2-persisted XLSX workbook output at `GET /api/search-jobs/:id/papers.xlsx`, replacing the XLSX artifact state from planned to generated/stored. (codex)
+- Changed: Connected `critic_flags` and `job_outputs` APIs to dashboard UI panels for Paper Detail, Output Artifacts, Ops metrics, live Critic Review, and artifact download links. (codex)
+- Added: Implemented full workflow skeleton persistence with `critic_flags` and `job_outputs` D1 tables, Critic Agent rule-based flags, output metadata APIs, and completed fallback relevance trace status in `apps/worker/src/index.ts` and `apps/worker/schema.sql`. (codex)
+- Changed: Added dashboard trace metadata display for `enrichmentLimit`, processed counts, skipped counts, Crossref verification, Unpaywall OA, and Google Drive storage summaries in `apps/web/src/main.tsx` and `apps/web/src/dashboard/DashboardPages.tsx`. (codex)
+
+## 2026-05-24 (codex)
+
+- Added: Introduced `enrichmentLimit` to cap Crossref and Unpaywall lookups per job, reducing Cloudflare Worker subrequest-limit failures while recording skipped rows explicitly. (codex)
+- Added: Connected Google Drive OA PDF archival for Unpaywall-confirmed PDF URLs using Worker service-account credentials and persisted Drive metadata in D1, CSV, Markdown, dashboard, and MCP outputs. (codex)
+- Changed: Connected the Ops dashboard route to live Worker search jobs and D1 `agent_traces` for status board, pipeline, and console output. (codex)
+- Fixed: Ensured Worker diagnostics runs schema bootstrap before checking columns, set new search jobs to 12 total steps, and completed trace rows now receive completion timestamps. (codex)
+
+- Added: Persisted Worker multi-agent execution traces in D1 and exposed trace read APIs for dashboard and MCP inspection. (codex)
+- Changed: Replaced misleading dashboard mock metric/status values with explicit incomplete mock placeholders in final dashboard routes. (codex)
+
+## 2026-05-27 (codex)
+- Fixed: Removed the accidentally tracked .worktrees/agent-traces gitlink so Cloudflare Git Builds no longer fail while updating repository submodules. (codex)
+
+- Fixed: Cleaned the organization-main root wrangler.toml conflict markers so Cloudflare Git Builds can parse the Worker deploy config. (codex)
+
+
+- Docs: Recorded the personal-repo sync and organization PR merge that restored the org-ready baseline in `docs/progress.md` and `docs/debug-log.md`. (codex)
+- Docs: Added `docs/team-branch-evaluation-2026-05-27.md` with team-branch status, recommendations, and troubleshooting notes. (codex)
+
+## 2026-05-27 (codex)
+
+
+
+- Docs: Added docs/benchmark-branch-review-2026-05-27.md to record that the benchmark branches need rebase or cherry-pick before merging onto the current org-ready baseline. (codex)
+
+## 2026-05-27 (jin23624)
+
+- Benchmark: Refined T001-T003 gold labels (G001-G009) with real DOI-backed, top-journal papers verified via Crossref. (jin23624)
+
+## 2026-05-26 (gemini)
+
+- Added: Integrated LLM-backed Critic Agent using Cloudflare Workers AI (`@cf/meta/llama-3-8b-instruct`) for qualitative evaluation of abstracts. (gemini)
+- Added: Integrated Cloudflare Vectorize and Workers AI for semantic relevance scoring. (gemini)
+- Added: Created `apps/worker/src/vectorize.ts` for abstract embedding generation and semantic similarity search. (gemini)
+- Added: Created `apps/worker/src/critic.ts` to centralize rule-based and LLM-backed qualitative analysis. (gemini)
+- Changed: Updated ranking formula to combine semantic similarity scores (60% weight) with keyword overlap scores (40% weight). (gemini)
+- Changed: Modularized `apps/worker/src/index.ts` into specialized modules (`types.ts`, `utils.ts`, `scoring.ts`, `providers.ts`, `enrichment.ts`, `persistence.ts`, `critic.ts`) to improve maintainability and code clarity. (gemini)
+- Docs: Updated `GEMINI.md` with strict file management and historical preservation rules. (gemini)
+- Docs: Updated project progress and debug logs with refactoring, Vectorize, and LLM Critic integration details. (gemini)
+
+## 2026-05-27 (codex)
+
 
 
 - Docs: Added `docs/gemini-latest-work-evaluation.md` with blocking findings and salvage guidance for the latest divergent Gemini local branch. (codex)

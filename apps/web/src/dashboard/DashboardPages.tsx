@@ -699,6 +699,37 @@ export function AgentOpsPage() {
 }
 
 function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[]; errorMessage: string }) {
+  const getArtifactInfo = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "md":
+        return {
+          label: "한글 보고서",
+          description: "대시보드 사용자를 위한 공식 한글 문헌 검색 보고서입니다.",
+          usage: "검토, 복사, 발표 준비, 문헌 정리"
+        };
+      case "pdf":
+        return {
+          label: "영문 PDF",
+          description: "현재 PDF 엔진의 폰트 제약으로 영어로 제공됩니다. PDF 기능은 정상 작동합니다.",
+          usage: "파일 제출, 빠른 공유, 영문 출력 확인"
+        };
+      case "csv":
+        return {
+          label: "분석용 원자료",
+          description: "데이터 처리와 재분석을 위한 표 형식 파일입니다. 컬럼명은 시스템 호환성을 위해 영어로 유지됩니다.",
+          usage: "데이터 분석, 재현성 확인, 외부 도구 연동"
+        };
+      case "xlsx":
+        return {
+          label: "스프레드시트 원자료",
+          description: "엑셀에서 열람 가능한 분석용 파일입니다. 컬럼명은 시스템 호환성을 위해 영어로 유지됩니다.",
+          usage: "엑셀 검토, 정렬, 필터링"
+        };
+      default:
+        return { label: "", description: "", usage: "" };
+    }
+  };
+
   return (
     <section className="uxPanel">
       <div className="uxPanelHead">
@@ -708,18 +739,43 @@ function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[];
         </div>
         <FileText size={18} />
       </div>
+
+      <div className="uxPolicyCard">
+        <strong>산출물 언어 정책</strong>
+        <p>Markdown 보고서는 한글로 제공되며, PDF 보고서는 현재 Worker PDF 엔진의 폰트 제약으로 영어로 제공됩니다. CSV/XLSX는 분석용 원자료이므로 영어 컬럼명을 유지합니다.</p>
+        <ul>
+          <li>한글 내용을 읽으려면 <strong>Markdown 보고서</strong>를 사용하세요.</li>
+          <li>PDF 파일이 필요하다면 <strong>영문 PDF</strong>를 사용하세요.</li>
+          <li>데이터를 분석하거나 재가공하려면 <strong>CSV/XLSX</strong>를 사용하세요.</li>
+        </ul>
+      </div>
+
       {errorMessage ? <p className="uxTinyError">{errorMessage}</p> : null}
       <div className="uxArtifactList">
-        {outputs.length ? outputs.map((output) => (
-          <article key={output.id} className="uxArtifactItem">
-            <div>
-              <strong>{output.outputType.toUpperCase()}</strong>
-              <span>{output.storage} · {output.detail}</span>
-              {output.urlPath ? <a href={apiUrl(output.urlPath)} target="_blank" rel="noreferrer">산출물 열기</a> : <small>생성 예정</small>}
-            </div>
-            <span className={`uxPill ${output.status === "stored" || output.status === "generated" ? "green" : output.status === "failed" ? "amber" : "gray"}`}>{formatRuntimeStatus(output.status)}</span>
-          </article>
-        )) : <p className="uxEmptyNote">불러온 산출물 정보(metadata)가 없습니다.</p>}
+        {outputs.length ? outputs.map((output) => {
+          const info = getArtifactInfo(output.outputType);
+          return (
+            <article key={output.id} className="uxArtifactItem">
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <strong>{output.outputType.toUpperCase()}</strong>
+                  {info.label && <span className="uxLangBadge">{info.label}</span>}
+                </div>
+                <span>{output.storage} · {output.detail}</span>
+                <p className="uxArtifactDesc">{info.description}</p>
+                <small className="uxArtifactUsage">권장 사용: {info.usage}</small>
+                {output.urlPath ? (
+                  <div style={{ marginTop: '4px' }}>
+                    <a href={apiUrl(output.urlPath)} target="_blank" rel="noreferrer">산출물 열기</a>
+                  </div>
+                ) : (
+                  <small style={{ display: 'block', marginTop: '4px' }}>생성 예정</small>
+                )}
+              </div>
+              <span className={`uxPill ${output.status === "stored" || output.status === "generated" ? "green" : output.status === "failed" ? "amber" : "gray"}`}>{formatRuntimeStatus(output.status)}</span>
+            </article>
+          );
+        }) : <p className="uxEmptyNote">불러온 산출물 정보(metadata)가 없습니다.</p>}
       </div>
     </section>
   );

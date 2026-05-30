@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (English PDF output and Korean Markdown report logic separated)
+Updated: 2026-05-30 (Report Output Language Guide implemented)
+
+## 2026-05-30 (gemini) - Report Output Language Guide
+- **Language Guide UI**: Added a comprehensive "Output Language Policy" card and detailed labels/descriptions to the `OutputArtifactsPanel` in the Research Dashboard.
+- **Artifact Clarification**: Explicitly labeled Markdown as "한글 보고서" (Korean Report) and PDF as "영문 PDF" (English PDF) to prevent user confusion regarding the dual-language strategy.
+- **Usage Recommendations**: Added recommended use cases for each artifact type (e.g., Markdown for review/presentation, PDF for submission, CSV/XLSX for data analysis).
+- **Technical Disclosure**: Explained that PDF output is in English due to font engine constraints and that CSV/XLSX maintain English column names for system compatibility.
+- **Visual Consistency**: Applied cohesive styling (`uxPolicyCard`, `uxLangBadge`, etc.) that aligns with the existing Korean Dashboard aesthetic and ensures mobile responsiveness.
 
 ## 2026-05-30 (gemini) - Keep PDF Export Active With English Output
 - **Language Separation**: Refactored `apps/worker/src/reports.ts` to separate report generation logic for Korean (Markdown) and English (PDF).

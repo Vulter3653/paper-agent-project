@@ -1,23 +1,24 @@
 # Gemini Session State
 
-Updated: 2026-05-30 (English PDF output and Korean Markdown report logic separated)
+Updated: 2026-05-30 (Report Output Language Guide implemented)
 
 ## Current Context
-- **Latest Commit**: `9bff6df` (pre-freeze/korean-report-output-2026-05-30) + English PDF Output Fix.
-- **Active Branch**: `pre-freeze/pdf-english-output-2026-05-30`
-- **Current Task**: Separated report generation logic so Markdown remains in Korean while PDF is fixed to English only (ASCII-safe).
+- **Latest Commit**: `main` (linearized with English PDF Fix) + Report Output Language Guide.
+- **Active Branch**: `pre-freeze/report-output-language-guide-2026-05-30`
+- **Current Task**: Completed the localization guide in the dashboard to clarify artifact languages and usage.
 
 ## Completed Actions
-1. **Structural Refactoring**: Refactored `apps/worker/src/reports.ts` to support dual-language report generation.
-2. **English PDF Fix**: Re-introduced English versions of insights and critic summaries for the PDF output to prevent mojibake.
-3. **Korean Markdown Persistence**: Ensured the Markdown report remains fully localized in Korean for dashboard users.
-4. **Dashboard Disclosure**: Updated the Research Dashboard UI to explain the language difference between Markdown (KO) and PDF (EN) reports.
-5. **Validation**: Full validation suite passed (`validate:history`, `typecheck`, `build:web`, `audit-gold`).
+1. **Language Guide UI**: Added "Output Language Policy" card and detailed labels/descriptions to the `OutputArtifactsPanel`.
+2. **Artifact Labeling**: Labeled Markdown as "한글 보고서" and PDF as "영문 PDF".
+3. **Usage Guidance**: Added recommended use cases and technical disclosures for all artifact formats (MD, PDF, CSV, XLSX).
+4. **Visual Styling**: Applied cohesive `uxPolicyCard` and `uxLangBadge` styles in `dashboard.css`.
+5. **Documentation**: Updated `CHANGELOG.md`, `docs/progress.md`, and `docs/debug-log.md` while maintaining historical integrity.
+6. **Validation**: Full validation suite passed (`validate:history`, `typecheck`, `build:web`, `audit-gold`).
 
-## Remaining Risks
-- **Font Constraints**: PDF output will remain in English until a more robust PDF library with font embedding is integrated.
+## Pending Actions
+1. **Merge & Push**: Merge the current branch into `main` and push to `origin`.
+2. **Live Verification**: Run a new search job and verify the artifact panel UI reflects the new labels and descriptions.
+3. **Team Sync**: Prepare for the final Sunday Code Freeze by verifying all claim boundaries remain hardened.
 
-## Next Recommended Actions
-1. **Push & Fast-forward**: Push `pre-freeze/pdf-english-output-2026-05-30` to origin and fast-forward into `main`.
-2. **Review Final Outputs**: Perform a final check of the localized Markdown and English PDF outputs on a live environment.
-
+## Blockers
+- None. System is stable and ready for pre-freeze finalization.

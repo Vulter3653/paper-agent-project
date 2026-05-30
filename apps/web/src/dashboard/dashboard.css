@@ -844,3 +844,70 @@
 .uxArtifactItem span, .uxArtifactItem small { color: #64748b; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
 .uxArtifactItem a { color: #2563eb; font-size: 12px; font-weight: 800; text-decoration: none; }
 .uxEmptyNote { color: #64748b; font-size: 13px; padding: 12px; text-align: center; }
+
+/* Artifact Language Policy Styles */
+.uxPolicyCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 14px;
+}
+
+.uxPolicyCard strong {
+  color: #0f172a;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.uxPolicyCard p {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.uxPolicyCard ul {
+  border-top: 1px solid #f1f5f9;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+}
+
+.uxPolicyCard li {
+  color: #475569;
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.uxPolicyCard li strong {
+  display: inline;
+  color: #2563eb;
+}
+
+.uxLangBadge {
+  background: #dbeafe;
+  border-radius: 4px;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 850;
+  padding: 2px 8px;
+}
+
+.uxArtifactDesc {
+  color: #64748b !important;
+  font-size: 12px !important;
+  margin: 4px 0 !important;
+  line-height: 1.5;
+}
+
+.uxArtifactUsage {
+  background: #f1f5f9;
+  border-radius: 4px;
+  color: #475569 !important;
+  display: inline-block !important;
+  font-size: 11px !important;
+  margin: 2px 0 6px !important;
+  padding: 2px 8px;
+}

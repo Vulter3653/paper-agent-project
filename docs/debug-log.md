@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-30 - Report Output Language Guide
+- **Incident**: Although report generation logic was separated into Korean (Markdown) and English (PDF), users might still be confused by the mixed-language artifacts without a clear explanation in the dashboard.
+- **Resolution**:
+  - Implemented an "Output Language Policy" card in the dashboard's artifact download area.
+  - Added specific labels ("한글 보고서" for MD, "영문 PDF" for PDF) and purpose-driven descriptions for each file type.
+  - Clarified that CSV/XLSX maintain English column names for system compatibility.
+  - Ensured all UI elements are responsive and follow the project's styling conventions.
+- **Verification**: Verified UI layout and wording locally. Confirmed labels correctly match the underlying file language.
+
 ## 2026-05-30 - Keep PDF Export Active With English Output
 - **Incident**: After localizing the Markdown report to Korean, the PDF report output also shared the same Korean strings, causing the Helvetica/ASCII-constrained PDF engine to output '?????' (mojibake) for all Korean characters.
 - **Resolution**:

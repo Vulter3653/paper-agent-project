@@ -68,10 +68,6 @@ const manifest = {
 
 fs.writeFileSync(path.join(outputDir, "run_manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
 
-// Run evaluate logic inline for filtered data
-// We'll reuse compare-baselines.mjs by calling it, but we need to patch compare-baselines to accept custom METHOD_INPUTS or we just inline the eval.
-// Since compare-baselines has METHOD_INPUTS hardcoded, let's write a small temporary script or inline the logic.
-
 const metricRows = [];
 const summaryOutputPath = path.join(outputDir, "summary.json");
 const metricsOutputPath = path.join(outputDir, "metrics.csv");
@@ -134,16 +130,20 @@ console.log(`Independent run completed. Results saved to ${outputDir}`);
 // Generated D1 SQL helper
 const sqlPath = path.join(outputDir, "insert_run.sql");
 const sqlLines = [];
-sqlLines.push(`INSERT INTO benchmark_runs (id, run_label, benchmark_scope, task_range, status, methods, source_commit, gold_version, created_at, notes) VALUES ('${runId}', '${manifest.run_label}', '${scope}', '${tasksRaw}', 'completed', '${manifest.methods.join(",")}', '${manifest.source_commit}', '${manifest.gold_version}', '${manifest.created_at}', 'Auto-generated');`);
+sqlLines.push("-- Independent Benchmark Run Seeding Script");
+sqlLines.push(`-- Run ID: ${runId}`);
+sqlLines.push(`-- Generated At: ${manifest.created_at}`);
+sqlLines.push("");
 
-// We'd insert metricRows and tasks here in full implementation.
+sqlLines.push(`INSERT OR REPLACE INTO benchmark_runs (id, run_label, benchmark_scope, task_range, status, methods, source_commit, gold_version, created_at, notes) VALUES ('${runId}', '${manifest.run_label}', '${scope}', '${tasksRaw}', 'completed', '${manifest.methods.join(",")}', '${manifest.source_commit}', '${manifest.gold_version}', '${manifest.created_at}', 'Auto-generated');`);
+
 for (const taskId of tasks) {
-  sqlLines.push(`INSERT INTO benchmark_run_tasks (id, run_id, task_id, status, started_at, completed_at) VALUES ('${runId}-${taskId}', '${runId}', '${taskId}', 'completed', '${manifest.created_at}', '${manifest.created_at}');`);
+  sqlLines.push(`INSERT OR REPLACE INTO benchmark_run_tasks (id, run_id, task_id, status, started_at, completed_at) VALUES ('${runId}-${taskId}', '${runId}', '${taskId}', 'completed', '${manifest.created_at}', '${manifest.created_at}');`);
 }
 
 for (let i = 0; i < metricRows.length; i++) {
   const m = metricRows[i];
-  sqlLines.push(`INSERT INTO benchmark_run_metrics (id, run_id, task_id, method, precision_at_5, ndcg_at_5, gold_doi_hit_rate_at_5, doi_presence_rate_at_5, top_journal_precision_at_5, paper_validity_rate_at_5, accepted_exception_count, matched_gold_ids, matched_dois, created_at) VALUES ('${runId}-m${i}', '${runId}', '${m.task_id}', '${m.method}', ${m.precision_at_5}, ${m.ndcg_at_5}, ${m.gold_doi_hit_rate_at_5}, ${m.doi_presence_rate_at_5}, ${m.top_journal_precision_at_5}, ${m.paper_validity_rate_at_5}, ${m.accepted_exception_count}, '${m.matched_gold_ids}', '${m.matched_dois}', '${manifest.created_at}');`);
+  sqlLines.push(`INSERT OR REPLACE INTO benchmark_run_metrics (id, run_id, task_id, method, precision_at_5, ndcg_at_5, gold_doi_hit_rate_at_5, doi_presence_rate_at_5, top_journal_precision_at_5, paper_validity_rate_at_5, accepted_exception_count, matched_gold_ids, matched_dois, created_at) VALUES ('${runId}-m${i}', '${runId}', '${m.task_id}', '${m.method}', ${m.precision_at_5}, ${m.ndcg_at_5}, ${m.gold_doi_hit_rate_at_5}, ${m.doi_presence_rate_at_5}, ${m.top_journal_precision_at_5}, ${m.paper_validity_rate_at_5}, ${m.accepted_exception_count}, '${m.matched_gold_ids}', '${m.matched_dois}', '${manifest.created_at}');`);
 }
 
 fs.writeFileSync(sqlPath, sqlLines.join("\n"), "utf8");
@@ -194,7 +194,7 @@ function parseCsvLine(line) {
 function parseCsv(text) {
   const trimmed = text.trim();
   if (!trimmed) return [];
-  const lines = trimmed.split(/\\r?\\n/);
+  const lines = trimmed.split(/\r?\n/);
   const headers = parseCsvLine(lines.shift());
   return lines.map((line) => {
     const values = parseCsvLine(line);
@@ -203,13 +203,13 @@ function parseCsv(text) {
 }
 
 function writeCsv(path, rows, headers) {
-  const text = [headers.join(","), ...rows.map((row) => headers.map((header) => escapeCsv(row[header] ?? "")).join(","))].join("\\n") + "\\n";
+  const text = [headers.join(","), ...rows.map((row) => headers.map((header) => escapeCsv(row[header] ?? "")).join(","))].join("\n") + "\n";
   fs.writeFileSync(path, text, "utf8");
 }
 
 function escapeCsv(value) {
   const stringValue = String(value);
-  if (!/[",\\n\\r]/.test(stringValue)) return stringValue;
+  if (!/[",\n\r]/.test(stringValue)) return stringValue;
   return '"' + stringValue.replace(/"/g, '""') + '"';
 }
 
@@ -248,7 +248,7 @@ function normalizeTitle(value) {
     .toLowerCase()
     .replace(/&amp;/g, "&")
     .replace(/[^a-z0-9가-힣]+/g, " ")
-    .replace(/\\s+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -322,7 +322,7 @@ function evaluateMethodTask(method, sourceFile, taskId, taskRows, taskGoldRows, 
     .sort((a, b) => b - a)
     .slice(0, cutoff);
 
-  const denominator = rankedResults.length || 1;
+  const denominator = cutoff || 1; // Standardize to cutoff if fewer results returned to show penalty
   const matchedDoiCount = rankedResults.filter((result) => goldByDoi.has(normalizeDoi(result.doi))).length;
   const doiPresentCount = rankedResults.filter((result) => normalizeDoi(result.doi)).length;
   const topJournalCount = rankedResults.filter(isTopJournal).length;

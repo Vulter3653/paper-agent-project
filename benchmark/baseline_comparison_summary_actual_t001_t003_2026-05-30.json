@@ -1,12 +1,23 @@
 {
-  "run_id": "2026-05-30-controlled-t001-t003",
-  "scope": "controlled",
-  "tasks": [
-    "T001",
-    "T002",
-    "T003"
-  ],
+  "gold": "benchmark/gold_relevant_papers.verified.csv",
+  "allowlist": "benchmark/gold_audit_allowlist.json",
+  "metricsOutput": "benchmark/baseline_comparison_metrics_actual_t001_t003_2026-05-30.csv",
+  "summaryOutput": "benchmark/baseline_comparison_summary_actual_t001_t003_2026-05-30.json",
   "k": 5,
+  "inputs": [
+    {
+      "method": "rule_based",
+      "path": "benchmark/baseline_rule_based_results.csv"
+    },
+    {
+      "method": "single_llm",
+      "path": "benchmark/baseline_single_llm_results.csv"
+    },
+    {
+      "method": "proposed_agent",
+      "path": "benchmark/proposed_agent_results.csv"
+    }
+  ],
   "methodOrder": [
     "proposed_agent",
     "rule_based",

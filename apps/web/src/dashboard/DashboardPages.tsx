@@ -108,6 +108,8 @@ type BenchmarkAutoReviewMethod = {
 
 type BenchmarkMetrics = {
   source?: "static_snapshot" | "live" | string;
+  runId?: string;
+  runLabel?: string;
   note?: string;
   tasks: number;
   results: number;
@@ -1220,18 +1222,23 @@ export function EvaluationDashboardPage() {
   async function loadBenchmarkMetrics(runId: string) {
     setLoading(true);
     try {
-      // Note: If runId is 'latest', we use the standard endpoint. In a full implementation, we'd fetch specific runs.
       const fetchUrl = runId === "latest" ? apiUrl("/api/benchmark-metrics") : apiUrl(`/api/benchmark-runs/${runId}/metrics`);
-      // Since /api/benchmark-runs/:id/metrics doesn't format full response in mock, fallback to fetching latest if custom UI is not ready.
-      // We will just hit /api/benchmark-metrics for now to get the formatted object, assuming it serves latest.
-      const response = await fetch(apiUrl("/api/benchmark-metrics"));
+      const response = await fetch(fetchUrl);
       if (!response.ok) throw new Error("벤치마크 지표를 불러오지 못했습니다.");
       const data = (await response.json()) as BenchmarkMetrics;
       setBenchmarkMetrics(data);
-      setMessage({
-        title: data.source?.includes("static") ? "정적 벤치마크 로드됨" : "벤치마크 결과 확인됨",
-        body: `${data.tasks}개 태스크, ${data.results}개 결과물 기준입니다. ${data.note ?? ""}`
-      });
+      
+      let title = "벤치마크 결과 확인됨";
+      let body = `${data.tasks || 0}개 태스크, ${data.results || 0}개 결과물 기준입니다. ${data.note ?? ""}`;
+      
+      if (data.source === "legacy_static_snapshot") {
+        title = "정적 벤치마크 로드됨 (Fallback)";
+        body = "아직 Production D1에 benchmark run이 seed되지 않았습니다. 현재 표는 legacy fallback이며, 실제 run selector는 D1 seed 이후 활성화됩니다.";
+      } else if (data.source === "d1_benchmark_run") {
+        title = `D1 Benchmark Run: ${data.runId}`;
+      }
+      
+      setMessage({ title, body });
     } catch (error) {
       console.error(error);
       setMessage({

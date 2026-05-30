@@ -83,6 +83,7 @@ import {
   updateSearchJobProgress,
   listBenchmarkRuns,
   getLatestCompletedBenchmarkRun,
+  getBenchmarkRunById,
   getBenchmarkRunMetrics,
   getBenchmarkRunTasks
 } from "./persistence";
@@ -521,8 +522,20 @@ export default {
       try {
         if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
         await ensureSchema(env.DB);
-        // Note: For full implementation, fetch run detail. Currently just return empty or metadata.
-        return json({ error: "Not implemented fully yet" }, 501);
+        const runId = runsMatch[1];
+        const run = await getBenchmarkRunById(env.DB, runId);
+        if (!run) return json({ error: "Benchmark run not found" }, 404);
+        
+        const tasks = await getBenchmarkRunTasks(env.DB, runId);
+        const metrics = await getBenchmarkRunMetrics(env.DB, runId);
+        
+        return json({
+          run,
+          tasks,
+          metricsSummary: formatBenchmarkMetrics("d1_benchmark_run", run, metrics),
+          claimBoundary: run.benchmark_scope === "controlled" ? "Quantitative performance comparison available." : "Execution stability evidence only.",
+          limitations: "Local infrastructure limits may apply for expanded tasks."
+        });
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
       }
@@ -533,8 +546,12 @@ export default {
       try {
         if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
         await ensureSchema(env.DB);
-        const metrics = await getBenchmarkRunMetrics(env.DB, runsMetricsMatch[1]);
-        return json({ runId: runsMetricsMatch[1], metrics });
+        const runId = runsMetricsMatch[1];
+        const run = await getBenchmarkRunById(env.DB, runId);
+        if (!run) return json({ error: "Benchmark run not found" }, 404);
+        
+        const metrics = await getBenchmarkRunMetrics(env.DB, runId);
+        return json(formatBenchmarkMetrics("d1_benchmark_run", run, metrics));
       } catch (error) {
         return json({ error: getErrorMessage(error) }, 500);
       }
@@ -549,42 +566,7 @@ export default {
           
           if (latestRun) {
             const metrics = await getBenchmarkRunMetrics(env.DB, latestRun.id);
-            const methods = Array.from(new Set(metrics.map(m => m.method)));
-            const comparisonByMethod: any = {};
-            
-            for (const method of methods) {
-              const methodMetrics = metrics.filter(m => m.method === method);
-              comparisonByMethod[method] = {
-                taskCount: methodMetrics.length,
-                macroAverages: {
-                  precision_at_5: methodMetrics.reduce((sum, m) => sum + (m.precision_at_5 || 0), 0) / methodMetrics.length,
-                  ndcg_at_5: methodMetrics.reduce((sum, m) => sum + (m.ndcg_at_5 || 0), 0) / methodMetrics.length,
-                  gold_doi_hit_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.gold_doi_hit_rate_at_5 || 0), 0) / methodMetrics.length,
-                  doi_presence_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.doi_presence_rate_at_5 || 0), 0) / methodMetrics.length,
-                  top_journal_precision_at_5: methodMetrics.reduce((sum, m) => sum + (m.top_journal_precision_at_5 || 0), 0) / methodMetrics.length,
-                  paper_validity_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.paper_validity_rate_at_5 || 0), 0) / methodMetrics.length,
-                  accepted_exception_count: methodMetrics.reduce((sum, m) => sum + (m.accepted_exception_count || 0), 0)
-                }
-              };
-            }
-
-            return json({
-              source: "d1_benchmark_run",
-              runId: latestRun.id,
-              runLabel: latestRun.run_label,
-              benchmarkScope: latestRun.benchmark_scope,
-              taskRange: latestRun.task_range,
-              generatedAt: latestRun.created_at,
-              sourceCommit: latestRun.source_commit,
-              goldVersion: latestRun.gold_version,
-              methodOrder: methods,
-              comparison: {
-                k: 5,
-                methodOrder: methods,
-                byMethod: comparisonByMethod
-              },
-              claimBoundary: "Quantitative performance comparison available."
-            });
+            return json(formatBenchmarkMetrics("d1_benchmark_run", latestRun, metrics));
           }
         }
 
@@ -1314,5 +1296,56 @@ function corsHeaders(): HeadersInit {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Authorization"
+  };
+}
+
+function formatBenchmarkMetrics(source: string, run: any, metrics: any[]): any {
+  const methods = Array.from(new Set(metrics.map(m => m.method)));
+  const comparisonByMethod: any = {};
+  
+  for (const method of methods) {
+    const methodMetrics = metrics.filter(m => m.method === method);
+    comparisonByMethod[method] = {
+      taskCount: methodMetrics.length,
+      macroAverages: {
+        precision_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.precision_at_5 || 0), 0) / methodMetrics.length,
+        ndcg_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.ndcg_at_5 || 0), 0) / methodMetrics.length,
+        gold_doi_hit_rate_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.gold_doi_hit_rate_at_5 || 0), 0) / methodMetrics.length,
+        doi_presence_rate_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.doi_presence_rate_at_5 || 0), 0) / methodMetrics.length,
+        top_journal_precision_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.top_journal_precision_at_5 || 0), 0) / methodMetrics.length,
+        paper_validity_rate_at_5: methodMetrics.reduce((sum: number, m: any) => sum + (m.paper_validity_rate_at_5 || 0), 0) / methodMetrics.length,
+        accepted_exception_count: methodMetrics.reduce((sum: number, m: any) => sum + (m.accepted_exception_count || 0), 0)
+      }
+    };
+  }
+
+  const proposedMetrics = comparisonByMethod["proposed_agent"]?.macroAverages || {};
+
+  return {
+    source,
+    runId: run.id,
+    runLabel: run.run_label,
+    benchmarkScope: run.benchmark_scope,
+    taskRange: run.task_range,
+    generatedAt: run.created_at,
+    sourceCommit: run.source_commit,
+    goldVersion: run.gold_version,
+    methodOrder: methods,
+    macroAverages: {
+      precision_at_k: proposedMetrics.precision_at_5 || 0,
+      ndcg_at_k: proposedMetrics.ndcg_at_5 || 0,
+      gold_doi_hit_rate_at_k: proposedMetrics.gold_doi_hit_rate_at_5 || 0,
+      doi_accuracy_at_k: proposedMetrics.doi_presence_rate_at_5 || 0,
+      paper_validity_rate_at_k: proposedMetrics.paper_validity_rate_at_5 || 0,
+      top_journal_precision_at_k: proposedMetrics.top_journal_precision_at_5 || 0,
+      hallucination_rate_at_k: 0,
+      oa_success_rate_at_k: 0
+    },
+    comparison: {
+      k: 5,
+      methodOrder: methods,
+      byMethod: comparisonByMethod
+    },
+    claimBoundary: run.benchmark_scope === "controlled" ? "Quantitative performance comparison available." : "Execution stability evidence only."
   };
 }

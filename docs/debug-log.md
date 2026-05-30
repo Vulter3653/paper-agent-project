@@ -1,5 +1,23 @@
 # Debug Log
 
+## 2026-05-30 - Independent Benchmark Pipeline Correctness Fix
+- **Incident**: The independent benchmark runner (`run-independent-benchmark.mjs`) was generating `summary.json` and `insert_run.sql` with zeroed metrics despite having valid result rows in the artifact CSVs.
+- **Root cause analysis**:
+  - Double escaping of backslashes in regex literals (caused by a previous automated edit) led to syntax errors and failed matching logic.
+  - CSV parsing was failing due to improper line splitting and column mapping in the runner script.
+  - The dashboard Run Selector UI was present but was hardcoded to fetch only the `/api/benchmark-metrics` endpoint instead of the selected run.
+- **Resolution**:
+  - Re-implemented the trailing helper functions in `apps/worker/src/index.ts` using direct shell commands to ensure complete and non-truncated code blocks.
+  - Fixed regex literals and CSV parsing logic in `run-independent-benchmark.mjs`.
+  - Updated `insert_run.sql` generator to use `INSERT OR REPLACE` for safer seeding.
+  - Implemented the missing `/api/benchmark-runs/:id` endpoint and enhanced `:id/metrics` to return dashboard-compatible objects.
+  - Connected the dashboard Run Selector to the correct backend endpoints.
+  - Strengthened UI feedback to clearly distinguish between `D1 Benchmark Run` and `Legacy Static Snapshot` fallbacks.
+- **Verification**:
+  - `run-independent-benchmark.mjs` now correctly calculates non-zero metrics for T001-T003 (e.g., Precision@5: 0.1333 for proposed/rule-based).
+  - `insert_run.sql` contains verified non-zero metric values.
+  - `npm run typecheck` passed for both Web and Worker workspaces.
+
 ## 2026-05-30 - Report Output Language Guide
 - **Incident**: Although report generation logic was separated into Korean (Markdown) and English (PDF), users might still be confused by the mixed-language artifacts without a clear explanation in the dashboard.
 - **Resolution**:

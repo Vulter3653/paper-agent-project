@@ -932,6 +932,11 @@ export async function getLatestCompletedBenchmarkRun(db: D1Database, scope: stri
   return result;
 }
 
+export async function getBenchmarkRunById(db: D1Database, runId: string): Promise<any | null> {
+  const result = await db.prepare("SELECT * FROM benchmark_runs WHERE id = ?").bind(runId).first();
+  return result;
+}
+
 export async function getBenchmarkRunMetrics(db: D1Database, runId: string): Promise<any[]> {
   const result = await db.prepare("SELECT * FROM benchmark_run_metrics WHERE run_id = ?").bind(runId).all();
   return result.results;

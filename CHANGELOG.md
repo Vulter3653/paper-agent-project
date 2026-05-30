@@ -17,8 +17,17 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## Unreleased
+- Fix: Corrected independent benchmark runner parsing/matching logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
+- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. (gemini)
+- Web: Bound Evaluation Dashboard run selector to actual selected benchmark run metrics endpoint. (gemini)
+- Docs: Clarified that Production D1 seeding is required before D1 benchmark run source appears in the deployed dashboard. (gemini)
 
 ## 2026-05-30 (gemini)
+- Benchmark: Fixed independent benchmark runner (`run-independent-benchmark.mjs`) regex escaping and CSV parsing logic to ensure non-zero metric calculation. (gemini)
+- Benchmark: Updated `insert_run.sql` generator to use `INSERT OR REPLACE` for repeatable seeding. (gemini)
+- Web: Connected Evaluation Dashboard Run Selector to actual API endpoints and improved UI feedback for D1 vs Legacy fallback status. (gemini)
+- Worker: Implemented `/api/benchmark-runs/:id` and enhanced `:id/metrics` endpoints to return unified, dashboard-compatible metric objects. (gemini)
+- Worker: Fixed `apps/worker/src/index.ts` truncation issues and ensured all benchmark helper imports are present. (gemini)
 - Feat: Implemented Independent Benchmark Evaluation Pipeline separating the static evaluation metrics from live runtime aggregation. (gemini)
 - Worker: Expanded D1 database schema in `schema.sql` and created migration `0006_add_benchmark_tables.sql` to include benchmark persistence tables (`benchmark_runs`, `benchmark_run_tasks`, etc.). (gemini)
 - Worker: Added robust benchmark helper methods in `persistence.ts` to support runtime retrieval of `benchmark_runs` and `benchmark_run_metrics`. (gemini)
@@ -26,6 +35,37 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Scripts: Added `run-independent-benchmark.mjs` to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive `benchmark/runs/` architecture and generating D1 SQL inserts. (gemini)
 - Web: Upgraded Evaluation Dashboard `DashboardPages.tsx` to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
 - Web: Added an interactive "Run Selector" to the Evaluation Dashboard to toggle between distinct evaluation runs natively. (gemini)
+- Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
+- Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)
+- Docs: Marked earlier English-report-preview wording as superseded by the later Korean Markdown / English PDF split. (gemini)
+- Web: Implemented Report Output Language Guide. Added detailed labels and descriptions for all output artifacts (Markdown, PDF, CSV, XLSX) to the Research Dashboard. Added an "Output Language Policy" card to explain why different formats have different languages (KO vs EN) and their intended use cases. (gemini)
+- Worker: Fixed PDF report output to remain in English, avoiding mojibake caused by ASCII-only PDF engine while keeping the Markdown report localized in Korean. Separated insight and critic summary logic by language. (gemini)
+- Worker: Localized the generated Markdown and PDF reports to Korean, including section headers, status mappings, metadata labels, critic actions, and summary texts to Korean in `apps/worker/src/reports.ts`. (gemini)
+- Web & Worker: Implemented Search Execution Reliability Hotfix. Reduced default dashboard search size to 5 and added a "Safe Execution Mode" toggle to prevent Cloudflare Worker CPU timeouts. Added OpenAlex fallback upon Web of Science API failure, and improved handling and UI display of jobs with zero results after journal filtering. (gemini)
+- Web: Enhanced dashboard usability for Korean users by translating key terminology, separating feature implementation status from runtime job status, and adding descriptive tooltips. (gemini)
+- Web: Improved the Evaluation dashboard scenarios (Strict, Broad Recall, Fast Demo) to interactively change highlighted metrics and interpretive context upon click, clarifying that these are analytical lenses rather than new benchmark runs. (gemini)
+- Web: Translated and reformatted the Report Preview panel sections (e.g., "Executive Summary" to "전체 요약") while explicitly noting that the underlying generated text remains in English. (gemini)
+- Web: Hardened the "Trace Summary Console" in the Ops dashboard by translating trace meta labels (e.g., `verified`, `llm_augmented`, `rule_based_fallback`) into user-friendly Korean terms. (gemini)
+- Infra: Implemented 15-second timeout guard and rule-based fallback for LLM Critic to prevent job stalls in live environments. (gemini)
+- Worker: Reduced default LLM Critic review limit from 5 to 3 papers for improved latency. (gemini)
+- Dashboard: Enhanced UI to display granular agent execution modes (LLM Augmented, LLM Timeout Fallback, Rule-based Fallback) based on real-time traces. (gemini)
+- Docs: Completed initial LLM Critic latency research and fallback implementation for Sunday Code Freeze. (gemini)
+- Fixed: Resolved `VECTOR_QUERY_ERROR (40026)` by changing `returnMetadata` to `"none"` in `apps/worker/src/vectorize.ts`. (gemini)
+- Infra: Verified Vectorize semantic relevance fix in live deployment via smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9`. (gemini)
+- Feature: AI Opt-in (Vectorize, LLM Critic) runtime verification and dashboard integration. (gemini)
+- Feat: Implemented Independent Benchmark Evaluation Pipeline separating the static evaluation metrics from live runtime aggregation. (gemini)
+- Worker: Expanded D1 database schema in `schema.sql` and created migration `0006_add_benchmark_tables.sql` to include benchmark persistence tables (`benchmark_runs`, `benchmark_run_tasks`, etc.). (gemini)
+- Worker: Added robust benchmark helper methods in `persistence.ts` to support runtime retrieval of `benchmark_runs` and `benchmark_run_metrics`. (gemini)
+- Worker: Updated `/api/benchmark-metrics` endpoint to intelligently serve latest completed benchmark run from D1, gracefully falling back to a `legacy_static_snapshot`. Added new endpoint `/api/benchmark-runs`. (gemini)
+- Scripts: Added `run-independent-benchmark.mjs` to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive `benchmark/runs/` architecture and generating D1 SQL inserts. (gemini)
+- Web: Upgraded Evaluation Dashboard `DashboardPages.tsx` to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
+- Web: Added an interactive "Run Selector" to the Evaluation Dashboard to toggle between distinct evaluation runs natively. (gemini)
+
+## Unreleased
+- Fix: Corrected independent benchmark runner parsing/matching logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
+- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. (gemini)
+- Web: Bound Evaluation Dashboard run selector to actual selected benchmark run metrics endpoint. (gemini)
+- Docs: Clarified that Production D1 seeding is required before D1 benchmark run source appears in the deployed dashboard. (gemini)
 
 ## 2026-05-30 (gemini)
 - Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
@@ -43,6 +83,12 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Worker: Reduced default LLM Critic review limit from 5 to 3 papers for improved latency. (gemini)
 - Dashboard: Enhanced UI to display granular agent execution modes (LLM Augmented, LLM Timeout Fallback, Rule-based Fallback) based on real-time traces. (gemini)
 - Docs: Completed initial LLM Critic latency research and fallback implementation for Sunday Code Freeze. (gemini)
+
+## Unreleased
+- Fix: Corrected independent benchmark runner parsing/matching logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
+- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. (gemini)
+- Web: Bound Evaluation Dashboard run selector to actual selected benchmark run metrics endpoint. (gemini)
+- Docs: Clarified that Production D1 seeding is required before D1 benchmark run source appears in the deployed dashboard. (gemini)
 
 ## 2026-05-30 (gemini)
 - Fixed: Resolved `VECTOR_QUERY_ERROR (40026)` by changing `returnMetadata` to `"none"` in `apps/worker/src/vectorize.ts`. (gemini)

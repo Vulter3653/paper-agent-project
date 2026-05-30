@@ -8,6 +8,30 @@
   - Clarified that CSV/XLSX maintain English column names for system compatibility.
   - Ensured all UI elements are responsive and follow the project's styling conventions.
 - **Verification**: Verified UI layout and wording locally. Confirmed labels correctly match the underlying file language.
+# Debug Log
+
+## 2026-05-30 - Documentation State Consistency Reconciliation
+- **Incident**:
+  - The `gemini-session-state.md` file incorrectly listed "Merge & Push" and "Live Verification" as pending actions even after the Report Output Language Guide had been successfully merged into `main`.
+  - Progress and changelog entries required alignment to ensure the current bifurcated language policy (Korean MD / English PDF) was clearly reflected and that older, conflicting wording was marked as superseded.
+- **Resolution**:
+  - Updated `docs/gemini-session-state.md` to reflect the current `main` commit (`84b4b58`) and move completed merge/verification tasks to the "Completed Actions" section.
+  - Added a reconciliation section to `docs/progress.md` explicitly defining the language policy and marking previous "English-only report" mentions as superseded.
+  - Verified that all historical records remain intact under the prepend-only policy.
+- **Verification**:
+  - Documentation-only changes.
+  - No benchmark CSV/JSON or gold label files were modified.
+  - No generated submission artifacts (PDF/PPTX) were modified.
+  - Validation suite (`validate:history`, `typecheck`, etc.) passed.
+
+## 2026-05-30 - Report Output Language Guide
+- **Incident**: Although report generation logic was separated into Korean (Markdown) and English (PDF), users might still be confused by the mixed-language artifacts without a clear explanation in the dashboard.
+- **Resolution**:
+  - Implemented an "Output Language Policy" card in the dashboard's artifact download area.
+  - Added specific labels ("한글 보고서" for MD, "영문 PDF" for PDF) and purpose-driven descriptions for each file type.
+  - Clarified that CSV/XLSX maintain English column names for system compatibility.
+  - Ensured all UI elements are responsive and follow the project's styling conventions.
+- **Verification**: Verified UI layout and wording locally. Confirmed labels correctly match the underlying file language.
 
 ## 2026-05-30 - Keep PDF Export Active With English Output
 - **Incident**: After localizing the Markdown report to Korean, the PDF report output also shared the same Korean strings, causing the Helvetica/ASCII-constrained PDF engine to output '?????' (mojibake) for all Korean characters.

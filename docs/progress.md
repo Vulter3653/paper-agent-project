@@ -1,6 +1,19 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Report Output Language Guide implemented)
+Updated: 2026-05-30 (Documentation state reconciled with main)
+
+## 2026-05-30 (gemini) - Documentation State Consistency Reconciliation
+- **Artifact Policy Alignment**: Synchronized documentation with the current `main` state following the merge of the "Report Output Language Guide".
+- **Current Artifact Language Policy**:
+  - **Markdown (`report.md`)**: Localized Korean report (official).
+  - **PDF (`report.pdf`)**: Strictly English ASCII-safe report (due to PDF engine font constraints).
+  - **CSV/XLSX (`papers.csv`/`.xlsx`)**: Data analysis source files with original English schemas.
+- **Superseded Records**: Marked previous mentions of "generated report remains English" (from the initial Korean Dashboard Usability phase) as superseded by subsequent hotfixes that localized the Markdown output.
+- **Claim Boundary Integrity**:
+  - Maintained Vectorize and LLM Critic as opt-in experimental features.
+  - Core benchmark claim remains the T001-T003 controlled comparison.
+  - T001-T018 tasks serve as partial expanded evidence; T019-T020 recorded as infrastructure resource limit failures.
+  - Zero deletions policy strictly observed; all historical records preserved.
 
 ## 2026-05-30 (gemini) - Report Output Language Guide
 - **Language Guide UI**: Added a comprehensive "Output Language Policy" card and detailed labels/descriptions to the `OutputArtifactsPanel` in the Research Dashboard.
@@ -32,7 +45,7 @@ Updated: 2026-05-30 (Report Output Language Guide implemented)
 - **Dashboard Localization**: Translated key English terminology and developer jargon into Korean across Research, Ops, and Evaluation routes to improve usability for Korean users.
 - **Status Clarity**: Separated feature implementation status (Live, Partial, Mock, Planned) from runtime job execution status (Running, Completed, Idle) to prevent user confusion.
 - **Evaluation Scenarios**: Updated the Evaluation dashboard to make scenarios (Strict, Broad Recall, Fast Demo) interactive. Clicking a scenario now dynamically updates the descriptive text, highlighted metrics, and interpretation messages, clarifying that these are analytical views on the static benchmark snapshot rather than new execution runs.
-- **Report Preview Refinement**: Renamed sections in the Report Preview panel (e.g., 'Executive Summary' to '전체 요약') and added descriptive tooltips. Added a disclaimer that the actual generated report content remains in English, preserving the underlying Markdown logic.
+- **Report Preview Refinement**: Renamed sections in the Report Preview panel (e.g., 'Executive Summary' to '전체 요약') and added descriptive tooltips. Added a disclaimer that the actual generated report content remains in English (NOTE: this was superseded by later hotfixes that localized the Markdown report), preserving the underlying Markdown logic.
 - **Trace Summary Hardening**: Formatted raw trace keys (`mode`, `processed`, `llm_augmented`) into user-friendly Korean labels (`실행 방식`, `처리됨`, `LLM 보강됨`) within the Ops Trace Console.
 - **Claim Boundary Maintained**: Ensured all translations and UI updates strictly preserve the existing claim boundaries (e.g., Vectorize/LLM Critic as opt-in/experimental, 18/20 partial expanded evidence).
 - **Validation**: Full validation suite (`validate:history`, `typecheck`, `build:web`, `audit-gold`) passed successfully. No benchmark or output artifacts were modified.

@@ -17,6 +17,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-30 (gemini)
+- Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
+- Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)
+- Docs: Marked earlier English-report-preview wording as superseded by the later Korean Markdown / English PDF split. (gemini)
 - Web: Implemented Report Output Language Guide. Added detailed labels and descriptions for all output artifacts (Markdown, PDF, CSV, XLSX) to the Research Dashboard. Added an "Output Language Policy" card to explain why different formats have different languages (KO vs EN) and their intended use cases. (gemini)
 - Worker: Fixed PDF report output to remain in English, avoiding mojibake caused by ASCII-only PDF engine while keeping the Markdown report localized in Korean. Separated insight and critic summary logic by language. (gemini)
 - Worker: Localized the generated Markdown and PDF reports to Korean, including section headers, status values, critic actions, and summary messages, to resolve the discrepancy between the Korean dashboard and the English report output. (gemini)

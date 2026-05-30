@@ -53,6 +53,7 @@ Implemented:
 - Conditional Google Drive upload for Unpaywall-confirmed OA PDF URLs.
 - R2-backed CSV, Markdown, XLSX, and PDF report artifacts, with dynamic endpoint fallback.
 - Rule-based Critic Agent flags for metadata, relevance, inclusion, and access risks.
+- Opt-in LLM qualitative review (experimental smoke path) to augment rule-based flags.
 - Dashboard trace, artifact, critic, diagnostics, and recent-job visibility.
 - Read-only MCP tools for job/result/report inspection.
 - 20-task benchmark fixture with audited DOI-backed gold labels.
@@ -60,7 +61,7 @@ Implemented:
 
 Still planned or partial:
 
-- Advanced LLM Critic qualitative peer review; Current production-safe default is rule-based critic flags (D1 `critic_flags`). LLM Critic is an opt-in future extension.
+- Full production-scale LLM Critic with consistency checks and larger token windows; current implementation is an opt-in experimental extension.
 - Richer Planner decomposition into sub-questions and query variants.
 - External JCR/SCImago/CiteScore enrichment when licensed API access is available; Internal business-school allowlist filtering is currently live.
 - Full 20-task Proposed Agent runtime collection (T001-T018 Partial Expanded Evidence available; T019-T020 limited by Cloudflare Worker resource limits).

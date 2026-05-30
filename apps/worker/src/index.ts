@@ -476,6 +476,8 @@ type DiagnosticsResponse = {
     activeProviderReady: boolean;
     vectorizeReady: boolean;
     semanticRankingDefault: boolean;
+    llmCriticReady: boolean;
+    llmCriticDefault: boolean;
   };
 };
 
@@ -886,7 +888,9 @@ async function getDiagnostics(env: Env): Promise<DiagnosticsResponse> {
     readiness: {
       activeProviderReady,
       vectorizeReady,
-      semanticRankingDefault: false
+      semanticRankingDefault: false,
+      llmCriticReady: Boolean(env.AI),
+      llmCriticDefault: false
     }
   };
 }
@@ -1043,30 +1047,64 @@ async function processSearchJob(
 
     // 9. Critic Review
     job = await updateSearchJobProgress(db, job, "reviewing", "critic_review");
-    let criticFlags = buildCriticFlags(rankedPapers);
+    const ruleBasedFlags = buildCriticFlags(rankedPapers);
+    let criticFlags = [...ruleBasedFlags];
+
     if (options.useLlmCritic && options.ai) {
       try {
+        const reviewedPaperCount = Math.min(rankedPapers.length, 5);
         criticFlags = await runLlmCritic(options.ai, keyword, rankedPapers, criticFlags);
         await recordAgentTrace(db, job, {
           stepOrder: 10,
           stepId: "critic_review",
           agentName: "Critic Agent",
-          summary: "Generated " + criticFlags.length + " critic flags (including LLM qualitative analysis).",
-          detail: JSON.stringify({ ruleBasedCount: buildCriticFlags(rankedPapers).length, llmCount: criticFlags.filter(f => f.flagType === 'llm_critique').length }),
+          summary: `Generated ${criticFlags.length} critic flags (Rule-based + LLM qualitative analysis for top ${reviewedPaperCount} papers).`,
+          detail: JSON.stringify({
+            mode: "llm_augmented",
+            aiBound: true,
+            ruleBasedCount: ruleBasedFlags.length,
+            llmCount: criticFlags.length - ruleBasedFlags.length,
+            reviewedPaperCount,
+            fallbackUsed: false
+          }),
           inputCount: rankedPapers.length,
           outputCount: criticFlags.length
         });
       } catch (error) {
         console.error("LLM Critic Agent error:", error);
-        await recordAgentTrace(db, job, { stepOrder: 10, stepId: "critic_review", agentName: "Critic Agent", summary: "Generated " + criticFlags.length + " rule-based critic flags; LLM analysis failed.", detail: JSON.stringify({ error: getErrorMessage(error) }), inputCount: rankedPapers.length, outputCount: criticFlags.length });
+        await recordAgentTrace(db, job, {
+          stepOrder: 10,
+          stepId: "critic_review",
+          agentName: "Critic Agent",
+          summary: `Generated ${criticFlags.length} rule-based critic flags; LLM analysis failed.`,
+          detail: JSON.stringify({
+            mode: "rule_based_fallback",
+            aiBound: true,
+            fallbackUsed: true,
+            reason: getErrorMessage(error),
+            ruleBasedCount: ruleBasedFlags.length
+          }),
+          inputCount: rankedPapers.length,
+          outputCount: criticFlags.length
+        });
       }
     } else {
+      const summary = options.useLlmCritic
+        ? `Generated ${criticFlags.length} rule-based critic flags; LLM skipped (AI binding missing).`
+        : `Generated ${criticFlags.length} rule-based critic flags; LLM skipped (default path).`;
+
       await recordAgentTrace(db, job, {
         stepOrder: 10,
         stepId: "critic_review",
         agentName: "Critic Agent",
-        summary: "Generated " + criticFlags.length + " rule-based critic flags; LLM analysis skipped for fast dashboard runs.",
-        detail: JSON.stringify({ useLlmCritic: options.useLlmCritic, aiBound: Boolean(options.ai) }),
+        summary,
+        detail: JSON.stringify({
+          mode: options.useLlmCritic ? "rule_based_fallback" : "rule_based_only",
+          aiBound: Boolean(options.ai),
+          useLlmCritic: options.useLlmCritic,
+          fallbackUsed: options.useLlmCritic && !options.ai,
+          ruleBasedCount: ruleBasedFlags.length
+        }),
         inputCount: rankedPapers.length,
         outputCount: criticFlags.length
       });

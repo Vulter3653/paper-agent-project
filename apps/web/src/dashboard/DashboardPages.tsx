@@ -59,6 +59,8 @@ type DiagnosticsResponse = {
     activeProviderReady: boolean;
     vectorizeReady: boolean;
     semanticRankingDefault: boolean;
+    llmCriticReady: boolean;
+    llmCriticDefault: boolean;
   };
 };
 
@@ -518,15 +520,20 @@ export function AgentOpsPage() {
                 </small>
               )}
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: diagnostics?.env.aiBinding ? 'pointer' : 'not-allowed', color: diagnostics?.env.aiBinding ? 'inherit' : '#999' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: diagnostics?.readiness.llmCriticReady ? 'pointer' : 'not-allowed', color: diagnostics?.readiness.llmCriticReady ? 'inherit' : '#999' }}>
                 <input
                   type="checkbox"
                   checked={useLlmCritic}
                   onChange={(e) => setUseLlmCritic(e.target.checked)}
-                  disabled={!diagnostics?.env.aiBinding}
+                  disabled={!diagnostics?.readiness.llmCriticReady}
                 />
-                Use LLM Critic (experimental)
+                Use LLM Critic qualitative review (experimental opt-in)
               </label>
+              {!diagnostics?.readiness.llmCriticReady && (
+                <small style={{ color: '#d97706', fontSize: '0.75rem', marginTop: '-0.25rem' }}>
+                  Unavailable: AI binding missing; rule-based critic active.
+                </small>
+              )}
             </div>
             <button className="uxButton green" type="button" onClick={launchJob} disabled={running || !keyword.trim()}>
               {running ? <RefreshCw size={18} className="spin" /> : <Play size={18} />}

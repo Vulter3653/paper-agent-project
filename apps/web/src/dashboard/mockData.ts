@@ -101,7 +101,7 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Trace Summary Console", status: "partial", evidence: "D1 agent_traces 요약을 console log로 표시 (Raw API 로그 아님)", next: "개별 외부 API request/response 상세 로그 저장 (Planned)" },
   { feature: "Vectorize Status", status: "partial", evidence: "Opt-in experimental path implemented; metadata fallback active.", next: "Production scaling and multi-index support" },
   { feature: "Google Drive PDF Archive", status: "partial", evidence: "Unpaywall 확인된 합법적 OA PDF 한정 Drive 업로드", next: "Drive 공유 정책 및 실패 재시도 UI 추가" },
-  { feature: "Critic Review", status: "live", evidence: "D1 critic_flags 기반 rule-based 리스크 표시", next: "Future: Optional LLM qualitative peer review extension" }
+  { feature: "Critic Review", status: "partial", evidence: "Rule-based flags live; LLM qualitative review available as opt-in experimental smoke path.", next: "Full production LLM review pipeline and consistency checks." }
 ];
 
 export const evaluationImplementationStatus: FeatureImplementationItem[] = [

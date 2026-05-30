@@ -1,5 +1,49 @@
 # Debug Log
 
+## 2026-05-30 - LLM Critic Opt-in Logic & Fallback Validation
+- **Context**: Task 7 requires a minimal, safe, opt-in LLM Critic smoke test path with graceful fallback.
+- **Implementation Check**:
+  - `runLlmCritic` in `critic.ts` now correctly slices `papers.slice(0, 5)` to limit resource usage.
+  - LLM messages are prefixed with `[Opt-in/Experimental]`.
+  - Diagnostics now include `llmCriticReady` based on `env.AI` binding.
+  - Trace `mode` explicitly tracks `"llm_augmented"`, `"rule_based_fallback"`, or `"rule_based_only"`.
+- **Local Validation**:
+  - Created `test-critic-logic.mjs` to dry-run the LLM Critic logic with mock AI and papers.
+  - Verified that LLM review is strictly limited to the top 5 papers.
+  - Verified that when AI binding is `null`, the system falls back to rule-based flags without error.
+  - Verified that trace metadata correctly captures the execution mode and paper counts.
+- **Frontend Check**:
+  - Dashboard toggle correctly handles `llmCriticReady` state.
+  - Fallback warning `"Unavailable: AI binding missing; rule-based critic active"` displays correctly when readiness is false.
+- **History Fix**:
+  - Detected missing historical attribution line in `CHANGELOG.md` via `validate:history`.
+  - Restored `- Docs: Completed Sunday Code Freeze pre-audit and created checklist. (gemini)` to pass integrity checks.
+
+## 2026-05-30 - Dashboard Partial Area Hardening Verification
+- **Context**: Final hardening of the Research Dashboard before the Sunday code freeze.
+- **Verification**:
+  - **Evaluation Boundary**: Confirmed the new panel correctly explains the difference between the controlled T001-T003 layer and the expanded T001-T018 evidence.
+  - **Ops Rename**: Verified "Tool Call Console" is now "Trace Summary Console" and aligns with live D1 trace data.
+  - **Google Drive**: Confirmed conditional backup wording ("Conditional OA PDF backup") is accurate to the service-account implementation.
+  - **Diagnostics**: Verified that `/api/diagnostics` readiness fields drive UI state across all hardened panels.
+  - **Data Integrity**: Ran `ls -l benchmark/` and confirmed no benchmark CSV/JSON files were modified today.
+
+## 2026-05-30 - Sunday Code Freeze Pre-Audit
+- **Audit Completion**: Performed a comprehensive pre-freeze architecture and repository audit. (gemini)
+- **Checklist Creation**: Created `docs/sunday-code-freeze-checklist.md` to document system status, claim boundaries, and demo readiness.
+- **Claim Hardening**: Verified that all AI features and expanded benchmark results are correctly labeled as opt-in/experimental or partial evidence.
+- **Integrity Check**: Confirmed that protected benchmark data and generated PDF/PPTX artifacts remain untouched.
+
+## 2026-05-30 - Vectorize Opt-in Relevance Validation
+- **Context**: Implementation of Task 6 (Vectorize opt-in semantic relevance).
+- **Validation**:
+  - **Diagnostics**: Verified that `GET /api/diagnostics` correctly reports `vectorizeReady: true` only when both `AI` and `VECTOR_INDEX` are bound.
+  - **Fallback Logic**: Verified (via mock) that `processSearchJob` defaults to metadata scoring when `useSemanticRanking` is false or bindings are missing.
+  - **Trace Detail**: Enhanced `vectorize_relevance` trace now includes `mode: "vector_semantic"` or `"metadata_fallback"`, providing full transparency.
+  - **Frontend UI**: Verified that the "Use Vectorize semantic relevance (experimental)" toggle correctly reflects backend readiness and defaults to unchecked.
+- **Issue Found**: Initial `npm run smoke:worker` against the remote worker returned the old diagnostics schema because the code wasn't deployed yet.
+- **Resolution**: Relied on local `npm run build` and typechecks; full end-to-end verification deferred until deployment.
+
 ## 2026-05-29 Benchmark Observability Enhancement
 - Context: T009 failed with polling error and T010-T020 failed with POST error during expanded benchmark run.
 - Hypothesis: T009 (4-min timeout), T010-T020 (Worker concurrency limit or WoS quota).

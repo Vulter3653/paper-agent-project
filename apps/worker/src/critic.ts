@@ -13,12 +13,17 @@ export async function runLlmCritic(
   existingFlags: CriticFlag[]
 ): Promise<CriticFlag[]> {
   const flags = [...existingFlags];
+  if (!ai) return flags;
+
   const model = "@cf/meta/llama-3-8b-instruct";
 
-  // Evaluate all papers in small concurrent chunks to balance speed and rate limits
-  const chunkSize = 3;
-  for (let i = 0; i < papers.length; i += chunkSize) {
-    const chunk = papers.slice(i, i + chunkSize);
+  // Limit LLM Critic to top 5 papers for resource safety and smoke testing
+  const papersToReview = papers.slice(0, 5);
+
+  // Evaluate papers in small concurrent chunks to balance speed and rate limits
+  const chunkSize = 2;
+  for (let i = 0; i < papersToReview.length; i += chunkSize) {
+    const chunk = papersToReview.slice(i, i + chunkSize);
     await Promise.all(
       chunk.map(async (paper) => {
         if (!paper.abstract || paper.abstract.length < 50) return;
@@ -62,7 +67,7 @@ Return ONLY a JSON object with the following structure:
               paperRank: paper.rank,
               severity,
               flagType: "llm_critique",
-              message: String(critique.message),
+              message: `[Opt-in/Experimental] ${String(critique.message)}`,
               evidence: critique.evidence ? String(critique.evidence) : "LLM qualitative analysis."
             });
           }

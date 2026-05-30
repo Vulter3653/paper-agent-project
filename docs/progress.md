@@ -1,5 +1,22 @@
 # Project Progress And Session Handoff
 
+Updated: 2026-05-30 (opt-in LLM Critic smoke path complete)
+
+## 2026-05-30 (gemini) - LLM Critic Opt-in Smoke Path
+- **Feature Completion**: Implemented a safe, opt-in LLM Critic smoke test path to augment rule-based flags. (gemini)
+- **Backend Implementation**:
+  - Restricted LLM review to the top 5 papers for resource safety and smoke testing.
+  - Added `[Opt-in/Experimental]` prefix to LLM-generated critique messages for transparency.
+  - Updated `/api/diagnostics` and agent traces to expose LLM Critic readiness and execution mode.
+  - Implemented graceful fallback to rule-based flags when AI bindings are missing or fail.
+- **Frontend Implementation**:
+  - Integrated an "experimental opt-in" toggle for LLM Critic in the Research Dashboard.
+  - Added dynamic fallback warnings and status labels to distinguish between live rule-based and experimental LLM paths.
+- **Integrity & Compliance**:
+  - Maintained rule-based critic as the production default.
+  - Verified logic via local code-level dry run and static validation.
+  - Confirmed zero impact on protected benchmark data or document generation artifacts.
+
 Updated: 2026-05-30 (partial dashboard area hardening complete)
 
 ## 2026-05-30 (gemini) - Partial Area Hardening

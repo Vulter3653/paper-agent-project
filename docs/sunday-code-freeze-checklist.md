@@ -27,8 +27,8 @@
 | Ops Dashboard | **Live** | 작업 관리 및 리소스 모니터링 가능. |
 | Evaluation Dashboard | **Partial** | 정적 스냅샷 기반 벤치마크 지표 표시. |
 | Vectorize opt-in relevance | **Partial** | 실험적 옵션으로 구현됨 (Opt-in). |
-| LLM Critic | **Planned** | UI 토글은 존재하나 로직은 차후 확장용. |
-| Google Drive archive | **Live** | 바인딩 존재 시 자동 아카이빙 지원. |
+| LLM Critic | **Partial** | Opt-in experimental smoke path 구현됨. |
+| Google Drive archive | **Partial** | OA PDF 가용 시 자동 아카이빙 지원. |
 | External Enrichment | **Planned** | JCR/SCImago 등 외부 API 연동은 계획 단계. |
 | Benchmark controlled layer | **Live** | T001-T003 기반 자동 평가 스크립트. |
 | Partial expanded evidence | **Live** | T001-T018 실행 완료 및 결과 보존. |

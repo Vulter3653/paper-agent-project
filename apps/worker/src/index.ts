@@ -80,7 +80,11 @@ import {
   saveSearchFailure,
   saveSearchJob,
   saveSearchResult,
-  updateSearchJobProgress
+  updateSearchJobProgress,
+  listBenchmarkRuns,
+  getLatestCompletedBenchmarkRun,
+  getBenchmarkRunMetrics,
+  getBenchmarkRunTasks
 } from "./persistence";
 
 export interface Env {
@@ -501,12 +505,92 @@ export default {
       }
     }
 
+    if (url.pathname === "/api/benchmark-runs" && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const scope = url.searchParams.get("scope") || undefined;
+        return json({ runs: await listBenchmarkRuns(env.DB, scope) });
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
+    const runsMatch = url.pathname.match(/^\/api\/benchmark-runs\/([^/]+)$/);
+    if (runsMatch && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        // Note: For full implementation, fetch run detail. Currently just return empty or metadata.
+        return json({ error: "Not implemented fully yet" }, 501);
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
+    const runsMetricsMatch = url.pathname.match(/^\/api\/benchmark-runs\/([^/]+)\/metrics$/);
+    if (runsMetricsMatch && request.method === "GET") {
+      try {
+        if (!env.DB) return json({ error: "D1 database binding is not configured" }, 503);
+        await ensureSchema(env.DB);
+        const metrics = await getBenchmarkRunMetrics(env.DB, runsMetricsMatch[1]);
+        return json({ runId: runsMetricsMatch[1], metrics });
+      } catch (error) {
+        return json({ error: getErrorMessage(error) }, 500);
+      }
+    }
+
     if (url.pathname === "/api/benchmark-metrics" && request.method === "GET") {
       try {
-        // This endpoint currently exposes the committed benchmark snapshot, not a live D1/R2 aggregate.
-        // Keep the source explicit so the dashboard does not overstate implementation status.
+        if (env.DB) {
+          await ensureSchema(env.DB);
+          const scope = url.searchParams.get("scope") || "controlled";
+          const latestRun = await getLatestCompletedBenchmarkRun(env.DB, scope);
+          
+          if (latestRun) {
+            const metrics = await getBenchmarkRunMetrics(env.DB, latestRun.id);
+            const methods = Array.from(new Set(metrics.map(m => m.method)));
+            const comparisonByMethod: any = {};
+            
+            for (const method of methods) {
+              const methodMetrics = metrics.filter(m => m.method === method);
+              comparisonByMethod[method] = {
+                taskCount: methodMetrics.length,
+                macroAverages: {
+                  precision_at_5: methodMetrics.reduce((sum, m) => sum + (m.precision_at_5 || 0), 0) / methodMetrics.length,
+                  ndcg_at_5: methodMetrics.reduce((sum, m) => sum + (m.ndcg_at_5 || 0), 0) / methodMetrics.length,
+                  gold_doi_hit_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.gold_doi_hit_rate_at_5 || 0), 0) / methodMetrics.length,
+                  doi_presence_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.doi_presence_rate_at_5 || 0), 0) / methodMetrics.length,
+                  top_journal_precision_at_5: methodMetrics.reduce((sum, m) => sum + (m.top_journal_precision_at_5 || 0), 0) / methodMetrics.length,
+                  paper_validity_rate_at_5: methodMetrics.reduce((sum, m) => sum + (m.paper_validity_rate_at_5 || 0), 0) / methodMetrics.length,
+                  accepted_exception_count: methodMetrics.reduce((sum, m) => sum + (m.accepted_exception_count || 0), 0)
+                }
+              };
+            }
+
+            return json({
+              source: "d1_benchmark_run",
+              runId: latestRun.id,
+              runLabel: latestRun.run_label,
+              benchmarkScope: latestRun.benchmark_scope,
+              taskRange: latestRun.task_range,
+              generatedAt: latestRun.created_at,
+              sourceCommit: latestRun.source_commit,
+              goldVersion: latestRun.gold_version,
+              methodOrder: methods,
+              comparison: {
+                k: 5,
+                methodOrder: methods,
+                byMethod: comparisonByMethod
+              },
+              claimBoundary: "Quantitative performance comparison available."
+            });
+          }
+        }
+
+        // Fallback to static snapshot if no DB or no completed run found
         return json({
-          source: "static_snapshot",
+          source: "legacy_static_snapshot",
           note: "Committed T001-T003 benchmark snapshot with Rule-based, Single-LLM, Proposed Agent comparison and automated baseline review outputs. Full 20-task live aggregation is not implemented yet.",
           tasks: 3,
           results: 15,

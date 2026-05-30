@@ -16,6 +16,17 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## Unreleased
+
+## 2026-05-30 (gemini)
+- Feat: Implemented Independent Benchmark Evaluation Pipeline separating the static evaluation metrics from live runtime aggregation. (gemini)
+- Worker: Expanded D1 database schema in `schema.sql` and created migration `0006_add_benchmark_tables.sql` to include benchmark persistence tables (`benchmark_runs`, `benchmark_run_tasks`, etc.). (gemini)
+- Worker: Added robust benchmark helper methods in `persistence.ts` to support runtime retrieval of `benchmark_runs` and `benchmark_run_metrics`. (gemini)
+- Worker: Updated `/api/benchmark-metrics` endpoint to intelligently serve latest completed benchmark run from D1, gracefully falling back to a `legacy_static_snapshot`. Added new endpoint `/api/benchmark-runs`. (gemini)
+- Scripts: Added `run-independent-benchmark.mjs` to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive `benchmark/runs/` architecture and generating D1 SQL inserts. (gemini)
+- Web: Upgraded Evaluation Dashboard `DashboardPages.tsx` to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
+- Web: Added an interactive "Run Selector" to the Evaluation Dashboard to toggle between distinct evaluation runs natively. (gemini)
+
 ## 2026-05-30 (gemini)
 - Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
 - Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)

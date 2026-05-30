@@ -1,0 +1,80 @@
+{
+  "run_id": "2026-05-30-controlled-t001-t003",
+  "scope": "controlled",
+  "tasks": [
+    "T001",
+    "T002",
+    "T003"
+  ],
+  "k": 5,
+  "methodOrder": [
+    "proposed_agent",
+    "rule_based",
+    "single_llm"
+  ],
+  "byMethod": {
+    "proposed_agent": {
+      "task_count": 3,
+      "result_count": 0,
+      "gold_count": 0,
+      "verified_gold_count": 0,
+      "macro_averages": {
+        "precision_at_5": 0,
+        "ndcg_at_5": 0,
+        "gold_doi_hit_rate_at_5": 0,
+        "doi_presence_rate_at_5": 0,
+        "top_journal_precision_at_5": 0,
+        "paper_validity_rate_at_5": 0,
+        "accepted_exception_count": 0
+      },
+      "matched_gold_ids": [],
+      "matched_dois": [],
+      "accepted_exception_locations": []
+    },
+    "rule_based": {
+      "task_count": 3,
+      "result_count": 0,
+      "gold_count": 0,
+      "verified_gold_count": 0,
+      "macro_averages": {
+        "precision_at_5": 0,
+        "ndcg_at_5": 0,
+        "gold_doi_hit_rate_at_5": 0,
+        "doi_presence_rate_at_5": 0,
+        "top_journal_precision_at_5": 0,
+        "paper_validity_rate_at_5": 0,
+        "accepted_exception_count": 0
+      },
+      "matched_gold_ids": [],
+      "matched_dois": [],
+      "accepted_exception_locations": []
+    },
+    "single_llm": {
+      "task_count": 3,
+      "result_count": 0,
+      "gold_count": 0,
+      "verified_gold_count": 0,
+      "macro_averages": {
+        "precision_at_5": 0,
+        "ndcg_at_5": 0,
+        "gold_doi_hit_rate_at_5": 0,
+        "doi_presence_rate_at_5": 0,
+        "top_journal_precision_at_5": 0,
+        "paper_validity_rate_at_5": 0,
+        "accepted_exception_count": 0
+      },
+      "matched_gold_ids": [],
+      "matched_dois": [],
+      "accepted_exception_locations": []
+    }
+  },
+  "interpretation": {
+    "precision_at_5": "Exact DOI/title overlap against task gold rows with human_relevance >= 4.",
+    "ndcg_at_5": "Rank quality using matched gold human_relevance as gain.",
+    "gold_doi_hit_rate_at_5": "Exact DOI hits divided by verified DOI gold labels for the task.",
+    "doi_presence_rate_at_5": "Share of top-5 rows with a DOI.",
+    "top_journal_precision_at_5": "Share of top-5 rows in approved international S or A1 journals.",
+    "paper_validity_rate_at_5": "Share of rows with DOI, title, journal, and no failed verification marker.",
+    "accepted_exception_count": "Accepted gold-audit exception locations touched by the method/task result set."
+  }
+}

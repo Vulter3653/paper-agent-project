@@ -17,8 +17,8 @@ export async function runLlmCritic(
 
   const model = "@cf/meta/llama-3-8b-instruct";
 
-  // Limit LLM Critic to top 5 papers for resource safety and smoke testing
-  const papersToReview = papers.slice(0, 5);
+  // Limit LLM Critic to top 3 papers for resource safety and smoke testing
+  const papersToReview = papers.slice(0, 3);
 
   // Evaluate papers in small concurrent chunks to balance speed and rate limits
   const chunkSize = 2;

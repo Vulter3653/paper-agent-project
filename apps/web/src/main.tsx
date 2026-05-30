@@ -210,7 +210,10 @@ function ResearchDashboard() {
     if (!trace) return "대기 중";
     const detail = parseTraceDetail(trace.detail);
     if (detail.mode === "llm_augmented") return "LLM Augmented";
-    if (detail.mode === "rule_based_fallback") return "Rule-based Fallback";
+    if (detail.mode === "rule_based_fallback") {
+      if (detail.reason === "llm_critic_timeout") return "LLM Timeout Fallback";
+      return "Rule-based Fallback";
+    }
     return "Rule-based (Default)";
   }, [agentTraces, isDemoMode]);
 

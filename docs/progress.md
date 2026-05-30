@@ -1,6 +1,32 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (AI opt-in runtime verification, merge to main, and live verification complete)
+Updated: 2026-05-30 (LLM Critic fallback hardened, dashboard transparency enhanced)
+
+## 2026-05-30 (gemini) - LLM Critic Latency Fallback Hardening
+- **Implementation Success**: Hardened the LLM Critic path to prevent job stalls caused by high latency or timeouts in Workers AI.
+- **Key Changes**:
+  *   **Timeout Guard**: Added a 15-second `Promise.race` timeout to the LLM Critic step in `apps/worker/src/index.ts`.
+  *   **Rule-based Fallback**: Automated fallback to metadata heuristics (rule-based flags) if the LLM fails or times out, ensuring job completion.
+  *   **Review Limit**: Reduced default qualitative analysis limit from top-5 to top-3 papers in `apps/worker/src/critic.ts` for live smoke/demo stability.
+- **Trace Evidence**:
+  *   Updated `recordAgentTrace` to include granular modes: `llm_augmented`, `rule_based_fallback`, and `rule_based_only`.
+  *   Added `reason` field to traces to distinguish between failures and timeouts (e.g., `llm_critic_timeout`).
+- **Dashboard Updates**:
+  *   Enhanced `Ranking` and `Critic` metrics in the Research dashboard to reflect real-time execution modes (e.g., "LLM Timeout Fallback").
+  *   Synchronized Ops dashboard trace meta items with the new fallback telemetry.
+- **Verification**: Confirmed smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9` stalled in `critic_review`, validating the necessity of these hardening measures.
+- **Mandatory Validation**: Full suite passed on fallback branch (`validate:history`, `validate:agent-rules`, `typecheck`, `build:web`, `audit-gold`).
+
+## 2026-05-30 (gemini) - Vectorize Fix Live Revalidation
+- **Issue Resolved**: Successfully resolved `VECTOR_QUERY_ERROR (40026)` by changing `returnMetadata` to `"none"` in the Vectorize query. (gemini)
+- **Live Verification**:
+  - Executed new live smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9` with AI enabled.
+  - **Vectorize Trace**: Recorded `status: completed` and `mode: vector_semantic`. This confirms the Relevance Agent is now using embedding-based scoring successfully.
+  - **Trace Detail**: Confirmed `fallbackUsed: false` and `scoredCount: 5`.
+- **LLM Critic Status**:
+  - Smoke job reached `critic_review` step and recorded `requested: true` and `aiBound: true` in traces.
+  - Observed increased latency during qualitative analysis (Llama-3-8B); investigations into prompt efficiency or Workers AI quota recommended if status remains "reviewing" for extended periods.
+- **Mandatory Validation**: Full suite passed on main (`validate:history`, `validate:agent-rules`, `typecheck`, `build:web`, `audit-gold`).
 
 ## 2026-05-30 (gemini) - AI Opt-in Runtime Merge & Live Verification
 - **Merge Success**: Merged `pre-freeze/ai-opt-in-runtime-verification-2026-05-30` into `main` and pushed to `origin`. (gemini)

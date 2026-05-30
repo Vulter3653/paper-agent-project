@@ -1058,25 +1058,54 @@ async function processSearchJob(
 
     if (options.useLlmCritic && options.ai) {
       try {
-        const reviewedPaperCount = Math.min(rankedPapers.length, 5);
-        criticFlags = await runLlmCritic(options.ai, keyword, rankedPapers, criticFlags);
-        await recordAgentTrace(db, job, {
-          stepOrder: 10,
-          stepId: "critic_review",
-          agentName: "Critic Agent",
-          summary: `Generated ${criticFlags.length} critic flags (Rule-based + LLM qualitative analysis for top ${reviewedPaperCount} papers).`,
-          detail: JSON.stringify({
-            mode: "llm_augmented",
-            requested: true,
-            aiBound: true,
-            ruleBasedCount: ruleBasedFlags.length,
-            llmCount: criticFlags.length - ruleBasedFlags.length,
-            reviewedPaperCount,
-            fallbackUsed: false
-          }),
-          inputCount: rankedPapers.length,
-          outputCount: criticFlags.length
-        });
+        const reviewedPaperCount = Math.min(rankedPapers.length, 3);
+        const timeoutMs = 15000;
+
+        // Wrap LLM Critic in a timeout to prevent stalling the entire job
+        const llmResult = await Promise.race([
+          runLlmCritic(options.ai, keyword, rankedPapers, ruleBasedFlags),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs))
+        ]);
+
+        if (llmResult === null) {
+          // Timeout occurred
+          await recordAgentTrace(db, job, {
+            stepOrder: 10,
+            stepId: "critic_review",
+            agentName: "Critic Agent",
+            summary: `Generated ${criticFlags.length} rule-based critic flags; LLM analysis timed out after ${timeoutMs / 1000}s.`,
+            detail: JSON.stringify({
+              mode: "rule_based_fallback",
+              requested: true,
+              aiBound: true,
+              fallbackUsed: true,
+              reason: "llm_critic_timeout",
+              ruleBasedCount: ruleBasedFlags.length,
+              reviewedPaperCount
+            }),
+            inputCount: rankedPapers.length,
+            outputCount: criticFlags.length
+          });
+        } else {
+          criticFlags = llmResult;
+          await recordAgentTrace(db, job, {
+            stepOrder: 10,
+            stepId: "critic_review",
+            agentName: "Critic Agent",
+            summary: `Generated ${criticFlags.length} critic flags (Rule-based + LLM qualitative analysis for top ${reviewedPaperCount} papers).`,
+            detail: JSON.stringify({
+              mode: "llm_augmented",
+              requested: true,
+              aiBound: true,
+              ruleBasedCount: ruleBasedFlags.length,
+              llmCount: criticFlags.length - ruleBasedFlags.length,
+              reviewedPaperCount,
+              fallbackUsed: false
+            }),
+            inputCount: rankedPapers.length,
+            outputCount: criticFlags.length
+          });
+        }
       } catch (error) {
         console.error("LLM Critic Agent error:", error);
         await recordAgentTrace(db, job, {

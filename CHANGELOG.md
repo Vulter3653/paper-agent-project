@@ -16,6 +16,12 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## [Unreleased]
+- Infra: Implemented 15-second timeout guard and rule-based fallback for LLM Critic to prevent job stalls in live environments. (gemini)
+- Worker: Reduced default LLM Critic review limit from 5 to 3 papers for improved latency. (gemini)
+- Dashboard: Enhanced UI to display granular agent execution modes (LLM Augmented, LLM Timeout Fallback, Rule-based Fallback) based on real-time traces. (gemini)
+- Docs: Completed initial LLM Critic latency research and fallback implementation for Sunday Code Freeze. (gemini)
+
 ## 2026-05-30 (gemini)
 - Fixed: Resolved `VECTOR_QUERY_ERROR (40026)` by changing `returnMetadata` to `"none"` in `apps/worker/src/vectorize.ts`. (gemini)
 - Infra: Verified Vectorize semantic relevance fix in live deployment via smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9`. (gemini)

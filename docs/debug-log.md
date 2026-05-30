@@ -1,5 +1,25 @@
 # Debug Log
 
+## 2026-05-30 - LLM Critic Latency Stall & Fallback Hardening
+- **Incident**: Smoke job `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9` stalled at `critic_review` step during qualitative analysis.
+- **Root Cause**: High latency or indefinite stall when calling Workers AI for Llama-3-8B.
+- **Resolution**:
+  - Implemented 15-second latency guard using `Promise.race` in `apps/worker/src/index.ts`.
+  - Added automatic fallback to rule-based critic flags (`rule_based_fallback`) on timeout or failure.
+  - Reduced review limit from top-5 to top-3 papers in `apps/worker/src/critic.ts` for improved live reliability.
+  - Updated dashboard to display "LLM Timeout Fallback" or "Rule-based Fallback" based on trace telemetry.
+- **Verification**: Local validation suite passed. Confirmed stalling behavior of previous job, justifying the guardrails.
+
+## 2026-05-30 - Vectorize Fix Live Revalidation Success
+- **Context**: Revalidating the fix for `VECTOR_QUERY_ERROR (40026)`.
+- **New Smoke Job**: `job-5404b9d3-b3c0-41ae-95cf-ba6e787d76d9`
+- **Result**:
+  - `vectorize_relevance` trace status: `completed`.
+  - mode: `vector_semantic`.
+  - `scoredCount`: 5.
+- **Confirmation**: The `returnMetadata: "none"` fix is correctly deployed and interpreted by the Cloudflare Vectorize API. Error 40026 is resolved.
+- **LLM Critic Note**: Qualitative analysis step reached; confirmed trace metadata (`aiBound: true`, `requested: true`), but observed high latency/stuck status. Recommended further monitoring of Workers AI stability.
+
 ## 2026-05-30 - Vectorize returnMetadata JSON Parsing Error Fix
 - **Issue**: Live Worker hit `VECTOR_QUERY_ERROR (40026)`: "Failed to parse request body as JSON: returnMetadata".
 - **Root Cause**: The Cloudflare Vectorize SDK (or service) for the current compatibility date expects `returnMetadata` to be an enum ("none" | "all" | "indexed") rather than a boolean in some runtime contexts, or strictly rejects boolean `false` if it expects a string.

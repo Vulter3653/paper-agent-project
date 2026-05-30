@@ -819,6 +819,22 @@ function buildTraceMetaItems(trace: AgentTrace, detail: TraceDetail): string[] {
     if (driveSkipped) items.push(`Drive skipped ${driveSkipped}`);
   }
 
+  if (trace.stepId === "vectorize_relevance") {
+    const mode = formatTraceValue(detail.mode);
+    const fallbackUsed = detail.fallbackUsed === true;
+    if (mode) items.push(`mode: ${mode}`);
+    if (fallbackUsed) items.push("fallback active");
+  }
+
+  if (trace.stepId === "critic_review") {
+    const mode = formatTraceValue(detail.mode);
+    const reason = formatTraceValue(detail.reason);
+    const llmCount = formatTraceValue(detail.llmCount);
+    if (mode) items.push(`mode: ${mode}`);
+    if (reason) items.push(`reason: ${reason}`);
+    if (llmCount) items.push(`LLM flags: ${llmCount}`);
+  }
+
   return items;
 }
 

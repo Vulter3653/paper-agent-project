@@ -356,6 +356,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
 export function AgentOpsPage() {
   const [running, setRunning] = useState(false);
   const [keyword, setKeyword] = useState("AI interview employer branding");
+  const [searchSize, setSearchSize] = useState<"fast" | "standard">("fast");
   const [useSemanticRanking, setUseSemanticRanking] = useState(false);
   const [useLlmCritic, setUseLlmCritic] = useState(false);
   const [activeJob, setActiveJob] = useState<SearchJob | null>(null);
@@ -367,6 +368,7 @@ export function AgentOpsPage() {
   const [diagnostics, setDiagnostics] = useState<DiagnosticsResponse | null>(null);
   const [diagnosticsError, setDiagnosticsError] = useState("");
   const [logs, setLogs] = useState(toolCallLogs);
+  const [pollingStartTime, setPollingStartTime] = useState<number>(0);
   const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
   const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
   const liveStages = traces.length ? mapTracesToWorkflowStages(traces) : literatureWorkflowStages;
@@ -410,8 +412,13 @@ export function AgentOpsPage() {
       setActiveJob(data.job);
       setTraces(data.traces);
       setLogs(data.traces.map((trace) => ({ level: getTraceLogLevel(trace.status), message: formatTraceConsoleMessage(trace) })));
-      await loadJobArtifacts(data.job.id);
-      if (data.job.status === "completed" || data.job.status === "failed") setRunning(false);
+      
+      if (data.job.status === "completed" || data.job.status === "failed") {
+        await loadJobArtifacts(data.job.id);
+        setRunning(false);
+      } else if (pollingStartTime > 0 && Date.now() - pollingStartTime > 60000 && data.traces.length === 0) {
+        setTraceError("작업 지연 중: 60초 이상 진행이 없습니다.");
+      }
     } catch (error) {
       setTraceError(error instanceof Error ? error.message : "실행 기록(trace)을 불러오지 못했습니다");
       setRunning(false);
@@ -455,16 +462,27 @@ export function AgentOpsPage() {
   async function launchJob() {
     setRunning(true);
     setTraceError("");
-    setLogs([{ level: "muted", message: `POST /api/search-jobs keyword="${keyword}" useSemanticRanking=${useSemanticRanking} useLlmCritic=${useLlmCritic}` }]);
+    setPollingStartTime(Date.now());
+    const maxResults = searchSize === "fast" ? 5 : 10;
+    const enrichmentLimit = 5;
+    
+    setLogs([{ level: "muted", message: `POST /api/search-jobs keyword="${keyword}" maxResults=${maxResults} useSemanticRanking=${useSemanticRanking} useLlmCritic=${useLlmCritic}` }]);
     try {
       const response = await fetch(apiUrl("/api/search-jobs"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keyword, maxResults: 20, enrichmentLimit: 10, useSemanticRanking, useLlmCritic })
+        body: JSON.stringify({ keyword, maxResults, enrichmentLimit, useSemanticRanking, useLlmCritic })
       });
-      if (!response.ok) throw new Error(await readDashboardError(response, "Agent 작업 실행에 실패했습니다"));
+      if (!response.ok) {
+        const errMsg = await readDashboardError(response, "Agent 작업 실행에 실패했습니다");
+        if (errMsg.includes("API key") || errMsg.includes("quota")) {
+          throw new Error(`검색 제공자 오류: ${errMsg}`);
+        }
+        throw new Error(errMsg);
+      }
       const data = (await response.json()) as { job: SearchJob };
       setActiveJob(data.job);
+      setTraceError("작업 생성됨 / trace 생성 대기 중...");
       await loadJobTraces(data.job.id);
     } catch (error) {
       setTraceError(error instanceof Error ? error.message : "Agent 작업 실행에 실패했습니다");
@@ -477,6 +495,8 @@ export function AgentOpsPage() {
     setLogs((current) => [...current, { level: trace ? getTraceLogLevel(trace.status) : "muted", message: trace ? `${trace.agentName}.inspect ${formatTraceConsoleMessage(trace)}` : `${name}.inspect no live trace loaded` }]);
   }
 
+  const failedReason = activeJob?.status === "failed" ? traces.find(t => t.status === "failed")?.errorMessage || "Top Journal 필터 결과 없음 또는 알 수 없는 오류" : "";
+
   return (
     <main className="uxShell">
       <section className="uxHero">
@@ -485,6 +505,11 @@ export function AgentOpsPage() {
             <span className="uxEyebrow cyan">인터랙티브 Agent 운영</span>
             <h1>Multi-Agent 실행 상태와 도구 호출(tool call) 흐름을 확인합니다.</h1>
             <p className="uxHeroDesc">이 화면에서는 검색 작업이 실제로 어느 단계까지 진행되었는지 추적합니다. 각 Agent의 역할, 데이터 수집 결과, 외부 도구 접근 상태, 실패나 폴백(대체 경로) 발생 원인을 검증할 수 있습니다.</p>
+            {diagnostics && (
+              <p className="uxHeroDesc" style={{ color: '#0369a1', marginTop: '0.5rem' }}>
+                현재 기본 검색 제공자는 <strong>{diagnostics.searchProvider === "wos" ? "Web of Science" : "OpenAlex"}</strong>입니다. 실패 시 OpenAlex 대체 검색이 가능하도록 설정되어 있는지 확인합니다.
+              </p>
+            )}
           </div>
           <aside className="uxSearchSummary">
             <h2>Agent 작업 실행</h2>
@@ -494,9 +519,10 @@ export function AgentOpsPage() {
             </label>
             <div className="uxFieldGrid">
               <label className="uxField">
-                <span>Provider</span>
-                <select defaultValue="wos" disabled>
-                  <option value="wos">Worker 설정 제공자</option>
+                <span>규모</span>
+                <select value={searchSize} onChange={(e) => setSearchSize(e.target.value as "fast" | "standard")} disabled={running}>
+                  <option value="fast">빠른 검증 (Max 5)</option>
+                  <option value="standard">표준 검색 (Max 10)</option>
                 </select>
               </label>
               <label className="uxField">
@@ -506,7 +532,10 @@ export function AgentOpsPage() {
                 </select>
               </label>
             </div>
-            <div className="uxToggleGrid" style={{ marginTop: '0.75rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
+              안전 실행 모드: 기본 검색은 Cloudflare Worker 제한을 피하기 위해 최대 5~10개 논문만 처리합니다. 더 큰 검색은 추후 배치 실행 모드에서 처리합니다.
+            </p>
+            <div className="uxToggleGrid" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: diagnostics?.readiness.vectorizeReady ? 'pointer' : 'not-allowed', color: diagnostics?.readiness.vectorizeReady ? 'inherit' : '#999' }}>
                 <input
                   type="checkbox"
@@ -542,7 +571,13 @@ export function AgentOpsPage() {
               Agent 작업 실행
             </button>
             {activeJob ? <p className="uxTinyStatus">작업 번호(job_id): {activeJob.id}</p> : null}
-            {traceError ? <p className="uxTinyError">{traceError}</p> : null}
+            {traceError && <p className={traceError.includes("대기 중") ? "uxTinyStatus" : "uxTinyError"}>{traceError}</p>}
+            {activeJob?.status === "failed" && (
+              <div className="uxFailureBox" style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '4px', fontSize: '0.8rem', color: '#991b1b' }}>
+                <strong>실패 원인:</strong> {failedReason}<br/>
+                조치: 더 넓은 키워드 또는 필터 완화가 필요할 수 있습니다. 제공자 오류일 경우 API Key를 확인하세요.
+              </div>
+            )}
           </aside>
         </div>
       </section>

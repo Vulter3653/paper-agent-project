@@ -935,16 +935,65 @@ async function processSearchJob(
 
     // 2. Search
     job = await updateSearchJobProgress(db, job, "searching", getSearchStepId(options.searchProvider));
-    const candidates =
-      options.searchProvider === "openalex"
+    let candidates: PaperRecord[] = [];
+    let searchProviderUsed = options.searchProvider;
+    let searchErrorMessage = "";
+    try {
+      candidates = options.searchProvider === "openalex"
         ? await searchOpenAlex(keyword, options)
         : await searchWebOfScience(keyword, options);
-    await recordAgentTrace(db, job, { stepOrder: 3, stepId: getSearchStepId(options.searchProvider), agentName: "Search/Retriever Agent", summary: "Retrieved " + candidates.length + " candidate papers from " + options.searchProvider + ".", inputCount: 1, outputCount: candidates.length });
+    } catch (err) {
+      searchErrorMessage = getErrorMessage(err);
+      if (options.searchProvider === "wos" && options.openAlexEmail) {
+        try {
+          candidates = await searchOpenAlex(keyword, options);
+          searchProviderUsed = "openalex";
+          await recordAgentTrace(db, job, {
+            stepOrder: 2.5,
+            stepId: "search_provider_fallback",
+            agentName: "Search/Retriever Agent",
+            summary: "Web of Science 검색 실패 후 OpenAlex 대체 검색을 실행했습니다.",
+            detail: JSON.stringify({ primaryProvider: "wos", fallbackProvider: "openalex", reason: searchErrorMessage, fallbackUsed: true }),
+            status: "completed",
+            inputCount: 1,
+            outputCount: 1
+          });
+        } catch (fallbackErr) {
+          throw new Error(`Primary (${options.searchProvider}) failed: ${searchErrorMessage}. Fallback (openalex) failed: ${getErrorMessage(fallbackErr)}`);
+        }
+      } else {
+        throw err;
+      }
+    }
+    await recordAgentTrace(db, job, { stepOrder: 3, stepId: getSearchStepId(searchProviderUsed), agentName: "Search/Retriever Agent", summary: "Retrieved " + candidates.length + " candidate papers from " + searchProviderUsed + ".", inputCount: 1, outputCount: candidates.length });
 
     // 3. Journal Filter
     job = await updateSearchJobProgress(db, job, "scoring", "journal_filter");
-    const allowedPapers = filterAllowedBusinessSchoolJournals(candidates, options.journalCategoryId).slice(0, options.maxResults);
-    await recordAgentTrace(db, job, { stepOrder: 2, stepId: "journal_selector", agentName: "Journal Selector Agent", summary: "Filtered candidates to " + allowedPapers.length + " approved business-school journal papers.", detail: JSON.stringify({ sourceCount: candidates.length, categoryId: options.journalCategoryId ?? "all" }), inputCount: candidates.length, outputCount: allowedPapers.length });
+    const allowedPapersFiltered = filterAllowedBusinessSchoolJournals(candidates, options.journalCategoryId);
+    let allowedPapers = allowedPapersFiltered.slice(0, options.maxResults);
+    
+    let filterFallbackMode = "none";
+    if (candidates.length > 0 && allowedPapers.length === 0) {
+      allowedPapers = candidates.slice(0, Math.min(5, options.maxResults)).map(p => ({ ...p, includeStatus: "review", relevanceReason: "Top Journal 필터 결과가 없어 검토용으로 유지된 후보입니다." }));
+      filterFallbackMode = "journal_filter_no_match_fallback";
+    }
+
+    await recordAgentTrace(db, job, { 
+      stepOrder: 2, 
+      stepId: "journal_selector", 
+      agentName: "Journal Selector Agent", 
+      summary: "Filtered candidates to " + allowedPapersFiltered.length + " approved business-school journal papers.", 
+      detail: JSON.stringify({ 
+        sourceCount: candidates.length, 
+        categoryId: options.journalCategoryId ?? "all",
+        mode: filterFallbackMode !== "none" ? filterFallbackMode : undefined,
+        allowedCount: allowedPapersFiltered.length,
+        fallbackCandidateCount: filterFallbackMode !== "none" ? allowedPapers.length : undefined,
+        claimBoundary: filterFallbackMode !== "none" ? "Top Journal approved result가 아니라 검토용 후보입니다." : undefined
+      }), 
+      inputCount: candidates.length, 
+      outputCount: allowedPapersFiltered.length 
+    });
 
     // 4. Crossref Enrichment
     job = await updateSearchJobProgress(db, job, "enriching_metadata", "crossref_enrichment");

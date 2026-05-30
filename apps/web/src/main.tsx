@@ -160,8 +160,8 @@ function App() {
 
 function ResearchDashboard() {
   const [keyword, setKeyword] = useState("AI interview employer branding");
-  const [maxResults, setMaxResults] = useState("20");
-  const [enrichmentLimit, setEnrichmentLimit] = useState("10");
+  const [maxResults, setMaxResults] = useState("5");
+  const [enrichmentLimit, setEnrichmentLimit] = useState("5");
   const [yearStart, setYearStart] = useState("2020");
   const [yearEnd, setYearEnd] = useState("");
   const [journalCategoryId, setJournalCategoryId] = useState("");

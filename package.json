@@ -49,6 +49,7 @@
     "benchmark:v3:layer4": "node benchmark/scripts/compute-layer4-retrieval-v3.mjs",
     "benchmark:v3:layer5:prepare": "node benchmark/scripts/prepare-layer5-judge-input-v3.mjs",
     "benchmark:v3:layer5:run": "node benchmark/scripts/run-layer5-llm-judge-v3.mjs",
+    "benchmark:v3:layer5:retry": "node benchmark/scripts/retry-layer5-failed-judge-v3.mjs",
     "benchmark:v3:layer5:compute": "node benchmark/scripts/compute-layer5-semantic-v3.mjs",
     "benchmark:v3:layer5": "npm run benchmark:v3:layer5:prepare && npm run benchmark:v3:layer5:run && npm run benchmark:v3:layer5:compute",
     "benchmark:v3:layer6": "node benchmark/scripts/compute-layer6-robustness-v3.mjs",

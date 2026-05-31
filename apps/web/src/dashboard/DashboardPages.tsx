@@ -110,6 +110,11 @@ type BenchmarkMetrics = {
   source?: "static_snapshot" | "live" | string;
   runId?: string;
   runLabel?: string;
+  benchmarkScope?: string;
+  taskRange?: string;
+  sourceCommit?: string;
+  goldVersion?: string;
+  createdAt?: string;
   note?: string;
   tasks: number;
   results: number;
@@ -129,6 +134,7 @@ type BenchmarkMetrics = {
   };
   comparison?: {
     k: number;
+    rowCount?: number;
     methodOrder: BenchmarkMethodKey[];
     byMethod: Partial<Record<BenchmarkMethodKey, BenchmarkComparisonMethod>>;
   };
@@ -1284,12 +1290,79 @@ export function EvaluationDashboardPage() {
       </section>
 
       <section className="uxMetrics">
-        <MetricTile label="Precision@5" value={scenario.metrics.precisionAt5} detail="상위 추천 정확도" tone="green" />
-        <MetricTile label="DOI Accuracy" value={scenario.metrics.doiAccuracy} detail="실존 논문 검증률" tone="green" />
-        <MetricTile label="Top Journal %" value={scenario.metrics.topJournalPrecision} detail="S급/A1급 매칭률" tone="blue" />
-        <MetricTile label="Hallucination" value={scenario.metrics.hallucinationRate} detail="존재하지 않는 논문" tone="amber" />
-        <MetricTile label="Report Completeness" value={scenario.metrics.reportCompleteness} detail="보고서 완성도" tone="purple" />
-        <MetricTile label="Latency" value={scenario.metrics.avgLatency} detail="평균 소요 시간" tone="blue" />
+        <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div className="uxMetricHeader" style={{ gridColumn: '1 / -1', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ShieldCheck size={16} /> Live Benchmark Metrics (D1 Evidence)
+            </h3>
+          </div>
+          <MetricTile label="Precision@5" value={benchmarkMetrics?.macroAverages.precision_at_k.toFixed(4) ?? "-"} detail="상위 추천 정확도" tone="green" />
+          <MetricTile label="NDCG@5" value={benchmarkMetrics?.macroAverages.ndcg_at_k.toFixed(4) ?? "-"} detail="랭킹 품질 점수" tone="green" />
+          <MetricTile label="Gold DOI Hit" value={benchmarkMetrics?.macroAverages.gold_doi_hit_rate_at_k.toFixed(4) ?? "-"} detail="Gold DOI 재현율" tone="blue" />
+          <MetricTile label="Top Journal %" value={benchmarkMetrics ? (benchmarkMetrics.macroAverages.top_journal_precision_at_k * 100).toFixed(1) + "%" : "-"} detail="S급/A1급 매칭률" tone="blue" />
+        </div>
+
+        <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+          <div className="uxMetricHeader" style={{ gridColumn: '1 / -1', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <BarChart3 size={16} /> Scenario Interpretation (View Only)
+            </h3>
+          </div>
+          <MetricTile label="Scenario Score" value={(overall / 100).toFixed(2)} detail={`${scenario.label} 해석치`} tone="purple" />
+          <MetricTile label="Hallucination" value={scenario.metrics.hallucinationRate} detail="가상 지표(해석용)" tone="amber" />
+          <MetricTile label="Completeness" value={scenario.metrics.reportCompleteness} detail="보고서 완성도" tone="purple" />
+          <MetricTile label="Avg Latency" value={scenario.metrics.avgLatency} detail="평균 소요 시간" tone="blue" />
+        </div>
+      </section>
+
+      <section className="uxPanel">
+        <div className="uxPanelHead">
+          <div>
+            <h2>실시간 벤치마크 증거 (Live Benchmark Evidence)</h2>
+            <p>Production D1 데이터베이스에서 직접 서빙되는 런타임 검증 증거입니다.</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {benchmarkMetrics?.source === "d1_benchmark_run" ? (
+              <span className="uxPill green">● D1 Benchmark Run Active</span>
+            ) : benchmarkMetrics?.source === "legacy_static_snapshot" ? (
+              <span className="uxPill amber">○ Legacy Fallback Active</span>
+            ) : (
+              <span className="uxPill red">Data Connection Failed</span>
+            )}
+          </div>
+        </div>
+        <div className="uxSystemGrid">
+          <div className="uxSystemItem">
+            <strong>Data Source</strong>
+            <span>{benchmarkMetrics?.source || "unknown"}</span>
+            <small>{benchmarkMetrics?.source === "d1_benchmark_run" ? "Production D1 DB" : "Static JSON Fallback"}</small>
+          </div>
+          <div className="uxSystemItem">
+            <strong>Run ID</strong>
+            <span>{benchmarkMetrics?.runId || "-"}</span>
+            <small>{benchmarkMetrics?.runLabel || "-"}</small>
+          </div>
+          <div className="uxSystemItem">
+            <strong>Scope / Range</strong>
+            <span>{benchmarkMetrics?.benchmarkScope || "-"}</span>
+            <small>{benchmarkMetrics?.taskRange || "-"}</small>
+          </div>
+          <div className="uxSystemItem">
+            <strong>Source Commit</strong>
+            <span style={{ fontSize: '0.7rem', wordBreak: 'break-all' }}>{benchmarkMetrics?.sourceCommit || "-"}</span>
+            <small>Gold Version: {benchmarkMetrics?.goldVersion || "-"}</small>
+          </div>
+          <div className="uxSystemItem">
+            <strong>Generated At</strong>
+            <span>{benchmarkMetrics?.createdAt ? new Date(benchmarkMetrics.createdAt).toLocaleString() : "-"}</span>
+            <small>{benchmarkMetrics?.comparison?.rowCount || 0} metric rows loaded</small>
+          </div>
+          <div className="uxSystemItem">
+            <strong>Claim Boundary</strong>
+            <span className="blue">Controlled T001-T003</span>
+            <small>D1-backed live evidence</small>
+          </div>
+        </div>
       </section>
 
       <ImplementationStatusPanel
@@ -1304,7 +1377,7 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>벤치마크 증거 경계 (Evidence Boundary)</h2>
-                <p>부분 확장 결과(18/20)와 엄격한 통제 검증(T001-T003)을 구분하여 해석해야 합니다.</p>
+                <p>통제된 T001-T003 실시간 증거와 부분적 확장 결과를 구분합니다.</p>
               </div>
               <ShieldCheck size={18} className="blue" />
             </div>
@@ -1312,22 +1385,22 @@ export function EvaluationDashboardPage() {
               <div className="uxSystemItem">
                 <strong>통제 비교 레이어 (Control)</strong>
                 <span>T001-T003</span>
-                <small>Gold Label 완전 검증 및 모델 간 성능 비교 완료</small>
+                <small>Production D1 기반 실시간 벤치마크 서빙 중</small>
               </div>
               <div className="uxSystemItem">
                 <strong>부분 확장 증거 (Partial)</strong>
                 <span>T001-T018 (90%)</span>
-                <small>제안 모델의 엔드투엔드 파이프라인 실행 완료 확인</small>
+                <small>전체 20-task 검증이 아닌 부분적 실행 증거임</small>
               </div>
               <div className="uxSystemItem">
                 <strong>인프라 제한 (Resource Limit)</strong>
                 <span>T019-T020</span>
-                <small>Cloudflare Worker 환경 자원 한계로 인한 통신 실패</small>
+                <small>런타임 자원 한계로 인한 미완료 항목</small>
               </div>
               <div className="uxSystemItem">
                 <strong>데이터 속성 (Status)</strong>
-                <span>부분 증거 (Partial)</span>
-                <small>전체 20-task 결과가 아닙니다. 정적 스냅샷 기반 데이터.</small>
+                <span>Live D1 Evidence</span>
+                <small>Legacy 정적 스냅샷에서 D1 기반으로 전환 완료</small>
               </div>
             </div>
           </section>
@@ -1403,19 +1476,19 @@ export function EvaluationDashboardPage() {
                     <td>투명성 (Traceability)</td>
                     <td>부분 제공 (검색 조건 확인 가능)</td>
                     <td>불가 (블랙박스)</td>
-                    <td><strong style={{ color: "#16a34a" }}>완전 제공 (12-stage 추적 로그)</strong></td>
+                    <td><strong style={{ color: "#16a34a" }}>구현된 workflow 내 trace 제공 (12-stage)</strong></td>
                   </tr>
                   <tr>
                     <td>검증 (Verification)</td>
                     <td>없음</td>
                     <td>불안정 (환각 발생 위험)</td>
-                    <td><strong style={{ color: "#16a34a" }}>시스템 검증 (Crossref/Unpaywall)</strong></td>
+                    <td><strong style={{ color: "#16a34a" }}>Crossref/Unpaywall 기반 metadata verification</strong></td>
                   </tr>
                   <tr>
                     <td>산출물 (Outputs)</td>
                     <td>데이터 (CSV/JSON)</td>
                     <td>비정형 텍스트</td>
-                    <td><strong style={{ color: "#16a34a" }}>보고서 & 데이터 (MD, PDF, CSV, XLSX)</strong></td>
+                    <td><strong style={{ color: "#16a34a" }}>MD/PDF/CSV/XLSX artifact generation</strong></td>
                   </tr>
                 </tbody>
               </table>

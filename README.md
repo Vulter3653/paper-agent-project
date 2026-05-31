@@ -1,5 +1,11 @@
 # Paper Agent Project
 
+## Final Submission Status (2026-05-31)
+- **Status**: Production Deployment & Verification Complete (gemini)
+- **Live Verification**: [docs/live-benchmark-verification-2026-05-31.md](docs/live-benchmark-verification-2026-05-31.md)
+- **Benchmark Coverage**: Controlled T001-T003 performance is served live from Production D1.
+- **Evidence**: Raw API responses captured in `docs/api-*.json`.
+
 AI Agent 기반 학술논문 탐색 및 문헌검토 자동화 시스템입니다.
 
 
@@ -133,7 +139,7 @@ Recommended names:
 | 대시보드 메인 | https://paper-agent-project.pages.dev/ | 화면이 열리고 Research/Ops/Evaluation 라우트로 이동 가능해야 합니다. |
 | Research Dashboard | https://paper-agent-project.pages.dev/dashboard/research | 검색 실행, Ranked Papers, Paper Detail, Report Preview를 확인합니다. |
 | Ops Dashboard | https://paper-agent-project.pages.dev/dashboard/ops | Worker, D1, R2, MCP, Agent trace 상태를 확인합니다. |
-| Evaluation Dashboard | https://paper-agent-project.pages.dev/dashboard/evaluation | Rule-based, Single-LLM, Proposed Multi-Agent 비교와 benchmark snapshot을 확인합니다. |
+| Evaluation Dashboard | https://paper-agent-project.pages.dev/dashboard/evaluation | Rule-based, Single-LLM, Proposed Multi-Agent 비교와 D1-backed controlled benchmark run을 확인합니다. |
 | Worker health | https://paper-agent-project.shch3653.workers.dev/api/health | `{ "ok": true }` 형태의 정상 응답이어야 합니다. |
 | Worker diagnostics | https://paper-agent-project.shch3653.workers.dev/api/diagnostics | DB missingColumns가 비어 있고 WoS/Crossref/Unpaywall/R2/Google Drive 준비 상태를 확인합니다. |
 | 최근 검색 작업 | https://paper-agent-project.shch3653.workers.dev/api/search-jobs?limit=5 | 최근 job id, status, sourceResultCount, allowedResultCount를 확인합니다. |

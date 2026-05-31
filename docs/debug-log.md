@@ -1,5 +1,23 @@
 # Debug Log
 
+## 2026-05-31 - Evaluation Dashboard Reliability Improvement
+- **Incident**: The Evaluation Dashboard mixed live D1 evidence with hypothetical scenario interpretations, causing potential confusion about the system's current proven performance.
+- **Resolution**:
+  - Implemented `Live Benchmark Evidence` panel to expose actual D1 runtime metadata.
+  - Decoupled real measured metrics from scenario-based projections in the UI.
+  - Added explicit data source status indicators (D1 Active / Fallback).
+  - Adjusted "Functional Capabilities" and "Evidence Boundary" labels to match implemented reality (e.g., "within implemented workflow traces").
+- **Verification**: UI component state correctly reflects `benchmarkMetrics.source` values. (gemini)
+
+## 2026-05-31 - Final Submission Live Verification
+- **Incident**: Production D1 seeding required manual execution due to headless environment authentication limits (`wrangler` unable to open browser).
+- **Resolution**:
+  - Validated `insert_run.sql` for `INSERT OR REPLACE` and correct `source_commit`.
+  - User executed manual seed; verified 13 queries and 38 rows written.
+  - Performed live verification of `/api/benchmark-runs`, `/api/benchmark-metrics`, and dashboard components.
+  - Confirmed all metrics (P@5: 0.1333, NDCG: 0.3579) match the controlled T001-T003 baseline.
+- **Verification Evidence**: Raw JSON responses captured in `docs/api-*.json`. (gemini)
+
 ## 2026-05-30 - Independent Benchmark Pipeline Correctness Fix
 - **Incident**: The independent benchmark runner (`run-independent-benchmark.mjs`) was generating `summary.json` and `insert_run.sql` with zeroed metrics despite having valid result rows in the artifact CSVs.
 - **Root cause analysis**:

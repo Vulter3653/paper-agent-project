@@ -1,6 +1,25 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Independent Benchmark Evaluation Pipeline)
+Updated: 2026-05-31 (Evaluation Dashboard Reliability Improved)
+
+## 2026-05-31 (gemini) - Evaluation Dashboard Reliability & Clarity Improvement
+- **Summary**: Refactored the Evaluation Dashboard to clearly distinguish between live D1 benchmark evidence and scenario-based interpretations. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - **Live Benchmark Evidence Panel**: Added a dedicated panel displaying runtime metadata (source, runId, sourceCommit, generatedAt) directly from Production D1.
+  - **Metric Decoupling**: Split top-level metric tiles into "Live Benchmark Metrics" (actual measured values) and "Scenario Interpretation" (view-only analytical projections).
+  - **Status Indicators**: Added real-time data source status cards (D1 Active, Legacy Fallback, Connection Failed).
+  - **Claim Hardening**: Updated Evidence Boundary and Functional Capability sections to reflect the current implementation level (e.g., "within implemented workflow traces" instead of "fully provided").
+  - **Documentation Alignment**: Synchronized `README.md` and `docs/progress.md` with the D1-backed benchmark reality.
+- **Verification**: Full validation suite passed; verified D1 source priority logic in UI components. (gemini)
+
+## 2026-05-31 (gemini) - Final Submission & Live Verification
+- **Status**: FINAL PACKAGE READY. (gemini)
+- **Live Verification**: Production D1 successfully seeded with controlled benchmark run `2026-05-30-controlled-t001-t003`.
+- **API Verification**: `/api/benchmark-metrics` confirms `source: d1_benchmark_run` with P@5: 0.1333 and NDCG: 0.3579.
+- **Dashboard Verification**: Live Run Selector operational; "D1 Benchmark Run" label confirmed.
+- **Evidence**: Raw API responses saved in `docs/api-*.json` and summary report in `docs/live-benchmark-verification-2026-05-31.md`.
+- **Claim Boundary**: Strictly limited to T001-T003 controlled benchmark layer. (gemini)
 
 ## 2026-05-30 (gemini) - Independent Benchmark Evaluation Pipeline Completion
 - **Summary**: Established a fully functional and accurate evaluation pipeline that separates static benchmarks from runtime aggregation. Verified metric accuracy and implemented dynamic dashboard switching. (gemini)

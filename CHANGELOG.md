@@ -17,7 +17,13 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-31 (gemini)
+- Docs: Added `docs/codex-handoff-phase-3d-dry-run-planning.md` for strategic transition. (gemini)
+- Docs: Recorded Phase 3C verification results in `docs/phase-3c-post-migration-verification.md` and updated progress. (gemini)
+- Docs: Created `docs/phase-3b-manual-migration-runbook.md` to resolve headless auth recovery. (gemini)
+- Docs: Documented Phase 3B aborted migration and procedural violation in `docs/debug-log.md`. (gemini)
+- Docs: Prepared Production D1 Migration Approval Package in `docs/production-d1-migration-approval-package.md`. (gemini)
 - Added: `scripts/verify-live-benchmark.mjs` for automated production API verification. (gemini)
+- Added: `docs/final-report-integrity.md` implementing the Final Report Integrity Protocol. (gemini)
 - Changed: `apps/worker/src/index.ts`: added `rowCount` to benchmark metrics comparison to ensure dashboard diagnostics display 9/9. (gemini)
 - Added: `docs/live-benchmark-verification-2026-05-31.md`: documented production API verification results. (gemini)
 

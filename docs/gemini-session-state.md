@@ -1,23 +1,35 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Phase 3A Production Migration Approval Package Complete)
+Updated: 2026-05-31 (Phase 3C Verification and Codex Handoff Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
 > The latest commit identity must be verified via the **Final Report Integrity Protocol** raw git output in the final summary of each task.
 
 ## Current Status
-- **Phase 3 State**: Phase 3A (Production Migration Approval Package) completed.
-- **Approval Pending**: Formal package created and awaiting user approval before executing `--remote` migration.
-- **Verification Baseline**: The `main` branch contains the approval package and final safety check guidelines.
+- **Phase 3 State**: Phase 3C (Post-Migration Verification) completed.
+- **D1 Schema**: Migration 0007 successfully applied to production. Batch columns and indexes verified.
+- **Controlled Baseline**: T001-T003 integrity remains intact (9 metric rows).
+- **Handoff**: Strategic handoff to Codex for Phase 3D Dry-Run Planning is complete.
 
-## Phase 2D/3A Provenance
-- **Implementation Commit**: `f27b54baacc042f7cbb5d98fabcb608a9436e7c5` (Compatibility layer)
-- **Correction Commit**: `94d84b75a20b24d27672e0d030fb43dd9a24c50c` (Provenance protocol update)
-- **Approval Package Commit**: (This session) Added `docs/production-d1-migration-approval-package.md`.
+## Verification Baseline
+- **HEAD Commit**: `fcfd9660b2a2df6afac41a467abfa85fb16d9492` (Codex Handoff)
+- **Provenance**: Full manual migration and verification trail established in `docs/`.
 
 ## Completed Actions
-1. **Approval Package**: Drafted full migration plan with summary, contents, command, and verification steps.
+1. **Approval Package**: Created Phase 3A approval document (`adbe437`).
+2. **Incident Log**: Documented Phase 3B aborted migration and headless auth root cause (`f4e0575`).
+3. **Manual Runbook**: Created the Phase 3B-R manual recovery path (`4ec0ba9`).
+4. **Verification**: Executed and documented Phase 3C post-migration verification (`20e9192`).
+5. **Codex Handoff**: Created single-file strategic handoff for Phase 3D dry-run planning (`fcfd966`).
+
+## Next Recommended Actions
+1. **Codex Takeover**: Begin Phase 3D Dry-Run Planning using `docs/codex-handoff-phase-3d-dry-run-planning.md`.
+2. **Dry-Run Scope**: Limit initial run to T004-T006 to verify batch orchestration logic.
+3. **Safety Gate**: Review dry-run results before committing to full T004-T020 execution.
+
+## Blockers
+- **Headless D1 Execute**: Remote `--remote` execute/export still requires `CLOUDFLARE_API_TOKEN` for agent-led automation in this environment. Manual path (Option A) used as fallback.
 2. **Safety Audit**: Confirmed that the `0007` migration script is non-destructive and backward compatible.
 3. **Checklist Implementation**: Defined strict pre-migration and post-migration validation procedures.
 4. **README Synchronization**: Linked the approval package for easy navigation.

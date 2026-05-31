@@ -56,39 +56,61 @@ The benchmark is fixed at 20 tasks (T001-T020). Each method (Rule-based, Single 
 - **Verification**: Independent Crossref/Unpaywall lookup.
 - **Transparency**: Detailed trace logs and component-level scoring.
 
-## 6. Automated Metrics
+## 6. Automated Metrics (6-Layer Architecture)
 
-### 6.1 Retrieval and Ranking Metrics (Deterministic)
+The benchmark metrics are organized into 6 layers to provide comprehensive evaluation depth. Each layer contains 5 specific metrics, totaling 30 automated indicators.
+
+### Layer 1: Foundation & Reproducibility (기반 및 재현성)
+Ensures the system and the benchmark execution are traceable and reproducible.
+- **Reproducibility Manifest Completeness**: Checks if `run_id`, prompts, and model params are recorded.
+- **Baseline Parity Check**: Ensures all compared methods use the same task set and schema.
+- **Claim Boundary Compliance**: Verifies that results distinguish between artifact and validated states.
+- **Trace Completeness Rate**: Percentage of agent stages with successful execution logs.
+- **Critic Flag Coverage**: Rate of papers analyzed by the rule-based or LLM Critic.
+
+### Layer 2: Schema & Metadata (스키마 및 메타데이터)
+Evaluates the structural integrity and data accuracy of the retrieved results.
+- **Schema Normalization Rate**: Rate of successful conversion to the v2 benchmark schema.
+- **Metadata Completeness Rate**: Rate of results with all required fields (DOI, Title, Journal, Year).
+- **DOI Format Validity Rate**: Rate of results with syntactically valid DOI strings.
+- **JSON Parsing Success Rate**: Rate of successful automated parsing of agent/judge outputs.
+- **Metadata Mismatch Rate**: Discrepancy rate between reported and verified API metadata.
+
+### Layer 3: Deterministic Validity (결정론적 타당성)
+Verifies scholarly validity using external ground-truth sources (APIs).
+- **DOI Exact Match Rate**: Percentage of DOIs verified as existing by external scholarly APIs.
+- **Paper Existence Rate**: Rate of papers confirmed as real scholarly records.
+- **Journal Policy Compliance Rate**: Rate of papers correctly matching the approved journal list.
+- **Top Journal Precision**: Precision restricted to S and A1 tier journals.
+- **OA Success Rate**: Rate of successful Open Access status/URL verification (Unpaywall).
+
+### Layer 4: Retrieval Accuracy (탐색 정확도)
+Measures quantitative retrieval performance against the audited Gold Set.
 - **Precision@5**: Proportion of retrieved papers that match the gold DOI set in the top 5.
-- **NDCG@5**: Normalized Discounted Cumulative Gain, evaluating the quality of ranking.
+- **NDCG@5**: Normalized Discounted Cumulative Gain for ranking quality.
 - **Recall@20**: Proportion of the gold set successfully retrieved within 20 results.
 - **Gold Hit Rate**: Percentage of tasks where at least one gold paper was retrieved.
-- **MRR (Mean Reciprocal Rank)**: The average of the reciprocal ranks of the first relevant paper.
+- **MRR (Mean Reciprocal Rank)**: Average reciprocal rank of the first relevant gold paper.
 
-### 6.2 Scholarly Validity Metrics (Deterministic)
-- **DOI Exact Match Rate**: Percentage of DOIs verified as existing and correct by external APIs.
-- **Paper Existence Rate**: Percentage of results where metadata matches a real scholarly record.
-- **Journal Policy Compliance Rate**: Percentage of papers correctly filtered by the approved journal list.
-- **Top Journal Precision**: Precision restricted to S and A1 tier journals.
+### Layer 5: Semantic Quality (의미적 품질 - LLM Judge)
+Uses a fixed LLM-as-a-judge to evaluate semantic alignment.
+- **LLM Relevance Score**: 1-5 semantic relevance score from the fixed v2 judge.
+- **Construct Coverage Score**: Match rate between task constructs and paper findings.
+- **Context/Method Match Score**: Alignment with requested domain or level of analysis.
+- **LLM Judge Confidence Score**: Self-reported confidence of the automated judge.
+- **LLM Judge Reasoning Validity**: Automated check for logical consistency in judge reasoning.
 
-### 6.3 Hallucination and Integrity Metrics (Deterministic)
-- **Nonexistent Paper Rate**: Rate of papers that cannot be found in any scholarly database.
-- **Invalid DOI Rate**: Rate of results with malformed or fake DOI strings.
-- **Metadata Mismatch Rate**: Discrepancy rate between LLM-reported and verified metadata.
-
-### 6.4 System Robustness Metrics
-- **Task Completion Rate**: Percentage of tasks that finished without runner crash.
+### Layer 6: Robustness & Risk (안정성 및 위험)
+Evaluates system limits, errors, and negative behavioral risks.
+- **Negative Distractor Rejection Rate**: Rate of correctly excluding/rejecting known distractors.
+- **Hallucination Rate**: Rate of nonexistent or fabricated papers returned.
 - **Timeout Rate**: Percentage of jobs reaching infrastructure time limits.
-- **Average Latency**: Time elapsed per discovery task.
+- **Latency per Task**: Average time elapsed per discovery task.
+- **Cost Proxy**: Estimated resource/API cost per discovery task.
 
-### 6.5 Automated LLM Judge Metrics (Qualitative Proxy)
-- **LLM Relevance Score**: 1-5 score based on the research question and candidate abstract.
-- **Construct Coverage Score**: Matches between task constructs and paper findings.
-- **Context/Method Match**: Alignment with the requested level of analysis or domain.
+*Note: LLM-as-a-judge scores (Layer 5) are semantic relevance proxies. They support interpretation but do not override deterministic evidence (Layers 1-3) such as DOI existence or gold DOI matching.
 
-*Note: LLM-as-a-judge scores are treated as semantic relevance proxies. They support interpretation but do not override deterministic evidence such as DOI existence, metadata consistency, gold DOI matching, or paper existence checks.
-
-LLM-as-a-judge 점수는 의미적 관련성의 보조 지표이며, DOI 존재 여부, 메타데이터 일치, gold DOI matching, paper existence check와 같은 결정론적 검증보다 강한 증거로 사용하지 않는다.*
+LLM-as-a-judge 점수는 의미적 관련성의 보조 지표이며, DOI 존재 여부, 메타데이터 일치, gold DOI matching과 같은 결정론적 검증(Layer 1-3)보다 강한 증거로 사용하지 않는다.*
 
 ## 7. Automated LLM-as-a-Judge Protocol
 

@@ -4,8 +4,52 @@
   "human_evaluation": false,
   "task_count": 20,
   "methods": ["rule_based", "single_llm", "proposed_agent"],
-  "primary_metrics": ["precision_at_5", "ndcg_at_5", "recall_at_20", "doi_exact_match_rate", "paper_existence_rate", "hallucination_rate"],
-  "secondary_metrics": ["llm_judge_relevance_score", "trace_completeness_rate", "latency", "cost_proxy"],
+  "primary_metrics": ["precision_at_5", "ndcg_at_5", "recall_at_20", "doi_exact_match_rate", "hallucination_rate", "claim_boundary_compliance"],
+  "secondary_metrics": ["llm_judge_relevance_score", "trace_completeness_rate", "latency_per_task", "cost_proxy"],
+  "metric_layers": {
+    "layer_1_foundation": [
+      "reproducibility_manifest_completeness",
+      "baseline_parity_check",
+      "claim_boundary_compliance",
+      "trace_completeness_rate",
+      "critic_flag_coverage"
+    ],
+    "layer_2_schema": [
+      "schema_normalization_rate",
+      "metadata_completeness_rate",
+      "doi_format_validity_rate",
+      "json_parsing_success_rate",
+      "metadata_mismatch_rate"
+    ],
+    "layer_3_validity": [
+      "doi_exact_match_rate",
+      "paper_existence_rate",
+      "journal_policy_compliance_rate",
+      "top_journal_precision",
+      "oa_success_rate"
+    ],
+    "layer_4_accuracy": [
+      "precision_at_5",
+      "ndcg_at_5",
+      "recall_at_20",
+      "gold_hit_rate",
+      "mrr"
+    ],
+    "layer_5_quality": [
+      "llm_judge_relevance_score",
+      "construct_coverage_score",
+      "context_method_match_score",
+      "llm_judge_confidence_score",
+      "llm_judge_reasoning_validity"
+    ],
+    "layer_6_risk": [
+      "negative_distractor_false_positive_rate",
+      "hallucination_rate",
+      "timeout_rate",
+      "latency_per_task",
+      "cost_proxy"
+    ]
+  },
   "validation_state_definitions": {
     "protocol_defined": "Benchmark rules and schemas exist, but metrics have not necessarily been computed.",
     "artifact_only": "Execution artifacts exist but have not passed automated v2 validation gates.",

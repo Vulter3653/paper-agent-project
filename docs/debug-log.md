@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark Standard v2 Metric Layering
+
+- Refactored the metric architecture into 6 distinct layers.
+- Expanded the total automated indicators to 30 (5 per layer).
+- Integrated new indicators: construct coverage, context match, judge confidence, reasoning validity, schema normalization rate, and metadata completeness.
+- Synchronized `metric_spec_v2.csv` and `auto_eval_protocol_v2.json` with the new layered architecture.
+- No stochastic or destructive actions were performed.
+
 ## 2026-06-01 (gemini) - Benchmark Standard v2 Quality Hardening
 
 - Hardened documentation and schemas for the v2 protocol.

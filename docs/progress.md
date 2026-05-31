@@ -1,6 +1,14 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark Standard v2 Quality Hardening)
+Updated: 2026-06-01 (Benchmark Standard v2 Metric Layering)
+
+## 2026-06-01 (gemini) - Benchmark Standard v2 Metric Layering
+
+- **Status**: Completed metric architecture refactoring for Benchmark Standard v2.
+- **Architecture**: Established a 30-metric, 6-layer structure (Foundation, Schema, Validity, Accuracy, Quality, Risk) with 5 indicators per layer.
+- **Scope**: Documentation and schema update only. No benchmark execution, D1 command, migration, or result CSV edit was performed.
+- **Improvements**: Formalized metrics for construct coverage, context match, judge confidence, reasoning validity, and Open Access success rate. Reorganized the metric specification into a layered CSV for better observability.
+- **Verification**: ✅ ALL PASSED (typecheck, web build, history integrity).
 
 ## 2026-06-01 (gemini) - Benchmark Standard v2 Quality Hardening
 

@@ -1,21 +1,31 @@
-metric_name,metric_group,definition,input_required,calculation_type,primary_or_secondary,claim_use
-precision_at_5,Retrieval,Proportion of top 5 matching gold set,Gold Set,Deterministic,Primary,Quantitative retrieval quality
-ndcg_at_5,Ranking,Ranking quality using discounted gain,Gold Set,Deterministic,Primary,Search effectiveness
-recall_at_20,Retrieval,Proportion of gold set found in top 20,Gold Set,Deterministic,Primary,Retrieval coverage
-doi_exact_match_rate,Validity,Percentage of valid DOIs returned,Crossref API,Deterministic,Primary,Evidence integrity
-hallucination_rate,Integrity,Rate of nonexistent papers,Multiple APIs,Deterministic,Primary,System trustworthiness
-paper_existence_rate,Validity,Rate of real vs fake records,API lookup,Deterministic,Secondary,Hallucination check
-journal_policy_compliance_rate,Validity,Rate of papers in allowed pool,Allowlist,Deterministic,Secondary,Policy enforcement
-llm_judge_relevance_score,Qualitative,1-5 score from fixed LLM judge,LLM Judge,Stochastic (T=0),Secondary,Semantic relevance proxy
-timeout_rate,Robustness,Rate of job timeouts,Runner Logs,Deterministic,Secondary,Infrastructure stability
-latency_per_task,Robustness,Average time per task,Runner Logs,Deterministic,Secondary,System efficiency
-trace_completeness_rate,Traceability,Percentage of stages with full logs,D1 Traces,Deterministic,Secondary,Process transparency
-metadata_mismatch_rate,Integrity,Discrepancy in year/journal/DOI,API lookup,Deterministic,Primary,Data accuracy
-gold_hit_rate,Retrieval,Percentage of tasks with >=1 gold result,Gold Set,Deterministic,Secondary,Task success rate
-mrr,Ranking,Average reciprocal rank of first gold,Gold Set,Deterministic,Secondary,Ranking quality
-cost_proxy,Robustness,Estimated API cost per task,Runner Logs,Deterministic,Secondary,Economical viability
-critic_flag_coverage,Traceability,Rate of papers with critic flags,D1 Table,Deterministic,Secondary,Risk detection transparency
-baseline_parity_check,Reproducibility,Checks whether all compared methods have outputs for the same task set and schema,Normalized result files,Deterministic,Primary,Required before comparative validation
-reproducibility_manifest_completeness,Reproducibility,Checks whether run_id input files prompts model parameters timestamps and output schema are recorded,Manifest JSON,Deterministic,Primary,Reproducibility claim
-claim_boundary_compliance,Claim Safety,Checks whether outputs distinguish protocol-defined artifact-only and validated states,Report and dashboard text,Deterministic,Primary,Prevents overclaiming
-negative_distractor_false_positive_rate,Integrity,Rate at which known negative distractors are selected or scored as relevant,Gold label schema v2,Deterministic or LLM-assisted,Secondary,False-positive risk detection
+metric_name,metric_layer,definition,input_required,calculation_type,primary_or_secondary,claim_use
+reproducibility_manifest_completeness,Layer 1,Checks if run_id input files prompts model parameters and timestamps are recorded,Manifest JSON,Deterministic,Primary,Reproducibility claim
+baseline_parity_check,Layer 1,Ensures all compared methods have outputs for the same task set and schema,Result files,Deterministic,Primary,Comparative validation requirement
+claim_boundary_compliance,Layer 1,Verifies if outputs distinguish protocol-defined artifact-only and validated states,Report/Dashboard text,Deterministic,Primary,Prevents overclaiming
+trace_completeness_rate,Layer 1,Percentage of agent stages with successful execution logs,D1 Traces,Deterministic,Secondary,Process transparency
+critic_flag_coverage,Layer 1,Rate of papers analyzed by the rule-based or LLM Critic,D1 Table,Deterministic,Secondary,Risk detection transparency
+schema_normalization_rate,Layer 2,Rate of successful conversion to v2 benchmark schema,Result files,Deterministic,Secondary,Data structural integrity
+metadata_completeness_rate,Layer 2,Rate of results with all required fields (DOI Title Journal Year),Result files,Deterministic,Secondary,Data completeness
+doi_format_validity_rate,Layer 2,Rate of results with syntactically valid DOI strings,Result files,Deterministic,Secondary,Syntax validation
+json_parsing_success_rate,Layer 2,Rate of successful automated parsing of agent and judge outputs,Logs/JSON,Deterministic,Secondary,Automated pipeline stability
+metadata_mismatch_rate,Layer 2,Discrepancy rate between reported and verified API metadata,API lookup,Deterministic,Primary,Data accuracy
+doi_exact_match_rate,Layer 3,Percentage of DOIs verified as existing by external APIs,Crossref API,Deterministic,Primary,Evidence integrity
+paper_existence_rate,Layer 3,Rate of papers confirmed as real scholarly records,API lookup,Deterministic,Secondary,Hallucination check
+journal_policy_compliance_rate,Layer 3,Rate of papers matching the approved journal list,Allowlist,Deterministic,Secondary,Policy enforcement
+top_journal_precision,Layer 3,Precision restricted to S and A1 tier journals,Allowlist/Gold Set,Deterministic,Secondary,High-quality retrieval
+oa_success_rate,Layer 3,Rate of successful Open Access status and URL verification,Unpaywall,Deterministic,Secondary,Accessibility evidence
+precision_at_5,Layer 4,Proportion of retrieved papers matching gold set in top 5,Gold Set,Deterministic,Primary,Quantitative retrieval quality
+ndcg_at_5,Layer 4,Ranking quality using normalized discounted cumulative gain,Gold Set,Deterministic,Primary,Search effectiveness
+recall_at_20,Layer 4,Proportion of gold set successfully retrieved within 20 results,Gold Set,Deterministic,Primary,Retrieval coverage
+gold_hit_rate,Layer 4,Percentage of tasks where at least one gold paper was retrieved,Gold Set,Deterministic,Secondary,Task success rate
+mrr,Layer 4,Average reciprocal rank of the first relevant gold paper,Gold Set,Deterministic,Secondary,Ranking quality
+llm_judge_relevance_score,Layer 5,1-5 semantic relevance score from fixed v2 judge,LLM Judge,Stochastic (T=0),Secondary,Semantic relevance proxy
+construct_coverage_score,Layer 5,Match rate between task constructs and paper findings,LLM Judge,Stochastic (T=0),Secondary,Construct alignment
+context_method_match_score,Layer 5,Alignment with requested domain or level of analysis,LLM Judge,Stochastic (T=0),Secondary,Domain specificity
+llm_judge_confidence_score,Layer 5,Self-reported confidence of the automated judge,LLM Judge,Stochastic (T=0),Secondary,Judge reliability
+llm_judge_reasoning_validity,Layer 5,Automated check for logical consistency in judge reasoning,LLM Judge,Stochastic (T=0),Secondary,Scoring integrity
+negative_distractor_false_positive_rate,Layer 6,Rate at which known negative distractors are selected as relevant,Gold Set v2,Deterministic/LLM,Secondary,False-positive risk detection
+hallucination_rate,Layer 6,Rate of nonexistent or fabricated papers returned,Multiple APIs,Deterministic,Primary,System trustworthiness
+timeout_rate,Layer 6,Percentage of jobs reaching infrastructure time limits,Runner Logs,Deterministic,Secondary,Infrastructure stability
+latency_per_task,Layer 6,Average time elapsed per discovery task,Runner Logs,Deterministic,Secondary,System efficiency
+cost_proxy,Layer 6,Estimated resource and API cost per discovery task,Runner Logs,Deterministic,Secondary,Economical viability

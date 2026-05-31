@@ -55,18 +55,18 @@ Example task:
 {"task_id":"T001","keyword":"AI interview employer branding","field":"organization-hr","year_start":2020,"year_end":2026,"max_results":5}
 ```
 
-## Core Metrics
+## Core Metrics (Benchmark Standard v2 Layered Architecture)
 
-- Precision@5
-- NDCG@5
-- Paper validity rate
-- DOI accuracy
-- Top journal precision
-- Hallucination rate
-- OA PDF success rate
-- Report completeness
-- Latency
-- Cost and quota usage
+The Benchmark Standard v2 protocol organizes 30 specific metrics into 6 evaluation layers:
+
+1. **Layer 1: Foundation & Reproducibility**: Manifest completeness, baseline parity, claim safety.
+2. **Layer 2: Schema & Metadata**: Normalization success, metadata accuracy, DOI validity.
+3. **Layer 3: Deterministic Validity**: DOI existence, journal allowlist match, OA status.
+4. **Layer 4: Retrieval Accuracy**: Precision@5, NDCG@5, Gold DOI Hit Rate, Recall.
+5. **Layer 5: Semantic Quality (LLM Judge)**: Relevance scores, construct coverage, reasoning validity.
+6. **Layer 6: Robustness & Risk**: Negative distractor rejection, hallucination rate, latency, cost.
+
+Detailed specifications for all 30 metrics are defined in `benchmark/metric_spec_v2.csv`.
 
 ## Agent-Level Metrics
 

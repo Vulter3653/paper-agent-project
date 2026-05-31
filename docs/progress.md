@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Session State Policy Fixed)
+Updated: 2026-05-31 (Phase 2B Migration Draft Complete)
+
+## 2026-05-31 (gemini) - Benchmark Batch Migration Draft
+- **Summary**: Prepared the minimal D1 schema extension migration and static review documentation for T004-T020 batch expansion. (gemini)
+- **Status**: Completed (Draft Phase).
+- **Key Deliverables**:
+  - **Migration Script**: Created `apps/worker/migrations/0007_add_benchmark_batch_columns.sql` with orchestration columns (`parent_run_id`, `is_derived`, `retry_count`, etc.).
+  - **Static Review**: Created `docs/benchmark-batch-migration-static-review.md` covering compatibility, integrity, and pre-production checklist.
+  - **Integrity Check**: Confirmed migration script is non-destructive and contains no DML statements (`INSERT`/`UPDATE`/`DELETE`).
+- **Verification**: Documentation-only update. No migration executed. `npm run validate:history` passing. (gemini)
 
 ## 2026-05-31 (gemini) - Session State Policy Correction
 - **Summary**: Addressed the structural SHA staleness in `docs/gemini-session-state.md` by decoupling it from the authoritative commit verification process. (gemini)

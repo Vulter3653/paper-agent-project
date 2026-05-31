@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-31 - Benchmark Batch Migration Draft
+- **Context**: Phase 2B of the batch benchmark expansion roadmap.
+- **Action**: Prepared the SQL migration script (`0007_add_benchmark_batch_columns.sql`) for D1.
+- **Decision**:
+  - Applied `ALTER TABLE ... ADD COLUMN` to maintain backward compatibility with existing T001-T003 data.
+  - Included columns for batch hierarchy (`parent_run_id`, `is_derived`) and retry logic (`retry_count`, `last_error`).
+  - Created a static review document (`docs/benchmark-batch-migration-static-review.md`) to guide the safe application of the schema change.
+- **Integrity Check**: Confirmed that the SQL script contains no destructive statements (`DROP`, `DELETE`) and has NOT been executed in this session. (gemini)
+
 ## 2026-05-31 - Session State HEAD Field Is Structurally Stale
 - **Incident**: On multiple occasions, the `main HEAD` field in `docs/gemini-session-state.md` was found to be pointing to the commit immediately preceding the one it was supposed to represent.
 - **Root Cause**: The structural issue arises when an agent records the current HEAD SHA in the document and then commits that document. The act of committing generates a new SHA, making the value recorded inside the file instantly stale.

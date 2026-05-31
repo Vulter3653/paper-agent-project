@@ -1,7 +1,16 @@
 # Debug Log
 
-## 2026-06-01 (gemini) - Benchmark Standard v2 Automated Evaluation Design
+## 2026-06-01 (gemini) - Benchmark Standard v2 Quality Hardening
 
+- Hardened documentation and schemas for the v2 protocol.
+- Added negative distractor label type (`pending_negative_example`) to `gold_label_schema_v2.csv`.
+- Injected integrity metrics (`baseline_parity_check`, `reproducibility_manifest_completeness`, `claim_boundary_compliance`, and `negative_distractor_false_positive_rate`) into `metric_spec_v2.csv`.
+- Clarified evaluation scale in `docs/benchmark-standard-v2.md`: 1,200 rows is the "design capacity" (3 methods x 20 tasks x 20 results), not the current validation count.
+- Mandated LLM judge model-freeze (fixed identifier/parameters) to ensure scoring consistency.
+- Reinforce the "v2 documented ≠ v2 applied" principle to protect T001-T003 claim integrity.
+
+## 2026-06-01 (gemini) - Benchmark Standard v2 Automated Evaluation Design
+...
 - Added automated benchmark design documentation and protocol templates.
 - No benchmark execution or artifact rewrite was performed.
 - Human evaluation was explicitly excluded from the protocol.

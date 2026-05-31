@@ -1,10 +1,30 @@
 {
   "benchmark_name": "Benchmark Standard v2: Automated Evaluation Protocol for Traceable Scholarly Discovery",
+  "protocol_status": "defined_not_applied",
   "human_evaluation": false,
   "task_count": 20,
   "methods": ["rule_based", "single_llm", "proposed_agent"],
   "primary_metrics": ["precision_at_5", "ndcg_at_5", "recall_at_20", "doi_exact_match_rate", "paper_existence_rate", "hallucination_rate"],
   "secondary_metrics": ["llm_judge_relevance_score", "trace_completeness_rate", "latency", "cost_proxy"],
+  "validation_state_definitions": {
+    "protocol_defined": "Benchmark rules and schemas exist, but metrics have not necessarily been computed.",
+    "artifact_only": "Execution artifacts exist but have not passed automated v2 validation gates.",
+    "automated_validation": "Rows have passed normalization, DOI/metadata checks, gold matching, fixed LLM judge scoring, metric recomputation, and reproducibility manifest generation."
+  },
+  "promotion_gates": [
+    "schema_normalization",
+    "doi_existence_verification",
+    "metadata_consistency_check",
+    "gold_doi_matching",
+    "fixed_llm_judge_scoring",
+    "scripted_metric_recomputation",
+    "baseline_output_freezing",
+    "reproducibility_manifest",
+    "claim_boundary_update"
+  ],
+  "llm_judge_evidence_level": "semantic_proxy_secondary_to_deterministic_checks",
+  "max_candidate_rows_design_capacity": 1200,
+  "max_candidate_rows_note": "3 methods x 20 tasks x up to 20 results; design capacity, not validated row count.",
   "reproducibility_controls": [
     "frozen_prompts",
     "model_identifier",

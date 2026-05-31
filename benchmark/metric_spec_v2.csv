@@ -15,3 +15,7 @@ gold_hit_rate,Retrieval,Percentage of tasks with >=1 gold result,Gold Set,Determ
 mrr,Ranking,Average reciprocal rank of first gold,Gold Set,Deterministic,Secondary,Ranking quality
 cost_proxy,Robustness,Estimated API cost per task,Runner Logs,Deterministic,Secondary,Economical viability
 critic_flag_coverage,Traceability,Rate of papers with critic flags,D1 Table,Deterministic,Secondary,Risk detection transparency
+baseline_parity_check,Reproducibility,Checks whether all compared methods have outputs for the same task set and schema,Normalized result files,Deterministic,Primary,Required before comparative validation
+reproducibility_manifest_completeness,Reproducibility,Checks whether run_id input files prompts model parameters timestamps and output schema are recorded,Manifest JSON,Deterministic,Primary,Reproducibility claim
+claim_boundary_compliance,Claim Safety,Checks whether outputs distinguish protocol-defined artifact-only and validated states,Report and dashboard text,Deterministic,Primary,Prevents overclaiming
+negative_distractor_false_positive_rate,Integrity,Rate at which known negative distractors are selected or scored as relevant,Gold label schema v2,Deterministic or LLM-assisted,Secondary,False-positive risk detection

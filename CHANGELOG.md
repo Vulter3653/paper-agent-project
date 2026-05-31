@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Benchmark: Hardened protocol schemas with negative distractors, 9-gate promotion logic, and reproducibility metrics. (gemini)
 - Docs: Added Benchmark Standard v2 as an automated evaluation protocol using deterministic metrics, gold DOI matching, scripted validation, and fixed LLM-as-a-judge scoring without human evaluation. (gemini)
 - Benchmark: Added auto-evaluation protocol, LLM judge prompt, task taxonomy template, gold label schema v2, and metric specification files. (gemini)
 - Docs: Corrected Phase 3L artifact preservation wording to reflect that Batch 2 and Batch 3 CSV artifacts were committed as artifact-only staged execution evidence. (gemini)

@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark Standard v2 Automated Evaluation Design)
+Updated: 2026-06-01 (Benchmark Standard v2 Quality Hardening)
+
+## 2026-06-01 (gemini) - Benchmark Standard v2 Quality Hardening
+
+- **Status**: Hardened Benchmark Standard v2 documentation and protocol schemas before implementation.
+- **Scope**: Documentation/schema correction only. No benchmark execution, D1 command, migration, seed, import, gold-label mass edit, baseline result edit, proposed result edit, artifact rewrite, dashboard edit, paper edit, or presentation edit was performed.
+- **Improvements**: Added negative distractor handling, expanded promotion gates, clarified LLM judge model-freeze requirements, distinguished design capacity from validated row count, and reinforced the protocol-defined vs artifact-only vs validated state distinction.
+- **Claim Boundary**: Benchmark Standard v2 being documented means the protocol is defined, not yet applied to T004-T020 validation.
 
 ## 2026-06-01 (gemini) - Benchmark Standard v2 Automated Evaluation Design
 

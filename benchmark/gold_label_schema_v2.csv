@@ -4,3 +4,4 @@ T001,10.5465/amr.2022.0058,"Algorithms and the self...",acceptable_gold,4,partia
 T013,10.1016/j.jretai.2022.02.003,"The omnichannel customer journey...",core_gold,5,yes,yes,yes,S_tier,verified,verified,Key T013 reference,script_verified
 T007,N/A,Pending automated discovery,near_miss,1,no,no,no,unknown,none,none,distractor example,pending_auto_validation
 T020,10.1287/isre.2022.1121,"Digital transformation and organizational value...",core_gold,5,yes,yes,yes,S_tier,verified,verified,Gold standard example,script_verified
+T001,pending_negative_example,Example negative distractor for AI hiring task,negative_distractor,1,no,no,no,out_of_scope,pending_auto_validation,pending_auto_validation,Surface keyword overlap but wrong research question/domain; placeholder for future automated distractor generation,pending_auto_validation

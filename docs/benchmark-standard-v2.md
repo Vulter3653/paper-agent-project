@@ -35,7 +35,9 @@ Data Characteristics:
 
 ## 4. Evaluation Scale
 
-The benchmark is fixed at 20 tasks (T001-T020). Each method (Rule-based, Single LLM, Proposed Agent) retrieves up to 20 results per task, resulting in a comparison pool of up to 1,200 total paper-level rows.
+The benchmark is fixed at 20 tasks (T001-T020). Each method (Rule-based, Single LLM, Proposed Agent) retrieves up to 20 results per task. The maximum comparison design is 3 methods × 20 tasks × up to 20 results, or up to 1,200 paper-level candidate rows. This is a design capacity, not a claim that all rows have already been validated.
+
+이는 최대 비교 설계 규모를 의미하며, 모든 row가 이미 validation layer에 포함되었다는 주장이 아니다.
 
 ## 5. Compared Systems
 
@@ -84,16 +86,22 @@ The benchmark is fixed at 20 tasks (T001-T020). Each method (Rule-based, Single 
 - **Construct Coverage Score**: Matches between task constructs and paper findings.
 - **Context/Method Match**: Alignment with the requested level of analysis or domain.
 
-*Note: LLM judge metrics are treated as lower-level evidence compared to deterministic DOI matching.*
+*Note: LLM-as-a-judge scores are treated as semantic relevance proxies. They support interpretation but do not override deterministic evidence such as DOI existence, metadata consistency, gold DOI matching, or paper existence checks.
+
+LLM-as-a-judge 점수는 의미적 관련성의 보조 지표이며, DOI 존재 여부, 메타데이터 일치, gold DOI matching, paper existence check와 같은 결정론적 검증보다 강한 증거로 사용하지 않는다.*
 
 ## 7. Automated LLM-as-a-Judge Protocol
 
 To ensure objectivity without human evaluation:
 - **Fixed Prompt**: Use `benchmark/llm_judge_prompt_v2.md`.
-- **Model**: Fixed model identifier (e.g., Llama-3-8B-Instruct or GPT-4o).
-- **Temperature**: Strictly 0.0.
+- **Model Identifier**: Must be fixed before execution. The final validation run must record the exact model name/version. Example model names may be listed only as candidates, not as completed configuration.
+- **Temperature**: 0.0.
+- **Top-p**: Fixed and recorded.
+- **Seed**: Recorded if supported; if unsupported, this limitation must be documented.
 - **Output**: JSON-only format for automated parsing.
 - **Logs**: All judge outputs must be saved with full reasoning strings.
+
+A protocol document does not imply that LLM judge scoring has already been applied. LLM judge scoring becomes evidence only after the fixed prompt, fixed model identifier, fixed parameters, and machine-readable judge outputs are committed.
 
 Judge Rubric (1-5):
 - 5: Directly answers research question; matches constructs and domain.
@@ -109,6 +117,9 @@ Labels for v2:
 - `acceptable_gold`: Relevant papers within the approved journal pool.
 - `foundational_exception`: Essential papers that might fall outside the specific year/journal filter (documented exceptions).
 - `near_miss`: Papers that match keywords but miss evaluation focus (distractor set).
+- `negative_distractor`: A paper that may share surface keywords with the task but is clearly wrong for the research question, domain, level of analysis, or scholarly validity. Selecting it counts as an automated false-positive risk.
+
+  `negative_distractor`는 표면적 키워드는 유사하지만 연구질문, 도메인, 분석 수준, 학술적 타당성과 명확히 어긋나는 논문이다. 이를 선택하면 자동 평가에서 false-positive risk로 간주된다.
 
 ## 9. Task Taxonomy
 

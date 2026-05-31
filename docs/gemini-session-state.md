@@ -1,58 +1,52 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Phase 3C Verification and Codex Handoff Complete)
+Updated: 2026-06-01 (Benchmark Standard v2 Quality Hardening Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
 > The latest commit identity must be verified via the **Final Report Integrity Protocol** raw git output in the final summary of each task.
 
 ## Current Status
-- **Phase 3 State**: Phase 3C (Post-Migration Verification) completed.
-- **D1 Schema**: Migration 0007 successfully applied to production. Batch columns and indexes verified.
-- **Controlled Baseline**: T001-T003 integrity remains intact (9 metric rows).
-- **Handoff**: Strategic handoff to Codex for Phase 3D Dry-Run Planning is complete.
+- **Benchmark v2**: Hardened protocol documentation and schemas (distractors, metrics, gates).
+- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with hardening details.
+- **Verification**: ✅ ALL PASSED (typecheck, web build, history integrity, agent rules).
+- **Claim Boundary**: Protocol is DEFINED and HARDENED, not yet APPLIED to T004-T020.
 
 ## Verification Baseline
-- **HEAD Commit**: `fcfd9660b2a2df6afac41a467abfa85fb16d9492` (Codex Handoff)
-- **Provenance**: Full manual migration and verification trail established in `docs/`.
+- **HEAD Commit**: `659fe234af6c3e487c2e4738e0e6717a714802dd` (Base for hardening)
+- **Local State**: 8 files modified in working tree, ready for commit.
 
 ## Completed Actions
-1. **Approval Package**: Created Phase 3A approval document (`adbe437`).
-2. **Incident Log**: Documented Phase 3B aborted migration and headless auth root cause (`f4e0575`).
-3. **Manual Runbook**: Created the Phase 3B-R manual recovery path (`4ec0ba9`).
-4. **Verification**: Executed and documented Phase 3C post-migration verification (`20e9192`).
-5. **Codex Handoff**: Created single-file strategic handoff for Phase 3D dry-run planning (`fcfd966`).
+1. **Design**: Added Benchmark Standard v2 automated evaluation design.
+2. **Hardening**: Reinforced schemas with negative distractors and integrity metrics.
+3. **Documentation**: Clarified design capacity vs validation count in `docs/benchmark-standard-v2.md`.
+4. **Verification**: Executed full verification suite (`typecheck`, `build:web`, `validate-history`).
 
 ## Next Recommended Actions
-1. **Codex Takeover**: Begin Phase 3D Dry-Run Planning using `docs/codex-handoff-phase-3d-dry-run-planning.md`.
-2. **Dry-Run Scope**: Limit initial run to T004-T006 to verify batch orchestration logic.
-3. **Safety Gate**: Review dry-run results before committing to full T004-T020 execution.
+1. **Commit and Push**: "Docs: harden benchmark standard v2".
+2. **Implementation**: Begin scripting the deterministic metrics (9 gates) defined in the protocol.
+3. **Artifact Audit**: Perform read-only audit of T007 timeout evidence in `benchmark/runs/`.
 
 ## Blockers
-- **Headless D1 Execute**: Remote `--remote` execute/export still requires `CLOUDFLARE_API_TOKEN` for agent-led automation in this environment. Manual path (Option A) used as fallback.
-2. **Safety Audit**: Confirmed that the `0007` migration script is non-destructive and backward compatible.
-3. **Checklist Implementation**: Defined strict pre-migration and post-migration validation procedures.
-4. **README Synchronization**: Linked the approval package for easy navigation.
+- **None**: Environment is stable and verified.
 
 ## Verification Results
-- `node scripts/verify-live-benchmark.mjs`: ✅ PASS (15/15 checks)
-- `npm run validate:history`: ✅ PASS
+- `npm run validate:history`: ✅ PASS (local line count check confirmed delta)
 - `npm run validate:agent-rules`: ✅ PASS
 - `npm run typecheck`: ✅ PASS
 - `npm run build:web`: ✅ PASS
-- `npm run benchmark:audit-gold`: ✅ PASS
-
-## Next Recommended Actions
-1. **User Review**: User must review `docs/production-d1-migration-approval-package.md`.
-2. **Explicit Approval**: Proceed to Phase 3B (Production Execution) ONLY after receiving explicit user approval.
-3. **Execution**: Run the `wrangler d1 execute` command with `--remote` flag as defined in the package.
+- `node scripts/validate-history-integrity.mjs`: ✅ PASS (compared against origin/main)
 
 ## Git Status Snapshot
 ```text
-On branch main
-Your branch is up to date with 'origin/main'.
-
-nothing to commit, working tree clean
+ M benchmark/auto_eval_protocol_v2.json
+ M benchmark/gold_label_schema_v2.csv
+ M benchmark/metric_spec_v2.csv
+ M CHANGELOG.md
+ M docs/benchmark-standard-v2.md
+ M docs/benchmark.md
+ M docs/debug-log.md
+ M docs/progress.md
 ```
 
 (gemini)

@@ -2,6 +2,14 @@
 
 Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
 
+## 2026-06-01 (codex) - Final Paper And Presentation Benchmark v3 Alignment
+
+- **Paper**: Updated the LaTeX manuscript and section drafts to describe Benchmark v3 as a six-layer, 30-metric automated framework with **PASS WITH CLAIM BOUNDARIES** readiness.
+- **Comparison Boundary**: Limited baseline comparison to the T001-T003 common-support subset; T004-T020 remain artifact-level validation tasks and T007 remains `proposed_agent_missing`.
+- **Semantic Boundary**: Recorded Layer 5A as a quota-limited partial implementation audit (22/125, 17.6%, no Proposed Agent rows in the successful subset) and Layer 5B as a 125-row supplementary deterministic proxy.
+- **Presentation**: Reworked the authoritative presentation Markdown and 14-slide outline for an 8-minute claim-bounded talk.
+- **Safety Boundary**: No benchmark search, judge rerun, raw judge-output rewrite, D1 command, migration, benchmark-script edit, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Benchmark v3 Supplement Audits
 
 - **Baseline Support**: Added a generated availability matrix confirming that controlled common-support comparison is limited to T001-T003. T004-T020 remain artifact-level validation unless baseline parity is proven.

@@ -1,21 +1,15 @@
-# 5. Experiments
+# Experiments
 
-## 5.1 Controlled T001-T003 Comparison
+The Benchmark v3 experiment set contains T001--T020 tasks. The evaluation distinguishes common-support comparison from artifact-level validation.
 
-The verified controlled layer compares Rule-Based, Single LLM, and Paper Agent baselines on T001-T003. It contains nine comparison rows. This is the only layer used for quantitative baseline claims in the current manuscript.
+## T001--T003 Common-Support Comparison
 
-## 5.2 T004-T006 Artifact-Only Dry-Run
+T001--T003 are the only tasks with the support needed for controlled baseline comparison among Rule-Based, Single LLM, and Paper Agent methods. Proposed Agent metrics in this layer are Precision@5 = 0.1333, NDCG@5 = 0.3579, and Recall@20 = 0.5000.
 
-An explicitly approved gated wrapper executed T004-T006 as an artifact-only dry-run. T004 generated 20 rows, T005 generated 12 rows, and T006 generated 18 rows. The run produced three job rows and 50 result rows without failed jobs. These artifacts demonstrate execution coverage, not benchmark validation.
+## T004--T020 Artifact-Level Validation
 
-## 5.3 Phase 3L Partial Staged Expansion
+T004--T020 are artifact-level validation tasks. They must not be interpreted as a parity-controlled comparative benchmark. T007 is explicitly marked `proposed_agent_missing` in the Baseline Support Matrix.
 
-Phase 3L produced partial staged expansion evidence. Batch 1 (T007-T012) generated artifacts for T008-T012, while T007 timed out after approximately 250 seconds. Because this failure occurred within Batch 1, later batches T013-T018 and T019-T020 were not started. This result identifies both executable segments and infrastructure boundaries, and it does not constitute full benchmark validation.
+## Semantic Audit
 
-## 5.4 What Was Not Evaluated
-
-The manuscript does not report a completed T004-T020 benchmark. It does not merge artifact-only evidence into controlled metrics. It does not claim that D1 batch-aware persistence is implemented. It also does not claim global superiority over the Single LLM baseline.
-
-## 5.5 Artifact Isolation Strategy
-
-Staged wrappers isolate outputs by run ID, expose plan and preflight modes, require explicit execute acknowledgement, and prevent overwriting controlled artifacts.
+Layer 5A submitted 125 judge inputs and obtained 22 successful evaluated rows. The evaluated subset has 17.6% coverage and contains no Proposed Agent rows. Layer 5B deterministically generated supplementary proxy metrics for all 125 rows. This design records useful implementation evidence without converting incomplete semantic coverage into a performance claim.

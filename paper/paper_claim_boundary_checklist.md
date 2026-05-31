@@ -1,47 +1,45 @@
 # Paper Claim Boundary Checklist
 
-Updated: 2026-05-31
+## Accepted Reporting State
+
+- Benchmark v3 readiness: **PASS WITH CLAIM BOUNDARIES**.
+- Benchmark v3 includes six layers and 30 metrics.
+- Layers 1--4 and Layer 6 are computed.
+- Layer 5A is a quota-limited partial implementation audit: 22/125 rows, or 17.6%.
+- The successful Layer 5A subset contains no Proposed Agent rows.
+- Proposed Agent Layer 5 score: `not_available_in_subset`.
+- Layer 5B deterministic semantic proxy covers 125 rows and is supplementary only.
+- Baseline comparison is restricted to T001--T003 common support.
+- T004--T020 remain artifact-level validation tasks.
+- T007 is marked `proposed_agent_missing`.
 
 ## Allowed Claims
 
-- Controlled T001-T003 benchmark verified.
-- Quantitative baseline comparison is limited to controlled T001-T003 evidence with nine comparison rows.
-- T004-T006 artifact-only dry-run executed through a gated wrapper and produced three job rows and 50 result rows.
-- Phase 3L produced partial staged artifact-expansion evidence: T007 timed out and T008-T012 produced 87 result rows.
-- T013-T018 and T019-T020 were not started after the Phase 3L Batch 1 timeout.
-- Legacy T019-T020 resource-limit / HTTP 503 evidence remains visible.
-- Full T004-T020 validation remains incomplete.
-- D1 batch-aware persistence is not implemented.
+- Paper Agent provides a reproducible automated benchmark framework with explicit claim boundaries.
+- Baseline comparison is a partial common-support comparison.
+- Layer 5A is an evaluated-subset-only implementation audit.
+- Layer 5B supplements, but does not replace, LLM or human semantic evaluation.
+- The current evidence does not support full T001--T020 comparative superiority claims.
+- The current evidence does not support full semantic-quality validation claims.
 
-## Forbidden Claims
+## Prohibited Interpretations
 
-- T004-T006 benchmark validated.
-- T007-T020 validation completed.
-- T004-T018 validation completed.
-- T004-T020 benchmark completed.
-- Full 20-task validation complete.
-- Proposed Agent globally outperforms baseline.
-- 18/20 success.
-- 90% success.
-- 90% validated.
-- D1 batch-aware persistence completed.
-- System superiority perfectly proven.
+- Do not present partial baseline support as an all-task comparison.
+- Do not present Layer 5A as representative semantic coverage.
+- Do not assign a Proposed Agent Layer 5 score when it is unavailable in the evaluated subset.
+- Do not present deterministic semantic proxies as semantic ground truth.
+- Do not describe readiness without the claim-boundary qualifier.
 
-## Section-by-Section Risk Map
+## Section Risk Map
 
-| Section | Primary risk | Required mitigation |
+| Section | Primary risk | Required guardrail |
 | --- | --- | --- |
-| Abstract | compressing artifact evidence into a validation claim | state controlled scope and incomplete expansion |
-| Introduction | product-style claims | frame as decision support, not autonomous scholarship |
-| Method | inventing integrations | describe only WoS primary, OpenAlex fallback, Crossref, Unpaywall, D1, Workers, and implemented reporting |
-| Benchmark Design | merging legacy artifacts with controlled metrics | isolate T001-T003 quantitative layer |
-| Experiments | implying later batches ran | state T013-T020 were not started after timeout |
-| Results | implying global outperform | report Single LLM overlap advantage explicitly |
-| Limitations | hiding failure evidence | retain T007 timeout and legacy T019-T020 HTTP 503 evidence |
-| Conclusion | overstating completion | state full T004-T020 validation remains incomplete |
+| Abstract | compressing partial evidence into a broad claim | state readiness qualifier and Layer 5A limitation |
+| Benchmark Design | treating all metrics as equally complete | separate Layer 5A and Layer 5B |
+| Experiments | implying baseline parity across all tasks | limit comparison to T001--T003 |
+| Results | interpreting proxies as semantic scores | label Layer 5B supplementary |
+| Conclusion | claiming superiority | emphasize reproducible framework and boundaries |
 
-## Final Grep Terms
+## Final Search Terms
 
-```bash
-rg -n "18/20 success|90% success|90% validated|full validation complete|T004-T020 benchmark completed|T004-T006 benchmark validated|T007-T020 validation completed|globally outperforms|D1 batch-aware persistence completed|완벽히 증명|전반적으로 우수함이 입증" paper docs presentation --glob '!node_modules'
-```
+Before submission, search for unqualified readiness language, broad all-task superiority language, representative semantic-coverage language, and any statement that treats Layer 5B as a replacement for human or LLM evaluation.

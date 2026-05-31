@@ -1,31 +1,24 @@
-# 4. Benchmark Design
+# Benchmark Design
 
-Paper-Agent-Bench evaluates whether a literature-review agent retrieves useful and defensible papers under business-school constraints. Tasks represent domain questions and keyword sets. Gold labels are DOI-backed paper records reviewed under a relevance rubric. The controlled quantitative layer currently covers T001-T003. Expansion runs beyond this layer are reported separately as artifact-only evidence until evaluation and audit are complete.
+Benchmark v3 evaluates Paper Agent through six layers and 30 metrics. Its status is **PASS WITH CLAIM BOUNDARIES**.
 
-## 4.1 Baselines
+| Layer | Name | Purpose | Current status |
+| --- | --- | --- | --- |
+| 1 | Foundation & Reproducibility | Ensure traceable inputs, scripts, and generated artifacts | computed |
+| 2 | Schema & Metadata | Measure normalized and complete scholarly metadata | computed |
+| 3 | Deterministic Validity | Check DOI format, existence evidence, and policy fields | computed |
+| 4 | Retrieval Accuracy | Measure common-support ranking and retrieval metrics | computed with scope limits |
+| 5 | Semantic Quality | Audit semantic fit with Layer 5A and supplementary Layer 5B | quota-limited partial / supplementary |
+| 6 | Robustness & Risk | Surface hallucination, timeout, and operational risk | computed |
 
-- **Rule-Based baseline:** deterministic retrieval and ranking heuristics.
-- **Single LLM baseline:** a single-model recommendation baseline used for comparison.
-- **Paper Agent:** the traceable multi-agent pipeline.
+## Layer 5A: LLM Judge Semantic Audit
 
-## 4.2 Metrics
+Layer 5A is a quota-limited partial implementation audit. It evaluated 22 of 125 judge-input rows (17.6%). The successful evaluated subset contains no Proposed Agent rows; therefore, the Proposed Agent Layer 5 score is `not_available_in_subset`. Layer 5A is not a representative semantic-quality estimate.
 
-| Metric | Definition | Why it matters |
-| --- | --- | --- |
-| Precision@5 | proportion of top-five recommendations judged relevant | measures top-ranked usefulness |
-| NDCG@5 | normalized discounted cumulative gain at rank five | rewards correct ordering of highly relevant papers |
-| DOI Accuracy | proportion of evaluated papers with correct DOI evidence | captures metadata integrity |
-| Top Journal Precision | proportion of recommendations satisfying the approved journal policy | captures policy compliance |
-| Hallucination Rate | proportion of unsupported or fabricated recommendations | captures trust risk |
+## Layer 5B: Deterministic Semantic Proxy
 
-## 4.3 Evaluation Protocol
+Layer 5B was generated for 125 rows using existing artifact fields. It supplements the partial LLM-judge audit with deterministic overlap, construct, context, and evidence-field signals. It is not a replacement for LLM or human semantic evaluation.
 
-Quantitative claims are limited to the controlled T001-T003 layer with nine comparison rows. Execution artifacts from T004-T006 and T007-T012 are isolated by run ID and are not merged into controlled metrics. Gold labels must not be modified to hide retrieval or ranking failures. Failures remain visible as evidence, including the T007 timeout and legacy T019-T020 HTTP 503 resource-limit records.
+## Comparison Scope
 
-## 4.4 Reproducibility Controls
-
-The repository retains scripts, prompts, trace APIs, documentation reports, and claim-boundary rules. Live reproduction requires valid API credentials and available external services. Artifact-only runs use gated wrappers and isolated directories to avoid overwriting controlled evidence.
-
-## 4.5 Validity Boundaries
-
-The controlled layer is intentionally narrow. Metric interpretation must remain multidimensional: overlap, ordering, DOI integrity, venue-policy compliance, hallucination risk, and failure visibility answer different questions.
+The Baseline Support Matrix limits comparative interpretation to the T001--T003 common-support subset. T004--T020 remain artifact-level validation tasks unless baseline parity is proven. T007 is marked `proposed_agent_missing`.

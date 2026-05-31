@@ -2,221 +2,165 @@
 
 ## 0. Usage Note
 
-- This MD is the authoritative content source for the final presentation.
-- PPTX, Canva, and other visual decks should be generated or redesigned from this MD.
-- Use [`final-presentation-outline.md`](final-presentation-outline.md) as the official 8-minute speaker-notes source.
-- The content preserves the verified claim boundaries.
-- This is not a full benchmark validation claim.
+This Markdown file is the authoritative, claim-bounded source for the final deck, Canva redesign, oral script, and defense checklist. Visual materials should preserve these evidence boundaries. The current benchmark state is **PASS WITH CLAIM BOUNDARIES**; it is not a claim of full comparative superiority or full semantic-quality validation.
 
 ## 1. One-Sentence Project Definition
 
-Paper Agent is a traceable multi-agent / tool-use system for verified scholarly paper discovery.
+Paper Agent is a traceable multi-agent and tool-use system for verified scholarly paper discovery and reproducible evaluation.
 
 ## 2. Core Problem
 
-1. Single LLM paper recommendation is black-box.
-2. It can hallucinate DOI, title, author, or metadata.
-3. It may ignore journal-policy constraints.
-4. It provides weak traceability and weak reproducibility.
-5. Scholarly discovery needs verifiable evidence, not only plausible recommendations.
+1. Single-request paper recommendation can be difficult to audit.
+2. DOI, title, author, and metadata can be wrong or unverifiable.
+3. Journal-policy constraints can be inconsistently applied.
+4. Scholarly discovery needs reproducible traces and visible failures.
+5. Evaluation must separate supported comparison from incomplete evidence.
 
 ## 3. System Architecture: 12-Step Pipeline
 
-| Stage | Agent | Purpose | Main evidence or output | Tool or infrastructure |
-| ---: | --- | --- | --- | --- |
-| 1 | Planner | Normalize the research question and runtime constraints. | Search scope and sub-questions. | Request payload and trace. |
-| 2 | Journal Selector | Select the applicable internal journal pool. | Field and tier-priority policy. | Internal business-school allowlist. |
-| 3 | Search / Retriever | Retrieve candidate scholarly records. | Candidate metadata and provider trace. | Configured scholarly search backend. |
-| 4 | Journal Filtering | Apply the selected venue policy. | Included and excluded candidates with reasons. | Internal allowlist. |
-| 5 | Verifier | Check DOI and bibliographic metadata. | Verification status and mismatch reasons. | Crossref API. |
-| 6 | Open Access | Inspect open-access availability. | OA status, PDF URL, landing-page URL, and license where available. | Unpaywall API. |
-| 7 | Storage | Persist runtime evidence and artifacts. | Job, paper, trace, and output-storage records. | Cloudflare D1, R2, optional Google Drive. |
-| 8 | Evaluation Prep | Normalize records for scoring and later audit. | Scoring-ready inputs with missing values visible. | Worker pipeline and trace records. |
-| 9 | Relevance | Estimate topical relevance. | Relevance components and reason. | Metadata scoring and optional semantic path. |
-| 10 | Ranking | Order candidates using documented components. | Ranked list and score-component trace. | Deterministic ranking logic. |
-| 11 | Critic | Flag metadata and recommendation risks. | Critic flags and review summaries. | Rule-based default and optional LLM path. |
-| 12 | Report / Delivery | Generate inspectable outputs. | Markdown, PDF, CSV, XLSX, and dashboard links. | Report generator, R2, and dashboard. |
+| Step | Stage | Purpose | Main evidence or tool |
+| ---: | --- | --- | --- |
+| 1 | Planner | structure the research request | plan trace |
+| 2 | Journal Selector | apply approved-journal policy | allowlist trace |
+| 3 | Search / Retriever | retrieve candidate papers | configured scholarly backend |
+| 4 | Journal Filtering | exclude out-of-policy candidates | filter decisions |
+| 5 | Verifier | normalize metadata and DOI fields | Crossref evidence |
+| 6 | Open Access | inspect OA availability | Unpaywall evidence |
+| 7 | Storage | persist artifacts and traces | storage / D1 trace |
+| 8 | Evaluation Prep | generate reproducible inputs | benchmark rows |
+| 9 | Relevance | assess query-candidate fit | relevance evidence |
+| 10 | Ranking | produce ordered recommendations | ranked output |
+| 11 | Critic | review evidence and failures | critic trace |
+| 12 | Report / Delivery | expose results and limits | dashboard / report |
 
 ## 4. Tools and Infrastructure
 
-- **Crossref API**: DOI / metadata verification.
-- **Unpaywall API**: Open Access status.
-- **Cloudflare Workers**: execution.
-- **Cloudflare D1**: trace / benchmark evidence.
-- **R2 / optional Google Drive**: artifact storage.
-- **Internal business-school approved journal allowlist**: explicit journal-policy filter.
-- **GitHub repository**: code, prompts, documentation, and reproducibility evidence.
+- Crossref API: DOI and metadata verification.
+- Unpaywall API: open-access status.
+- Cloudflare Workers: workflow execution.
+- Cloudflare D1: trace and benchmark evidence.
+- R2 / optional Google Drive: artifact storage.
+- Internal business-school journal allowlist: explicit policy filter.
+- GitHub repository: scripts, artifacts, prompts, and documentation.
 
-## 5. Benchmark Design
+## 5. Benchmark v3 Design
 
-### 5.1 Controlled Benchmark Layer
+Benchmark v3 is an automated framework with six layers and 30 metrics.
 
-Scope:
+| Layer | Name | Current state |
+| ---: | --- | --- |
+| 1 | Foundation & Reproducibility | computed |
+| 2 | Schema & Metadata | computed |
+| 3 | Deterministic Validity | computed |
+| 4 | Retrieval Accuracy | computed with scope limits |
+| 5A | LLM Judge Semantic Audit | quota-limited partial implementation audit |
+| 5B | Deterministic Semantic Proxy | supplementary, 125 rows |
+| 6 | Robustness & Risk | computed |
 
-- T001-T003 only.
+## 6. Baseline Support Boundary
 
-Metrics:
+- T001--T003: partial common-support comparison.
+- T004--T020: artifact-level validation unless baseline parity is proven.
+- T007: `proposed_agent_missing`.
+- The benchmark does not support full T001--T020 comparative superiority claims.
 
-- Precision@5.
-- NDCG@5.
-- DOI Accuracy.
-- Top Journal Precision.
-- Hallucination Rate.
+## 7. T001--T003 Controlled Results
 
-Systems compared:
+| Metric | Rule-Based | Single LLM | Paper Agent |
+| --- | ---: | ---: | ---: |
+| Precision@5 | 0.1333 | 0.6667 | 0.1333 |
+| NDCG@5 | 0.3579 | 0.9949 | 0.3579 |
+| DOI Accuracy | 1.0000 | 1.0000 | 1.0000 |
+| Top Journal Precision | 1.0000 | 0.9333 | 1.0000 |
+| Hallucination Rate | 0.0 | high / risk noted | 0.0 |
 
-- Rule-Based.
-- Single LLM.
-- Paper Agent.
+Interpretation: Single LLM has higher Precision@5 and NDCG@5 within this common-support layer. Paper Agent is not claimed to globally outperform Single LLM. Its design emphasizes traceability, DOI integrity, hallucination control, and journal-policy compliance.
 
-### 5.2 Expanded Artifact Evidence Layer
+## 8. Benchmark v3 Key Metrics
 
-Scope:
+| Metric | Value |
+| --- | ---: |
+| Schema Normalization | 1.0000 |
+| Metadata Completeness | 0.9854 |
+| DOI Format Validity | 0.9678 |
+| DOI Exact Match Rate | 0.6930 |
+| Paper Existence Rate | 0.6930 |
+| Top Journal Precision | 0.8129 |
+| Proposed Agent Precision@5, T001--T003 | 0.1333 |
+| Proposed Agent NDCG@5, T001--T003 | 0.3579 |
+| Proposed Agent Recall@20, T001--T003 | 0.5000 |
+| Hallucination Rate | 0.3070 |
+| Timeout Rate | 0.1111 |
+| Latency per Task | 204.60 s |
 
-- T004-T006.
-- T007-T012.
+## 9. Layer 5 Semantic-Quality Boundary
 
-Important:
+### Layer 5A: LLM Judge Semantic Audit
 
-- This is not controlled benchmark validation.
-- This is artifact / execution evidence.
+- Coverage: 22/125 rows = 17.6%.
+- Status: quota-limited partial implementation audit.
+- Successful evaluated subset: no Proposed Agent rows.
+- Proposed Agent Layer 5 score: `not_available_in_subset`.
+- Interpretation: evaluated subset only, not a representative semantic-quality estimate.
 
-## 6. T001-T003 Controlled Benchmark Results
+### Layer 5B: Deterministic Semantic Proxy
 
-| Metric                | Rule-Based |        Single LLM | Paper Agent |
-| --------------------- | ---------: | ----------------: | ----------: |
-| Precision@5           |     0.1333 |            0.6667 |      0.1333 |
-| NDCG@5                |     0.3579 |            0.9949 |      0.3579 |
-| DOI Accuracy          |     1.0000 |            1.0000 |      1.0000 |
-| Top Journal Precision |     1.0000 |            0.9333 |      1.0000 |
-| Hallucination Rate    |        0.0 | high / risk noted |         0.0 |
+- Generated for 125 rows.
+- Uses deterministic artifact-field signals.
+- Supplements Layer 5A.
+- Does not replace LLM or human semantic evaluation.
 
-Interpretation:
+## 10. Evidence Boundary Summary
 
-- Single LLM has higher Precision@5 and NDCG@5.
-- Paper Agent is not claimed to globally outperform Single LLM.
-- Paper Agent's strength is evidence quality: traceability, DOI integrity, hallucination control, and journal-policy compliance.
+| Scope | Evidence level | Allowed interpretation | Required limit |
+| --- | --- | --- | --- |
+| T001--T003 | partial common-support comparison | quantitative baseline comparison | do not generalize to every task |
+| T004--T020 | artifact-level validation | reproducible artifact inspection | baseline parity not proven |
+| T007 | missing Proposed Agent artifact | visible missing-evidence record | do not hide missing evidence |
+| Layer 5A | quota-limited subset audit | implementation behavior | not representative semantic coverage |
+| Layer 5B | deterministic proxy | supplementary semantic signals | not semantic ground truth |
 
-## 7. Single LLM Trap
+## 11. Dashboard / Demo Flow
 
-- Single LLM appears strong on relevance ranking.
-- It achieved higher Precision@5 and NDCG@5 in T001-T003.
-- But pure relevance ranking is not enough for scholarly discovery.
-- Risks:
-  - weak traceability;
-  - weaker journal-policy control;
-  - possible hallucination risk;
-  - weaker reproducibility;
-  - weaker audit trail.
+1. Explain Paper Agent and the 12-stage traceable pipeline.
+2. Show Benchmark v3: six layers and 30 metrics.
+3. Show `PASS WITH CLAIM BOUNDARIES`.
+4. Explain T001--T003 common-support comparison and T004--T020 artifact-level validation.
+5. Show Layer 5A quota limitation and Layer 5B supplement.
+6. Close with remaining risks and next steps.
 
-Single LLM is a useful comparison method. The risk is over-interpreting overlap metrics as the full definition of scholarly-discovery quality.
+## 12. Limitations and Ethics
 
-## 8. Paper Agent's Composite Evidence-Quality Strength
+- Baseline parity is partial.
+- Layer 5A coverage is 17.6% and contains no successful Proposed Agent rows.
+- Layer 5B is supplementary, not a substitute for semantic review.
+- Hallucination rate 0.3070 and timeout rate 0.1111 remain material risks.
+- Journal filtering can reproduce disciplinary gatekeeping.
+- Human scholarly review remains the final authority.
 
-Paper Agent should be evaluated as a traceable scholarly discovery system, not as a relevance-only recommender.
+## 13. Final Claim
 
-Composite dimensions:
+Paper Agent demonstrates a reproducible automated benchmark framework with explicit claim boundaries. The current evidence supports traceable evaluation infrastructure and visible risk reporting. It does not support full T001--T020 comparative superiority claims or full semantic-quality validation claims.
 
-1. Relevance quality.
-2. DOI / metadata integrity.
-3. Journal-policy compliance.
-4. Hallucination control.
-5. Trace completeness.
-6. Evidence availability.
-7. Failure transparency.
-8. Claim boundary compliance.
+## 14. Language Guardrail
 
-Paper Agent does not dominate pure ranking metrics, but it provides stronger evidence-quality performance for verified scholarly discovery.
+- Always retain the `PASS WITH CLAIM BOUNDARIES` qualifier.
+- Describe Layer 5A as a `quota-limited partial implementation audit`.
+- Describe Layer 5B as supplementary.
+- Describe baseline comparison as `partial common-support comparison`.
+- Describe T004--T020 as `artifact-level validation` unless baseline parity is proven.
+- Never convert missing, partial, or proxy evidence into a broad performance claim.
 
-## 9. T004-T006 Artifact Evidence
-
-- Phase 3J.
-- T004-T006 artifact-only dry-run executed.
-- 3 job rows.
-- 50 result rows.
-- No failed jobs.
-- Not benchmark validation.
-
-This is artifact evidence, not controlled benchmark validation.
-
-## 10. T007-T012 Partial Expansion Evidence
-
-- Phase 3L.
-- Staged T007-T020 expansion attempted.
-- Only Batch 1 T007-T012 executed.
-- T007 timed out after approximately 250 seconds and 21 polling attempts.
-- T008-T012 produced 87 result rows.
-- T013-T018 not started.
-- T019-T020 not started.
-- Full T004-T020 validation remains incomplete.
-
-This is partial staged artifact-expansion evidence, not full benchmark validation.
-
-## 11. Evidence Boundary Summary
-
-| Scope     | Evidence Level       | What Can Be Claimed                                 | What Cannot Be Claimed |
-| --------- | -------------------- | --------------------------------------------------- | ---------------------- |
-| T001-T003 | Controlled benchmark | Quantitative comparison                             | Global superiority     |
-| T004-T006 | Artifact evidence    | Executed dry-run, 3 jobs, 50 rows                   | Benchmark validated    |
-| T007-T012 | Partial expansion    | T008-T012 generated 87 rows, T007 timeout preserved | Full validation        |
-| T013-T020 | Not started          | Not executed after timeout                          | Completed validation   |
-
-## 12. Dashboard / Demo Flow
-
-- Dashboard should first show Executive Summary.
-- Then show Controlled Benchmark.
-- Then show Expanded Artifact Evidence.
-- Then show Technical Trace only if needed.
-- Demo must distinguish:
-  - **VERIFIED BENCHMARK**;
-  - **ARTIFACT EVIDENCE**;
-  - **PARTIAL EXPANSION**;
-  - **INFRA LIMIT**;
-  - **NOT STARTED**;
-  - **TECHNICAL TRACE**.
-
-## 13. Limitations and Ethics
-
-- T001-T003 is small.
-- T004-T020 full validation is incomplete.
-- D1 batch-aware persistence is not implemented.
-- T007 timeout shows an infrastructure boundary.
-- User feedback logs, if added later, must be anonymized and human-audited before becoming gold labels.
-- The internal journal allowlist can introduce algorithmic gatekeeping.
-- The system must not overclaim performance.
-
-## 14. Final Claim
-
-Paper Agent does not globally outperform a single-LLM baseline on pure relevance-ranking metrics. Instead, it demonstrates stronger evidence-quality performance for scholarly paper discovery by combining DOI verification, journal-policy compliance, hallucination control, traceability, and transparent failure reporting.
-
-## 15. Forbidden Wording
-
-The following phrases may appear only as forbidden examples, never as project claims:
-
-- T004-T006 benchmark validated.
-- T007-T020 validation completed.
-- T004-T020 benchmark completed.
-- Full 20-task validation complete.
-- Proposed Agent globally outperforms baseline.
-- 18/20 success.
-- 90% success.
-- 90% validated.
-- D1 batch-aware persistence completed.
-- System superiority perfectly proven.
-- 완벽히 증명.
-- 제안 시스템이 전반적으로 우수함이 입증됨.
-
-## 16. Final Slide Checklist
+## 15. Final Slide Checklist
 
 - [ ] Project definition included.
-- [ ] Core problem included.
-- [ ] 12-step pipeline included.
-- [ ] Tools and infrastructure included.
-- [ ] T001-T003 controlled benchmark table included.
-- [ ] Single LLM advantage acknowledged.
-- [ ] Paper Agent composite evidence-quality claim included.
-- [ ] T004-T006 artifact evidence included.
-- [ ] T007-T012 partial expansion included.
-- [ ] T013-T020 not started included.
-- [ ] D1 batch-aware persistence not implemented included.
-- [ ] No forbidden overclaim included.
+- [ ] 12-stage pipeline included.
+- [ ] Benchmark v3 six layers and 30 metrics included.
+- [ ] T001--T003 common-support boundary included.
+- [ ] T004--T020 artifact-level boundary included.
+- [ ] T007 `proposed_agent_missing` included.
+- [ ] Layer 5A 22/125 and 17.6% included.
+- [ ] Layer 5A no-Proposed-Agent-row limit included.
+- [ ] Layer 5B supplementary proxy included.
+- [ ] Hallucination and timeout risks included.
+- [ ] No broad superiority claim included.

@@ -1,67 +1,90 @@
-# Final Presentation Outline
+# Paper Agent Final Presentation Outline
 
-Updated: 2026-05-31 (codex)
+Format: 14 slides / 8 minutes, followed by a 2--3 minute live demo.
 
-Target duration: 8 minutes plus Q&A.
-
-## Slide 1 - Title
+## Slide 1. Title
 
 **Paper Agent: A Traceable Multi-Agent System for Verified Scholarly Paper Discovery**
 
-- Academic literature-review support for business-school research.
-- Focus: verifiable evidence and traceable decisions.
+- AI Agent-based literature discovery and evaluation system.
+- Team project final presentation.
 
-**Speaker notes (0:00-0:25)**: Introduce Paper Agent as a research-assistance prototype. State that the goal is not autonomous scholarship or a global performance claim. The system helps researchers discover, verify, and inspect candidate papers.
+**Speaker notes (0:20):** Paper Agent treats literature discovery as an evidence workflow, not only a ranking task.
 
-## Slide 2 - Background: Why Scholarly Paper Discovery Needs Verification
+## Slide 2. Why Scholarly Discovery Needs Verification
 
-- Researchers need relevant papers, correct DOI metadata, venue-policy checks, and reproducible traces.
-- Search, verification, access lookup, ranking, and reporting are usually fragmented across tools.
+- Researchers need relevant papers, reliable DOI metadata, journal-policy compliance, and reproducible traces.
+- Plausible recommendations without evidence create citation risk.
 
-**Speaker notes (0:25-0:55)**: Explain that literature review quality depends on more than finding plausible titles. A researcher must be able to verify metadata and understand why a paper was recommended or excluded.
+**Speaker notes (0:30):** The business-school workflow requires both relevance and verification.
 
-## Slide 3 - Problem: Black-Box LLM Recommendation Risk
+## Slide 3. Limits of a Single Opaque Request
 
-- A single LLM can produce plausible but unverifiable recommendations.
-- Risks: DOI hallucination, metadata mismatch, opaque ranking, and journal-policy bypass.
-- Human scholarly review remains the final authority.
+- Metadata may be wrong or unverifiable.
+- Journal rules may be inconsistently applied.
+- Traceability and reproducibility are weak.
+- Failures can be hidden by fluent output.
 
-**Speaker notes (0:55-1:25)**: Frame the problem as a traceability gap. Even a useful LLM answer can be difficult to audit because the retrieval source, filtering rule, and verification evidence may be unclear.
+**Speaker notes (0:30):** A single LLM is useful, but a paper-discovery workflow needs explicit evidence stages.
 
-## Slide 4 - Paper Agent Overview
+## Slide 4. Paper Agent Overview
 
-- A traceable multi-agent and tool-using discovery pipeline.
-- Separates retrieval, filtering, metadata verification, ranking, critic review, and delivery.
-- Preserves intermediate evidence and failure states.
+- Traceable multi-agent and tool-use workflow.
+- Multi-Agent decomposition, retrieval augmentation, metadata APIs, storage traces, and reporting.
+- Goal: inspectable scholarly discovery.
 
-**Speaker notes (1:25-1:55)**: Emphasize that Paper Agent treats evidence artifacts as the result, not only the final ranked list. This makes inclusion and exclusion decisions inspectable.
+**Speaker notes (0:30):** The system separates responsibilities and retains intermediate evidence.
 
-## Slide 5 - System Architecture: 12-Step Pipeline
+## Slide 5. 12-Stage Pipeline
 
-Planner -> Journal Selector -> Search / Retriever -> Journal Filtering -> Verifier -> Open Access -> Storage -> Evaluation Prep -> Relevance -> Ranking -> Critic -> Report / Delivery
+1. Planner
+2. Journal Selector
+3. Search / Retriever
+4. Journal Filtering
+5. Verifier
+6. Open Access
+7. Storage
+8. Evaluation Prep
+9. Relevance
+10. Ranking
+11. Critic
+12. Report / Delivery
 
-- Tool use: configured scholarly backend, Crossref, Unpaywall, D1, R2, and dashboard surfaces.
-- Stage-level traces isolate failures.
+**Speaker notes (0:45):** Briefly connect retrieval, Crossref DOI verification, Unpaywall, D1 traces, and the dashboard.
 
-**Speaker notes (1:55-2:35)**: Walk through the pipeline at a high level. Mention that decomposition is justified by distinct responsibilities: policy filtering, DOI verification, OA inspection, scoring, and reporting should remain separately observable.
+## Slide 6. Benchmark v3: Six Layers, 30 Metrics
 
-## Slide 6 - Benchmark Design and Gold Label QA
+| Layer | Focus |
+| ---: | --- |
+| 1 | Foundation & Reproducibility |
+| 2 | Schema & Metadata |
+| 3 | Deterministic Validity |
+| 4 | Retrieval Accuracy |
+| 5 | Semantic Quality: Layer 5A judge + Layer 5B proxy |
+| 6 | Robustness & Risk |
 
-- Paper-Agent-Bench uses business-research tasks and DOI-backed gold labels.
-- Methods: Rule-Based baseline, Single LLM baseline, and Paper Agent.
-- Metrics: Precision@5, NDCG@5, DOI Accuracy, Top Journal Precision, and Hallucination Rate.
+**Speaker notes (0:40):** The benchmark is intentionally layered so incomplete evidence remains visible.
 
-**Speaker notes (2:35-3:05)**: Describe the benchmark as a domain-specific evaluation protocol. Explain that gold labels and metadata QA matter because incorrect labels can reward the wrong behavior.
+## Slide 7. Promotion Gate Result
 
-## Slide 7 - Controlled Benchmark Scope: T001-T003 Only
+**PASS WITH CLAIM BOUNDARIES**
 
-- Verified controlled comparison scope: T001-T003.
-- Comparison rows: 9.
-- Quantitative comparison claims are limited to this controlled layer.
+- Layers 1--4 computed.
+- Layer 6 computed.
+- Layer 5A remains quota-limited and partial.
+- Layer 5B is supplementary.
 
-**Speaker notes (3:05-3:25)**: State the scope boundary directly. Later execution artifacts are useful engineering evidence but are not merged into the controlled comparison.
+**Speaker notes (0:30):** The qualifier is mandatory. It prevents a partial audit from becoming a broad claim.
 
-## Slide 8 - T001-T003 Three-Way Results
+## Slide 8. Baseline Support Boundary
+
+- T001--T003: partial common-support comparison.
+- T004--T020: artifact-level validation unless baseline parity is proven.
+- T007: `proposed_agent_missing`.
+
+**Speaker notes (0:35):** The support matrix limits which tasks can be used for comparative interpretation.
+
+## Slide 9. T001--T003 Three-Way Results
 
 | Metric | Rule-Based | Single LLM | Paper Agent |
 | --- | ---: | ---: | ---: |
@@ -69,75 +92,61 @@ Planner -> Journal Selector -> Search / Retriever -> Journal Filtering -> Verifi
 | NDCG@5 | 0.3579 | 0.9949 | 0.3579 |
 | DOI Accuracy | 1.0000 | 1.0000 | 1.0000 |
 | Top Journal Precision | 1.0000 | 0.9333 | 1.0000 |
-| Hallucination Rate | 0.0 | risk noted | 0.0 |
 
-**Speaker notes (3:25-3:55)**: Read the result conservatively. Single LLM is higher on overlap-oriented metrics. Paper Agent preserves DOI accuracy and strict top-journal precision in this narrow controlled scope.
+**Speaker notes (0:45):** Single LLM has higher overlap-based ranking metrics in the common-support subset. We do not claim global outperform.
 
-## Slide 9 - Single LLM Trap
+## Slide 10. Benchmark v3 Key Results
 
-- Higher Precision@5 and NDCG@5 do not expose the recommendation process.
-- Single LLM output remains less constrained by explicit journal-policy and metadata-verification stages.
-- This is an interpretive risk, not proof of a causal mechanism.
+- Schema Normalization: 1.0000
+- Metadata Completeness: 0.9854
+- DOI Format Validity: 0.9678
+- DOI Exact Match Rate: 0.6930
+- Top Journal Precision: 0.8129
+- Proposed Agent Recall@20, T001--T003: 0.5000
 
-**Speaker notes (3:55-4:20)**: Explain why the comparison is multi-dimensional. Do not claim Paper Agent wins globally. The contribution is a more traceable decision process with explicit controls.
+**Speaker notes (0:35):** These metrics show where the pipeline is reliable and where improvement is still required.
 
-## Slide 10 - Paper Agent Verified Strengths
+## Slide 11. Layer 5A: Quota-Limited Partial Audit
 
-- Traceable stage outputs and stored failure evidence.
-- DOI and metadata verification through Crossref.
-- Internal journal allowlist enforcement.
-- Separate OA status through Unpaywall.
-- Report and dashboard surfaces linked to inspectable traces.
+- 22/125 successful rows = 17.6%.
+- No Proposed Agent rows in the successful evaluated subset.
+- Proposed Agent Layer 5 score: `not_available_in_subset`.
+- This is an implementation audit, not a representative semantic-quality estimate.
 
-**Speaker notes (4:20-4:50)**: Summarize strengths demonstrated by implementation and controlled evidence. Clarify that DOI integrity and policy compliance do not automatically prove substantive paper quality.
+**Speaker notes (0:40):** We disclose the quota limit directly instead of extrapolating from an incomplete subset.
 
-## Slide 11 - Evidence Boundary: Benchmark vs Artifact Evidence
+## Slide 12. Layer 5B and Risk Signals
 
-- **Controlled benchmark evidence**: audited T001-T003 quantitative comparison.
-- **Artifact evidence**: isolated execution CSVs; useful for coverage and failure inspection.
-- **Partial evidence**: incomplete staged attempts with preserved failures.
-- Full T004-T020 validation remains incomplete.
+- Deterministic semantic proxy generated for 125 rows.
+- Supplementary only; not a replacement for LLM or human semantic evaluation.
+- Hallucination rate: 0.3070.
+- Timeout rate: 0.1111.
+- Latency per task: 204.60 seconds.
 
-**Speaker notes (4:50-5:20)**: Explain why polished dashboard output must not be mistaken for completed validation. The project separates controlled metrics, artifacts, and incomplete runs explicitly.
+**Speaker notes (0:40):** Proxy signals expand observability but do not close the semantic-evaluation gap.
 
-## Slide 12 - Phase 3J / Phase 3L Artifact Evidence
+## Slide 13. Limitations and Ethics
 
-### Phase 3J
-- T004-T006 artifact-only dry-run executed through a gated wrapper.
-- 3 jobs and 50 result rows.
-- This is artifact evidence, not benchmark validation.
+- Baseline parity is partial.
+- Semantic judge coverage is incomplete.
+- Missing evidence remains visible.
+- Journal filtering can reinforce disciplinary gatekeeping.
+- Human scholarly review remains the final authority.
 
-### Phase 3L
-- Partial staged expansion evidence. Only Batch 1 T007-T012 executed.
-- T007 timed out after approximately 250 seconds and 21 polling attempts.
-- T008-T012 produced 87 rows.
-- T013-T018 not started. T019-T020 not started.
-- This is not full benchmark validation.
+**Speaker notes (0:35):** Trustworthy research assistance requires visible limits and human accountability.
 
-**Speaker notes (5:20-6:00)**: Show the staged safety boundary. Explain that the process stopped later batches after the Batch 1 timeout. Preserving failure evidence is part of the system design.
+## Slide 14. Demo and Next Steps
 
-## Slide 13 - Limitations and Ethics
+**Demo path**
+1. Pipeline overview.
+2. Benchmark v3 readiness qualifier.
+3. Baseline support matrix.
+4. Layer 5A and Layer 5B boundaries.
+5. Technical trace if asked.
 
-- Full T004-T020 validation remains incomplete.
-- D1 batch-aware persistence is not implemented.
-- Gold-label coverage remains limited.
-- The internal journal allowlist can introduce algorithmic gatekeeping.
-- Automated ranking can amplify citation and journal-hierarchy bias.
+**Next steps**
+- Expand baseline parity.
+- Obtain full approved judge coverage or human evaluation.
+- Improve timeout and hallucination handling.
 
-**Speaker notes (6:00-6:40)**: Discuss limits directly. Human scholarly review remains necessary. Explain that journal filtering is an explicit project policy, not a universal definition of academic quality.
-
-## Slide 14 - Final Demo / Next Steps
-
-Demo flow:
-1. Research Dashboard: submit or load a search job.
-2. Ops Dashboard: inspect stage traces and tool evidence.
-3. Evaluation Dashboard: show controlled T001-T003 comparison and artifact boundaries.
-4. Report output: show downloadable summary artifacts.
-
-Next steps:
-- diagnose T007 timeout;
-- complete separately approved staged expansion;
-- implement D1 batch-aware persistence;
-- expand DOI-backed gold labels.
-
-**Speaker notes (6:40-8:00)**: Use the last section for a concise live demonstration. End by restating the claim boundary: Paper Agent is a traceable deployed prototype with controlled T001-T003 evidence and partial artifact expansion, not a completed 20-task validation.
+**Speaker notes (0:35):** Close with the defensible claim: reproducible automated benchmark infrastructure with explicit claim boundaries.

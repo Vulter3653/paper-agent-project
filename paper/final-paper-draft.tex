@@ -17,40 +17,22 @@
 \maketitle
 
 \begin{abstract}
-Business-school literature review requires more than topically plausible recommendations. Researchers must verify DOI metadata, enforce journal-selection policies, inspect open-access status, and retain reproducible evidence explaining why each paper was included or excluded. A single large-language-model (LLM) response can produce useful suggestions, but it can also return unverifiable metadata and opaque recommendations. We present \textit{Paper Agent}, a traceable multi-agent system for verified scholarly paper discovery. The system decomposes literature review into a 12-stage tool-using pipeline covering planning, journal selection, retrieval, journal filtering, metadata verification, open-access checking, storage, evaluation preparation, relevance scoring, ranking, critic review, and report delivery. The deployed workflow uses Web of Science as its primary configured scholarly search provider and OpenAlex as a fallback, Crossref for DOI and metadata verification, Unpaywall for open-access status, Cloudflare Workers for execution, and Cloudflare D1 for persistent traces.
+Academic paper discovery requires traceable retrieval, DOI integrity, metadata normalization, venue-policy enforcement, access-status inspection, and reproducible evaluation. We present \textit{Paper Agent}, an AI Agent-based literature-discovery and evaluation system implemented as a 12-stage multi-agent and tool-use pipeline. The workflow combines configured scholarly retrieval, Crossref verification, Unpaywall lookup, Cloudflare Worker execution, D1 traces, artifact storage, ranking, critic review, and dashboard reporting.
 
-We evaluate the system with \textit{Paper-Agent-Bench}. Quantitative comparison is restricted to a verified controlled T001--T003 layer containing nine comparison rows. On this layer, the Single LLM baseline has higher Precision@5 and NDCG@5, while Paper Agent preserves DOI accuracy, strict top-journal precision, traceability, and explicit policy enforcement. We additionally report artifact-only execution evidence: a gated T004--T006 dry-run produced three job rows and 50 result rows, and a staged T007--T012 attempt produced 87 result rows for T008--T012 while T007 timed out after approximately 250 seconds. Later batches were not started. These expansion artifacts are not benchmark validation. Full T004--T020 validation remains incomplete, and D1 batch-aware persistence is not implemented.
+We evaluate the system through \textit{Benchmark v3}, a six-layer, 30-metric automated evaluation framework. Layers 1--4 and Layer 6 are computed from existing artifacts. Overall readiness is \textbf{PASS WITH CLAIM BOUNDARIES}. Baseline comparison is restricted to the T001--T003 common-support subset; T004--T020 remain artifact-level validation tasks, and T007 is marked \texttt{proposed\_agent\_missing}. Layer 5A is a quota-limited partial implementation audit with 22/125 successful rows (17.6\%); its evaluated subset contains no Proposed Agent rows, so the Proposed Agent Layer 5 score is \texttt{not\_available\_in\_subset}. Layer 5B provides deterministic semantic proxies for 125 rows, but supplements rather than replaces LLM or human semantic evaluation. The framework supports reproducible, claim-boundary-aware reporting; it does not support full T001--T020 comparative superiority or full semantic-quality validation claims.
+
 \end{abstract}
 
 \noindent\textbf{Keywords}---multi-agent systems, scholarly search, literature review automation, DOI verification, tool use, reproducibility.
 
 \section{Introduction}
-Literature review is a recurring bottleneck for business-school researchers, graduate students, and project teams. The task is not merely to locate papers whose titles appear related to a question. A defensible review must identify relevant work, verify bibliographic metadata, retain DOI evidence, comply with an approved journal policy, inspect access paths, and explain why specific papers were ranked or excluded. Researchers often perform these checks across disconnected search portals, publisher pages, DOI registries, open-access services, spreadsheets, and local notes.
+Literature review is a recurring bottleneck for business-school researchers. A defensible review must identify relevant work, verify metadata, retain DOI evidence, comply with an explicit journal policy, inspect access paths, and explain why papers were recommended or excluded. A fluent single-LLM answer can be useful, but it may not expose retrieval provenance, policy enforcement, DOI checks, or ranking reasons.
 
-Generative AI can reduce search effort, but a single LLM call is an inadequate control surface for a scholarly workflow. A fluent answer may contain plausible yet unverifiable recommendations. Even when recommendations are real, the user may not know which external source was consulted, whether journal-policy constraints were applied, whether DOI metadata was checked, or why one result ranked above another. This traceability gap is especially important in academic contexts where the user remains responsible for the final literature selection.
+Paper Agent addresses this traceability gap through a multi-agent, retrieval-augmented, and tool-using workflow. Its stages expose records and failure boundaries rather than treating one model response as the final result. The project applies Multi-Agent decomposition, RAG-style grounding, MCP/Tool Use inspection surfaces, and benchmark evaluation.
 
-Paper Agent addresses this gap through a traceable multi-agent and tool-using pipeline. Rather than treating an LLM response as the result, the system treats externally verifiable artifacts as the result: candidate metadata, allowlist decisions, Crossref verification outcomes, Unpaywall status, ranking components, persisted traces, and downloadable reports. Its primary user is a researcher preparing an early-stage business-school literature review. Its design goal is reproducible decision support, not autonomous scholarship.
+Evaluation is part of the domain problem. A paper-discovery agent should be evaluated with preserved task scope, provenance, baseline availability, metadata checks, timeout evidence, semantic-audit coverage, and claim boundaries. Benchmark v3 separates controlled common-support comparison, artifact-level validation, quota-limited semantic audit, deterministic semantic proxies, and robustness indicators.
 
-This project makes five contributions:
-\begin{enumerate}
-    \item a traceable 12-stage multi-agent architecture for scholarly paper discovery;
-    \item a DOI- and journal-policy-aware verification pipeline;
-    \item Paper-Agent-Bench, a domain-specific evaluation protocol;
-    \item a controlled baseline comparison plus artifact-only staged expansion evidence; and
-    \item a reproducibility and claim-boundary framework for honest reporting.
-\end{enumerate}
-
-\subsection{Problem Definition and Design Requirements}
-The operational problem can be expressed as a constrained evidence-selection task. Given a research question, Paper Agent must retrieve candidate papers, apply a domain-specific venue policy, verify available metadata, score relevance, preserve the origin of each decision, and deliver reviewable outputs. A useful answer is therefore not only a ranked list. It is a ranked list accompanied by evidence that another researcher can inspect.
-
-We derive six design requirements from this problem. First, retrieval and recommendation must be separated so that a candidate can be checked before it is promoted. Second, the venue-selection policy must be explicit. Third, DOI and title metadata must be verifiable through a structured external service. Fourth, intermediate states and failures must be observable. Fifth, generated reports must link back to stored records and traces. Sixth, evaluation claims must remain bounded by the actual scope of audited evidence.
-
-These requirements clarify why a single conversational answer is insufficient. A single LLM response can help generate hypotheses, but it does not automatically expose its retrieval source, enforce an allowlist, preserve failed requests, or make artifact boundaries reproducible. Paper Agent uses agent decomposition to turn these requirements into explicit execution stages.
-
-\subsection{Representative User Workflow}
-A representative workflow begins when a business-school researcher submits a topic such as digital transformation, organizational resilience, or ESG disclosure. The Planner normalizes the request and runtime constraints. The Journal Selector interprets the selected field and prioritizes the approved journal pool. The Retriever submits structured queries to the configured provider. The remaining stages enrich, filter, score, rank, critique, and report the resulting records. The dashboard exposes progress rather than presenting a single opaque completion event.
-
-The user still performs scholarly judgment. A high-ranked result is a candidate for review, not an automatically accepted citation. The system is designed to reduce repetitive verification effort and improve observability while preserving the researcher's responsibility for relevance, methodology, and interpretation.
+This project contributes: (1) a traceable 12-stage Paper Agent pipeline; (2) Benchmark v3, a six-layer and 30-metric automated framework; (3) reproducible validation artifacts; and (4) claim-boundary-aware reporting that prevents partial evidence from becoming a full-performance claim.
 
 \section{Related Work}
 \subsection{LLM-Based Scholarly Search}
@@ -143,162 +125,201 @@ Benchmark expansion uses explicit wrappers rather than broad package commands. W
 The gate design does not solve every operational issue. It does not implement D1 batch-aware persistence, automatic resumability, or an approved retry policy. Instead, it creates a conservative foundation for later work. The current system favors evidence preservation over aggressive completion.
 
 \section{Benchmark Design}
-Paper-Agent-Bench evaluates whether a literature-review agent retrieves useful and defensible papers under business-school constraints. Tasks represent domain questions and keyword sets. Gold labels are DOI-backed paper records reviewed under a relevance rubric. The controlled quantitative layer currently covers T001--T003. Expansion runs beyond this layer are reported separately as artifact-only evidence until evaluation and audit are complete.
+Benchmark v3 evaluates inspectable literature-discovery evidence across T001--T020. It defines six layers with five metrics each, for a total of 30 metrics.
+\begin{table*}[t]\centering\footnotesize
+\begin{tabularx}{\textwidth}{l l X}\toprule
+Layer & Metrics & Interpretation \\\midrule
+1. Foundation \& Reproducibility & manifest, parity, claim boundary, trace, critic coverage & evidence reproducibility \\
+2. Schema \& Metadata & normalization, completeness, DOI format, parsing, mismatch & structured artifact quality \\
+3. Deterministic Validity & DOI match, existence, journal policy, journal precision, OA & validity signals \\
+4. Retrieval Accuracy & Precision@5, NDCG@5, Recall@20, hit rate, MRR & retrieval and ranking \\
+5. Semantic Quality & relevance, constructs, context, confidence, reasoning & Layer 5A audit and Layer 5B proxy \\
+6. Robustness \& Risk & distractors, hallucination, timeout, latency, cost & operational risk \\
+\bottomrule\end{tabularx}
+\caption{Benchmark v3: six layers and 30 metrics.}\label{tab:v3layers}\end{table*}
 
-\subsection{Baselines}
-We compare three approaches: (1) a \textit{Rule-Based} baseline with deterministic retrieval and ranking heuristics, (2) a \textit{Single LLM} recommendation baseline, and (3) \textit{Paper Agent}, the traceable multi-agent pipeline.
+\subsection{Baseline Support Matrix}
+Only T001--T003 contain Paper Agent, Rule-Based, Single LLM, and gold-target support simultaneously. They form the controlled common-support subset. T004--T020 remain artifact-level validation tasks unless baseline parity is proven. T007 is \texttt{proposed\_agent\_missing}.
 
-\begin{table}[t]
+\subsection{Layer 5A and Layer 5B}
+Layer 5A prepared 125 judge rows but evaluated 22 successfully (17.6\%) under quota limits. The successful subset contains no Proposed Agent rows, so it is a partial implementation audit rather than a representative semantic-quality estimate. Layer 5B computes deterministic semantic proxies for 125 rows: query-title overlap, query-notes overlap, construct coverage, context match, and evidence-field presence. These proxies supplement but do not replace LLM or human semantic evaluation.
+
+\subsection{Claim Boundary}
+Benchmark v3 is \textbf{PASS WITH CLAIM BOUNDARIES}. It supports a reproducible automated framework, not full T001--T020 comparative superiority or full semantic-quality validation.
+
+\section{Evaluation Protocol and Claim Boundaries}
+\subsection{Why the Benchmark Is Layered}
+Benchmark v3 is organized as a diagnostic framework rather than a single leaderboard. A scholarly-discovery workflow can fail in several distinct ways. It can return an irrelevant paper, attach malformed metadata, provide a plausible but mismatched DOI, violate an explicit journal policy, omit evidence needed for an audit, time out under external-service pressure, or summarize partial data too confidently. A single aggregate score would hide these failure modes. The six-layer structure therefore preserves a separate interpretation boundary for reproducibility, metadata, deterministic validity, retrieval accuracy, semantic quality, and robustness.
+
+Layer 1 checks whether evidence can be reconstructed from tracked manifests, scripts, traces, critic outputs, and claim-boundary records. These checks are prerequisites for analysis: a ranking score is difficult to defend if the input scope or generation path cannot be recovered. Layer 2 measures schema and metadata quality. Normalization and completeness remain separate because a syntactically normalized row may still omit fields needed for scholarly review. Layer 3 reports deterministic validity signals. DOI exact matching, existence evidence, journal-policy indicators, and access-status records help distinguish bibliographic confidence from topical relevance.
+
+Layer 4 measures retrieval behavior through Precision@5, NDCG@5, Recall@20, hit rate, and mean reciprocal rank. These metrics expose different properties: top-result overlap, ranking order, broader target coverage, binary recovery, and earliest-hit position. Layer 5 handles semantic quality cautiously by separating a quota-limited LLM-judge audit from deterministic semantic proxies. Layer 6 reports robustness and risk. Hallucination, timeout, latency, and cost-related indicators matter because a literature-review assistant must remain usable under live service constraints.
+
+\begin{table*}[t]
 \centering
 \footnotesize
-\begin{tabularx}{\columnwidth}{l X}
+\begin{tabularx}{\textwidth}{l X X}
 \toprule
-Metric & Definition and purpose \\
+Evidence class & Permitted interpretation & Unsupported interpretation \\
 \midrule
-Precision@5 & Fraction of top-five results judged relevant; measures immediate usefulness. \\
-NDCG@5 & Rank-sensitive normalized gain; rewards ordering of highly relevant results. \\
-DOI Accuracy & Fraction with correct DOI evidence; measures metadata integrity. \\
-Top Journal Precision & Fraction satisfying the approved journal policy. \\
-Hallucination Rate & Fraction of unsupported recommendations; measures trust risk. \\
+T001--T003 common support & Cross-method retrieval comparison within three controlled tasks & Generalization to every T001--T020 task \\
+T004--T020 artifact-level validation & Artifact generation, schema inspection, deterministic checks, and visible failures & Baseline-parity comparison without matching baseline support \\
+Layer 5A evaluated subset & Judge-path implementation behavior for 22 quota-limited rows & Representative semantic estimate or Proposed Agent semantic score \\
+Layer 5B deterministic proxy & Reproducible supplementary semantic indicators for 125 rows & Replacement for human or LLM semantic evaluation \\
+Layer 6 robustness evidence & Observed operational risk in retained artifacts & Proof that runtime limits have been resolved \\
 \bottomrule
 \end{tabularx}
-\caption{Paper-Agent-Bench metrics.}
-\label{tab:metrics}
-\end{table}
+\caption{Evidence classes and claim boundaries in Benchmark v3.}
+\label{tab:evidenceboundary}
+\end{table*}
 
-\subsection{Task and Gold-Label Construction}
-Paper-Agent-Bench is organized around business-research topics rather than generic question answering. Each task contains a keyword query and a journal-category context. Gold-label construction requires DOI-backed scholarly papers and records enough metadata for follow-up verification. Ambiguous candidates must remain ambiguous rather than being silently promoted. This matters because an incorrect gold set can reward confident retrieval while penalizing defensible abstention.
+\subsection{Baseline Support Protocol}
+The Baseline Support Matrix is generated from existing artifacts. For each task, it records whether Proposed Agent outputs, Rule-Based outputs, Single LLM outputs, and gold or target evidence are available. A task is comparable only when the required support exists. This prevents a common evaluation error: treating the presence of one method's artifact as if it implied parity across every method. Under the current matrix, T001--T003 form the common-support subset. T004--T020 remain artifact-level validation tasks unless baseline parity is proven. T007 is explicitly marked \texttt{proposed\_agent\_missing}.
 
-The controlled T001--T003 layer is intentionally narrow. It establishes an auditable starting point with nine comparison rows across the three methods. The remaining tasks are expansion targets, not automatically comparable observations. They require staged execution, artifact inspection, and subsequent evaluation before they can support metric claims.
+This distinction constrains retrieval interpretation. The controlled T001--T003 table is useful because the compared methods share a bounded evaluation context. It is not a universal leaderboard. The Single LLM baseline has higher Precision@5 and NDCG@5 in this subset, while Paper Agent retains explicit journal-policy enforcement, DOI verification, traceability, and visible failure reporting. The project does not collapse these different properties into an unsupported global ordering.
 
-\subsection{Metric Interpretation}
-Precision@5 and NDCG@5 measure overlap and ordering relative to the gold labels. DOI Accuracy and Top Journal Precision measure integrity and policy compliance. Hallucination Rate captures unsupported recommendation risk. None of these metrics should be interpreted in isolation. For example, a method can achieve high overlap while offering weak traceability, or strict policy filtering can reduce overlap while increasing compliance. We therefore report a multi-dimensional evaluation rather than a single winner score.
+Gold or target labels are also bounded references rather than complete descriptions of the literature. A relevant paper can be absent from a finite target set. Retrieval scores therefore measure overlap with current target evidence. DOI, metadata, policy, and trace metrics provide complementary signals. Future work should expand DOI-backed targets with human audit while preserving the distinction between target coverage and universal relevance.
 
-\subsection{Protocol and Reproducibility Controls}
-Quantitative claims are limited to the controlled T001--T003 layer with nine comparison rows. Execution artifacts from T004--T006 and T007--T012 are isolated by run ID and are not merged into controlled metrics. Gold labels are not rewritten to hide failures. The repository retains scripts, prompts, trace APIs, documentation reports, and claim-boundary rules. Live reproduction requires valid API credentials and available external services.
+\subsection{Layer 5A Representativeness Audit}
+The Layer 5A input population contains 125 prepared judge rows. Quota pressure allowed 22 rows to be evaluated successfully, which is 17.6\% coverage. The representativeness audit compares the full input population with the successful subset by task identifier, method, and candidate rank where available. Its purpose is not to repair missing coverage statistically. Instead, it discloses the degree to which the available subset differs from the intended evaluation population.
+
+The successful subset contains no Proposed Agent rows. Consequently, the Proposed Agent Layer 5 score is recorded as \texttt{not\_available\_in\_subset}. Assigning a score would fabricate evidence. The correct interpretation is narrower: the partial run confirms that the judge-path implementation can generate and retain some evaluated rows under quota constraints. It does not establish representative semantic quality for Paper Agent, any baseline, or the full dataset.
+
+This boundary matters because semantic judgments can be especially sensitive to sample selection. Candidate rank, research method, query language, abstract availability, and metadata density may all affect the difficulty of judgment. A future semantic protocol should predefine sampling, stratify across tasks and methods, retain failed calls, and compare automatic judgments with a human-reviewed subset.
+
+\subsection{Layer 5B Deterministic Semantic Proxy}
+Layer 5B computes deterministic semantic proxies for all 125 prepared rows. Available fields support signals such as query-title overlap, query-abstract-or-notes overlap where text exists, construct-coverage indicators, method-context match indicators, and evidence-field presence. Because these computations are deterministic, they can be rerun from tracked artifacts without spending judge quota or modifying raw outputs.
+
+The proxy has a deliberately limited role. A high title-overlap score can reveal lexical alignment, and an evidence-field-presence score can reveal whether a candidate is sufficiently documented for later review. Neither signal establishes conceptual relevance. A paper can use different terminology for the same construct, and a paper with matching terms can still be methodologically unsuitable. Layer 5B is therefore a supplementary observability mechanism, not a substitute for LLM or human semantic evaluation.
+
+\subsection{Artifact Preparation and Normalization}
+Benchmark v3 supplements consume retained artifacts rather than rerunning scholarly search. This constraint improves reproducibility: generated matrices and summaries can be regenerated from a stable snapshot without introducing changes from live API responses. Normalization shapes metadata fields, DOI strings, journals, statuses, ranks, and evidence text into consistent rows for deterministic validation.
+
+Normalization does not silently repair uncertain metadata. A malformed DOI remains a validity signal. A missing candidate artifact remains a support gap. A judge failure remains part of the coverage record. This policy treats missing evidence as information rather than imputing an optimistic value. It also permits engineering improvements to be evaluated later against the same preserved artifact lineage.
+
+\subsection{Operational Risk Protocol}
+Operational metrics are derived from retained jobs and artifacts. Timeout rate and latency per task are reported because external retrieval, enrichment, and polling behavior affect practical usability. Hallucination rate remains visible because metadata-oriented safeguards can reduce but not eliminate bibliographic uncertainty. These indicators characterize whether the workflow can be trusted under constrained resources.
+
+The current framework records that D1 batch-aware persistence remains incomplete. Existing artifacts support deterministic supplements, but artifact generation should not be described as complete Production D1 batch orchestration. Schema availability, local artifact presence, and end-to-end persistence are different claims. The same distinction applies to dashboard summaries: a polished interface is a view over evidence, not an independent validation source.
 
 \section{Experiments}
-\subsection{Controlled T001--T003 Comparison}
-The verified controlled layer compares Rule-Based, Single LLM, and Paper Agent baselines on T001--T003. It contains nine comparison rows. This is the only layer used for quantitative baseline claims in this manuscript.
+Benchmark v3 normalizes existing artifacts across T001--T020 without rerunning scholarly search. Layers 1--4 and Layer 6 are computed. Cross-method comparison is restricted to T001--T003 common support; T004--T020 remain artifact-level validation, and T007 lacks a Proposed Agent artifact.
 
-\subsection{T004--T006 Artifact-Only Dry-Run}
-An explicitly approved gated wrapper executed T004--T006 as an artifact-only dry-run. T004 generated 20 rows, T005 generated 12 rows, and T006 generated 18 rows. The run produced three job rows and 50 result rows without failed jobs. These artifacts demonstrate execution coverage, not benchmark validation.
-
-\subsection{Phase 3L Partial Staged Expansion}
-Phase 3L produced partial staged expansion evidence. Batch 1 (T007--T012) generated artifacts for T008--T012, while T007 timed out after approximately 250 seconds. Because this failure occurred within Batch 1, later batches T013--T018 and T019--T020 were not started. This result identifies both executable segments and infrastructure boundaries, and it does not constitute full benchmark validation.
-
-\subsection{Artifact Isolation Strategy}
-The staged execution wrappers enforce isolated output directories named by run ID. This prevents new attempts from overwriting controlled artifacts or earlier dry-run evidence. Before execution, wrappers expose plan and preflight modes. Execute mode requires explicit acknowledgement flags and an exact approved run ID. No permanent execute command is exposed through the package scripts. This operational design makes scope expansion reviewable and limits accidental broad execution.
-
-\subsection{What Was Not Evaluated}
-We do not report a completed T004--T020 benchmark. Artifact-only evidence is not merged into controlled metrics. D1 batch-aware persistence is not implemented. We do not claim global superiority over the Single LLM baseline.
+Layer 5A preserves the quota-limited judge subset and failures. Layer 5B computes deterministic proxies for all 125 prepared rows. No semantic scores are fabricated. D1 batch-aware persistence remains incomplete.
 
 \section{Results and Discussion}
-\begin{table}[t]
-\centering
-\footnotesize
-\begin{tabular}{lccc}
-\toprule
-Metric & Rule & Single LLM & Paper Agent \\
-\midrule
+\begin{table}[t]\centering\footnotesize
+\begin{tabular}{lccc}\toprule Metric & Rule & Single LLM & Paper Agent \\\midrule
 Precision@5 & 0.1333 & 0.6667 & 0.1333 \\
 NDCG@5 & 0.3579 & 0.9949 & 0.3579 \\
 DOI Accuracy & 1.0000 & 1.0000 & 1.0000 \\
 Top Journal Prec. & 1.0000 & 0.9333 & 1.0000 \\
 Hallucination Rate & 0.0 & risk noted & 0.0 \\
-\bottomrule
-\end{tabular}
-\caption{Controlled T001--T003 comparison only.}
-\label{tab:controlled}
-\end{table}
+\bottomrule\end{tabular}\caption{Controlled T001--T003 common-support comparison.}\label{tab:controlled}\end{table}
+The Single LLM baseline has higher Precision@5 and NDCG@5 in T001--T003. Paper Agent is not claimed to outperform baselines globally. Its contribution is an inspectable tradeoff: policy filtering, DOI verification, traces, artifacts, and failure evidence.
 
-The Single LLM baseline may appear strong under gold-label overlap metrics, but its recommendation process remains less traceable and less constrained by the explicit journal-policy and metadata-verification pipeline. Paper Agent does not outperform the Single LLM baseline on Precision@5 or NDCG@5 in the controlled scope. Its current contribution is a different tradeoff: DOI integrity, journal-policy compliance, traceability, and preserved failure evidence. Treating overlap metrics as the only objective can create an interpretive trap, but this is a risk to examine rather than a proven causal explanation.
+\begin{table}[t]\centering\footnotesize
+\begin{tabular}{lr}\toprule Metric & Value \\\midrule
+Schema normalization & 1.0000 \\
+Metadata completeness & 0.9854 \\
+DOI format validity & 0.9678 \\
+DOI exact match & 0.6930 \\
+Paper existence & 0.6930 \\
+Top journal precision & 0.8129 \\
+Paper Agent Precision@5 (T001--T003) & 0.1333 \\
+Paper Agent NDCG@5 (T001--T003) & 0.3579 \\
+Paper Agent Recall@20 (T001--T003) & 0.5000 \\
+Hallucination rate & 0.3070 \\
+Timeout rate & 0.1111 \\
+Latency per task & 204.60s \\
+\bottomrule\end{tabular}\caption{Scoped Benchmark v3 indicators.}\label{tab:v3summary}\end{table}
+The baseline-support matrix confirms 3/20 comparable tasks. Layer 5A evaluated 22/125 rows and includes no successful Proposed Agent rows. Layer 5B generated proxies for 125 rows. These supplements improve observability but do not establish semantic-quality superiority. The defensible result is \textbf{PASS WITH CLAIM BOUNDARIES}.
 
-\begin{table}[t]
+
+\subsection{Metadata and Validity Interpretation}
+Schema normalization reaches 1.0000, and metadata completeness reaches 0.9854. These values indicate that retained artifacts are generally structured enough for automated analysis. They do not imply that every recommendation is correct. DOI format validity is 0.9678, while DOI exact-match rate and paper-existence rate are both 0.6930. The difference between syntactic DOI format and stronger existence-oriented evidence illustrates why the benchmark separates formatting from verification. A DOI-like string can be well formed without providing sufficient evidence for a confident recommendation.
+
+Top journal precision is 0.8129 in the broader Benchmark v3 evidence. This metric reflects compliance with the internal business-school allowlist, not a universal measure of research quality. A journal outside the project list is not necessarily weak, and a journal inside the list does not guarantee that an individual paper is relevant. Separating journal policy, DOI evidence, and retrieval metrics reduces the chance that one institutional preference is mistaken for a complete relevance judgment.
+
+\subsection{Retrieval Interpretation}
+For T001--T003, Paper Agent records Precision@5 of 0.1333, NDCG@5 of 0.3579, and Recall@20 of 0.5000. The Single LLM baseline records higher Precision@5 and NDCG@5 in the controlled table. This result should be stated directly. Paper Agent does not dominate pure relevance-ranking metrics in the current common-support subset. Its current contribution lies in an inspectable workflow that combines retrieval with policy checks, verification, persistent traces, and conservative reporting.
+
+The tradeoff is useful for system design. An evaluation that reports only overlap metrics can reward plausible relevance ranking while omitting evidence-integrity requirements. An evaluation that reports only DOI validity can ignore whether users receive useful papers. Benchmark v3 retains both classes of evidence. Future optimization should improve retrieval quality without weakening DOI, policy, and trace safeguards. A larger baseline-parity set is also necessary before making broader comparative statements.
+
+\subsection{Semantic-Quality Interpretation}
+Layer 5A returned 22 successful rows from 125 prepared inputs. This 17.6\% coverage is too limited for representative semantic-quality conclusions. More importantly, the successful subset contains no Proposed Agent rows. Reporting a Proposed Agent semantic score would fabricate evidence. The benchmark instead reports \texttt{not\_available\_in\_subset} and uses the representativeness audit to preserve the limitation.
+
+Layer 5B broadens deterministic visibility across all 125 prepared rows. Its proxies can identify sparse evidence fields, weak lexical alignment, missing construct terms, or limited context matches. These signals are useful for debugging and future audit prioritization. They are not a semantic verdict. Scholarly relevance can depend on theoretical framing, research design, population, setting, and contribution in ways that lexical proxies cannot capture fully.
+
+\subsection{Robustness and Risk Interpretation}
+The hallucination rate of 0.3070 and timeout rate of 0.1111 remain material risks. Latency per task is 204.60 seconds. These observations constrain deployment claims. A traceable system can still be slow for some interactions, and verification infrastructure can still leave uncertain recommendations. The value of the current framework is that these issues remain measurable and visible. Future versions should reduce the rates through improved retrieval, bounded retries, caching, and expanded verification rather than removing inconvenient evidence from reports.
+
+\begin{table*}[t]
 \centering
 \footnotesize
-\begin{tabular}{lrl}
+\begin{tabularx}{\textwidth}{l X X}
 \toprule
-Task & Rows & Notes \\
+Observed condition & Current interpretation & Future mitigation \\
 \midrule
-T004 & 20 & completed \\
-T005 & 12 & completed \\
-T006 & 18 & completed \\
-\midrule
-Total & 50 & artifact-only evidence \\
+Only T001--T003 have common baseline support & comparative scope remains partial & collect parity-preserving baseline artifacts for additional tasks \\
+T007 is \texttt{proposed\_agent\_missing} & missing artifact remains visible & bounded recovery with preserved failure evidence \\
+Layer 5A covers 22/125 rows & quota-limited implementation audit only & approved judge budget and stratified human audit \\
+No Proposed Agent rows in successful Layer 5A subset & semantic score unavailable for Proposed Agent & balanced method sampling and retained failed-call records \\
+Hallucination rate is 0.3070 & metadata risk remains material & strengthen retrieval, verification, and uncertainty labels \\
+Timeout rate is 0.1111 & runtime resilience remains incomplete & bounded retries, caching, and provider-aware backoff \\
 \bottomrule
-\end{tabular}
-\caption{T004--T006 gated artifact-only dry-run.}
-\label{tab:t004t006}
-\end{table}
+\end{tabularx}
+\caption{Current limitations, conservative interpretations, and future mitigations.}
+\label{tab:mitigation}
+\end{table*}
 
-\begin{table}[t]
-\centering
-\footnotesize
-\begin{tabular}{lrl}
-\toprule
-Task & Rows & Notes \\
-\midrule
-T007 & 0 & timeout: 250250ms / 21 attempts \\
-T008 & 20 & completed \\
-T009 & 20 & completed \\
-T010 & 20 & completed \\
-T011 & 7 & completed \\
-T012 & 20 & completed \\
-\midrule
-Total & 87 & partial artifact evidence \\
-\bottomrule
-\end{tabular}
-\caption{Phase 3L Batch 1 partial staged expansion.}
-\label{tab:t007t012}
-\end{table}
+\subsection{Reporting Discipline}
+The promotion gate reports \textbf{PASS WITH CLAIM BOUNDARIES}. This phrase is not cosmetic. It communicates that deterministic layers and robustness metrics have been computed while semantic-audit coverage and baseline parity remain incomplete. The dashboard, final report, and presentation should retain the same qualifier. Generated summaries must not turn artifact availability into parity, proxy metrics into semantic ground truth, or partial judge coverage into representative evaluation.
 
-Batch 2 T013--T018 and Batch 3 T019--T020 were not started after the T007 timeout. Legacy T019--T020 resource-limit / HTTP 503 evidence remains visible. The safety stop is a meaningful system result: execution coverage should expand only when failure evidence remains inspectable.
-
-\subsection{Discussion of the Controlled Tradeoff}
-The controlled table should not be compressed into a winner narrative. The Single LLM baseline performs better on overlap-oriented metrics in T001--T003. Paper Agent matches the Rule-Based baseline on those metrics in the current controlled scope. At the same time, Paper Agent exposes an operationally different evidence surface: journal-policy filtering, structured metadata verification, stored traces, separated OA status, report artifacts, and failure preservation.
-
-This tradeoff is relevant for literature-review support because the cost of a recommendation is not limited to ranking error. Researchers also incur costs when they must investigate fabricated metadata, reconstruct an opaque decision, or discover that a polished interface mixed simulated and live evidence. The current experiment does not quantify all of these costs. It identifies them as dimensions for a broader benchmark.
-
-\subsection{Operational Failure Analysis}
-The T007 timeout provides a concrete operational boundary. The runner waited approximately 250 seconds across 21 polling attempts before recording a timeout. It then preserved the failure and continued through the remaining tasks in Batch 1. The outer staged process stopped before Batch 2 and Batch 3. This behavior demonstrates containment: the system retained successful T008--T012 artifacts without hiding T007 or escalating into an uncontrolled broad run.
-
-Legacy T019--T020 HTTP 503 records provide a second type of evidence. They indicate that external-service or Worker resource constraints must remain part of the evaluation story. The proper response is not to erase failed rows or relabel them as success. Future work should improve timeout handling, resource budgeting, and retry policies while keeping failure visibility intact.
-
-\subsection{Threats to Validity}
-There are at least four threats to validity. First, the controlled task set is small, so performance metrics cannot establish broad generalization. Second, gold-label quality depends on manual verification and may underrepresent relevant papers outside the initial pool. Third, live API behavior is time-dependent: quotas, provider responses, and network conditions can change. Fourth, the internal journal allowlist encodes institutional preferences that may not transfer to every research context. These threats motivate staged evidence collection and conservative claims.
+This reporting discipline is a practical contribution of the project. Agent systems often combine live APIs, asynchronous jobs, generated artifacts, and optional model calls. Their evidence can be uneven. A claim-boundary-aware report gives developers and evaluators a structured way to communicate what is available, what failed, and what still needs review.
 
 \section{Limitations and Ethics}
-The current evidence has clear boundaries. Full T004--T020 validation remains incomplete. D1 batch-aware persistence is not implemented. Phase 3L recorded a T007 timeout after approximately 250 seconds, and T013--T020 were not executed under Phase 3L after the safety stop. Gold-label coverage remains limited and should be expanded before broader performance claims.
+Baseline parity is partial. Layer 5A is quota-limited to 22/125 successful rows and contains no successful Proposed Agent rows. Layer 5B does not replace semantic evaluation. Full semantic-quality validation and full T001--T020 comparative superiority are not supported. The hallucination rate of 0.3070 and timeout rate of 0.1111 remain material risks. Broader evaluation requires funded judge coverage or human review.
 
-Paper Agent also introduces normative choices. The internal journal allowlist can create algorithmic gatekeeping by prioritizing established venues and potentially excluding useful work from emerging, regional, or interdisciplinary outlets. Automated ranking can amplify citation and journal-hierarchy biases. DOI verification improves metadata integrity but does not establish substantive research quality. Open-access status can improve accessibility but should not be interpreted as a quality signal.
+The journal allowlist may create algorithmic gatekeeping. Ranking can amplify citation and hierarchy biases. DOI verification reduces bibliographic uncertainty but does not establish substantive quality. Human scholarly review remains the final authority.
 
-Human scholarly review remains the final authority. Users must inspect recommendations, verify metadata when necessary, evaluate methodological fit, and take responsibility for citation choices. Responsibility for hallucination, metadata error, and ranking bias cannot be delegated entirely to an automated pipeline.
+\section{Reproducibility and Design Implications}
+\subsection{Reproducible Artifact Chain}
+The repository is designed so that an evaluator can inspect the path from task metadata to normalized rows, metric outputs, supplement reports, promotion-gate summaries, and presentation language. The Baseline Support Matrix records where comparison is possible. The Layer 5A representativeness report records the gap between prepared judge inputs and successful evaluations. The Layer 5B proxy report records deterministic semantic signals. The robustness layer records timeout, hallucination, and latency observations. Together, these artifacts make uncertainty inspectable.
+
+This artifact chain is important for live-service systems. Search providers and metadata APIs can change over time, and a rerun can produce different candidates or response timing. A reproducible supplement should therefore preserve the artifact snapshot used for analysis and derive reports from that snapshot. Reproducibility does not mean that every future live call is identical. It means that the evidence supporting a submitted claim can be reconstructed and audited.
+
+\subsection{Claim Boundaries as a System Requirement}
+Claim boundaries are not a final editing pass. They influence schema design, metric generation, dashboard labels, and presentation structure. A task-level missing artifact must remain visible in the support matrix. A quota-limited judge run must expose coverage. A deterministic proxy must retain its supplementary label. A promotion gate must communicate its qualifier. These requirements reduce the risk that downstream summaries accidentally overstate incomplete evidence.
+
+The approach is especially relevant for agentic workflows. Multi-stage systems can appear more capable than their least reliable dependency. A retrieval provider may return candidates while a metadata service fails. An artifact directory may exist while batch-aware D1 persistence remains incomplete. A dashboard may render a summary while baseline parity is unavailable. Treating these states separately is necessary for honest engineering and scholarly use.
+
+\subsection{Implications for Literature-Review Assistance}
+Paper Agent illustrates a broader design principle: literature-review automation should be optimized for evidence quality as well as ranking quality. Relevance remains essential, and the current T001--T003 comparison shows that Paper Agent needs retrieval improvement. At the same time, a useful research assistant should expose metadata integrity, policy decisions, access status, trace history, and failure reasons. Researchers need enough context to challenge a recommendation rather than merely accept it.
+
+A practical deployment should support iterative review. Users may inspect a recommended paper, reject a venue-policy decision, refine a query, or request broader coverage. Future feedback mechanisms should preserve provenance and avoid automatically promoting unreviewed feedback into gold labels. Human-audited governance is particularly important when the system is used in academic settings where citation choices influence literature visibility.
+
+\subsection{Future Evaluation Protocol}
+The next evaluation cycle should expand common-support baseline artifacts beyond T001--T003, recover T007 with a bounded retry policy, and obtain balanced semantic judgments across tasks and methods. A paid judge budget can reduce quota pressure, but the protocol should still use stratified sampling and retain failed-call evidence. Human reviewers should examine a subset of semantic judgments to estimate agreement and identify construct-level errors that deterministic proxies cannot detect.
+
+Future work should also connect artifact batches to Production D1 with explicit parent-run, batch, retry, and error fields. That implementation would improve trace continuity from staged execution to dashboard reporting. It should be introduced with migration freeze rules, controlled backfill, and regression checks for existing evidence. Until then, the manuscript retains the narrower distinction between artifact-level validation and end-to-end batch-aware persistence.
 
 \section{Conclusion}
-Paper Agent is a traceable multi-agent pipeline for business-school scholarly discovery. It combines role decomposition, retrieval tools, DOI verification, journal-policy filtering, open-access checking, persistent traces, ranking, critic review, and report delivery. The verified T001--T003 controlled comparison shows a nuanced result: the Single LLM baseline has higher overlap-based metrics, while Paper Agent preserves strict top-journal precision, DOI integrity, traceability, and hallucination control within the controlled scope.
-
-Artifact-only expansion provides additional implementation evidence without changing the benchmark claim boundary. T004--T006 generated 50 result rows through a gated wrapper. Phase 3L generated 87 result rows for T008--T012 while preserving the T007 timeout and stopping later batches. Full T004--T020 validation remains incomplete.
+Paper Agent combines a traceable multi-agent pipeline with Benchmark v3, a six-layer and 30-metric automated framework. The defensible conclusion is \textbf{PASS WITH CLAIM BOUNDARIES}. Layers 1--4 and Layer 6 are computed; comparison is restricted to T001--T003 common support; Layer 5A is a quota-limited partial implementation audit; and Layer 5B is supplementary. The benchmark does not support full T001--T020 comparative superiority or full semantic-quality validation.
 
 \section{Reproducibility Statement}
-\subsection{Repository Evidence}
-The GitHub repository contains source code, benchmark scripts, prompts, documentation reports, staged-wrapper logic, and a paper claim-boundary checklist. Cloudflare D1 stores live jobs and traces, while isolated local artifact directories preserve staged-run outputs. The controlled benchmark and expansion artifacts are intentionally described as separate evidence layers.
-
-\subsection{Reproduction Procedure}
-A reproduction attempt should first inspect repository status, configuration, and documented safety boundaries. Live execution requires separately provisioned API credentials and available external services. Benchmark expansion must use plan and preflight modes before any approved execute mode. Artifact directories must be isolated by run ID, and controlled T001--T003 evidence must remain unchanged. After execution, researchers should inspect job CSV files, result CSV files, checksums, status rows, failure messages, and trace records before making claims.
-
-\subsection{Reproduction Constraints}
-Reproduction depends on API credentials, external service availability, and explicit approval for gated execution. The current codebase does not implement D1 batch-aware persistence for staged artifacts. Consequently, local artifact inspection and documentation remain necessary. Future work includes separately approved T013--T020 staged expansion, D1 batch-aware persistence, broader gold-label coverage, improved timeout handling, and optional external bibliometric enrichment where appropriate.
+The repository contains code, prompts, task metadata, gold targets, normalization scripts, baseline-support outputs, Layer 5A representativeness artifacts, Layer 5B proxy artifacts, robustness summaries, and claim-boundary documentation. Supplements are derived from existing artifacts without rerunning scholarly search or the judge. Raw judge outputs remain preserved.
 
 \section{Future Work}
-The next engineering priority is not a broader claim. It is a safer evidence pipeline. First, the team should diagnose the T007 timeout using the preserved polling evidence and determine whether Worker CPU limits, external API latency, enrichment volume, or report generation caused the delay. Any retry policy should be bounded and documented. Second, the batch-aware D1 fields should be connected to the staged wrappers so that parent run ID, batch ID, retry count, last error, and last-error timestamp are persisted end to end.
-
-Third, Paper-Agent-Bench should expand its DOI-backed gold labels and record clearer provenance for ambiguous rows. A broader controlled layer would allow the team to examine whether journal-policy filtering trades overlap for integrity in a consistent way across fields. Fourth, evaluation should include operational metrics such as latency, resource-limit incidence, trace completeness, and recovery behavior. These dimensions capture costs that Precision@5 and NDCG@5 alone cannot describe.
-
-Fifth, the journal-policy layer should support explicit alternatives. Researchers may need a strict internal allowlist, a broader discovery mode, or an externally enriched bibliometric view. Such modes should be visible and should not silently change the meaning of a score.
+Future work should expand baseline parity beyond T001--T003, recover T007 under a bounded retry policy, obtain broader semantic coverage through a funded judge budget or human evaluation, connect batch-aware D1 persistence, strengthen timeout handling, and expand DOI-backed gold targets.
 
 \section{Implementation and Evaluation Checklist}
-Before final submission, the team should audit the T001--T003 metric provenance, inspect untracked staged artifacts, and retain the claim boundary. Any later T013--T020 execution requires a separate explicit approval. A completed dashboard or generated report must not be used as evidence of a completed benchmark unless the underlying artifacts and evaluation outputs have been audited.
+Before final submission, the team should verify generated supplement artifacts, retain the T001--T003 common-support boundary, and disclose Layer 5A quota limits. A dashboard or report must not be used as evidence of full comparative or semantic validation unless the underlying scope supports that claim.
+
+
+The final repository audit should confirm that baseline-support outputs, Layer 5A representativeness outputs, Layer 5B proxy outputs, and promotion-gate summaries are versioned together. Readers should be able to reconstruct the evidence chain from task metadata to normalized rows, metric summaries, and reporting language. This requirement is stronger than a screenshot-based demo check because reproducibility depends on tracked scripts and artifacts.
+
+\newpage
 
 \begin{thebibliography}{4}
 \bibitem{lo2020s2orc} K. Lo et al., ``S2ORC: The Semantic Scholar Open Research Corpus,'' in \textit{Proceedings of ACL}, 2020.

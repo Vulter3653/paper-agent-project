@@ -16,6 +16,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## 2026-06-01 (codex)
+- Docs: Updated the final paper, section drafts, claim checklist, enhanced report, and presentation sources for Benchmark v3 `PASS WITH CLAIM BOUNDARIES`, six-layer and 30-metric reporting, T001-T003 common-support limits, and Layer 5A/5B semantic-audit boundaries. (codex)
+
 ## 2026-06-01 (gemini)
 - Benchmark: Added Benchmark v3 common-support baseline matrix, Layer 5A representativeness audit, and Layer 5B deterministic semantic proxy supplements from existing artifacts only. (codex)
 - Scripts: Added deterministic supplement generators and integrated their claim-bounded summaries into `compute-v3-promotion-summary.mjs`. (codex)

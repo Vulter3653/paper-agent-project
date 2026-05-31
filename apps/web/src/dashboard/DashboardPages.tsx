@@ -282,7 +282,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
             <div className="uxSnapshotGrid">
               <MetricTile label="작업 상태" value={activeJob ? formatRuntimeStatus(activeJob.status) : "대기"} detail={activeJob?.currentStep || "준비됨"} tone="green" />
               <MetricTile label="실행 단계" value={`${completedTraceCount}/12`} detail="완료/건너뜀" tone="blue" />
-              <MetricTile label="Top Pool" value="부분 구현" detail="allowlist live" tone="purple" />
+              <MetricTile label="내부 Allowlist" value="부분 구현" detail="Internal Allowlist Filter" tone="purple" />
               <MetricTile label="Review" value={activeJob?.status === "completed" ? "준비됨" : "대기 중"} detail={report ? "Live 리포트" : "Critic 분석 중"} tone={activeJob?.status === "completed" ? "green" : "amber"} />
             </div>
           </aside>
@@ -301,7 +301,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
             <h2>12단계 Literature Review Pipeline</h2>
             <p>{traces.length ? "실제 D1 agent_traces 기반의 실시간 실행 단계입니다." : "예시 데이터(Mock): 실제 agent_traces 연결 전의 단계 구조입니다."}</p>
           </div>
-          <span className={`uxPill ${traces.length ? "green" : "amber"}`}>{traces.length ? "D1 trace 연결됨" : "예시 데이터"}</span>
+          <span className={`uxPill ${traces.length ? "green" : "amber"}`}>{traces.length ? "LIVE D1 VERIFIED" : "MOCK BLUEPRINT"}</span>
         </div>
         <div className="uxProgressTrack">
           <span style={{ width: `${progress}%` }} />
@@ -321,10 +321,10 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
         <section className="uxPanel">
           <div className="uxPanelHead">
             <div>
-              <h2>Top Journal Pool (부분 구현)</h2>
-              <p>실제 동작: 내부 비즈니스 스쿨 allowlist 필터링 적용 중. (미구현: 외부 JCR/SCImago API 연동)</p>
+              <h2>내부 Allowlist 필터 (Internal Allowlist Filter)</h2>
+              <p>실제 동작: 내부 비즈니스 스쿨 allowlist 필터링 적용 중. 외부 JCR/SCImago API 연동은 계획 단계입니다.</p>
             </div>
-            <span className="uxPill blue">부분 구현됨</span>
+            <span className="uxPill blue">PLANNED ONLY / PARTIAL</span>
           </div>
           <div className="uxSystemGrid">
             {topJournalPool.map((group) => (
@@ -343,7 +343,7 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
               <h2>문헌 검토 보고서 미리보기</h2>
               <p>{report ? "실제 Report Agent가 생성한 보고서의 요약 발췌본입니다." : "예시 데이터(Mock): 실제 리포트 생성 전의 한글 요약 예시입니다."}</p>
             </div>
-            <span className={`uxPill ${report ? "green" : "amber"}`}>{report ? "원문 보고서 발췌" : "예시 데이터"}</span>
+            <span className={`uxPill ${report ? "green" : "amber"}`}>{report ? "LIVE D1 VERIFIED" : "AWAITING REPORT GENERATION"}</span>
           </div>
           <div className="uxPreviewGrid">
             {livePreview.map((item) => (
@@ -1218,8 +1218,8 @@ function ToolChainEvidence() {
     <section className="uxPanel">
       <div className="uxPanelHead">
         <div>
-          <h2>에이전트 도구 체인 증거 (Tool Chain Evidence)</h2>
-          <p>각 Agent 역할별로 연동된 실제 외부 도구와 데이터 소스 맵입니다.</p>
+          <h2>계획된 도구 체인 아키텍처 (Planned Tool Chain Architecture)</h2>
+          <p>구현된 연결과 계획된 연결을 함께 설명하는 설계 맵입니다. 각 항목은 개별 런타임 검증 증거가 아닙니다.</p>
         </div>
         <LayoutList size={18} />
       </div>
@@ -1468,8 +1468,8 @@ export function EvaluationDashboardPage() {
     <main className="uxShell">
       <section className="uxHero compact">
         <span className="uxEyebrow">인터랙티브 평가 대시보드</span>
-        <h1>규칙 기반(Rule-based), 단일 LLM, 제안 Multi-Agent의 성능을 다양한 시각에서 검증합니다.</h1>
-        <p>상단의 시나리오 버튼을 클릭하면, 동일한 벤치마크 결과를 다른 목적(엄격도, 재현율, 시연 등)에 맞춰 해석하고 강조 지표를 변경합니다.</p>
+        <h1>통제된 T001-T003 증거와 시나리오 시뮬레이션을 구분하여 확인합니다.</h1>
+        <p>상단 버튼은 검증 결과를 추가 생성하지 않습니다. 프론트엔드 시나리오 시뮬레이션으로 표시 방식을 바꿉니다.</p>
         <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#b45309', fontWeight: 'bold' }}>
           * Claim Boundary: Controlled quantitative benchmark covers T001-T003 only. Expanded T001-T018 evidence remains partial and should not be interpreted as full 20-task validation.
         </p>
@@ -1480,13 +1480,14 @@ export function EvaluationDashboardPage() {
       <section className="uxPanel uxScenarioPanel">
         <div className="uxPanelHead">
           <div>
-            <h2>평가 해석 시나리오 (View Options)</h2>
+            <h2>Scenario Simulation (Not Live Data)</h2>
             <p><strong>{scenario.label}</strong>: {scenario.description}</p>
           </div>
           <div className="uxActions">
+            <span className="uxPill amber">SCENARIO SIMULATION</span>
             {evaluationScenarios.map((item) => (
               <button key={item.key} className={item.key === scenarioKey ? "uxButton" : "uxSoftButton"} type="button" onClick={() => setScenarioKey(item.key)}>
-                {item.label}
+                View Scenario Simulation: {item.label}
               </button>
             ))}
             <button className="uxSoftButton" type="button" onClick={() => loadBenchmarkMetrics(selectedRun)} disabled={loading} aria-label="새로고침">
@@ -1500,7 +1501,7 @@ export function EvaluationDashboardPage() {
         <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div className="uxMetricHeader" style={{ gridColumn: '1 / -1', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
             <h3 style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck size={16} /> Live Benchmark Metrics (D1 Evidence)
+              <ShieldCheck size={16} /> CONTROLLED T001-T003 Benchmark Metrics
             </h3>
           </div>
           <MetricTile label="Precision@5" value={benchmarkMetrics?.macroAverages.precision_at_k.toFixed(4) ?? "-"} detail="상위 추천 정확도" tone="green" />
@@ -1512,29 +1513,29 @@ export function EvaluationDashboardPage() {
         <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
           <div className="uxMetricHeader" style={{ gridColumn: '1 / -1', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
             <h3 style={{ fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <BarChart3 size={16} /> Scenario Interpretation (View Only)
+              <BarChart3 size={16} /> Scenario Simulation (Not Live Data)
             </h3>
           </div>
-          <MetricTile label="Scenario Score" value={(overall / 100).toFixed(2)} detail={`${scenario.label} 해석치`} tone="purple" />
+          <MetricTile label="Scenario Score" value={(overall / 100).toFixed(2)} detail={`${scenario.label} · NOT LIVE DATA`} tone="purple" />
           <MetricTile label="Hallucination" value={scenario.metrics.hallucinationRate} detail="가상 지표(해석용)" tone="amber" />
-          <MetricTile label="Completeness" value={scenario.metrics.reportCompleteness} detail="보고서 완성도" tone="purple" />
-          <MetricTile label="Avg Latency" value={scenario.metrics.avgLatency} detail="평균 소요 시간" tone="blue" />
+          <MetricTile label="Completeness" value={scenario.metrics.reportCompleteness} detail="시뮬레이션 표시값" tone="purple" />
+          <MetricTile label="Avg Latency" value={scenario.metrics.avgLatency} detail="시뮬레이션 표시값" tone="blue" />
         </div>
       </section>
 
       <section className="uxPanel">
         <div className="uxPanelHead">
           <div>
-            <h2>실시간 벤치마크 증거 (Live Benchmark Evidence)</h2>
-            <p>Production D1 데이터베이스에서 직접 서빙되는 런타임 검증 증거입니다.</p>
+            <h2>벤치마크 데이터 출처 (Benchmark Evidence Source)</h2>
+            <p>LIVE D1 VERIFIED와 CONTROLLED T001-T003 fallback을 명확히 구분합니다.</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {benchmarkMetrics?.source === "d1_benchmark_run" ? (
-              <span className="uxPill green">● D1 Benchmark Run Active</span>
+              <span className="uxPill green">LIVE D1 VERIFIED</span>
             ) : benchmarkMetrics?.source === "legacy_static_snapshot" ? (
-              <span className="uxPill amber">○ Legacy Fallback Active</span>
+              <span className="uxPill amber">CONTROLLED T001-T003</span>
             ) : (
-              <span className="uxPill red">Data Connection Failed</span>
+              <span className="uxPill red">NOT YET EXECUTED / CONNECTION FAILED</span>
             )}
           </div>
         </div>
@@ -1596,8 +1597,8 @@ export function EvaluationDashboardPage() {
               </div>
               <div className="uxSystemItem">
                 <strong>부분 확장 증거 (Partial)</strong>
-                <span>T001-T018 (90%)</span>
-                <small>전체 20-task 검증이 아닌 부분적 실행 증거임</small>
+                <span>LEGACY PARTIAL ARTIFACT</span>
+                <small>T001-T018 과거 부분 artifact이며 최종 검증이 아님. T019-T020 HTTP 503 실패 증거 유지.</small>
               </div>
               <div className="uxSystemItem">
                 <strong>인프라 제한 (Resource Limit)</strong>
@@ -1605,9 +1606,9 @@ export function EvaluationDashboardPage() {
                 <small>런타임 자원 한계로 인한 미완료 항목</small>
               </div>
               <div className="uxSystemItem">
-                <strong>데이터 속성 (Status)</strong>
-                <span>Live D1 Evidence</span>
-                <small>Legacy 정적 스냅샷에서 D1 기반으로 전환 완료</small>
+                <strong>확장 실행 상태</strong>
+                <span>PLANNED ONLY / NOT YET EXECUTED</span>
+                <small>T004-T006 artifact dry-run 및 T004-T020 전체 검증은 아직 실행되지 않음</small>
               </div>
             </div>
           </section>
@@ -1616,9 +1617,9 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>기준모형 성능 비교 (Baseline Evaluation)</h2>
-                <p>{benchmarkMetrics ? `${benchmarkMetrics.tasks || 3}개 통제 태스크(T001-T003) 기준 매크로 평균입니다.` : "예시 데이터(Mock): 실제 벤치마크 결과를 불러오기 전입니다."}</p>
+                <p>{benchmarkMetrics ? `${benchmarkMetrics.tasks || 3}개 통제 태스크(T001-T003) 기준 매크로 평균입니다.` : "MOCK BLUEPRINT / SCENARIO SIMULATION: 실제 벤치마크 결과를 불러오기 전입니다."}</p>
                 <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <label htmlFor="run-selector" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Run 선택:</label>
+                  <label htmlFor="run-selector" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Current Scope Limited:</label>
                   <select id="run-selector" value={selectedRun} onChange={handleRunChange} style={{ fontSize: '0.8rem', padding: '0.2rem' }}>
                     <option value="latest">최신 (Latest)</option>
                     {runs.map(run => (
@@ -1748,8 +1749,8 @@ export function EvaluationDashboardPage() {
           <section className="uxPanel">
             <div className="uxPanelHead">
               <div>
-                <h2>현재 시나리오 점수 (Score Breakdown)</h2>
-                <p>선택된 <strong>{scenario.label}</strong> 관점에서의 성능 평가치입니다.</p>
+                <h2>Scenario Simulation (Not Live Data)</h2>
+                <p>선택된 <strong>{scenario.label}</strong> 관점의 프론트엔드 시뮬레이션 표시값입니다.</p>
               </div>
               <span className="uxPill blue">{scenarioKey}</span>
             </div>
@@ -1768,7 +1769,7 @@ export function EvaluationDashboardPage() {
                 </div>
               ))}
             </div>
-            <small className="uxPanelNote">이 그래프는 벤치마크 데이터가 아닌 선택한 시나리오에 따른 기대 품질을 표시합니다.</small>
+            <small className="uxPanelNote">SCENARIO SIMULATION: 이 그래프는 LIVE D1 VERIFIED 벤치마크 결과가 아닌 프론트엔드 파생 표시값입니다.</small>
           </section>
 
           <CriticReviewPanel title="오류 분석 가이드" description="아래 항목을 클릭하면 주요 품질 저하 원인과 해결 방향을 확인합니다." onSelect={(item) => setMessage({ title: item.title, body: item.note })} />

@@ -16,6 +16,11 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## 2026-05-31 (codex)
+- Changed: Clarified dashboard benchmark claim boundaries across `apps/web/src/dashboard/DashboardPages.tsx`, `apps/web/src/dashboard/mockData.ts`, and `apps/web/src/main.tsx` with explicit live, controlled, legacy, mock, planned, and not-yet-executed labels. (codex)
+- Fixed: Made dashboard metric/workflow grids responsive and added safe wrapping for long identifiers in `apps/web/src/dashboard/dashboard.css`. (codex)
+- Docs: Recorded Phase 3H dashboard claim-boundary cleanup and its no-execution safety boundary in `docs/progress.md` and `docs/debug-log.md`. (codex)
+
 ## 2026-05-31 (gemini)
 - Docs: Added `docs/codex-handoff-phase-3d-dry-run-planning.md` for strategic transition. (gemini)
 - Docs: Recorded Phase 3C verification results in `docs/phase-3c-post-migration-verification.md` and updated progress. (gemini)

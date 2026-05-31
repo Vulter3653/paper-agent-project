@@ -237,7 +237,7 @@
 .uxMetrics {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   margin-bottom: 20px;
 }
 
@@ -426,7 +426,7 @@
 .uxSteps12 {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .uxStep {
@@ -527,6 +527,14 @@
 
 .uxPreviewGrid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.uxSystemItem span,
+.uxSystemItem small,
+.uxPanel p,
+.uxPanelNote {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .uxAgentGrid {

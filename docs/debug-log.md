@@ -611,3 +611,11 @@
 - Root cause: `wrangler.toml` referenced a Vectorize index that had not been created in the Cloudflare account yet.
 - Action: Ran `npx wrangler vectorize create paper-abstract-index --dimensions=384 --metric=cosine` to create the missing index.
 - Status: Resolved. Deploy should now succeed upon retry. (gemini)
+
+
+## 2026-05-31 - Phase 3H Dashboard Claim-Boundary Cleanup
+
+- Incident: Dashboard labels still exposed `T001-T018 (90%)` and scenario-derived score bars in a way that could be mistaken for completed validation or live benchmark evidence. (codex)
+- Fix: Reclassified T001-T018 as `LEGACY PARTIAL ARTIFACT`, added explicit `PLANNED ONLY / NOT YET EXECUTED` wording for T004-T006 and full T004-T020, and relabeled frontend-derived values as `Scenario Simulation (Not Live Data)`. (codex)
+- Fix: Added responsive dashboard grid tracks and safe wrapping for long source identifiers. (codex)
+- Verification boundary: No benchmark runner, execute wrapper, D1 command, migration, seed, or import was executed. (codex)

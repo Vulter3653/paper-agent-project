@@ -1569,3 +1569,12 @@ R2 object check:
 R2 -> paper-agent-outputs -> reports/<job_id>/papers.csv
 R2 -> paper-agent-outputs -> reports/<job_id>/report.md
 ```
+
+
+## 2026-05-31 - Phase 3H Dashboard Claim-Boundary Cleanup
+
+- Dashboard: Added explicit badges for LIVE D1 VERIFIED, CONTROLLED T001-T003, LEGACY PARTIAL ARTIFACT, MOCK BLUEPRINT, SCENARIO SIMULATION, PLANNED ONLY, and NOT YET EXECUTED states. (codex)
+- Dashboard: Relabeled T001-T018 as legacy partial artifact evidence, kept T019-T020 HTTP 503 failure visibility, and marked T004-T006 artifact dry-run plus full T004-T020 validation as not yet executed. (codex)
+- Dashboard: Separated frontend scenario simulation values from verified benchmark metrics and renamed internal allowlist, planned tool-chain architecture, report-generation waiting state, and English PDF engine-limitation actions. (codex)
+- Layout: Converted dashboard metric and workflow grids to responsive auto-fit tracks and added safe wrapping for long IDs, commits, and artifact text. (codex)
+- Safety: No benchmark runner, T004-T006 execute mode, D1 command, migration, seed, or import was executed during Phase 3H. (codex)

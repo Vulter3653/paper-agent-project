@@ -551,7 +551,7 @@ function ResearchDashboard() {
                 <button className="iconButton" onClick={downloadReport} disabled={!job} aria-label="Download Markdown report" title="Download Markdown report">
                   <FileText size={18} />
                 </button>
-                <button className="iconButton" onClick={downloadPdfReport} disabled={!job} aria-label="Download PDF report" title="Download PDF report">
+                <button className="iconButton" onClick={downloadPdfReport} disabled={!job} aria-label="Download English PDF (Engine Limitation)" title="Download English PDF (Engine Limitation)">
                   <Download size={18} />
                 </button>
                 <button className="iconButton" onClick={downloadCsv} disabled={!job} aria-label="Download CSV" title="Download CSV">
@@ -1069,7 +1069,7 @@ function ReportPreviewPanel({
     <section className="reportPreviewPanel">
       <div className="reportPreviewHeader">
         <div>
-          <h2>Report Preview</h2>
+          <h2>Report Preview {report ? null : <span className="uxPill amber">Awaiting Report Generation</span>}</h2>
           <p>{job ? (isCompleted ? `${sections.length || 0}개 섹션` : `대기 중: ${job.status}`) : "활성 job 없음"}</p>
         </div>
         <div className="panelActions">
@@ -1079,7 +1079,7 @@ function ReportPreviewPanel({
           <button className="iconButton" onClick={onDownload} disabled={!canLoad} aria-label="Download Markdown report" title="Download Markdown report">
             <FileText size={18} />
           </button>
-          <button className="iconButton" onClick={onPdfDownload} disabled={!canLoad} aria-label="Download PDF report" title="Download PDF report">
+          <button className="iconButton" onClick={onPdfDownload} disabled={!canLoad} aria-label="Download English PDF (Engine Limitation)" title="Download English PDF (Engine Limitation)">
             <Download size={18} />
           </button>
         </div>
@@ -1103,7 +1103,7 @@ function ReportPreviewPanel({
         ) : (
           <div className="reportPreviewEmpty">
             <Eye size={18} />
-            <span>{job ? "job 완료 후 report preview가 표시됩니다." : "report를 미리 보려면 job을 선택하거나 실행하세요."}</span>
+            <span>{job ? "Awaiting Report Generation: job 완료 후 report preview가 표시됩니다." : "Awaiting Report Generation: job을 선택하거나 실행하세요."}</span>
           </div>
         )}
       </div>

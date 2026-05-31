@@ -76,10 +76,10 @@ export type FeatureImplementationItem = {
 };
 
 export const implementationLegend: Array<{ status: FeatureImplementationStatus; label: string; detail: string }> = [
-  { status: "live", label: "실제 구현됨", detail: "실제 Worker/D1/R2/API 또는 배포된 기능과 연결됨" },
-  { status: "partial", label: "부분 구현", detail: "일부 실제 기능이 있으나 화면의 일부는 정적 데이터 또는 추가 연결 필요" },
-  { status: "mock", label: "예시 데이터", detail: "실제 결과가 아니며 API/DB 연결 전의 자리표시자" },
-  { status: "planned", label: "미구현", detail: "설계상 필요하지만 아직 코드/인프라 연결 전" }
+  { status: "live", label: "LIVE D1 VERIFIED", detail: "실제 Worker/D1/R2/API 또는 배포된 기능과 연결됨" },
+  { status: "partial", label: "PLANNED ONLY / PARTIAL", detail: "일부 실제 기능이 있으나 화면의 일부는 정적 데이터 또는 추가 연결 필요" },
+  { status: "mock", label: "MOCK BLUEPRINT", detail: "실제 결과가 아니며 API/DB 연결 전의 자리표시자" },
+  { status: "planned", label: "PLANNED ONLY", detail: "설계상 필요하지만 아직 코드/인프라 연결 전" }
 ];
 
 export const researchImplementationStatus: FeatureImplementationItem[] = [
@@ -88,7 +88,7 @@ export const researchImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Paper Detail", status: "live", evidence: "Crossref, Unpaywall, score breakdown 표시", next: "현재 Rule-based 비평 한정" },
   { feature: "Report Preview", status: "live", evidence: "GET /api/search-jobs/:id/report.md", next: "R2 저장 PDF/XLSX 다운로드 연동" },
   { feature: "12-step Workflow Panel", status: "live", evidence: "agent_traces API 실시간 연동 완료", next: "상세 로그 드릴다운 추가" },
-  { feature: "Top Journal Pool Panel", status: "partial", evidence: "내부 저널 allowlist 필터링 (S/A1급) 구현됨", next: "Future: External JCR/SCImago bibliometric enrichment (Planned)" },
+  { feature: "Internal Allowlist Filter Panel", status: "partial", evidence: "내부 저널 allowlist 필터링 (S/A1급) 구현됨", next: "Future: External JCR/SCImago bibliometric enrichment (Planned)" },
   { feature: "Literature Review Preview Cards", status: "mock", evidence: "미완성 Mock: 실제 Report Agent section 연결 전", next: "Report Agent section API 연결" }
 ];
 
@@ -192,11 +192,11 @@ export const systemStatuses: SystemStatus[] = [
   { name: "Google Drive", status: "부분 구현", detail: "OA PDF (Unpaywall) 업로드 경로 연결됨", tone: "amber" },
   { name: "Vectorize", status: "부분 구현", detail: "Opt-in experimental semantic ranking path", tone: "blue" },
   { name: "Remote MCP", status: "온라인", detail: "paper-agent-mcp /mcp", tone: "purple" },
-  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route; 18/20 partial evidence", tone: "amber" }
+  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route; legacy partial artifacts are NOT FINAL", tone: "amber" }
 ];
 
 export const criticReviews: CriticReviewItem[] = [
-  { title: "인접 저널 모호성", severity: "medium", note: "Top Journal Pool에는 없지만 Q1 인접 분야로 분류되어 rule-based critic 확인이 필요합니다." },
+  { title: "인접 저널 모호성", severity: "medium", note: "내부 allowlist에는 없지만 Q1 인접 분야로 분류되어 rule-based critic 확인이 필요합니다." },
   { title: "OA PDF 미확보", severity: "low", note: "PDF URL이 없으면 landing page와 metadata 기반 요약으로 대체합니다." },
   { title: "Metadata 불일치", severity: "high", note: "제목, 저자, 연도 불일치가 있으면 Crossref 재검증 후 제외 후보로 이동합니다." }
 ];
@@ -215,20 +215,20 @@ export const evaluationScenarios: EvaluationScenario[] = [
     key: "strict",
     label: "엄격한 통제 검증 (Strict)",
     description: "Gold label과 DOI 검증을 가장 엄격하게 비교하는 평가입니다. (T001-T003 통제 레이어 기준)",
-    limitation: "현재 T001-T018 부분 확장 결과를 전체 20-task 검증 완료로 과장해서는 안 됩니다.",
-    announcement: "본 평가는 오차율 0%를 목표로 하며, 제안 Multi-Agent가 단일 LLM 대비 환각(Hallucination) 없이 정확한 DOI 문헌을 추천함을 입증합니다.",
+    limitation: "LEGACY PARTIAL ARTIFACT T001-T018은 최종 검증이 아닙니다. T019-T020 실패 증거를 유지해야 합니다.",
+    announcement: "SCENARIO SIMULATION: 통제된 T001-T003 증거를 보수적으로 해석하는 프론트엔드 예시입니다. 전역 우위를 입증하지 않습니다.",
     metrics: {
-      precisionAt5: "0.1333",
-      doiAccuracy: "100.0%",
-      topJournalPrecision: "100.0%",
-      hallucinationRate: "0.0%",
-      reportCompleteness: "A+",
-      avgLatency: "1m 15s"
+      precisionAt5: "NOT LIVE DATA",
+      doiAccuracy: "NOT LIVE DATA",
+      topJournalPrecision: "NOT LIVE DATA",
+      hallucinationRate: "NOT LIVE DATA",
+      reportCompleteness: "SIMULATED",
+      avgLatency: "SIMULATED"
     },
     rows: [
-      { metric: "Precision@5", ruleBased: "0.1333", singleLlm: "0.6667", proposed: "0.1333", finding: "제안 방법론은 엄격한 검증을 통과한 문헌만 제공합니다." },
-      { metric: "NDCG@5", ruleBased: "0.3579", singleLlm: "0.9949", proposed: "0.3579", finding: "단일 LLM의 과대적합(환각 가능성)과 대비되는 보수적 성능입니다." },
-      { metric: "DOI Accuracy", ruleBased: "100.0%", singleLlm: "45.0%", proposed: "100.0%", finding: "Crossref 검증이 환각을 완벽히 차단합니다." }
+      { metric: "Precision@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 통제 증거 로드 전의 시각화 구조입니다." },
+      { metric: "NDCG@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 검증된 성능 비교가 아닙니다." },
+      { metric: "DOI Accuracy", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "Crossref 검증 경로를 설명하는 예시이며 전역 정확도 주장이 아닙니다." }
     ],
     bars: [
       { label: "Precision", value: 13 },
@@ -241,19 +241,19 @@ export const evaluationScenarios: EvaluationScenario[] = [
     label: "넓은 탐색 평가 (Broad Recall)",
     description: "연구 초기 단계에서 관련 후보 논문을 폭넓게 확보하는 능력을 봅니다.",
     limitation: "넓게 찾는 성능(Recall)이 최종 연구 인용 정확성(Precision)을 보장하지 않습니다.",
-    announcement: "제안 Multi-Agent 시스템은 제한된 키워드에서 벗어나 연관 주제까지 확장 탐색하여, 단일 방식보다 훨씬 풍부한 선행연구 풀을 제공합니다.",
+    announcement: "SCENARIO SIMULATION: 넓은 탐색 관점을 설명하는 프론트엔드 예시입니다. 검증된 성능 주장이 아닙니다.",
     metrics: {
-      precisionAt5: "0.4500",
-      doiAccuracy: "100.0%",
-      topJournalPrecision: "85.0%",
-      hallucinationRate: "0.0%",
-      reportCompleteness: "A",
-      avgLatency: "2m 10s"
+      precisionAt5: "NOT LIVE DATA",
+      doiAccuracy: "NOT LIVE DATA",
+      topJournalPrecision: "NOT LIVE DATA",
+      hallucinationRate: "NOT LIVE DATA",
+      reportCompleteness: "SIMULATED",
+      avgLatency: "SIMULATED"
     },
     rows: [
-      { metric: "Precision@5", ruleBased: "0.3000", singleLlm: "0.6667", proposed: "0.4500", finding: "의미 기반 탐색이 규칙 기반 방식의 한계를 보완합니다." },
-      { metric: "NDCG@5", ruleBased: "0.4500", singleLlm: "0.9949", proposed: "0.6500", finding: "다양한 분야의 유효한 논문이 랭킹에 포함되었습니다." },
-      { metric: "DOI Accuracy", ruleBased: "100.0%", singleLlm: "45.0%", proposed: "100.0%", finding: "범위를 넓혀도 Crossref 검증이 신뢰성을 유지합니다." }
+      { metric: "Precision@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 넓은 탐색 시나리오 구조입니다." },
+      { metric: "NDCG@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 검증된 랭킹 결과가 아닙니다." },
+      { metric: "DOI Accuracy", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "Crossref 경로의 계획된 해석 예시입니다." }
     ],
     bars: [
       { label: "Recall/Broad", value: 65 },
@@ -266,19 +266,19 @@ export const evaluationScenarios: EvaluationScenario[] = [
     label: "빠른 시연 평가 (Fast Demo)",
     description: "발표 시 제한된 시간 안에 시스템의 12단계 흐름을 보여주기 위한 빠른 설정입니다.",
     limitation: "시연용 성공 지표는 전체 20-task 벤치마크 성능과 다를 수 있습니다.",
-    announcement: "복잡한 학술 검색부터 보고서 산출까지의 전체 파이프라인(End-to-End)이 안정적으로 실행됨을 증명합니다.",
+    announcement: "SCENARIO SIMULATION: 발표 흐름을 설명하는 프론트엔드 예시입니다. 전체 파이프라인 검증 완료를 의미하지 않습니다.",
     metrics: {
-      precisionAt5: "0.2000",
-      doiAccuracy: "100.0%",
-      topJournalPrecision: "95.0%",
-      hallucinationRate: "0.0%",
-      reportCompleteness: "B+",
-      avgLatency: "35s"
+      precisionAt5: "NOT LIVE DATA",
+      doiAccuracy: "NOT LIVE DATA",
+      topJournalPrecision: "NOT LIVE DATA",
+      hallucinationRate: "NOT LIVE DATA",
+      reportCompleteness: "SIMULATED",
+      avgLatency: "SIMULATED"
     },
     rows: [
-      { metric: "Workflow 완료율", ruleBased: "100%", singleLlm: "Fail", proposed: "100%", finding: "빠른 시간 안에 전체 12단계를 모두 완수합니다." },
-      { metric: "응답 속도", ruleBased: "15s", singleLlm: "120s", proposed: "35s", finding: "Vectorize/LLM 캐싱을 통해 데모용 응답 속도를 확보합니다." },
-      { metric: "출력 안정성", ruleBased: "OK", singleLlm: "JSON Error", proposed: "OK", finding: "규칙 기반 폴백이 안정적인 데모 진행을 보장합니다." }
+      { metric: "Workflow 완료율", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 12단계 시연 구조이며 완료율 검증 결과가 아닙니다." },
+      { metric: "응답 속도", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 실제 latency 측정값이 아닙니다." },
+      { metric: "출력 안정성", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "계획된 fallback 설명이며 전체 안정성 검증 완료를 의미하지 않습니다." }
     ],
     bars: [
       { label: "Completion", value: 100 },
@@ -291,7 +291,7 @@ export const evaluationScenarios: EvaluationScenario[] = [
 export const evaluationRubrics: LiteraturePreviewItem[] = [
   { title: "Relevance", body: "사용자 연구 주제와 논문 초록, 이론, 방법론이 얼마나 직접 연결되는가?" },
   { title: "Validity", body: "논문이 실제 존재하며 DOI, 저널명, 저자, 연도가 정확히 검증되었는가?" },
-  { title: "저널 품질", body: "Q1, Top Journal Pool, FT50, ABS 등 품질 기준에 부합하는가?" },
+  { title: "저널 품질", body: "Q1, 내부 allowlist, FT50, ABS 등 품질 기준에 부합하는가?" },
   { title: "활용 가능성", body: "서론, 이론적 배경, 가설 개발, 변수 조작화에 활용 가능한가?" },
   { title: "Gap 명확성", body: "기존 연구와 사용자 연구의 차별점 및 research gap이 명확한가?" },
   { title: "근거 추적 가능성", body: "추천 이유와 점수 산출 근거가 검증 가능한 데이터에 기반하는가?" }

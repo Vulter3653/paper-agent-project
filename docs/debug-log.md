@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-31 - Evaluator Demo UX Enhancement
+- **Incident**: Previous dashboard versions lacked a structured narrative for evaluators, making it difficult to quickly grasp the agent architecture and the specific tools used.
+- **Resolution**:
+  - Added `EvaluatorDemoGuide` component to Evaluation Dashboard.
+  - Added `ToolChainEvidence` component providing a "transparency map" of the agent-tool relationship.
+  - Integrated CTA links to simplify navigation during a live demo.
+- **Verification**: Verified that all icons and links point to active routes. (gemini)
+
 ## 2026-05-31 - Evaluation Dashboard Reliability Improvement
 - **Incident**: The Evaluation Dashboard mixed live D1 evidence with hypothetical scenario interpretations, causing potential confusion about the system's current proven performance.
 - **Resolution**:

@@ -1,6 +1,17 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Evidence Link Integrity Fixed)
+Updated: 2026-05-31 (Evaluator Demo UX Enhanced)
+
+## 2026-05-31 (gemini) - Evaluator Demo UX Enhancement
+- **Summary**: Implemented a guided demo flow and multi-agent tool chain visualization on the Evaluation Dashboard to improve evaluator understanding. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - **Evaluator Demo Guide**: 5-step guided walkthrough integrated into the dashboard.
+  - **Tool Chain Evidence Panel**: Detailed mapping of agents to external tools (WoS, Crossref, Unpaywall, Drive, R2, D1, MCP).
+  - **Inter-Dashboard Navigation**: Added CTA buttons connecting Evaluation, Research, and Ops routes.
+  - **Claim Boundary Reinforcement**: Repeatedly emphasized the T001-T003 controlled boundary for quantitative accuracy.
+  - **README Update**: Added demo flow summary to the main documentation.
+- **Verification**: All dashboard components verified for responsive layout and link correctness. (gemini)
 
 ## 2026-05-31 (gemini) - Evidence Link Integrity Fix
 - **Summary**: Restored missing live benchmark evidence JSON files and the verification report in the `docs/` folder to ensure README links are valid. (gemini)

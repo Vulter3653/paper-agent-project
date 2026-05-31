@@ -148,6 +148,13 @@ Recommended names:
 
 주의: Worker 루트 경로 `https://paper-agent-project.shch3653.workers.dev/`는 `{ "error": "Not found" }`를 반환할 수 있습니다. 이는 오류가 아니며, 상태 확인은 `/api/health`와 `/api/diagnostics`를 기준으로 합니다.
 
+### 평가자 시연 가이드 (Evaluator Demo Flow)
+
+평가자는 다음 순서에 따라 시스템의 무결성과 Agent 동작을 검증할 수 있습니다:
+1. **평가 대시보드(Evaluation)**: D1 기반 실시간 벤치마크 증거 확인 및 모델별 정량 지표 비교.
+2. **연구 스튜디오(Research)**: 실제 키워드로 논문 검색 실행 및 12단계 파이프라인(Pipeline) 실시간 추적.
+3. **운영 대시보드(Ops)**: 에이전트별 도구 호출(Tool Call) 기록, D1/R2/Drive 저장 상태 및 검토 경고(Critic Flags) 감사.
+
 ## Required Secrets
 
 Never commit real credentials. Use `.env.example` as a template and set production secrets in Cloudflare.

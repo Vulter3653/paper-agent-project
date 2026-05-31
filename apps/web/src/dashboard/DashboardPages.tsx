@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, BarChart3, Cloud, FileText, Play, RefreshCw, ShieldCheck } from "lucide-react";
+import { Activity, ArrowRight, BarChart3, Cloud, FileText, LayoutList, Play, RefreshCw, Search, ShieldCheck, Terminal } from "lucide-react";
 import {
   agentStatuses,
   criticReviews,
@@ -1133,6 +1133,85 @@ function buildAutoReviewRows(metrics: BenchmarkMetrics | null) {
   return (["rule_based", "single_llm"] as const).map((method) => ({ method, label: methodLabel(method), data: byMethod[method] })).filter((item) => item.data);
 }
 
+function EvaluatorDemoGuide() {
+  const steps = [
+    { title: "Step 1: D1 Evidence", body: "Live Benchmark Evidence 패널에서 Production D1의 실시간 데이터 소스(Source, Commit, Timestamp)를 확인합니다.", icon: <ShieldCheck size={18} /> },
+    { title: "Step 2: Method Comparison", body: "Baseline Evaluation 테이블에서 Rule-based, Single-LLM 대비 제안 모델의 정량적 성능 지표를 비교합니다.", icon: <BarChart3 size={18} /> },
+    { title: "Step 3: Claim Boundary", body: "통제된 T001-T003 영역 외의 결과는 '부분적 증거'임을 인지하고, 과장되지 않은 기술적 한계를 검토합니다.", icon: <ShieldCheck size={18} className="amber" /> },
+    { title: "Step 4: Active Research", body: "Research Dashboard로 이동하여 실제 논문 검색을 수행하고 12단계 파이프라인의 동작을 확인합니다.", icon: <Search size={18} /> },
+    { title: "Step 5: Trace & Audit", body: "Ops Dashboard에서 각 Agent의 Tool Call 기록과 D1/R2/Drive에 저장된 실시간 산출물을 검수합니다.", icon: <Terminal size={18} /> }
+  ];
+
+  return (
+    <section className="uxPanel" style={{ background: '#f0f9ff', borderColor: '#bae6fd', marginBottom: '20px' }}>
+      <div className="uxPanelHead">
+        <div>
+          <h2 style={{ color: '#0369a1' }}>평가자 시연 가이드 (Evaluator Demo Guide)</h2>
+          <p style={{ color: '#075985' }}>시스템의 Agent 구조, 도구 활용, 벤치마크 증거를 확인하는 5단계 흐름입니다.</p>
+        </div>
+        <Play size={20} className="blue" />
+      </div>
+      <div className="uxImplementationGrid">
+        {steps.map((step, idx) => (
+          <article key={idx} className="uxImplementationItem" style={{ background: '#ffffff', borderColor: '#e0f2fe' }}>
+            <div style={{ marginBottom: '8px' }}>
+              <strong style={{ color: '#0369a1' }}>{step.title}</strong>
+              {step.icon}
+            </div>
+            <p style={{ fontSize: '0.8rem' }}>{step.body}</p>
+          </article>
+        ))}
+      </div>
+      <div className="uxActions" style={{ marginTop: '1.5rem', justifyContent: 'flex-start' }}>
+        <a className="uxButton" href="/dashboard/research" style={{ background: '#0284c7' }}>
+          <Search size={16} /> Run Paper Search
+        </a>
+        <a className="uxButton" href="/dashboard/ops" style={{ background: '#0369a1' }}>
+          <Activity size={16} /> Inspect Agent Trace
+        </a>
+        <a className="uxSoftButton" href="/dashboard/ops" style={{ borderColor: '#0ea5e9' }}>
+          <LayoutList size={16} /> View Output Artifacts
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function ToolChainEvidence() {
+  const chains = [
+    { agent: "Retriever Agent", tools: "Web of Science / OpenAlex", detail: "원천 논문 데이터 수집 및 Top Journal 필터링", icon: <Search size={16} /> },
+    { agent: "Verifier Agent", tools: "Crossref", detail: "DOI 존재 여부 및 공식 메타데이터 정합성 검증", icon: <ShieldCheck size={16} /> },
+    { agent: "Access Agent", tools: "Unpaywall", detail: "합법적 오픈액세스(OA) 여부 및 PDF 경로 확보", icon: <Cloud size={16} /> },
+    { agent: "Storage Agent", tools: "R2 / Google Drive", detail: "산출물 아카이빙 및 정적 리포트 물리 저장", icon: <FileText size={16} /> },
+    { agent: "Inspection Agent", tools: "MCP (Remote)", detail: "D1/R2 저장 데이터에 대한 외부 에이전트 검사", icon: <Terminal size={16} /> },
+    { agent: "Benchmark QA", tools: "D1 Evidence", detail: "실시간 벤치마크 메트릭 서빙 및 재현 증거 제공", icon: <BarChart3 size={16} /> }
+  ];
+
+  return (
+    <section className="uxPanel">
+      <div className="uxPanelHead">
+        <div>
+          <h2>에이전트 도구 체인 증거 (Tool Chain Evidence)</h2>
+          <p>각 Agent 역할별로 연동된 실제 외부 도구와 데이터 소스 맵입니다.</p>
+        </div>
+        <LayoutList size={18} />
+      </div>
+      <div className="uxSystemGrid">
+        {chains.map((chain, idx) => (
+          <div key={idx} className="uxSystemItem">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {chain.icon}
+              <strong>{chain.agent}</strong>
+            </div>
+            <span style={{ color: '#2563eb', margin: '4px 0', display: 'block' }}>{chain.tools}</span>
+            <small>{chain.detail}</small>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function EvaluationDashboardPage() {
   const [scenarioKey, setScenarioKey] = useState<EvaluationScenarioKey>("strict");
   const [benchmarkMetrics, setBenchmarkMetrics] = useState<BenchmarkMetrics | null>(null);
@@ -1268,7 +1347,12 @@ export function EvaluationDashboardPage() {
         <span className="uxEyebrow">인터랙티브 평가 대시보드</span>
         <h1>규칙 기반(Rule-based), 단일 LLM, 제안 Multi-Agent의 성능을 다양한 시각에서 검증합니다.</h1>
         <p>상단의 시나리오 버튼을 클릭하면, 동일한 벤치마크 결과를 다른 목적(엄격도, 재현율, 시연 등)에 맞춰 해석하고 강조 지표를 변경합니다.</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#b45309', fontWeight: 'bold' }}>
+          * Claim Boundary: Controlled quantitative benchmark covers T001-T003 only. Expanded T001-T018 evidence remains partial and should not be interpreted as full 20-task validation.
+        </p>
       </section>
+
+      <EvaluatorDemoGuide />
 
       <section className="uxPanel uxScenarioPanel">
         <div className="uxPanelHead">
@@ -1533,6 +1617,8 @@ export function EvaluationDashboardPage() {
               ))}
             </div>
           </section>
+
+          <ToolChainEvidence />
         </div>
 
         <aside className="uxStack">

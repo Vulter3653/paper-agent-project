@@ -16,6 +16,11 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## 2026-06-01 (gemini)
+- Benchmark: Executed staged artifact-only T013-T018 batch and recorded isolated CSV artifacts, checksums, and claim boundary documentation. (gemini)
+- Benchmark: Executed staged artifact-only T019-T020 batch after successful audit of Batch 2 and recorded isolated CSV artifacts, checksums, and claim boundary documentation. (gemini)
+- Docs: Updated Phase 3L staged expansion report, project progress, and debug log while preserving the T001-T003 quantitative claim boundary. (gemini)
+
 ## 2026-05-31 (codex)
 - Docs: Added `presentation/final-presentation-essential-content.md` as the authoritative claim-bounded deck content source for PPT redesign, Canva or 미리캔버스 input, oral defense, and final checklist review; clarified presentation artifact roles in `README.md`. (codex)
 - Docs: Generated and verified the claim-safe 14-slide submission deck at `presentation/final-paper-agent-benchmark-presentation.pptx`; linked it from `README.md` and retained the Markdown outline as the official speaker-notes source. (codex)

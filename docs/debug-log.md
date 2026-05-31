@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Phase 3M Staged T013-T020 Artifact Execution
+- **Event**: Successfully executed staged artifact batches for T013-T018 (run-003) and T019-T020 (run-004).
+- **Observation**: 100% task completion (8/8 tasks). No new HTTP 503 errors or runner timeouts observed during these isolated runs.
+- **Artifacts**: Confirmed creation of `proposed_agent_jobs.csv` and `proposed_agent_results.csv` in both run directories.
+- **Legacy Context**: Legacy HTTP 503 evidence for T019-T020 remains in `proposed_agent_debug.jsonl` history but is now superseded by current execution evidence for the artifact package.
+
 ## 2026-05-31 - Phase 3P-Step 2 PPTX Generator Template Cleanup
 - **Finding**: Existing PPTX candidates were outdated: one had 13 slides and a forbidden superiority phrase, while the prior generated deck had 19 slides and external template traces. (codex)
 - **Resolution**: Generated a new claim-safe deck through the PPTX MCP, removed the generator-added closing slide, replaced external template text, and verified a 14-slide output aligned with `presentation/final-presentation-outline.md`. (codex)

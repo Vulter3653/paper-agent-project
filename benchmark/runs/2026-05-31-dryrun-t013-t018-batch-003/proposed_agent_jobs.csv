@@ -1,0 +1,7 @@
+task_id,keyword,journal_category_id,job_id,status,current_step,source_result_count,allowed_result_count,paper_count,started_at,completed_at,error_message
+T013,privacy personalization tradeoff marketing,marketing,job-9d2259f7-9587-451b-82cd-97455a4ef9fc,completed,delivery,36,20,20,2026-05-31T17:31:56.919Z,2026-05-31T17:32:22.040Z,
+T014,FinTech adoption trust risk,information-systems,job-28c7f5ac-d212-4f21-800a-a0f90f04d904,completed,delivery,50,20,20,2026-05-31T17:32:25.746Z,2026-05-31T17:32:44.531Z,
+T015,blockchain supply chain transparency,operations,job-6dfcd53f-4878-4dc7-a895-cf14e28f2b83,completed,delivery,50,20,20,2026-05-31T17:32:53.064Z,2026-05-31T17:33:09.298Z,
+T016,AI decision support managerial judgment,information-systems,job-d21579b3-5cf1-4150-aa45-f78463697d20,completed,delivery,50,20,20,2026-05-31T17:33:20.339Z,2026-05-31T17:33:38.345Z,
+T017,diversity climate employee voice,organization-hr,job-47546da5-6c69-4cf5-a0bc-5fb23f9f50b1,completed,delivery,50,20,20,2026-05-31T17:33:47.563Z,2026-05-31T17:34:06.029Z,
+T018,organizational resilience crisis management,international-business,job-955a7648-0f68-4792-a5f7-3ba474bd7ccf,completed,delivery,50,20,20,2026-05-31T17:34:14.654Z,2026-05-31T17:34:32.280Z,

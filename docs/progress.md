@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 3C Verification Complete)
+Updated: 2026-06-01 (Phase 3M Staged T013-T020 Artifact Execution)
+
+## 2026-06-01 (gemini) - Phase 3M Staged T013-T020 Artifact Execution
+
+- **Status**: Executed staged artifact-only batches for T013-T018 (Batch 2) and T019-T020 (Batch 3).
+- **Evidence Boundary**: This completes isolated artifact coverage for the remaining tasks. It does not establish full T004-T020 benchmark validation as results are not merged into controlled metrics.
+- **Results**: T013-T018 generated 120 result rows (6/6 completed); T019-T020 generated 40 result rows (2/2 completed).
+- **Artifacts**: Batch 2 (run-003) and Batch 3 (run-004) CSV files recorded in isolated untracked directories with SHA256 checksums documented in the Phase 3L report.
+- **Safety Boundary**: No D1 command, migration, seed, import, gold-label edit, controlled T001-T003 overwrite, or T004-T006 overwrite was performed.
+- **Remaining Gaps**: D1 batch-aware persistence remains incomplete. Controlled quantitative comparison remains limited to T001-T003.
 
 ## 2026-05-31 (codex) - Phase 3P-Step 2B Authoritative Presentation Markdown
 - **Status**: Added `presentation/final-presentation-essential-content.md` as the concise, claim-bounded content source of truth for any future visual deck redesign. (codex)

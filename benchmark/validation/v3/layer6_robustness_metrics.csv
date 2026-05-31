@@ -1,0 +1,6 @@
+metric_name,value,status,numerator,denominator,notes
+negative_distractor_false_positive_rate,placeholder_only,SKIPPED,,,"Negative distractors exist but are placeholders (e.g., pending_negative_example)."
+hallucination_rate,0.4181,WARN,143,342,This hallucination rate is artifact-derived and does not perform fresh external paper verification. Risk candidates include unverified or mismatch status rows.
+timeout_rate,0.0588,PASS,1,17,Detected 1 timeouts and 0 resource failures across 17 recorded jobs. Legacy HTTP 503/resource-limit evidence remains preserved as prior context.
+latency_per_task,33.25,INFO,565,17,Average latency of 33.25s per job. Based on 17 jobs with valid timestamps. 0 jobs missing timing data.
+cost_proxy,"job_count_proxy: 17, row_count_proxy: 342",INFO,342,17,Estimated cost proxy based on 17 jobs and 342 result rows. USD cost not available in current artifacts. Token counts not found in logs.

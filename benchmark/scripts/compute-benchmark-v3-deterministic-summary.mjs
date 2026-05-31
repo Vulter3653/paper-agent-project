@@ -10,7 +10,8 @@ const LAYER_FILES = [
   path.join(VALIDATION_DIR, 'layer1_foundation_metrics_summary.json'),
   path.join(VALIDATION_DIR, 'layer2_schema_metrics_summary.json'),
   path.join(VALIDATION_DIR, 'layer3_validity_metrics_summary.json'),
-  path.join(VALIDATION_DIR, 'layer4_retrieval_metrics_summary.json')
+  path.join(VALIDATION_DIR, 'layer4_retrieval_metrics_summary.json'),
+  path.join(VALIDATION_DIR, 'layer6_robustness_metrics_summary.json')
 ];
 
 function stringifyCsv(data) {
@@ -39,10 +40,6 @@ async function computeSummary() {
       if (data.metrics) {
         allMetrics.push(...data.metrics);
       } else if (data.method_summary) {
-        // For Layer 4, we might want to include the mean metrics from the method summary
-        // However, the unified summary usually wants a flat list of metrics.
-        // Let's adapt Layer 4 summary JSON to also have a 'metrics' array for compatibility if needed,
-        // or handle it here by extracting key mean metrics.
         const methods = Object.keys(data.method_summary);
         if (methods.includes('proposed_agent')) {
           const stats = data.method_summary['proposed_agent'];
@@ -63,13 +60,13 @@ async function computeSummary() {
     benchmark_standard: 'v3',
     scope: 'T001-T020',
     computed_layers: layersInfo,
-    not_computed_layers: ['Layer 5', 'Layer 6'].filter(l => !layersInfo.includes(l)),
+    not_computed_layers: ['Layer 5: Semantic Quality'].filter(l => !layersInfo.includes(l)),
     human_evaluation: false,
     llm_judge_executed: false,
     benchmark_execution_performed: false,
     artifact_rows_modified: false,
-    validation_status: layersInfo.includes('Layer 4: Retrieval Accuracy') ? 'deterministic_layer_1_4_computed' : 'deterministic_layer_1_3_computed',
-    claim_boundary: 'Layer 1-4 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5-6 and all required gates pass.',
+    validation_status: layersInfo.includes('Layer 6: Robustness & Risk') ? 'deterministic_layer_1_4_6_computed' : 'deterministic_layer_1_4_computed',
+    claim_boundary: 'Layer 1-4 and Layer 6 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5 and all required gates pass. Baseline parity remains partial.',
     metrics: allMetrics,
     generated_at: new Date().toISOString()
   };
@@ -91,6 +88,7 @@ async function computeSummary() {
       'benchmark/scripts/compute-layer2-schema-v3.mjs',
       'benchmark/scripts/compute-layer3-validity-v3.mjs',
       'benchmark/scripts/compute-layer4-retrieval-v3.mjs',
+      'benchmark/scripts/compute-layer6-robustness-v3.mjs',
       'benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs'
     ],
     metric_spec_file: 'benchmark/metric_spec_v3.json',

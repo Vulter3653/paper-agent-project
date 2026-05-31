@@ -5,18 +5,18 @@
     "Layer 1",
     "Layer 2",
     "Layer 3",
-    "Layer 4: Retrieval Accuracy"
+    "Layer 4: Retrieval Accuracy",
+    "Layer 6: Robustness & Risk"
   ],
   "not_computed_layers": [
-    "Layer 5",
-    "Layer 6"
+    "Layer 5: Semantic Quality"
   ],
   "human_evaluation": false,
   "llm_judge_executed": false,
   "benchmark_execution_performed": false,
   "artifact_rows_modified": false,
-  "validation_status": "deterministic_layer_1_4_computed",
-  "claim_boundary": "Layer 1-4 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5-6 and all required gates pass.",
+  "validation_status": "deterministic_layer_1_4_6_computed",
+  "claim_boundary": "Layer 1-4 and Layer 6 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5 and all required gates pass. Baseline parity remains partial.",
   "metrics": [
     {
       "metric_name": "reproducibility_manifest_completeness",
@@ -117,7 +117,47 @@
       "metric_name": "mrr",
       "value": "0.1684",
       "details": "Proposed Agent mean"
+    },
+    {
+      "metric_name": "negative_distractor_false_positive_rate",
+      "value": "placeholder_only",
+      "status": "SKIPPED",
+      "numerator": 0,
+      "denominator": 0,
+      "notes": "Negative distractors exist but are placeholders (e.g., pending_negative_example)."
+    },
+    {
+      "metric_name": "hallucination_rate",
+      "value": "0.4181",
+      "status": "WARN",
+      "numerator": 143,
+      "denominator": 342,
+      "notes": "This hallucination rate is artifact-derived and does not perform fresh external paper verification. Risk candidates include unverified or mismatch status rows."
+    },
+    {
+      "metric_name": "timeout_rate",
+      "value": "0.0588",
+      "status": "PASS",
+      "numerator": 1,
+      "denominator": 17,
+      "notes": "Detected 1 timeouts and 0 resource failures across 17 recorded jobs. Legacy HTTP 503/resource-limit evidence remains preserved as prior context."
+    },
+    {
+      "metric_name": "latency_per_task",
+      "value": "33.25",
+      "status": "INFO",
+      "numerator": 565,
+      "denominator": 17,
+      "notes": "Average latency of 33.25s per job. Based on 17 jobs with valid timestamps. 0 jobs missing timing data."
+    },
+    {
+      "metric_name": "cost_proxy",
+      "value": "job_count_proxy: 17, row_count_proxy: 342",
+      "status": "INFO",
+      "numerator": 342,
+      "denominator": 17,
+      "notes": "Estimated cost proxy based on 17 jobs and 342 result rows. USD cost not available in current artifacts. Token counts not found in logs."
     }
   ],
-  "generated_at": "2026-05-31T19:27:36.773Z"
+  "generated_at": "2026-05-31T19:35:06.460Z"
 }

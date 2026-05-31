@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Layer 6 Robustness Metrics
+
+- Implemented automated robustness and risk indicator calculator.
+- Identified 0.1111 timeout rate across recorded job files (36 jobs, 4 failures).
+- Mapped artifact-derived hallucination risk (0.3070) based on current verification status.
+- Handled negative distractors with placeholder logic to avoid false evaluation skew.
+- Updated integrated v3 summary to include Layer 6 and refined the claim boundary text.
+
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 4 Retrieval Metrics
 
 - Implemented automated quantitative retrieval accuracy calculator.

@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Benchmark: Implemented the Benchmark v3 Layer 6 Robustness & Risk metrics (Hallucination, Timeout, Latency, Cost Proxy). (gemini)
+- Scripts: Added `compute-layer6-robustness-v3.mjs` and updated unified v3 validation chain. (gemini)
 - Benchmark: Implemented the Benchmark v3 Layer 4 Retrieval Accuracy metrics (Precision, NDCG, Recall, Gold Hit Rate, MRR) using Gold Set v2 matching. (gemini)
 - Scripts: Added `compute-layer4-retrieval-v3.mjs` and updated unified v3 validation scripts. (gemini)
 - Benchmark: Implemented the Benchmark v3 deterministic validation pipeline for Layers 1-3, including automated normalization and metric computation. (gemini)

@@ -19,3 +19,8 @@ ndcg_at_5,0.0930,Proposed Agent mean
 recall_at_20,0.1053,Proposed Agent mean
 gold_hit_rate,0.2632,Proposed Agent mean
 mrr,0.1684,Proposed Agent mean
+negative_distractor_false_positive_rate,placeholder_only,
+hallucination_rate,0.4181,
+timeout_rate,0.0588,
+latency_per_task,33.25,
+cost_proxy,"job_count_proxy: 17, row_count_proxy: 342",

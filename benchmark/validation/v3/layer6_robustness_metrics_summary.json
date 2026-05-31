@@ -1,0 +1,72 @@
+{
+  "benchmark_standard": "v3",
+  "layer": "Layer 6: Robustness & Risk",
+  "metrics_computed": [
+    "negative_distractor_false_positive_rate",
+    "hallucination_rate",
+    "timeout_rate",
+    "latency_per_task",
+    "cost_proxy"
+  ],
+  "scope": "T001-T020",
+  "input_files": [
+    "benchmark/validation/v3/normalized_results_t001_t020.csv",
+    "benchmark/gold_label_schema_v2.csv",
+    "benchmark/runs/2026-05-31-dryrun-t004-t006-batch-001/proposed_agent_jobs.csv",
+    "benchmark/runs/2026-05-31-dryrun-t007-t012-batch-002/proposed_agent_jobs.csv",
+    "benchmark/runs/2026-05-31-dryrun-t013-t018-batch-003/proposed_agent_jobs.csv",
+    "benchmark/runs/2026-05-31-dryrun-t019-t020-batch-004/proposed_agent_jobs.csv"
+  ],
+  "output_files": [
+    "benchmark/validation/v3/layer6_robustness_metrics.csv",
+    "benchmark/validation/v3/layer6_robustness_metrics_summary.json"
+  ],
+  "human_evaluation": false,
+  "llm_judge_executed": false,
+  "benchmark_execution_performed": false,
+  "artifact_rows_modified": false,
+  "claim_boundary": "Layer 6 robustness/risk metrics are computed from existing artifacts. Some values may be artifact-derived proxies where fresh external verification or usage telemetry is unavailable.",
+  "metrics": [
+    {
+      "metric_name": "negative_distractor_false_positive_rate",
+      "value": "placeholder_only",
+      "status": "SKIPPED",
+      "numerator": 0,
+      "denominator": 0,
+      "notes": "Negative distractors exist but are placeholders (e.g., pending_negative_example)."
+    },
+    {
+      "metric_name": "hallucination_rate",
+      "value": "0.4181",
+      "status": "WARN",
+      "numerator": 143,
+      "denominator": 342,
+      "notes": "This hallucination rate is artifact-derived and does not perform fresh external paper verification. Risk candidates include unverified or mismatch status rows."
+    },
+    {
+      "metric_name": "timeout_rate",
+      "value": "0.0588",
+      "status": "PASS",
+      "numerator": 1,
+      "denominator": 17,
+      "notes": "Detected 1 timeouts and 0 resource failures across 17 recorded jobs. Legacy HTTP 503/resource-limit evidence remains preserved as prior context."
+    },
+    {
+      "metric_name": "latency_per_task",
+      "value": "33.25",
+      "status": "INFO",
+      "numerator": 565,
+      "denominator": 17,
+      "notes": "Average latency of 33.25s per job. Based on 17 jobs with valid timestamps. 0 jobs missing timing data."
+    },
+    {
+      "metric_name": "cost_proxy",
+      "value": "job_count_proxy: 17, row_count_proxy: 342",
+      "status": "INFO",
+      "numerator": 342,
+      "denominator": 17,
+      "notes": "Estimated cost proxy based on 17 jobs and 342 result rows. USD cost not available in current artifacts. Token counts not found in logs."
+    }
+  ],
+  "generated_at": "2026-05-31T19:35:05.627Z"
+}

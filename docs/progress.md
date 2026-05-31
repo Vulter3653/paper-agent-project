@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark v3 Layer 4 Retrieval Metrics)
+Updated: 2026-06-01 (Benchmark v3 Layer 6 Robustness Metrics)
+
+## 2026-06-01 (gemini) - Benchmark v3 Layer 6 Robustness Metrics
+
+- **Status**: Implemented the Benchmark v3 Layer 6 Robustness & Risk metric calculator.
+- **Scope**: Computed Hallucination Rate, Timeout Rate, Latency per Task, and Cost Proxy from existing normalized artifacts and job logs.
+- **Pipeline**: Added `compute-layer6-robustness-v3.mjs` and updated the unified summary/check scripts to include Layer 6.
+- **Outputs**: Generated `layer6_robustness_metrics.csv` and updated summary JSON in `benchmark/validation/v3/`.
+- **Claim Boundary**: Verified that Layer 6 metrics are artifact-derived. Timeout rate (11%) and Hallucination risk (30%) are documented as baseline context for artifact-only data.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 4 Retrieval Metrics
 

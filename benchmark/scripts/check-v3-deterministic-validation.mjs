@@ -10,6 +10,8 @@ const FILES_TO_CHECK = [
   'layer4_retrieval_metrics_by_task.csv',
   'layer4_retrieval_metrics_by_method.csv',
   'layer4_retrieval_metrics_summary.json',
+  'layer6_robustness_metrics.csv',
+  'layer6_robustness_metrics_summary.json',
   'benchmark_v3_deterministic_metrics_summary.json',
   'reproducibility_manifest_t001_t020.json'
 ];
@@ -46,8 +48,13 @@ async function checkValidation() {
     process.exit(1);
   }
 
-  if (summary.not_computed_layers.includes('Layer 4')) {
-    console.error('Summary incorrectly includes Layer 4 in not_computed_layers');
+  if (!summary.computed_layers.includes('Layer 6: Robustness & Risk')) {
+    console.error('Summary missing Layer 6 in computed_layers');
+    process.exit(1);
+  }
+
+  if (summary.not_computed_layers.includes('Layer 6')) {
+    console.error('Summary incorrectly includes Layer 6 in not_computed_layers');
     process.exit(1);
   }
 

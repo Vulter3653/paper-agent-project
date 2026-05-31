@@ -20,11 +20,12 @@
 - `layer3_validity_metrics.csv`: Deterministic validity (DOI match, Existence, Journal pool).
 - `layer4_retrieval_metrics_by_task.csv`: Quantitative retrieval performance per task.
 - `layer4_retrieval_metrics_by_method.csv`: Aggregated retrieval performance per method.
-- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4.
+- `layer6_robustness_metrics.csv`: System stability and risk indicators.
+- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4 and 6.
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
 ## 4. Claim Boundary
-Layer 1-4 metrics are computed from existing artifacts. This does not constitute full T001-T020 benchmark validation because Layer 5 Semantic Quality and Layer 6 Robustness & Risk remain uncomputed.
+Layer 1-4 and Layer 6 metrics are computed from existing artifacts. This does not constitute full T001-T020 benchmark validation because Layer 5 Semantic Quality remains uncomputed and baseline parity remains partial.
 
 T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 are correctly labeled as "artifact_only" to prevent overclaiming.
 
@@ -47,5 +48,16 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 - Comparative claims are limited if baseline parity remains PARTIAL.
 - **Proposed Agent Mean P@5**: 0.1333 (for T001-T003)
 - **Proposed Agent Mean NDCG@5**: 0.3579 (for T001-T003)
+
+## 7. Layer 6 Robustness & Risk Metrics
+
+- Computed from existing artifacts and logs.
+- Metrics: Negative Distractor False Positive Rate, Hallucination Rate, Timeout Rate, Latency per Task, Cost Proxy.
+- No benchmark rerun was performed.
+- No LLM judge was executed.
+- Some metrics may be artifact-derived proxies where fresh external verification or usage telemetry is unavailable.
+- **Artifact-derived Hallucination Risk**: 0.3070 (Rows lacking verified status or gold DOI match).
+- **Timeout Rate**: 0.1111 (Based on recorded job artifacts).
+- **Latency per Task**: ~204.60s (Average for successfully recorded jobs).
 
 (gemini)

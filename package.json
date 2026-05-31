@@ -47,9 +47,10 @@
     "benchmark:v3:layer2": "node benchmark/scripts/compute-layer2-schema-v3.mjs",
     "benchmark:v3:layer3": "node benchmark/scripts/compute-layer3-validity-v3.mjs",
     "benchmark:v3:layer4": "node benchmark/scripts/compute-layer4-retrieval-v3.mjs",
+    "benchmark:v3:layer6": "node benchmark/scripts/compute-layer6-robustness-v3.mjs",
     "benchmark:v3:summary": "node benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs",
     "benchmark:v3:check": "node benchmark/scripts/check-v3-deterministic-validation.mjs",
-    "benchmark:v3:deterministic": "npm run benchmark:v3:normalize && npm run benchmark:v3:layer1 && npm run benchmark:v3:layer2 && npm run benchmark:v3:layer3 && npm run benchmark:v3:layer4 && npm run benchmark:v3:summary && npm run benchmark:v3:check"
+    "benchmark:v3:deterministic": "npm run benchmark:v3:normalize && npm run benchmark:v3:layer1 && npm run benchmark:v3:layer2 && npm run benchmark:v3:layer3 && npm run benchmark:v3:layer4 && npm run benchmark:v3:layer6 && npm run benchmark:v3:summary && npm run benchmark:v3:check"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

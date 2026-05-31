@@ -31,11 +31,11 @@
 | Google Drive archive | **Partial** | OA PDF 가용 시 자동 아카이빙 지원. |
 | External Enrichment | **Planned** | JCR/SCImago 등 외부 API 연동은 계획 단계. |
 | Benchmark controlled layer | **Live** | T001-T003 기반 자동 평가 스크립트. |
-| Partial expanded evidence | **Live** | T001-T018 실행 완료 및 결과 보존. |
+| Legacy partial artifacts | **Legacy / Not Final** | T001-T018 과거 부분 artifact만 보존. T004-T006 artifact dry-run 미실행, 전체 T004-T020 검증 미완료. |
 
 ## 3. Claim Boundary Audit
 
-- [x] **20개 태스크 전체 실행 완료 아님**: 18/20 성공 및 인프라 제한(HTTP 503)으로 인한 부분 증거(Partial Evidence)임을 문서에 명시함.
+- [x] **20개 태스크 전체 실행 완료 아님**: Legacy T001-T018 부분 artifact는 최종 검증이 아니며, T019-T020 인프라 제한 / HTTP 503 증거를 유지함.
 - [x] **Vectorize/LLM Critic 기본값 아님**: 두 기능 모두 "실험적(Experimental)" 및 "옵트인(Opt-in)"임을 UI 및 문서에서 명확히 함.
 - [x] **외부 지표(JCR 등) 미연동**: 현재는 내부 비즈니스 스쿨 리스트 기반 필터링만 수행됨을 명시함.
 - [x] **인간 학술 검토 대체 아님**: 시스템은 보조 도구이며 최종 검토는 인간의 영역임을 강조함.
@@ -44,7 +44,7 @@
 ## 4. Benchmark Audit
 
 - **Controlled Layer**: T001-T003이 핵심 비교 레이어로 유지됨.
-- **Expanded Evidence**: T001-T018 결과가 보존되어 있으며, T019-T020의 실패 원인이 CPU/메모리 제한임을 기록함.
+- **Expanded Evidence**: Legacy T001-T018 부분 artifact가 보존되어 있으며 최종 검증으로 사용하지 않음. T019-T020의 CPU/메모리 제한 및 HTTP 503 증거를 유지함.
 - **Data Protection**: `benchmark/` 내 보호 파일들이 오버라이트되지 않았음을 `git status` 및 `diff`로 확인.
 - **Gold/Baseline Integrity**: `npm run benchmark:audit-gold`를 통해 무결성 검증 완료.
 

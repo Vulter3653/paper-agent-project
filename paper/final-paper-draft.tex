@@ -67,7 +67,7 @@ Single-LLM (Baseline) & 0.6667 & 0.9949 & 0.9333 & 1.0000 \\
 \caption{Benchmark results for T001--T003 controlled layer. Evidence supports top-journal compliance and DOI integrity.}
 \end{table*}
 
-The Single-LLM baseline shows higher exact overlap with gold labels because it is repository-grounded and biased toward well-known papers. The Proposed Multi-Agent and Rule-based rows both report 100\% top-journal precision in this sample. While the expanded 18/20 task set confirms 90\% success in runtime completion, we define this as \textbf{Partial Evidence} only, as complete 20-task evaluation was constrained by Cloudflare Worker CPU limits.
+The Single-LLM baseline shows higher exact overlap with gold labels because it is repository-grounded and biased toward well-known papers. The Proposed Multi-Agent and Rule-based rows both report 100\% top-journal precision in the controlled T001--T003 sample only. Legacy T001--T018 partial artifacts are not final validation. The T004--T006 artifact dry-run has not yet executed, full T004--T020 validation remains incomplete, and T019--T020 resource-limit / HTTP 503 evidence remains visible.
 
 \section{Limitations and Ethics}
 
@@ -75,6 +75,6 @@ While Paper Agent improves traceability, it introduces ``Algorithmic Gatekeeping
 
 \section{Conclusion and Reproducibility}
 
-Paper Agent demonstrates that academic discovery can be automated without sacrificing transparency. By delivering a 12-stage auditable pipeline on Cloudflare, we prove that ``White-box'' research is feasible even under resource constraints. Future work will address the 18/20 evidence gap by optimizing Worker CPU usage and scaling to larger bibliometric quotas.
+Paper Agent demonstrates that academic discovery can be automated without sacrificing transparency. By delivering a 12-stage auditable pipeline on Cloudflare, we show that ``White-box'' research workflows are feasible even under resource constraints. Future work will execute the gated artifact dry-run, implement D1 batch-aware persistence, and evaluate the full T004--T020 scope without hiding T019--T020 resource-limit evidence.
 
 \end{document}

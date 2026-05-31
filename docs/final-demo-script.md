@@ -26,9 +26,9 @@
 - **Start**: Navigate to the Evaluation Dashboard (`/dashboard/evaluation`).
 - **Narration**: "We evaluate our rigor using 'Paper-Agent-Bench'. Here we compare our Multi-Agent approach against Rule-based and Single-LLM baselines."
 - **Action**: Show the comparison table for T001-T003.
-- **Narration**: "While naive AI might show high popularity-based relevance, Paper Agent ensures 100% Top-Journal Precision and DOI integrity. Our goal isn't just more results, but more *trustworthy* results."
-- **Action**: Mention the **Partial Expanded Evidence** (T001-T018, 90% success) and the T019-T020 infrastructure failure.
-- **Narration**: "We've demonstrated 18/20 success across tasks, with the final tasks hitting platform resource limits—proving that academic rigor also requires robust infrastructure."
+- **Narration**: "The controlled T001-T003 comparison reports metadata-integrity and journal-compliance measurements for that limited scope only. Our goal is traceable evidence, not a global performance claim."
+- **Action**: Mention that **Legacy T001-T018 Partial Artifacts are not final validation**, while keeping the T019-T020 resource-limit / HTTP 503 evidence visible.
+- **Narration**: "The verified comparison remains limited to controlled T001-T003 evidence. The T004-T006 artifact dry-run has not yet executed, and full T004-T020 validation remains incomplete."
 
 ## 5. Synthesis & Deliverables (1 minute)
 - **Action**: Click the **Download PDF Report** button.

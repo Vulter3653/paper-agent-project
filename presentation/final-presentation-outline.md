@@ -43,8 +43,9 @@ Show the Cloudflare stack:
 
 - 20 tasks, DOI-backed gold labels, repository-controlled artifacts.
 - Primary evaluation: **T001-T003 Controlled Comparison**.
-- Expanded evaluation: **T001-T018 Partial Expanded Evidence** (90% success).
-- Note: T019-T020 failed due to infrastructure resource limits (HTTP 503).
+- Legacy artifacts: **T001-T018 Partial Artifacts (Not Final Validation)**.
+- Current execution boundary: T004-T006 artifact dry-run is not yet executed; full T004-T020 validation remains incomplete.
+- Note: T019-T020 resource-limit / HTTP 503 evidence remains visible.
 
 ## Slide 7 - Results: Quality over Popularity
 
@@ -64,7 +65,7 @@ Map failure modes to accountability:
 
 - **Selection Bias**: Our journal allowlist introduces gatekeeping bias.
 - **Planned Enrichment**: External bibliometric API (JCR/SCImago) enrichment is planned.
-- Provider quotas affect retrieval depth; 18/20 evidence highlights resource constraints.
+- Provider quotas affect retrieval depth; legacy T001-T018 partial artifacts and T019-T020 HTTP 503 evidence document the remaining resource constraints.
 
 ## Slide 10 - Conclusion
 

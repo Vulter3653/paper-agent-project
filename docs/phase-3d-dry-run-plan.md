@@ -20,7 +20,7 @@ The verified live controlled benchmark remains T001-T003 only.
 - Controlled comparison row count: `9`
 - Production D1 migration `0007_add_benchmark_batch_columns.sql`: applied and verified
 
-Legacy isolated expanded artifacts may mention T001-T018 or 18/20 partial outcomes, but they are not equivalent to a new Production D1 batch orchestration run.
+Legacy isolated expanded artifacts may mention T001-T018 partial outcomes, but they are not equivalent to a new Production D1 batch orchestration run or final validation.
 
 T001-T018 partial legacy evidence must not be described as completed full validation.
 

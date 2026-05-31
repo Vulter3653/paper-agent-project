@@ -72,8 +72,9 @@ Business-school literature review는 고도의 엄밀성이 요구되나, 현재
 ## [content] Paper-Agent-Bench
 
 - **Primary**: T001-T003 Controlled Comparison Layer (High fidelity)
-- **Expanded**: T001-T018 **Partial Expanded Evidence** (90% success)
-- **Failure**: T019-T020 Resource limit (Cloudflare 503)
+- **Legacy Artifact**: T001-T018 **Partial Artifacts (Not Final Validation)**
+- **Not Yet Executed**: T004-T006 artifact dry-run; full T004-T020 validation
+- **Failure Evidence Kept Visible**: T019-T020 Resource limit (Cloudflare 503)
 - **Integrity**: DOI 기반 Gold Label 매칭 및 자동 감사 스크립트 실행
 
 ## [content] Results: Proposed vs Single-LLM
@@ -81,7 +82,7 @@ Business-school literature review는 고도의 엄밀성이 요구되나, 현재
 T001-T003 제어 레이어 결과:
 - **Proposed Agent**: **100% Top-Journal Precision**, 100% DOI Presence
 - **Single-LLM**: 높은 Overlap을 보이나 품질 준수율(93%) 및 실시간 검색 실행력 부재
-- **Core Claim**: 본 시스템은 18/20 수준의 확장성을 증명함과 동시에, **검증 가능한 학술 워크플로우를 기록하고 강제**합니다.
+- **Core Claim**: 통제된 T001-T003 비교 증거 범위에서 메타데이터 검증과 감사 가능한 학술 워크플로우를 설명합니다. 전역 성능 우위나 전체 검증 완료를 주장하지 않습니다.
 
 ## [divider] 6. Limitations And Ethics
 

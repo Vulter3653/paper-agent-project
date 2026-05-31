@@ -245,7 +245,7 @@ Updated: 2026-05-31 (Phase 3C Verification Complete)
 - **Evaluation Scenarios**: Updated the Evaluation dashboard to make scenarios (Strict, Broad Recall, Fast Demo) interactive. Clicking a scenario now dynamically updates the descriptive text, highlighted metrics, and interpretation messages, clarifying that these are analytical views on the static benchmark snapshot rather than new execution runs.
 - **Report Preview Refinement**: Renamed sections in the Report Preview panel (e.g., 'Executive Summary' to '전체 요약') and added descriptive tooltips. Added a disclaimer that the actual generated report content remains in English (NOTE: this was superseded by later hotfixes that localized the Markdown report), preserving the underlying Markdown logic.
 - **Trace Summary Hardening**: Formatted raw trace keys (`mode`, `processed`, `llm_augmented`) into user-friendly Korean labels (`실행 방식`, `처리됨`, `LLM 보강됨`) within the Ops Trace Console.
-- **Claim Boundary Maintained**: Ensured all translations and UI updates strictly preserve the existing claim boundaries (e.g., Vectorize/LLM Critic as opt-in/experimental, 18/20 partial expanded evidence).
+- **Claim Boundary Maintained**: Ensured all translations and UI updates strictly preserve the existing claim boundaries (e.g., Vectorize/LLM Critic as opt-in/experimental, legacy T001-T018 partial artifacts (not final validation)).
 - **Validation**: Full validation suite (`validate:history`, `typecheck`, `build:web`, `audit-gold`) passed successfully. No benchmark or output artifacts were modified.
 
 ## 2026-05-30 (gemini) - LLM Critic Latency Fallback Hardening
@@ -343,15 +343,15 @@ Updated: 2026-05-30 (partial dashboard area hardening complete)
 - **Integrity**: Maintained metadata-based scoring as the production default; no protected benchmark files or PDF/PPTX sources were modified. (gemini)
 
 ## 2026-05-29 (gemini) - Paper & Presentation Alignment
-- **Deliverable Alignment**: Synchronized `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with the verified claim boundary (18/20 success, opt-in AI features). (gemini)
-- **Content Consistency**: Ensured 90% success rate framing, infra-related failure explanations for T019-T020, and clear "planned/opt-in" status for AI/external enrichment features across all submission materials. (gemini)
+- **Deliverable Alignment**: Synchronized `paper/final-paper-draft.tex`, `presentation/final-presentation-outline.md`, `presentation/final-presentation-mcp.md`, and `docs/final-demo-script.md` with the revised claim boundary (controlled T001-T003 evidence only, legacy T001-T018 artifacts not final, opt-in AI features). (gemini)
+- **Content Consistency**: Removed percentage-based completion framing, retained T019-T020 HTTP 503 failure visibility, and clear "planned/opt-in" status for AI/external enrichment features across all submission materials. (gemini)
 - **Validation**: Verified that no protected files (PDFs, PPTXs, gold labels, baseline CSVs) were modified or regenerated. (gemini)
 
 ## 2026-05-29 (gemini)
 - **Claim Boundary Hardening**: Hardened the dashboard and documentation to clearly distinguish between live, partial, and planned features. (gemini)
 - **AI Feature Status**: Consistently labeled Vectorize and LLM Critic as "Planned / Opt-in / Not production-default". Default relevance now uses metadata/keyword fallback, and default review uses D1 rule-based critic flags. (gemini)
 - **Journal Quality Boundary**: Clarified that internal allowlist filtering is live, while external JCR/SCImago bibliometric enrichment is planned. (gemini)
-- **Benchmark Interpretation**: Explicitly defined the current evidence as "Partial Expanded Evidence (18/20 tasks, 90% success)". Acknowledged T019-T020 failures as infrastructure resource limits (HTTP 503). (gemini)
+- **Benchmark Interpretation**: Explicitly defined the current evidence as "Legacy T001-T018 Partial Artifacts (Not Final Validation)". Acknowledged T019-T020 failures as infrastructure resource limits (HTTP 503). (gemini)
 - **Data Protection**: Verified that T001-T003 controlled benchmark data, gold labels, and baseline files remain untouched. (gemini)
 
 Updated: 2026-05-29 (isolated expanded benchmark partial run corrected)

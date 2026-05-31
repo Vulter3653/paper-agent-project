@@ -1,19 +1,19 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Benchmark Batch Protocol Designed)
+Updated: 2026-05-31 (Phase 2 Design Ready)
 
 ## Current Status
-- **main HEAD**: `eae953947128b917b1d5d0a132158b377c12e64e` (Verified)
+- **main HEAD**: `5019692b801f0703a8e80a2a6e112c13ee441d54` (Verified)
+- **Batch Protocol**: `docs/benchmark-batch-protocol.md` created and completed (Design Phase).
 - **rowCount fix**: Pushed to origin main.
 - **Live Verification**: Automation script strengthened with 15+ regression checks and 5 endpoint calls.
-- **Batch Protocol**: `docs/benchmark-batch-protocol.md` created to manage T004-T020 expansion.
 - **Integrity**: Report Integrity Protocol fully observed.
 
 ## Completed Actions
-1. **rowCount fix pushed**: D1 benchmark metrics now report correct row count (9/9).
-2. **Live verification implemented**: `scripts/verify-live-benchmark.mjs` created and verified.
-3. **Automation integrity strengthened**: Added performance checks (Precision/NDCG), strict rowCount enforcement, and detail/metrics endpoint validation.
-4. **Benchmark Batch Protocol Designed**: Created risk mitigation and execution roadmap for full 20-task validation.
+1. **Benchmark Batch Protocol Designed**: Created risk mitigation and execution roadmap for full 20-task validation in `docs/benchmark-batch-protocol.md`.
+2. **rowCount fix pushed**: D1 benchmark metrics now report correct row count (9/9).
+3. **Live verification implemented**: `scripts/verify-live-benchmark.mjs` created and verified.
+4. **Automation integrity strengthened**: Added performance checks (Precision/NDCG), strict rowCount enforcement, and detail/metrics endpoint validation.
 5. **Documentation synchronized**: README, progress, and debug logs updated with protocol details.
 
 ## Verification Results
@@ -25,9 +25,9 @@ Updated: 2026-05-31 (Benchmark Batch Protocol Designed)
 - `npm run benchmark:audit-gold`: ✅ PASS
 
 ## Next Recommended Actions
-1. **Benchmark Batch Protocol Design**: Create `docs/benchmark-batch-protocol.md` to define batch execution, retry/resume, and resource management for T004-T020 expansion.
-2. **Review Requirement**: T004-T020 expanded/proposed benchmark must only be executed after the batch protocol is formally reviewed and approved.
-3. **Runner Prohibition**: Currently, no benchmark runners (proposed or expanded) should be executed.
+1. **Protocol Review**: Review `docs/benchmark-batch-protocol.md` for batch chunking and merging logic.
+2. **Phase 2 Design**: Start minimal D1 schema and API extension design for batch orchestration (e.g., `parent_run_id`, `retry_count`).
+3. **Runner Prohibition**: Do not execute expanded or proposed benchmark runners until the protocol review and Phase 2 design are approved.
 
 ## Git Status Snapshot
 ```text

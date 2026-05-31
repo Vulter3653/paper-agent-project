@@ -1,5 +1,9 @@
 # Debug Log
 
+## 2026-05-31 - Session State HEAD Staleness After Batch Protocol Design
+- **Incident**: Although the `docs/benchmark-batch-protocol.md` was created and completed, the `docs/gemini-session-state.md` file still contained the previous HEAD SHA and listed the protocol creation as a future action.
+- **Resolution**: Updated `docs/gemini-session-state.md` to reflect the verified HEAD (`5019692...`) and moved to Phase 2 (schema/API extension design) actions. (gemini)
+
 ## 2026-05-31 - Benchmark Batch Protocol Design
 - **Context**: Planning the extension of quantitative evaluation to T004-T020.
 - **Action**: Created `docs/benchmark-batch-protocol.md` to define risk mitigation strategies for Cloudflare CPU limits, WoS quotas, and partial failures.

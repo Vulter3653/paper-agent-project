@@ -1,5 +1,10 @@
 # Debug Log
 
+## 2026-05-31 - Benchmark Metrics `rowCount` Missing in Worker Response
+- **Incident**: The Ops Dashboard showed "0 / 9" metric rows despite the production database containing the correct data. This was traced to the `rowCount` field being missing from the `/api/benchmark-metrics` JSON response.
+- **Resolution**: Updated `formatBenchmarkMetrics` in `apps/worker/src/index.ts` to explicitly include `rowCount: metrics.length` in the `comparison` object.
+- **Verification**: Verified via local script logic that the field is now correctly populated in the response structure. (gemini)
+
 ## 2026-05-31 - Ops Dashboard Benchmark Health Visibility
 - **Incident**: Previously, the health and seed status of the Production D1 benchmark data was only visible on the Evaluation Dashboard, making it difficult for operators to distinguish between live data and legacy fallbacks without switching pages.
 - **Resolution**: Implemented `Benchmark Seed Diagnostics` in the Agent Ops Dashboard.

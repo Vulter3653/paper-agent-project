@@ -1343,6 +1343,7 @@ function formatBenchmarkMetrics(source: string, run: any, metrics: any[]): any {
     },
     comparison: {
       k: 5,
+      rowCount: metrics.length,
       methodOrder: methods,
       byMethod: comparisonByMethod
     },

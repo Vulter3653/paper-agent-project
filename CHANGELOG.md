@@ -16,8 +16,10 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
-## Unreleased
-- None.
+## 2026-05-31 (gemini)
+- Added: `scripts/verify-live-benchmark.mjs` for automated production API verification. (gemini)
+- Changed: `apps/worker/src/index.ts`: added `rowCount` to benchmark metrics comparison to ensure dashboard diagnostics display 9/9. (gemini)
+- Added: `docs/live-benchmark-verification-2026-05-31.md`: documented production API verification results. (gemini)
 
 ## 2026-05-30 (gemini)
 - Fix: Corrected independent benchmark runner (run-independent-benchmark.mjs) regex escaping and CSV parsing logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)

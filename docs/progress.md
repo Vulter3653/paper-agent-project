@@ -1,6 +1,24 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Evaluation Dashboard Reliability Improved)
+Updated: 2026-05-31 (Evidence Link Integrity Fixed)
+
+## 2026-05-31 (gemini) - Evidence Link Integrity Fix
+- **Summary**: Restored missing live benchmark evidence JSON files and the verification report in the `docs/` folder to ensure README links are valid. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - `docs/live-benchmark-verification-2026-05-31.md`: Re-created with production Worker and Dashboard evidence.
+  - `docs/api-benchmark-*.json`: Re-captured raw production API responses for runs, metrics, and details.
+  - **Integrity Check**: Verified all README links against actual filenames.
+- **Verification**: `npm run validate:history` and other suite commands passed. (gemini)
+
+## 2026-05-31 (gemini) - Evaluation Dashboard Reliability & Clarity Improvement
+- **Summary**: Restored missing live benchmark evidence JSON files and the verification report in the `docs/` folder to ensure README links are valid. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - `docs/live-benchmark-verification-2026-05-31.md`: Re-created with production Worker and Dashboard evidence.
+  - `docs/api-benchmark-*.json`: Re-captured raw production API responses for runs, metrics, and details.
+  - **Integrity Check**: Verified all README links against actual filenames.
+- **Verification**: `npm run validate:history` and other suite commands passed. (gemini)
 
 ## 2026-05-31 (gemini) - Evaluation Dashboard Reliability & Clarity Improvement
 - **Summary**: Refactored the Evaluation Dashboard to clearly distinguish between live D1 benchmark evidence and scenario-based interpretations. (gemini)

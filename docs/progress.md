@@ -1,6 +1,12 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Phase 3M Staged T013-T020 Artifact Execution)
+Updated: 2026-06-01 (Phase 3M Artifact Preservation Wording Correction)
+
+## 2026-06-01 (gemini) - Phase 3M Artifact Preservation Wording Correction
+
+- **Status**: Corrected the Phase 3L artifact preservation wording after Batch 2 and Batch 3 CSV artifacts were committed to main.
+- **Scope**: Documentation-only correction. No benchmark execution, D1 command, migration, seed, import, gold-label edit, dashboard edit, or artifact rewrite was performed.
+- **Claim Boundary**: Batch 2 and Batch 3 CSV files are preserved as artifact-only execution evidence. They do not establish full T004-T020 benchmark validation. Controlled quantitative comparison remains limited to T001-T003, and D1 batch-aware persistence remains incomplete.
 
 ## 2026-06-01 (gemini) - Phase 3M Staged T013-T020 Artifact Execution
 

@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Docs: Corrected Phase 3L artifact preservation wording to reflect that Batch 2 and Batch 3 CSV artifacts were committed as artifact-only staged execution evidence. (gemini)
 - Benchmark: Executed staged artifact-only T013-T018 batch and recorded isolated CSV artifacts, checksums, and claim boundary documentation. (gemini)
 - Benchmark: Executed staged artifact-only T019-T020 batch after successful audit of Batch 2 and recorded isolated CSV artifacts, checksums, and claim boundary documentation. (gemini)
 - Docs: Updated Phase 3L staged expansion report, project progress, and debug log while preserving the T001-T003 quantitative claim boundary. (gemini)

@@ -149,7 +149,9 @@ Do not use:
 
 ## 13. Artifact Preservation Recommendation
 
-Keep generated CSV artifacts untracked. These provide the necessary artifact evidence for the submission package without polluting the tracked benchmark repository.
+Batch 2 (`T013-T018`) and Batch 3 (`T019-T020`) CSV artifacts were committed to preserve staged execution evidence. Earlier Batch 1 artifacts remain untracked unless separately approved for preservation.
+
+This preservation step does not change the claim boundary: these files are artifact-only execution evidence and do not constitute full T004-T020 benchmark validation. Controlled quantitative comparison remains limited to T001-T003, and D1 batch-aware persistence remains incomplete.
 
 ## 14. Remaining Gaps
 

@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Artifact Preservation Wording Correction
+
+- Corrected the Phase 3L report wording to reflect that Batch 2 and Batch 3 CSV artifacts were committed to preserve staged execution evidence.
+- No benchmark execution, D1 command, migration, seed, import, gold-label edit, dashboard edit, or artifact rewrite was performed.
+- Claim boundary remains unchanged: artifact-only evidence, not full T004-T020 benchmark validation.
+
 ## 2026-06-01 (gemini) - Phase 3M Staged T013-T020 Artifact Execution
 - **Event**: Successfully executed staged artifact batches for T013-T018 (run-003) and T019-T020 (run-004).
 - **Observation**: 100% task completion (8/8 tasks). No new HTTP 503 errors or runner timeouts observed during these isolated runs.

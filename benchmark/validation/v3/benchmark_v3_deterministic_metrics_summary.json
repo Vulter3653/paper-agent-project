@@ -16,7 +16,7 @@
   "benchmark_execution_performed": false,
   "artifact_rows_modified": false,
   "validation_status": "deterministic_layer_1_4_6_computed",
-  "claim_boundary": "Layer 1-4 and Layer 6 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5 and all required gates pass. Baseline parity remains partial.",
+  "claim_boundary": "Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed.",
   "metrics": [
     {
       "metric_name": "reproducibility_manifest_completeness",
@@ -159,5 +159,5 @@
       "notes": "Estimated cost proxy based on 17 jobs and 342 result rows. USD cost not available in current artifacts. Token counts not found in logs."
     }
   ],
-  "generated_at": "2026-05-31T19:35:06.460Z"
+  "generated_at": "2026-05-31T20:03:12.945Z"
 }

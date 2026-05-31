@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-05-31T20:03:11.936Z",
+  "judge_model_identifier": "not_available",
+  "judge_provider": "not_available",
+  "temperature": 0,
+  "top_p": 1,
+  "prompt_file": "benchmark/llm_judge_prompt_v2.md",
+  "status": "pending_llm_judge_execution",
+  "evaluated_rows": 0,
+  "failed_rows": 0,
+  "pending_rows": 125,
+  "reason": "No BENCHMARK_JUDGE_MODEL or BENCHMARK_JUDGE_PROVIDER environment variables found. Scores were not fabricated."
+}

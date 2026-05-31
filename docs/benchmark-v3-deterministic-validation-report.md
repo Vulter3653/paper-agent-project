@@ -21,15 +21,25 @@
 - `layer4_retrieval_metrics_by_task.csv`: Quantitative retrieval performance per task.
 - `layer4_retrieval_metrics_by_method.csv`: Aggregated retrieval performance per method.
 - `layer6_robustness_metrics.csv`: System stability and risk indicators.
-- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4 and 6.
+- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4 and 6 (and Layer 5 if computed).
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
 ## 4. Claim Boundary
-Layer 1-4 and Layer 6 metrics are computed from existing artifacts. This does not constitute full T001-T020 benchmark validation because Layer 5 Semantic Quality remains uncomputed and baseline parity remains partial.
+Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed. Full v3 metric-layer coverage is therefore not complete.
 
 T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 are correctly labeled as "artifact_only" to prevent overclaiming.
+...
+- **Latency per Task**: ~204.60s (Average for successfully recorded jobs).
 
-## 5. Verification Results
+## 8. Layer 5 Semantic Quality Metrics
+
+- Uses fixed LLM-as-a-judge scoring.
+- Evaluation scope: top-5 rows per method-task pair.
+- Metrics: LLM Judge Relevance Score, Construct Coverage Score, Context/Method Match Score, Judge Confidence Score, Reasoning Validity.
+- **Status**: pending_llm_judge_execution
+- **Reason**: No fixed judge model/provider configuration was available. No semantic scores were fabricated.
+- Layer 5 metrics are semantic proxy metrics and do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.
+
 - **Reproducibility Manifest**: PASS
 - **Baseline Parity**: PARTIAL (Artifacts for T004-T020 exist for Proposed Agent, but not for all baselines yet)
 - **Claim Boundary Compliance**: PASS

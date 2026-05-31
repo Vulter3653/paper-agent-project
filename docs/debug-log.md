@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Semantic Quality Pipeline
+
+- Implemented automated LLM-as-a-judge pipeline for Layer 5 metrics.
+- Extracted 125 candidate rows for evaluation based on top-5 method-task rank.
+- Established a strictly pending status for LLM scoring to prevent score fabrication in environments without fixed judge configurations.
+- Integrated Layer 5 into the unified v3 check script and summary logic.
+
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 6 Robustness Metrics
 
 - Implemented automated robustness and risk indicator calculator.

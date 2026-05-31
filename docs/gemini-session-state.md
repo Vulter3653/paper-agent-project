@@ -1,40 +1,40 @@
 # Gemini Session State
 
-Updated: 2026-06-01 (Benchmark v3 Layer 6 Robustness Metrics Complete)
+Updated: 2026-06-01 (Benchmark v3 Layer 5 Semantic Pipeline Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
 > The latest commit identity must be verified via the **Final Report Integrity Protocol** raw git output in the final summary of each task.
 
 ## Current Status
-- **Robustness & Risk**: Implemented Layer 6 metric calculator (Hallucination, Timeout, etc.).
-- **Deterministic Pipeline**: UPDATED to include Layer 6 in unified summary and check scripts.
-- **Metrics**: 25/30 metrics now computed from existing artifacts.
-- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with Layer 6 details.
+- **Semantic Quality**: Implemented Layer 5 pipeline (fixed LLM-as-a-judge).
+- **Execution**: Layer 5 marked as PENDING (pending_llm_judge_execution) as no fixed model config was provided.
+- **Metrics**: 25/30 metrics computed; 5/30 (Layer 5) remain pending.
+- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with Layer 5 details.
 - **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
-- **Claim Boundary**: Layer 1-4 and 6 metrics computed; Layer 5 (Semantic Quality) remains pending.
+- **Claim Boundary**: Layer 1-4 and 6 metrics computed; Layer 5 remains pending for full validation.
 
 ## Verification Baseline
-- **HEAD Commit**: `7cc686813ff35d8771d2597b2e47dc870ca7ae41` (Base for Layer 6)
-- **Local State**: Scripts and validation outputs ready for commit.
+- **HEAD Commit**: `022c36b985a3cf5f64c6ec8ea98068e03f622083` (Base for Layer 5)
+- **Local State**: Scripts and updated manifests ready for commit.
 
 ## Completed Actions
-1. **Scripting**: Created `benchmark/scripts/compute-layer6-robustness-v3.mjs`.
-2. **Computation**: Generated system-wide robustness and risk indicators.
-3. **Integration**: Updated unified summary script to include Layer 6 metadata.
-4. **Reporting**: Updated `docs/benchmark-v3-deterministic-validation-report.md` with Layer 6 section.
-5. **Automation**: Integrated Layer 6 into `benchmark:v3:deterministic` package script.
+1. **Scripting**: Created Layer 5 scripts (`prepare`, `run`, `compute`).
+2. **Preparation**: Extracted 125 judge inputs from normalized results.
+3. **Integration**: Updated unified summary to include Layer 5 pending metadata.
+4. **Reporting**: Updated `docs/benchmark-v3-deterministic-validation-report.md`.
+5. **Automation**: Added Layer 5 and full v3 chain to `package.json`.
 
 ## Next Recommended Actions
-1. **Commit and Push**: "Scripts: add benchmark v3 layer6 robustness metrics".
-2. **Qualitative Scoring**: Implement Layer 5 (Semantic Quality) judge scorer using the fixed v2 judge prompt.
-3. **Full Promotion**: Finalize the artifact-to-validation promotion once Layer 5 is complete.
+1. **Commit and Push**: "Scripts: prepare benchmark v3 layer5 semantic judge pipeline".
+2. **Configuration**: Set `BENCHMARK_JUDGE_MODEL` and `BENCHMARK_JUDGE_PROVIDER` to execute Layer 5.
+3. **Dashboard**: Begin integrating v3 metrics summary into the Evaluation Dashboard UI.
 
 ## Blockers
-- **None**: Layer 6 metrics are functional and verified.
+- **Judge Configuration**: Execution requires a confirmed LLM judge configuration.
 
 ## Verification Results
-- `npm run benchmark:v3:deterministic`: ✅ PASS
+- `npm run benchmark:v3:full`: ✅ PASS (Layer 5 pending as expected)
 - `npm run validate:history`: ✅ PASS
 - `npm run typecheck`: ✅ PASS
 - `npm run build:web`: ✅ PASS
@@ -51,9 +51,13 @@ Updated: 2026-06-01 (Benchmark v3 Layer 6 Robustness Metrics Complete)
  M docs/debug-log.md
  M docs/gemini-session-state.md
  M docs/progress.md
- A benchmark/scripts/compute-layer6-robustness-v3.mjs
- A benchmark/validation/v3/layer6_robustness_metrics.csv
- A benchmark/validation/v3/layer6_robustness_metrics_summary.json
+ A benchmark/scripts/compute-layer5-semantic-v3.mjs
+ A benchmark/scripts/prepare-layer5-judge-input-v3.mjs
+ A benchmark/scripts/run-layer5-llm-judge-v3.mjs
+ A benchmark/validation/v3/layer5_judge_input_manifest.json
+ A benchmark/validation/v3/layer5_judge_inputs_top5.jsonl
+ A benchmark/validation/v3/layer5_judge_run_manifest.json
+ A benchmark/validation/v3/layer5_semantic_metrics_summary.json
 ```
 
 (gemini)

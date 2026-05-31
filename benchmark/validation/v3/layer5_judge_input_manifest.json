@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-05-31T20:03:11.472Z",
+  "input_file": "benchmark/validation/v3/normalized_results_t001_t020.csv",
+  "scope": "top5_rows_per_method_task",
+  "total_tasks": 20,
+  "processed_rows": 125,
+  "extracted_judge_inputs": 125
+}

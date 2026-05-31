@@ -1,6 +1,14 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark v3 Layer 6 Robustness Metrics)
+Updated: 2026-06-01 (Benchmark v3 Layer 5 Semantic Quality Pipeline)
+
+## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Semantic Quality Pipeline
+
+- **Status**: Implemented the Benchmark v3 Layer 5 Semantic Quality pipeline (fixed LLM-as-a-judge).
+- **Scope**: Prepared judge inputs for top 5 rows per method-task pair. Implementation is complete, but scoring is marked as PENDING due to missing fixed model configuration.
+- **Pipeline**: Added `prepare-layer5-judge-input-v3.mjs`, `run-layer5-llm-judge-v3.mjs`, and `compute-layer5-semantic-v3.mjs`. Updated unified summary and check scripts.
+- **Claim Boundary**: Layer 5 remains pending; full metric-layer coverage is not yet complete. No scores were fabricated.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 6 Robustness Metrics
 

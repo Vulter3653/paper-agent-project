@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Benchmark: Implemented the Benchmark v3 Layer 5 Semantic Quality pipeline (fixed LLM-as-a-judge) with pending execution safety. (gemini)
+- Scripts: Added Layer 5 preparation, execution, and computation scripts. (gemini)
 - Benchmark: Implemented the Benchmark v3 Layer 6 Robustness & Risk metrics (Hallucination, Timeout, Latency, Cost Proxy). (gemini)
 - Scripts: Added `compute-layer6-robustness-v3.mjs` and updated unified v3 validation chain. (gemini)
 - Benchmark: Implemented the Benchmark v3 Layer 4 Retrieval Accuracy metrics (Precision, NDCG, Recall, Gold Hit Rate, MRR) using Gold Set v2 matching. (gemini)

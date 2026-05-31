@@ -11,6 +11,7 @@ const LAYER_FILES = [
   path.join(VALIDATION_DIR, 'layer2_schema_metrics_summary.json'),
   path.join(VALIDATION_DIR, 'layer3_validity_metrics_summary.json'),
   path.join(VALIDATION_DIR, 'layer4_retrieval_metrics_summary.json'),
+  path.join(VALIDATION_DIR, 'layer5_semantic_metrics_summary.json'),
   path.join(VALIDATION_DIR, 'layer6_robustness_metrics_summary.json')
 ];
 
@@ -33,6 +34,7 @@ function stringifyCsv(data) {
 async function computeSummary() {
   const allMetrics = [];
   const layersInfo = [];
+  let llmJudgeExecuted = false;
 
   for (const file of LAYER_FILES) {
     if (fs.existsSync(file)) {
@@ -43,30 +45,51 @@ async function computeSummary() {
         const methods = Object.keys(data.method_summary);
         if (methods.includes('proposed_agent')) {
           const stats = data.method_summary['proposed_agent'];
-          allMetrics.push(
-            { metric_name: 'precision_at_5', value: stats.mean_precision_at_5, details: 'Proposed Agent mean' },
-            { metric_name: 'ndcg_at_5', value: stats.mean_ndcg_at_5, details: 'Proposed Agent mean' },
-            { metric_name: 'recall_at_20', value: stats.mean_recall_at_20, details: 'Proposed Agent mean' },
-            { metric_name: 'gold_hit_rate', value: stats.gold_hit_rate, details: 'Proposed Agent mean' },
-            { metric_name: 'mrr', value: stats.mrr, details: 'Proposed Agent mean' }
-          );
+          if (data.layer === 'Layer 4: Retrieval Accuracy') {
+            allMetrics.push(
+              { metric_name: 'precision_at_5', value: stats.mean_precision_at_5, details: 'Proposed Agent mean' },
+              { metric_name: 'ndcg_at_5', value: stats.mean_ndcg_at_5, details: 'Proposed Agent mean' },
+              { metric_name: 'recall_at_20', value: stats.mean_recall_at_20, details: 'Proposed Agent mean' },
+              { metric_name: 'gold_hit_rate', value: stats.gold_hit_rate, details: 'Proposed Agent mean' },
+              { metric_name: 'mrr', value: stats.mrr, details: 'Proposed Agent mean' }
+            );
+          } else if (data.layer === 'Layer 5: Semantic Quality' && data.llm_judge_executed) {
+            llmJudgeExecuted = true;
+            allMetrics.push(
+              { metric_name: 'llm_judge_relevance_score', value: stats.llm_judge_relevance_score, details: 'Proposed Agent mean' },
+              { metric_name: 'construct_coverage_score', value: stats.construct_coverage_score, details: 'Proposed Agent mean' },
+              { metric_name: 'context_method_match_score', value: stats.context_method_match_score, details: 'Proposed Agent mean' },
+              { metric_name: 'llm_judge_confidence_score', value: stats.llm_judge_confidence_score, details: 'Proposed Agent mean' },
+              { metric_name: 'llm_judge_reasoning_validity', value: stats.llm_judge_reasoning_validity, details: 'Proposed Agent mean' }
+            );
+          }
         }
       }
       layersInfo.push(data.layer);
     }
   }
 
+  const isLayer5Computed = layersInfo.includes('Layer 5: Semantic Quality') && llmJudgeExecuted;
+
   const summaryJson = {
     benchmark_standard: 'v3',
     scope: 'T001-T020',
-    computed_layers: layersInfo,
-    not_computed_layers: ['Layer 5: Semantic Quality'].filter(l => !layersInfo.includes(l)),
+    computed_layers: layersInfo.filter(l => {
+        if (l === 'Layer 5: Semantic Quality') return llmJudgeExecuted;
+        return true;
+    }),
+    not_computed_layers: ['Layer 5: Semantic Quality'].filter(l => {
+        if (l === 'Layer 5: Semantic Quality') return !llmJudgeExecuted;
+        return false; // Already filtered above
+    }),
     human_evaluation: false,
-    llm_judge_executed: false,
+    llm_judge_executed: llmJudgeExecuted,
     benchmark_execution_performed: false,
     artifact_rows_modified: false,
-    validation_status: layersInfo.includes('Layer 6: Robustness & Risk') ? 'deterministic_layer_1_4_6_computed' : 'deterministic_layer_1_4_computed',
-    claim_boundary: 'Layer 1-4 and Layer 6 metrics computed from existing artifacts. T004-T020 is not full benchmark validation until Layer 5 and all required gates pass. Baseline parity remains partial.',
+    validation_status: isLayer5Computed ? 'v3_validation_complete_pending_gates' : 'deterministic_layer_1_4_6_computed',
+    claim_boundary: isLayer5Computed
+        ? 'Layer 1-6 metrics have been computed from available artifacts and fixed LLM-as-a-judge scoring. Comparative claims remain limited where baseline parity is partial.'
+        : 'Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed.',
     metrics: allMetrics,
     generated_at: new Date().toISOString()
   };
@@ -88,13 +111,16 @@ async function computeSummary() {
       'benchmark/scripts/compute-layer2-schema-v3.mjs',
       'benchmark/scripts/compute-layer3-validity-v3.mjs',
       'benchmark/scripts/compute-layer4-retrieval-v3.mjs',
+      'benchmark/scripts/prepare-layer5-judge-input-v3.mjs',
+      'benchmark/scripts/run-layer5-llm-judge-v3.mjs',
+      'benchmark/scripts/compute-layer5-semantic-v3.mjs',
       'benchmark/scripts/compute-layer6-robustness-v3.mjs',
       'benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs'
     ],
     metric_spec_file: 'benchmark/metric_spec_v3.json',
     human_evaluation: false,
     benchmark_execution_performed: false,
-    llm_judge_executed: false
+    llm_judge_executed: llmJudgeExecuted
   };
 
   fs.writeFileSync(OUTPUT_CSV, stringifyCsv(allMetrics));

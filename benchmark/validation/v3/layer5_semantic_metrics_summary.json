@@ -1,0 +1,26 @@
+{
+  "benchmark_standard": "v3",
+  "layer": "Layer 5: Semantic Quality",
+  "metrics_computed": [
+    "llm_judge_relevance_score",
+    "construct_coverage_score",
+    "context_method_match_score",
+    "llm_judge_confidence_score",
+    "llm_judge_reasoning_validity"
+  ],
+  "scope": "top5_rows_per_method_task",
+  "human_evaluation": false,
+  "llm_judge_executed": false,
+  "benchmark_execution_performed": false,
+  "artifact_rows_modified": false,
+  "judge_model_identifier": "not_available",
+  "judge_provider": "not_available",
+  "temperature": 0,
+  "top_p": 1,
+  "claim_boundary": "Layer 5 scores are semantic proxy metrics from a fixed LLM-as-a-judge. They do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.",
+  "status": "pending_llm_judge_execution",
+  "method_summary": {},
+  "caveats": [
+    "Layer 5 metrics not computed: No BENCHMARK_JUDGE_MODEL or BENCHMARK_JUDGE_PROVIDER environment variables found. Scores were not fabricated."
+  ]
+}

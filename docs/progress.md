@@ -1,6 +1,16 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 3A Approval Package Complete)
+Updated: 2026-05-31 (Phase 3C Verification Complete)
+
+## 2026-05-31 (gemini) - Phase 3C Production D1 Migration Verified
+- **Summary**: Confirmed successful application of `0007_add_benchmark_batch_columns.sql` to production D1 via manual execution recovery. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - **Verification Report**: Created `docs/phase-3c-post-migration-verification.md` documenting backup evidence, PRAGMA schema checks, and regression results.
+  - **Schema Integrity**: Confirmed addition of `parent_run_id`, `batch_id`, `is_derived`, `merge_status` to `benchmark_runs` and retry/error columns to `benchmark_run_tasks`.
+  - **Regression Pass**: Verified T001-T003 controlled benchmark integrity (9/9 metrics) and application compatibility (typecheck/build).
+- **Constraints**: T004-T020 full benchmark execution is NOT yet authorized.
+- **Next Step**: Phase 3D dry-run planning. (gemini)
 
 ## 2026-05-31 (gemini) - Production D1 Migration Approval Package
 - **Summary**: Prepared the formal approval package for the Production D1 schema migration (`0007_add_benchmark_batch_columns.sql`). (gemini)

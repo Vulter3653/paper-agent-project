@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3C Production D1 Migration Verification
+- **Outcome**: Post-migration PRAGMA checks passed successfully.
+- **Verification**: Confirmed new batch orchestration columns and indexes are active in production.
+- **Regression**: `scripts/verify-live-benchmark.mjs` confirmed T001-T003 integrity (9 comparison rows).
+- **Safe State**: Production environment is ready for Phase 3D dry-run planning. No T004-T020 execution occurred. (gemini)
+
 ## 2026-05-31 - Phase 3B Production D1 Migration Aborted (Auth & Procedural Issue)
 - **Incident**: Phase 3B was aborted because Wrangler remote D1 commands required OAuth browser login in a headless environment. 
 - **Procedural Violation**: A migration command was attempted once despite the backup export failing.

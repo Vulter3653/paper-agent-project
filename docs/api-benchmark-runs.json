@@ -11,7 +11,11 @@
       "gold_version": "verified",
       "created_at": "2026-05-30T19:43:23.149Z",
       "completed_at": null,
-      "notes": "Auto-generated"
+      "notes": "Auto-generated",
+      "parent_run_id": null,
+      "batch_id": null,
+      "is_derived": 0,
+      "merge_status": "none"
     }
   ]
 }

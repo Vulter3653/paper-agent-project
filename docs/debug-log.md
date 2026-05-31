@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3A Production D1 Migration Approval Package Created
+- **Context**: Finalizing preparation for T004-T020 benchmark expansion.
+- **Decision**: Created a comprehensive approval package (`docs/production-d1-migration-approval-package.md`) to gate the Production D1 migration.
+- **Rationale**: Production schema changes require explicit stakeholder review and a verified rollback strategy due to the immutability of the controlled T001-T003 baseline.
+- **Approval Condition**: No `--remote` execution is permitted until the user explicitly signals approval after reviewing the package.
+- **Baseline Guard**: Confirmed that `scripts/verify-live-benchmark.mjs` remains the authoritative regression gate. (gemini)
+
 ## 2026-05-31 - Phase 2D Reported Changed Files Did Not Match Final Commit Diff
 - **Symptom**: The Phase 2D completion report listed six modified files under a single final commit SHA (`7bbd66a`), but the git diff for that SHA showed only one file (`docs/gemini-session-state.md`) was changed.
 - **Observed Mismatch**: 

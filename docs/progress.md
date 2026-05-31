@@ -1,6 +1,16 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 2B Migration Draft Complete)
+Updated: 2026-05-31 (Phase 2C Local Schema Test Complete)
+
+## 2026-05-31 (gemini) - Benchmark Batch Local Schema Test
+- **Summary**: Successfully verified the minimal D1 schema extension migration draft (`0007_add_benchmark_batch_columns.sql`) in a local D1 environment. (gemini)
+- **Status**: Completed (Test Phase).
+- **Key Deliverables**:
+  - **Local Verification**: Applied migration to local D1 using `wrangler d1 execute --local`.
+  - **Schema Confirmation**: Confirmed addition of `parent_run_id`, `batch_id`, `is_derived`, `merge_status` (benchmark_runs) and `retry_count`, `last_error`, `last_error_at` (benchmark_run_tasks).
+  - **Index Confirmation**: Verified creation of orchestration-focused indexes.
+  - **Test Report**: Created `docs/benchmark-batch-local-schema-test.md` documenting commands and results.
+- **Integrity Check**: Verified no destructive commands were used and no remote execution occurred. (gemini)
 
 ## 2026-05-31 (gemini) - Benchmark Batch Migration Draft
 - **Summary**: Prepared the minimal D1 schema extension migration and static review documentation for T004-T020 batch expansion. (gemini)

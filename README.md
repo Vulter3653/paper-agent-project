@@ -8,6 +8,7 @@
 - **Expansion Protocol**: [docs/benchmark-batch-protocol.md](docs/benchmark-batch-protocol.md) (gemini)
 - [Batch Design](./docs/benchmark-batch-schema-api-design.md) (gemini)
 - [Migration Review](./docs/benchmark-batch-migration-static-review.md) (gemini)
+- [Local Schema Test](./docs/benchmark-batch-local-schema-test.md) (gemini)
 
 
 AI Agent 기반 학술논문 탐색 및 문헌검토 자동화 시스템입니다.

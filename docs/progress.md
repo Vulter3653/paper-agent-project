@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 2C Local Schema Test Complete)
+Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
+
+## 2026-05-31 (gemini) - Benchmark Batch Compatibility Implementation
+- **Summary**: Implemented backward-compatible Worker API and Dashboard components for the upcoming Phase 3 benchmark batch expansion. (gemini)
+- **Status**: Completed (Phase 2D).
+- **Key Deliverables**:
+  - **Worker API Compatibility**: Updated `apps/worker/src/persistence.ts` with `mapBenchmarkRunCompatibility` and `mapBenchmarkRunTaskCompatibility` to ensure `GET /api/benchmark-runs` and related endpoints safely handle D1 environments where the new batch columns (`parent_run_id`, `retry_count`, etc.) have not yet been migrated.
+  - **Dashboard Type Extension**: Added the optional batch orchestration columns to the `BenchmarkRun` interface in `apps/web/src/dashboard/DashboardPages.tsx`.
+  - **Documentation Sync**: Updated `docs/benchmark-batch-schema-api-design.md` with implementation notes, confirming the deferral of the `/api/benchmark-runs/:id/batches` endpoint to strictly follow the minimal extension mandate.
+- **Integrity Check**: Verified the live regression script (`scripts/verify-live-benchmark.mjs`) passes successfully against the production D1, ensuring no disruption to the controlled T001-T003 tracking. (gemini)
 
 ## 2026-05-31 (gemini) - Benchmark Batch Local Schema Test
 - **Summary**: Successfully verified the minimal D1 schema extension migration draft (`0007_add_benchmark_batch_columns.sql`) in a local D1 environment. (gemini)

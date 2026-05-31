@@ -916,6 +916,27 @@ export async function getMissingColumns(db: D1Database): Promise<{ table: string
 }
 
 // Benchmark Query Helpers
+function mapBenchmarkRunCompatibility(row: any): any {
+  if (!row) return row;
+  return {
+    ...row,
+    parent_run_id: row.parent_run_id ?? null,
+    batch_id: row.batch_id ?? null,
+    is_derived: row.is_derived ?? 0,
+    merge_status: row.merge_status ?? 'none',
+  };
+}
+
+function mapBenchmarkRunTaskCompatibility(row: any): any {
+  if (!row) return row;
+  return {
+    ...row,
+    retry_count: row.retry_count ?? 0,
+    last_error: row.last_error ?? null,
+    last_error_at: row.last_error_at ?? null,
+  };
+}
+
 export async function listBenchmarkRuns(db: D1Database, scope?: string): Promise<any[]> {
   let query = "SELECT * FROM benchmark_runs ORDER BY created_at DESC";
   let params: any[] = [];
@@ -924,17 +945,17 @@ export async function listBenchmarkRuns(db: D1Database, scope?: string): Promise
     params = [scope];
   }
   const result = await db.prepare(query).bind(...params).all();
-  return result.results;
+  return result.results.map(mapBenchmarkRunCompatibility);
 }
 
 export async function getLatestCompletedBenchmarkRun(db: D1Database, scope: string = "controlled"): Promise<any | null> {
   const result = await db.prepare("SELECT * FROM benchmark_runs WHERE benchmark_scope = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1").bind(scope).first();
-  return result;
+  return mapBenchmarkRunCompatibility(result);
 }
 
 export async function getBenchmarkRunById(db: D1Database, runId: string): Promise<any | null> {
   const result = await db.prepare("SELECT * FROM benchmark_runs WHERE id = ?").bind(runId).first();
-  return result;
+  return mapBenchmarkRunCompatibility(result);
 }
 
 export async function getBenchmarkRunMetrics(db: D1Database, runId: string): Promise<any[]> {
@@ -944,5 +965,5 @@ export async function getBenchmarkRunMetrics(db: D1Database, runId: string): Pro
 
 export async function getBenchmarkRunTasks(db: D1Database, runId: string): Promise<any[]> {
   const result = await db.prepare("SELECT * FROM benchmark_run_tasks WHERE run_id = ?").bind(runId).all();
-  return result.results;
+  return result.results.map(mapBenchmarkRunTaskCompatibility);
 }

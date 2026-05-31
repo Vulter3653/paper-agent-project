@@ -361,7 +361,22 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
   );
 }
 
-export function AgentOpsPage() {
+type BenchmarkRun = {
+  id: string;
+  run_label: string;
+  benchmark_scope: string;
+  task_range: string;
+  status: string;
+  methods: string;
+  source_commit: string;
+  gold_version: string;
+  created_at: string;
+  notes: string;
+  parent_run_id?: string | null;
+  batch_id?: string | null;
+  is_derived?: number;
+  merge_status?: string | null;
+};
   const [running, setRunning] = useState(false);
   const [keyword, setKeyword] = useState("AI interview employer branding");
   const [searchSize, setSearchSize] = useState<"fast" | "standard">("fast");

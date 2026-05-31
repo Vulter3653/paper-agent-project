@@ -52,6 +52,6 @@ Before remote migration:
 2. Local backup of Production D1 via `wrangler d1 export`.
 3. Confirm that no benchmark processes are running during migration.
 
-**STATUS: LOCAL TEST SUCCESSFUL**
+**STATUS: LOCAL TEST SUCCESSFUL (Production migration still pending)**
 
 (gemini)

@@ -125,10 +125,10 @@ Updated: 2026-05-31 (Phase 2 Design Phase)
 - **Production Guard**: No `wrangler d1 seed` will be run. Only schema extension.
 
 ## 11. Implementation Roadmap
-- **Phase 2A**: Schema/API Design Review (CURRENT).
-- **Phase 2B**: Migration Draft & Static Validation.
-- **Phase 2C**: Local D1 Schema Extension Test.
-- **Phase 2D**: Worker API Implementation (Batch grouping logic).
+- **Phase 2A**: Schema/API Design Review (DONE).
+- **Phase 2B**: Migration Draft & Static Validation (DONE).
+- **Phase 2C**: Local D1 Schema Extension Test (DONE).
+- **Phase 2D**: Worker API & Dashboard Compatibility Implementation (DONE).
 - **Phase 2E**: Dashboard Integration (Batch progress visibility).
 - **Phase 3**: Batch Runner Implementation.
 - **Phase 4**: T004-T020 Execution (Sequential batches).
@@ -138,5 +138,10 @@ Updated: 2026-05-31 (Phase 2 Design Phase)
 - **NO SEED**: Do not re-run D1 seeding.
 - **NO OVERWRITE**: Do not modify existing T001-T003 CSV/JSON files.
 - **NO MIGRATION CREATION**: This phase is DESIGN ONLY. No `.sql` files allowed.
+
+## 13. Phase 2D Compatibility Implementation Notes
+- **Worker API Backward Compatibility**: The worker persistence layer (`apps/worker/src/persistence.ts`) has been updated with compatibility wrappers (`mapBenchmarkRunCompatibility`, `mapBenchmarkRunTaskCompatibility`) that inject safe default values (`parent_run_id: null`, `is_derived: 0`, `retry_count: 0`) when `benchmark_runs` or `benchmark_run_tasks` are queried. This ensures the API will not crash when reading from Production D1 where the batch columns have not yet been created.
+- **Dashboard Type Extension**: Added optional batch columns to the frontend `BenchmarkRun` interface in `apps/web/src/dashboard/DashboardPages.tsx`.
+- **API Endpoint Deferral**: The `/api/benchmark-runs/:id/batches` and `/api/benchmark-diagnostics` endpoints were deemed optional for this phase and deferred until Phase 3 or Phase 2E to adhere strictly to the "only add if strictly necessary" constraint.
 
 (gemini)

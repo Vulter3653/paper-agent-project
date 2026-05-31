@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-05-31 - Ops Dashboard Benchmark Health Visibility
+- **Incident**: Previously, the health and seed status of the Production D1 benchmark data was only visible on the Evaluation Dashboard, making it difficult for operators to distinguish between live data and legacy fallbacks without switching pages.
+- **Resolution**: Implemented `Benchmark Seed Diagnostics` in the Agent Ops Dashboard.
+- **Verification**:
+  - Confirmed `/api/benchmark-runs` and `/api/benchmark-metrics` integration.
+  - Verified `source: d1_benchmark_run` correctly triggers the "Healthy" status when 9 rows are present.
+  - Verified CTA links point to correct Evaluation routes. (gemini)
+
 ## 2026-05-31 - Recurrent Commit SHA Reporting Mismatch
 - **Symptom**: The full commit SHA reported in the final Gemini summary consistently mismatches the actual remote `main` HEAD hash.
 - **Observed cases**:

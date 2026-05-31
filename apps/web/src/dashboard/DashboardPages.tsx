@@ -375,6 +375,9 @@ export function AgentOpsPage() {
   const [outputs, setOutputs] = useState<JobOutput[]>([]);
   const [diagnostics, setDiagnostics] = useState<DiagnosticsResponse | null>(null);
   const [diagnosticsError, setDiagnosticsError] = useState("");
+  const [benchmarkMetrics, setBenchmarkMetrics] = useState<BenchmarkMetrics | null>(null);
+  const [benchmarkRuns, setBenchmarkRuns] = useState<any[]>([]);
+  const [benchmarkError, setBenchmarkError] = useState("");
   const [logs, setLogs] = useState(toolCallLogs);
   const [pollingStartTime, setPollingStartTime] = useState<number>(0);
   const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
@@ -601,6 +604,13 @@ export function AgentOpsPage() {
         <MetricTile label="생성된 산출물" value={String(outputs.length)} detail={outputs.length ? outputs.map((output) => output.outputType.toUpperCase() + ":" + formatRuntimeStatus(output.status)).join(" · ") : "metadata 없음"} tone="purple" />
         <MetricTile label="실행 환경(Runtime)" value={diagnostics?.readiness.activeProviderReady ? "준비됨" : "확인 필요"} detail={diagnostics ? `${diagnostics.searchProvider} 제공자` : "diagnostics 로드 중"} tone={diagnostics?.readiness.activeProviderReady ? "green" : "amber"} />
       </section>
+
+      <BenchmarkSeedDiagnostics
+        metrics={benchmarkMetrics}
+        runs={benchmarkRuns}
+        dbStatus={diagnostics?.db}
+        error={benchmarkError}
+      />
 
       <ImplementationStatusPanel
         title="Ops Route 기능 구현 상태"
@@ -1207,6 +1217,102 @@ function ToolChainEvidence() {
             <small>{chain.detail}</small>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function BenchmarkSeedDiagnostics({ metrics, runs, dbStatus, error }: { metrics: BenchmarkMetrics | null, runs: any[], dbStatus: any, error: string }) {
+  const rowCount = metrics?.comparison?.rowCount ?? 0;
+  const isD1 = metrics?.source === "d1_benchmark_run";
+  const tablesOk = !dbStatus?.missingColumns?.some((c: any) => c.table.startsWith("benchmark"));
+  
+  let statusLabel = "Diagnostics Unavailable";
+  let statusTone = "amber";
+  
+  if (error) {
+    statusLabel = "Connection Error";
+    statusTone = "red";
+  } else if (metrics) {
+    if (isD1) {
+      if (rowCount === 9) {
+        statusLabel = "Benchmark Seed Healthy";
+        statusTone = "green";
+      } else {
+        statusLabel = "Metric Row Count Mismatch";
+        statusTone = "amber";
+      }
+    } else {
+      statusLabel = "Legacy Fallback Active";
+      statusTone = "amber";
+    }
+  } else if (runs.length === 0) {
+    statusLabel = "Benchmark Seed Missing";
+    statusTone = "red";
+  }
+
+  return (
+    <section className="uxPanel">
+      <div className="uxPanelHead">
+        <div>
+          <h2>벤치마크 시드 진단 (Benchmark Seed Diagnostics)</h2>
+          <p>Production D1의 벤치마크 데이터 정합성과 배포 상태를 확인합니다.</p>
+        </div>
+        <span className={`uxPill ${statusTone}`}>{statusLabel}</span>
+      </div>
+      
+      {error && <p className="uxTinyError">{error}</p>}
+      
+      <div className="uxSystemGrid">
+        <div className="uxSystemItem">
+          <strong>Tables Available</strong>
+          <span>{tablesOk ? "준비됨" : "확인 필요"}</span>
+          <small>{dbStatus?.bound ? "D1 연결됨" : "D1 연결 없음"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Latest Run</strong>
+          <span>{runs.length > 0 ? "Exists" : "None"}</span>
+          <small>{runs.length} runs found</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Latest Run ID</strong>
+          <span>{metrics?.runId || "-"}</span>
+          <small>{metrics?.runLabel || "-"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Scope / Range</strong>
+          <span>{metrics?.benchmarkScope || "-"}</span>
+          <small>{metrics?.taskRange || "-"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Metric Rows</strong>
+          <span className={rowCount === 9 ? "green" : "amber"}>{rowCount} / 9</span>
+          <small>{rowCount === 9 ? "Match Expected" : "Mismatch"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Data Source</strong>
+          <span className={isD1 ? "green" : "amber"}>{metrics?.source || "unknown"}</span>
+          <small>{isD1 ? "Production D1 Active" : "Fallback Active"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Source Commit</strong>
+          <span style={{ fontSize: '0.65rem', wordBreak: 'break-all' }}>{metrics?.sourceCommit || "-"}</span>
+          <small>Gold Version: {metrics?.goldVersion || "-"}</small>
+        </div>
+        <div className="uxSystemItem">
+          <strong>Last Generated</strong>
+          <span>{metrics?.createdAt ? new Date(metrics.createdAt).toLocaleString() : "-"}</span>
+          <small>Controlled T001-T003 only</small>
+        </div>
+      </div>
+
+      <div className="uxActions" style={{ marginTop: '1rem', justifyContent: 'flex-start' }}>
+        <a className="uxButton blue" href="/dashboard/evaluation">
+          <BarChart3 size={16} /> View Evaluation Dashboard
+        </a>
+        <a className="uxSoftButton" href="/dashboard/evaluation">
+          <ShieldCheck size={16} /> Inspect Live Benchmark Evidence
+        </a>
       </div>
     </section>
   );

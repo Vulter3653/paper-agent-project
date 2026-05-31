@@ -138,7 +138,7 @@ Recommended names:
 | --- | --- | --- |
 | 대시보드 메인 | https://paper-agent-project.pages.dev/ | 화면이 열리고 Research/Ops/Evaluation 라우트로 이동 가능해야 합니다. |
 | Research Dashboard | https://paper-agent-project.pages.dev/dashboard/research | 검색 실행, Ranked Papers, Paper Detail, Report Preview를 확인합니다. |
-| Ops Dashboard | https://paper-agent-project.pages.dev/dashboard/ops | Worker, D1, R2, MCP, Agent trace 상태를 확인합니다. |
+| Ops Dashboard | https://paper-agent-project.pages.dev/dashboard/ops | Worker, D1, R2, MCP, Agent trace 상태 및 Benchmark Seed Diagnostics를 확인합니다. |
 | Evaluation Dashboard | https://paper-agent-project.pages.dev/dashboard/evaluation | Rule-based, Single-LLM, Proposed Multi-Agent 비교와 D1-backed controlled benchmark run을 확인합니다. |
 | Worker health | https://paper-agent-project.shch3653.workers.dev/api/health | `{ "ok": true }` 형태의 정상 응답이어야 합니다. |
 | Worker diagnostics | https://paper-agent-project.shch3653.workers.dev/api/diagnostics | DB missingColumns가 비어 있고 WoS/Crossref/Unpaywall/R2/Google Drive 준비 상태를 확인합니다. |

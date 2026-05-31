@@ -54,16 +54,16 @@ The user still performs scholarly judgment. A high-ranked result is a candidate 
 
 \section{Related Work}
 \subsection{LLM-Based Scholarly Search}
-LLM-based assistants can summarize papers, reformulate questions, and generate candidate reading lists. Their usefulness depends on grounding and metadata verification. Ungrounded recommendations are risky in scholarly settings because a fabricated title, DOI, venue, or author list can consume researcher time and contaminate a review \cite{placeholder_scholarly_search}. Paper Agent therefore separates recommendation from verification and stores evidence for downstream inspection.
+LLM-based assistants can summarize papers, reformulate questions, and generate candidate reading lists. Their usefulness depends on grounding and metadata verification. Large scholarly corpora such as S2ORC show the scale and structure of the evidence that research-support systems must handle \cite{lo2020s2orc}. Ungrounded recommendations are risky in scholarly settings because a fabricated title, DOI, venue, or author list can consume researcher time and contaminate a review. Paper Agent therefore separates recommendation from verification and stores evidence for downstream inspection.
 
 \subsection{Multi-Agent and Tool-Using Systems}
-Multi-agent systems decompose complex tasks into role-specific components such as planners, executors, critics, and reporters \cite{placeholder_multi_agent}. The value of decomposition is not the number of named agents alone; it is the ability to expose intermediate decisions and isolate failures. Paper Agent applies this principle to scholarly discovery by recording stage-level traces and preserving partial outcomes when a later service fails.
+Multi-agent systems decompose complex tasks into role-specific components such as planners, executors, critics, and reporters. AutoGen demonstrates how multi-agent conversation can structure LLM application workflows \cite{wu2023autogen}. The value of decomposition is not the number of named agents alone; it is the ability to expose intermediate decisions and isolate failures. Paper Agent applies this principle to scholarly discovery by recording stage-level traces and preserving partial outcomes when a later service fails.
 
 \subsection{Retrieval-Augmented Workflows}
-Retrieval-augmented generation grounds model behavior in external evidence \cite{placeholder_rag}. Paper Agent follows the same grounding principle but emphasizes structured scholarly metadata and policy enforcement. Search results are filtered through an internal business-school journal allowlist and enriched through external metadata services before ranking.
+Retrieval-augmented generation grounds model behavior in external evidence \cite{lewis2020rag}. Paper Agent follows the same grounding principle but emphasizes structured scholarly metadata and policy enforcement. Search results are filtered through an internal business-school journal allowlist and enriched through external metadata services before ranking.
 
 \subsection{Benchmarking and Reproducibility}
-Evaluation of agentic systems requires more than a single aggregate score. Reproducible evaluation should disclose task scope, baselines, metrics, failure evidence, artifact locations, and incomplete runs \cite{placeholder_reproducibility}. Paper Agent distinguishes controlled benchmark evidence from artifact-only expansion evidence.
+Evaluation of agentic systems requires more than a single aggregate score. AgentBench provides an example of evaluating LLMs as agents across multiple environments and highlights the importance of explicit evaluation design \cite{liu2023agentbench}. Reproducible evaluation should disclose task scope, baselines, metrics, failure evidence, artifact locations, and incomplete runs. Paper Agent distinguishes controlled benchmark evidence from artifact-only expansion evidence.
 
 \section{Method and System Design}
 Paper Agent is a multi-agent decision-support pipeline rather than a single LLM wrapper. Each stage records an inspectable output. The current Worker implementation uses Web of Science as the primary configured scholarly search provider and OpenAlex as a fallback for testing and quota resilience. Crossref performs DOI and metadata verification, while Unpaywall records open-access status. Cloudflare Workers execute the pipeline and Cloudflare D1 persists jobs, papers, scores, and traces.
@@ -295,16 +295,16 @@ The next engineering priority is not a broader claim. It is a safer evidence pip
 
 Third, Paper-Agent-Bench should expand its DOI-backed gold labels and record clearer provenance for ambiguous rows. A broader controlled layer would allow the team to examine whether journal-policy filtering trades overlap for integrity in a consistent way across fields. Fourth, evaluation should include operational metrics such as latency, resource-limit incidence, trace completeness, and recovery behavior. These dimensions capture costs that Precision@5 and NDCG@5 alone cannot describe.
 
-Fifth, the journal-policy layer should support explicit alternatives. Researchers may need a strict internal allowlist, a broader discovery mode, or an externally enriched bibliometric view. Such modes should be visible and should not silently change the meaning of a score. Finally, placeholder scholarly references in this manuscript must be replaced with verified citations before submission.
+Fifth, the journal-policy layer should support explicit alternatives. Researchers may need a strict internal allowlist, a broader discovery mode, or an externally enriched bibliometric view. Such modes should be visible and should not silently change the meaning of a score.
 
 \section{Implementation and Evaluation Checklist}
-Before final submission, the team should replace placeholder references with verified sources, audit the T001--T003 metric provenance, inspect untracked staged artifacts, and retain the claim boundary. Any later T013--T020 execution requires a separate explicit approval. A completed dashboard or generated report must not be used as evidence of a completed benchmark unless the underlying artifacts and evaluation outputs have been audited.
+Before final submission, the team should audit the T001--T003 metric provenance, inspect untracked staged artifacts, and retain the claim boundary. Any later T013--T020 execution requires a separate explicit approval. A completed dashboard or generated report must not be used as evidence of a completed benchmark unless the underlying artifacts and evaluation outputs have been audited.
 
 \begin{thebibliography}{4}
-\bibitem{placeholder_scholarly_search} TODO: Replace with a verified reference on LLM-based scholarly search and literature review automation.
-\bibitem{placeholder_multi_agent} TODO: Replace with a verified reference on multi-agent or tool-using AI systems.
-\bibitem{placeholder_rag} TODO: Replace with a verified reference on retrieval-augmented generation workflows.
-\bibitem{placeholder_reproducibility} TODO: Replace with a verified reference on reproducible evaluation of AI systems.
+\bibitem{lo2020s2orc} K. Lo et al., ``S2ORC: The Semantic Scholar Open Research Corpus,'' in \textit{Proceedings of ACL}, 2020.
+\bibitem{wu2023autogen} Q. Wu et al., ``AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation,'' arXiv:2308.08155, 2023.
+\bibitem{lewis2020rag} P. Lewis et al., ``Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks,'' in \textit{Advances in Neural Information Processing Systems}, 2020.
+\bibitem{liu2023agentbench} X. Liu et al., ``AgentBench: Evaluating LLMs as Agents,'' arXiv:2308.03688, 2023.
 \end{thebibliography}
 
 \end{document}

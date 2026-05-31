@@ -1,5 +1,40 @@
 # Paper Agent Project
 
+## Final Submission Package
+
+| Submission item | Repository path |
+| --- | --- |
+| Final paper LaTeX source | [`paper/final-paper-draft.tex`](paper/final-paper-draft.tex) |
+| Presentation outline | [`presentation/final-presentation-outline.md`](presentation/final-presentation-outline.md) |
+| Live demo script | [`docs/final-demo-script.md`](docs/final-demo-script.md) |
+| Prompt inventory | [`docs/prompts.md`](docs/prompts.md) |
+| Used papers list | [`docs/used_papers_list.md`](docs/used_papers_list.md) |
+| Benchmark documentation | [`docs/benchmark.md`](docs/benchmark.md) |
+| Paper claim-boundary checklist | [`paper/paper_claim_boundary_checklist.md`](paper/paper_claim_boundary_checklist.md) |
+| Dashboard | https://paper-agent-project.pages.dev/ |
+
+## Claim Boundary
+
+Allowed claims:
+
+- Controlled T001-T003 benchmark verified.
+- Evidence scope for quantitative comparison is limited to T001-T003.
+- T004-T006 artifact-only dry-run executed through a gated wrapper.
+- T004-T006 produced 3 job rows and 50 result rows.
+- Phase 3L produced partial staged artifact-expansion evidence.
+- T008-T012 generated 87 result rows.
+- T007 timeout evidence was preserved.
+- Later batches T013-T018 and T019-T020 were not started.
+- Full T004-T020 validation remains incomplete.
+- D1 batch-aware persistence is not implemented.
+- Paper Agent emphasizes traceability, DOI integrity, hallucination control, and journal-policy compliance.
+
+Interpretation note:
+
+- Single LLM has higher Precision@5 and NDCG@5 in the controlled T001-T003 benchmark.
+- Paper Agent is not claimed to globally outperform the Single LLM.
+- Paper Agent's validated strength is traceability, DOI verification, hallucination control, and journal-policy compliance within the controlled evidence boundary.
+
 ## Final Submission Status (2026-05-31)
 - **Status**: Production Deployment & Verification Complete (gemini)
 - **Live Verification**: [docs/live-benchmark-verification-2026-05-31.md](docs/live-benchmark-verification-2026-05-31.md)

@@ -2,6 +2,11 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3O Final Submission Package Completion
+- **Status**: Replaced final-paper placeholder citations with four real references, expanded the presentation outline to 14 timed slides with speaker notes, populated the project prompt inventory, and created `docs/used_papers_list.md`. (codex)
+- **README**: Added final submission links and an explicit claim-boundary section covering controlled T001-T003 evidence, artifact-only expansion, the T007 timeout, later unstarted batches, and the unimplemented D1 batch-aware persistence path. (codex)
+- **Safety Boundary**: No benchmark, execute mode, D1 command, migration, dashboard edit, benchmark-script edit, gold-label edit, or PPT edit was performed. (codex)
+
 ## 2026-05-31 (codex) - Phase 3N DESIGN.md-Guided Dashboard UX Improvement
 - **Status**: Added root `DESIGN.md` and applied an evaluator-first academic evidence design system to the dashboard. (codex)
 - **UX Boundary**: Added executive evidence summary, badge glossary, staged expansion panel, controlled benchmark interpretation helper, responsive evidence grids, and collapsed-by-default technical trace console. (codex)

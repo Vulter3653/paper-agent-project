@@ -45,3 +45,11 @@ The final report must explicitly include the raw outputs of the commands above. 
 - **NEVER** manually type or "guess" a commit SHA.
 - **ALWAYS** copy-paste directly from the raw command output.
 - **DOUBLE-CHECK** that the SHA in the summary matches the SHA returned after `git push`.
+
+## Session State SHA Policy
+To avoid structural staleness, the following rules apply to `docs/gemini-session-state.md`:
+
+- **Non-Authoritative**: `docs/gemini-session-state.md` MUST NOT be treated as the authoritative source for the latest commit SHA.
+- **Structural Staleness**: Because the session-state file itself is often part of the commit, any SHA recorded within it becomes the *parent* hash as soon as the commit is created.
+- **Raw Git Truth**: Technical verification of the current HEAD must rely exclusively on the raw git outputs required by this protocol (e.g., `git rev-parse HEAD`).
+- **Baseline Reference**: Session-state may reference a "Last Verified Handoff Baseline" to establish context, but must not claim this baseline is the current HEAD after a new commit has been generated.

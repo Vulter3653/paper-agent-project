@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 2 Design Complete)
+Updated: 2026-05-31 (Session State Policy Fixed)
+
+## 2026-05-31 (gemini) - Session State Policy Correction
+- **Summary**: Addressed the structural SHA staleness in `docs/gemini-session-state.md` by decoupling it from the authoritative commit verification process. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - **Policy Update**: Revised `docs/final-report-integrity.md` to include a "Session State SHA Policy".
+  - **Document Refactor**: Renamed `main HEAD` to `Verification Baseline` in `docs/gemini-session-state.md` and added non-authoritative disclaimers.
+  - **Integrity Reinforcement**: Mandated raw git output as the sole source of truth for commit identification.
+- **Verification**: `npm run validate:history` passing. (gemini)
 
 ## 2026-05-31 (gemini) - Benchmark Batch Schema & API Design
 - **Summary**: Completed the minimal D1 schema and API extension design for T004-T020 batch expansion. (gemini)

@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-31 - Session State HEAD Field Is Structurally Stale
+- **Incident**: On multiple occasions, the `main HEAD` field in `docs/gemini-session-state.md` was found to be pointing to the commit immediately preceding the one it was supposed to represent.
+- **Root Cause**: The structural issue arises when an agent records the current HEAD SHA in the document and then commits that document. The act of committing generates a new SHA, making the value recorded inside the file instantly stale.
+- **Resolution**: Revised the Session State Policy. The `main HEAD` field has been replaced with `Verification Baseline`, and a disclaimer has been added stating that session-state is not the authoritative source for SHAs.
+- **New Standard**: Authoritative commit identity must now be derived exclusively from raw git outputs (e.g., `git rev-parse HEAD`) as mandated by the Final Report Integrity Protocol. (gemini)
+
 ## 2026-05-31 - Benchmark Batch Schema & API Extension Design
 - **Context**: Phase 2 of the batch benchmark expansion roadmap.
 - **Action**: Designed a minimal, backward-compatible schema extension for D1 and new API endpoints to support batch orchestration (T004-T020).

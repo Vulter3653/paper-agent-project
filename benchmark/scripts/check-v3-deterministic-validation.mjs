@@ -51,13 +51,16 @@ async function checkValidation() {
           console.error('Summary says Layer 5 computed but llm_judge_executed is false');
           process.exit(1);
       }
+      if (summary.validation_status === 'v3_validation_partial_semantic_audit') {
+          console.log('Detected quota-limited partial semantic audit status');
+      }
   }
 
   if (summary.claim_boundary.includes('full benchmark validation')) {
     if (!summary.claim_boundary.includes('not full benchmark validation')) {
-       // Allow full validation claim only if Layer 5 is actually computed
-       if (!summary.llm_judge_executed) {
-           console.error('Summary makes full validation claim but Layer 5 is pending');
+       // Allow full validation claim only if Layer 5 is actually computed and not partial
+       if (!summary.llm_judge_executed || summary.validation_status === 'v3_validation_partial_semantic_audit') {
+           console.error('Summary makes full validation claim but Layer 5 is pending or partial');
            process.exit(1);
        }
     }

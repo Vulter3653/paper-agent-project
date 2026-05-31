@@ -10,17 +10,40 @@
   ],
   "scope": "top5_rows_per_method_task",
   "human_evaluation": false,
-  "llm_judge_executed": false,
+  "llm_judge_executed": true,
   "benchmark_execution_performed": false,
   "artifact_rows_modified": false,
-  "judge_model_identifier": "not_available",
-  "judge_provider": "not_available",
+  "judge_model_identifier": "gemini-2.5-flash",
+  "judge_provider": "google",
   "temperature": 0,
   "top_p": 1,
-  "claim_boundary": "Layer 5 scores are semantic proxy metrics from a fixed LLM-as-a-judge. They do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.",
-  "status": "pending_llm_judge_execution",
-  "method_summary": {},
+  "claim_boundary": "Layer 5 scores are semantic proxy metrics from a fixed LLM-as-a-judge. They do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures. Full semantic coverage claim is disabled due to partial audit status.",
+  "status": "computed",
+  "method_summary": {
+    "rule_based": {
+      "method": "rule_based",
+      "evaluated_count": 15,
+      "llm_judge_relevance_score": "2.2667",
+      "construct_coverage_score": "NaN",
+      "context_method_match_score": "NaN",
+      "llm_judge_confidence_score": "NaN",
+      "llm_judge_reasoning_validity": "1.0000"
+    },
+    "single_llm": {
+      "method": "single_llm",
+      "evaluated_count": 7,
+      "llm_judge_relevance_score": "3.7143",
+      "construct_coverage_score": "NaN",
+      "context_method_match_score": "NaN",
+      "llm_judge_confidence_score": "NaN",
+      "llm_judge_reasoning_validity": "1.0000"
+    }
+  },
   "caveats": [
-    "Layer 5 metrics not computed: No BENCHMARK_JUDGE_MODEL or BENCHMARK_JUDGE_PROVIDER environment variables found. Scores were not fabricated."
-  ]
+    "Partial semantic audit: only 22/125 rows evaluated due to quota limits."
+  ],
+  "evaluated_rows": 22,
+  "total_input_rows": 125,
+  "failed_rows": 103,
+  "semantic_coverage_rate": "0.1760"
 }

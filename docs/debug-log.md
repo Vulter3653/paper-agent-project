@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Partial Audit
+
+- Encountered persistent Gemini free-tier quota exceeded errors (repeated HTTP 429) during Layer 5 retry.
+- Reached a time-bounded constraint for full 125-row evaluation.
+- Converted the pipeline to a quota-limited partial semantic audit.
+- Preserved 22 successful judge outputs; audit results now reflect this subset (17.6% coverage).
+- Verified that all downstream summary and check scripts handle the partial audit status correctly.
+
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Semantic Quality Pipeline
 
 - Implemented automated LLM-as-a-judge pipeline for Layer 5 metrics.

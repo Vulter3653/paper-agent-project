@@ -35,6 +35,7 @@ async function computeSummary() {
   const allMetrics = [];
   const layersInfo = [];
   let llmJudgeExecuted = false;
+  let layer5Status = 'not_available';
 
   for (const file of LAYER_FILES) {
     if (fs.existsSync(file)) {
@@ -55,12 +56,14 @@ async function computeSummary() {
             );
           } else if (data.layer === 'Layer 5: Semantic Quality' && data.llm_judge_executed) {
             llmJudgeExecuted = true;
+            layer5Status = data.status;
             allMetrics.push(
-              { metric_name: 'llm_judge_relevance_score', value: stats.llm_judge_relevance_score, details: 'Proposed Agent mean' },
-              { metric_name: 'construct_coverage_score', value: stats.construct_coverage_score, details: 'Proposed Agent mean' },
-              { metric_name: 'context_method_match_score', value: stats.context_method_match_score, details: 'Proposed Agent mean' },
-              { metric_name: 'llm_judge_confidence_score', value: stats.llm_judge_confidence_score, details: 'Proposed Agent mean' },
-              { metric_name: 'llm_judge_reasoning_validity', value: stats.llm_judge_reasoning_validity, details: 'Proposed Agent mean' }
+              { metric_name: 'llm_judge_relevance_score', value: stats.llm_judge_relevance_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
+              { metric_name: 'construct_coverage_score', value: stats.construct_coverage_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
+              { metric_name: 'context_method_match_score', value: stats.context_method_match_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
+              { metric_name: 'llm_judge_confidence_score', value: stats.llm_judge_confidence_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
+              { metric_name: 'llm_judge_reasoning_validity', value: stats.llm_judge_reasoning_validity, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
+              { metric_name: 'semantic_coverage_rate', value: data.semantic_coverage_rate, details: `Audit depth: ${data.evaluated_rows}/${data.total_input_rows}` }
             );
           }
         }
@@ -70,6 +73,7 @@ async function computeSummary() {
   }
 
   const isLayer5Computed = layersInfo.includes('Layer 5: Semantic Quality') && llmJudgeExecuted;
+  const isLayer5Partial = isLayer5Computed && layer5Status === 'quota_limited_partial';
 
   const summaryJson = {
     benchmark_standard: 'v3',
@@ -80,16 +84,18 @@ async function computeSummary() {
     }),
     not_computed_layers: ['Layer 5: Semantic Quality'].filter(l => {
         if (l === 'Layer 5: Semantic Quality') return !llmJudgeExecuted;
-        return false; // Already filtered above
+        return false;
     }),
     human_evaluation: false,
     llm_judge_executed: llmJudgeExecuted,
     benchmark_execution_performed: false,
     artifact_rows_modified: false,
-    validation_status: isLayer5Computed ? 'v3_validation_complete_pending_gates' : 'deterministic_layer_1_4_6_computed',
-    claim_boundary: isLayer5Computed
-        ? 'Layer 1-6 metrics have been computed from available artifacts and fixed LLM-as-a-judge scoring. Comparative claims remain limited where baseline parity is partial.'
-        : 'Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed.',
+    validation_status: isLayer5Partial ? 'v3_validation_partial_semantic_audit' : (isLayer5Computed ? 'v3_validation_complete_pending_gates' : 'deterministic_layer_1_4_6_computed'),
+    claim_boundary: isLayer5Partial
+        ? 'Layer 1-4 and Layer 6 metrics computed from existing artifacts. Layer 5 is a quota-limited partial semantic audit. Full semantic coverage claim is disabled.'
+        : (isLayer5Computed
+            ? 'Layer 1-6 metrics have been computed from available artifacts and fixed LLM-as-a-judge scoring. Comparative claims remain limited where baseline parity is partial.'
+            : 'Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed.'),
     metrics: allMetrics,
     generated_at: new Date().toISOString()
   };
@@ -113,6 +119,7 @@ async function computeSummary() {
       'benchmark/scripts/compute-layer4-retrieval-v3.mjs',
       'benchmark/scripts/prepare-layer5-judge-input-v3.mjs',
       'benchmark/scripts/run-layer5-llm-judge-v3.mjs',
+      'benchmark/scripts/retry-layer5-failed-judge-v3.mjs',
       'benchmark/scripts/compute-layer5-semantic-v3.mjs',
       'benchmark/scripts/compute-layer6-robustness-v3.mjs',
       'benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs'

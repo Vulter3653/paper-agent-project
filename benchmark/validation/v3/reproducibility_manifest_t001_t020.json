@@ -1,6 +1,6 @@
 {
   "run_id": "v3-val-2026-05-31",
-  "generated_at": "2026-05-31T20:03:12.945Z",
+  "generated_at": "2026-05-31T20:58:56.432Z",
   "base_commit_or_head": "0728af84a8d76a9ba03276019879d39e0cf1e469",
   "input_files": [
     "benchmark/tasks.jsonl",
@@ -17,6 +17,7 @@
     "benchmark/scripts/compute-layer4-retrieval-v3.mjs",
     "benchmark/scripts/prepare-layer5-judge-input-v3.mjs",
     "benchmark/scripts/run-layer5-llm-judge-v3.mjs",
+    "benchmark/scripts/retry-layer5-failed-judge-v3.mjs",
     "benchmark/scripts/compute-layer5-semantic-v3.mjs",
     "benchmark/scripts/compute-layer6-robustness-v3.mjs",
     "benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs"

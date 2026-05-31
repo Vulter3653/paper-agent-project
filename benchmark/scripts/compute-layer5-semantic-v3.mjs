@@ -34,6 +34,10 @@ async function computeLayer5() {
 
   const manifest = JSON.parse(fs.readFileSync(RUN_MANIFEST, 'utf-8'));
   
+  // Accept 'computed', 'partial_computed', 'quota_limited_partial' etc.
+  // Only stop if explicitly pending.
+  const isExecuted = manifest.status !== 'pending_llm_judge_execution';
+
   const summaryJson = {
     benchmark_standard: "v3",
     layer: "Layer 5: Semantic Quality",
@@ -46,27 +50,32 @@ async function computeLayer5() {
     ],
     scope: "top5_rows_per_method_task",
     human_evaluation: false,
-    llm_judge_executed: manifest.status === 'computed',
+    llm_judge_executed: isExecuted,
     benchmark_execution_performed: false,
     artifact_rows_modified: false,
     judge_model_identifier: manifest.judge_model_identifier,
     judge_provider: manifest.judge_provider,
     temperature: manifest.temperature,
     top_p: manifest.top_p,
-    claim_boundary: "Layer 5 scores are semantic proxy metrics from a fixed LLM-as-a-judge. They do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.",
-    status: manifest.status,
+    claim_boundary: "Layer 5 scores are semantic proxy metrics from a fixed LLM-as-a-judge. They do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures. Full semantic coverage claim is disabled due to partial audit status.",
+    status: manifest.status === 'computed' ? 'computed' : 'quota_limited_partial',
     method_summary: {},
     caveats: []
   };
 
-  if (manifest.status !== 'computed') {
+  if (!isExecuted) {
+    summaryJson.status = 'pending_llm_judge_execution';
     summaryJson.caveats.push('Layer 5 metrics not computed: ' + (manifest.reason || 'Judge execution pending.'));
     fs.writeFileSync(OUTPUT_SUMMARY_JSON, JSON.stringify(summaryJson, null, 2));
     console.log('Layer 5 metrics marked as pending.');
     return;
   }
 
-  // If we had outputs, we would parse them here
+  if (!fs.existsSync(OUTPUT_JSONL)) {
+    console.error('Output raw file not found.');
+    process.exit(1);
+  }
+
   const rawOutputs = fs.readFileSync(OUTPUT_JSONL, 'utf-8').trim().split('\n').map(line => JSON.parse(line));
   const inputs = fs.readFileSync(INPUT_JSONL, 'utf-8').trim().split('\n').map(line => JSON.parse(line));
   const inputMap = new Map(inputs.map(i => [i.judge_input_id, i]));
@@ -74,7 +83,9 @@ async function computeLayer5() {
   const rowMetrics = [];
   const methodStats = {};
 
-  rawOutputs.forEach(out => {
+  const successfulOutputs = rawOutputs.filter(out => !out.judge_status || out.judge_status !== 'failed');
+
+  successfulOutputs.forEach(out => {
     const input = inputMap.get(out.judge_input_id);
     if (!input) return;
 
@@ -124,11 +135,20 @@ async function computeLayer5() {
     return acc;
   }, {});
 
+  summaryJson.evaluated_rows = successfulOutputs.length;
+  summaryJson.total_input_rows = inputs.length;
+  summaryJson.failed_rows = inputs.length - successfulOutputs.length;
+  summaryJson.semantic_coverage_rate = (successfulOutputs.length / inputs.length).toFixed(4);
+
+  if (summaryJson.evaluated_rows < summaryJson.total_input_rows) {
+    summaryJson.caveats.push(`Partial semantic audit: only ${summaryJson.evaluated_rows}/${summaryJson.total_input_rows} rows evaluated due to quota limits.`);
+  }
+
   fs.writeFileSync(OUTPUT_ROW_CSV, stringifyCsv(rowMetrics));
   fs.writeFileSync(OUTPUT_METHOD_CSV, stringifyCsv(methodSummaryRows));
   fs.writeFileSync(OUTPUT_SUMMARY_JSON, JSON.stringify(summaryJson, null, 2));
 
-  console.log(`Layer 5 computation complete.`);
+  console.log(`Layer 5 computation complete (Partial audit: ${summaryJson.evaluated_rows}/${summaryJson.total_input_rows}).`);
 }
 
 computeLayer5().catch(console.error);

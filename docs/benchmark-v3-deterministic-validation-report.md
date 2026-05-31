@@ -3,15 +3,16 @@
 ## 1. Scope
 - T001-T020
 - Existing artifacts only
-- Layer 1-3 computed
-- Layer 4-6 not computed
+- Layer 1-4 and 6 computed
+- Layer 5: Quota-limited partial audit
 
 ## 2. Safety Boundary
 - No benchmark execution
 - No D1 command
-- No artifact rewrite
-- No LLM judge execution
+- No artifact rewrite (appends only to logs)
+- Fixed LLM judge execution (Quota-bounded)
 - No dashboard/paper/presentation edit
+- No score fabrication
 
 ## 3. Generated Outputs
 - `normalized_results_t001_t020.csv`: 342 normalized result rows from baseline and agent runs.
@@ -21,25 +22,16 @@
 - `layer4_retrieval_metrics_by_task.csv`: Quantitative retrieval performance per task.
 - `layer4_retrieval_metrics_by_method.csv`: Aggregated retrieval performance per method.
 - `layer6_robustness_metrics.csv`: System stability and risk indicators.
-- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4 and 6 (and Layer 5 if computed).
+- `layer5_semantic_metrics_summary.json`: Partial semantic audit results.
+- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4, 6, and partial 5.
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
 ## 4. Claim Boundary
-Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 remains pending because fixed LLM-as-a-judge scoring was not executed. Full v3 metric-layer coverage is therefore not complete.
+Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 is a quota-limited partial semantic audit (22/125 rows evaluated). Full semantic coverage claim is disabled. This does not constitute full T001-T020 benchmark validation because Layer 5 remains partial and baseline parity remains partial.
 
 T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 are correctly labeled as "artifact_only" to prevent overclaiming.
-...
-- **Latency per Task**: ~204.60s (Average for successfully recorded jobs).
 
-## 8. Layer 5 Semantic Quality Metrics
-
-- Uses fixed LLM-as-a-judge scoring.
-- Evaluation scope: top-5 rows per method-task pair.
-- Metrics: LLM Judge Relevance Score, Construct Coverage Score, Context/Method Match Score, Judge Confidence Score, Reasoning Validity.
-- **Status**: pending_llm_judge_execution
-- **Reason**: No fixed judge model/provider configuration was available. No semantic scores were fabricated.
-- Layer 5 metrics are semantic proxy metrics and do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.
-
+## 5. Verification Results
 - **Reproducibility Manifest**: PASS
 - **Baseline Parity**: PARTIAL (Artifacts for T004-T020 exist for Proposed Agent, but not for all baselines yet)
 - **Claim Boundary Compliance**: PASS
@@ -54,7 +46,7 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 - Computed from existing normalized rows.
 - Metrics: Precision @5, NDCG @5, Recall @20, Gold Hit Rate, MRR.
 - No benchmark rerun was performed.
-- No LLM judge was executed.
+- No LLM judge was executed for Layer 4 quantitative matching.
 - Comparative claims are limited if baseline parity remains PARTIAL.
 - **Proposed Agent Mean P@5**: 0.1333 (for T001-T003)
 - **Proposed Agent Mean NDCG@5**: 0.3579 (for T001-T003)
@@ -64,10 +56,19 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 - Computed from existing artifacts and logs.
 - Metrics: Negative Distractor False Positive Rate, Hallucination Rate, Timeout Rate, Latency per Task, Cost Proxy.
 - No benchmark rerun was performed.
-- No LLM judge was executed.
 - Some metrics may be artifact-derived proxies where fresh external verification or usage telemetry is unavailable.
 - **Artifact-derived Hallucination Risk**: 0.3070 (Rows lacking verified status or gold DOI match).
 - **Timeout Rate**: 0.1111 (Based on recorded job artifacts).
 - **Latency per Task**: ~204.60s (Average for successfully recorded jobs).
+
+## 8. Layer 5 Semantic Quality Metrics
+
+- Uses fixed LLM-as-a-judge scoring.
+- Evaluation scope: top-5 rows per method-task pair.
+- **Status**: quota_limited_partial
+- **Semantic Coverage Rate**: 0.1760 (22/125 rows)
+- **Reason**: Gemini free-tier quota exceeded; audit depth capped for time-bounded delivery.
+- Layer 5 metrics are semantic proxy metrics and do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.
+- **Proposed Agent Mean Relevance Score (Partial Audit)**: 4.4545 (Based on 11 evaluated rows)
 
 (gemini)

@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Benchmark: Converted Layer 5 to a quota-limited partial semantic audit (17.6% coverage) due to persistent HTTP 429 quota limits. (gemini)
+- Scripts: Updated `compute-layer5-semantic-v3.mjs` and unified summary logic to handle partial audit subsets. (gemini)
 - Benchmark: Implemented the Benchmark v3 Layer 5 Semantic Quality pipeline (fixed LLM-as-a-judge) with pending execution safety. (gemini)
 - Scripts: Added Layer 5 preparation, execution, and computation scripts. (gemini)
 - Benchmark: Implemented the Benchmark v3 Layer 6 Robustness & Risk metrics (Hallucination, Timeout, Latency, Cost Proxy). (gemini)

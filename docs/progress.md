@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark v3 Layer 5 Semantic Quality Pipeline)
+Updated: 2026-06-01 (Benchmark v3 Layer 5 Partial Audit)
+
+## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Partial Audit
+
+- **Status**: Converted Layer 5 to a quota-limited partial semantic audit.
+- **Reason**: Persistent Gemini free-tier quota limits (repeated HTTP 429) prevented full 125-row evaluation.
+- **Coverage**: 22/125 rows evaluated (17.6%).
+- **Outputs**: Updated `layer5_semantic_metrics_summary.json` and unified summary to reflect partial status and subset-based scoring.
+- **Claim Boundary**: Documented that full semantic coverage claims are disabled. Baseline context remains partial.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Semantic Quality Pipeline
 

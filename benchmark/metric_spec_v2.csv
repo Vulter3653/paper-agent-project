@@ -1,0 +1,17 @@
+metric_name,metric_group,definition,input_required,calculation_type,primary_or_secondary,claim_use
+precision_at_5,Retrieval,Proportion of top 5 matching gold set,Gold Set,Deterministic,Primary,Quantitative retrieval quality
+ndcg_at_5,Ranking,Ranking quality using discounted gain,Gold Set,Deterministic,Primary,Search effectiveness
+recall_at_20,Retrieval,Proportion of gold set found in top 20,Gold Set,Deterministic,Primary,Retrieval coverage
+doi_exact_match_rate,Validity,Percentage of valid DOIs returned,Crossref API,Deterministic,Primary,Evidence integrity
+hallucination_rate,Integrity,Rate of nonexistent papers,Multiple APIs,Deterministic,Primary,System trustworthiness
+paper_existence_rate,Validity,Rate of real vs fake records,API lookup,Deterministic,Secondary,Hallucination check
+journal_policy_compliance_rate,Validity,Rate of papers in allowed pool,Allowlist,Deterministic,Secondary,Policy enforcement
+llm_judge_relevance_score,Qualitative,1-5 score from fixed LLM judge,LLM Judge,Stochastic (T=0),Secondary,Semantic relevance proxy
+timeout_rate,Robustness,Rate of job timeouts,Runner Logs,Deterministic,Secondary,Infrastructure stability
+latency_per_task,Robustness,Average time per task,Runner Logs,Deterministic,Secondary,System efficiency
+trace_completeness_rate,Traceability,Percentage of stages with full logs,D1 Traces,Deterministic,Secondary,Process transparency
+metadata_mismatch_rate,Integrity,Discrepancy in year/journal/DOI,API lookup,Deterministic,Primary,Data accuracy
+gold_hit_rate,Retrieval,Percentage of tasks with >=1 gold result,Gold Set,Deterministic,Secondary,Task success rate
+mrr,Ranking,Average reciprocal rank of first gold,Gold Set,Deterministic,Secondary,Ranking quality
+cost_proxy,Robustness,Estimated API cost per task,Runner Logs,Deterministic,Secondary,Economical viability
+critic_flag_coverage,Traceability,Rate of papers with critic flags,D1 Table,Deterministic,Secondary,Risk detection transparency

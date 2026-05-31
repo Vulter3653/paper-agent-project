@@ -1,0 +1,21 @@
+task_id,field,journal_category_id,topic_domain,query_type,difficulty_level,ambiguity_level,recency_requirement,interdisciplinary_level,expected_gold_count,known_risk,notes
+T001,2. 조직인사,organization-hr,HR/AI,Specific Question,Medium,Low,High,Medium,3,Niche constructs,"expected_priority: 국제 S급, 국제 A1급"
+T002,2. 조직인사,organization-hr,HR/AI,Broad Concept,Low,Medium,High,Low,5,Term collision,needs protocol review
+T003,5. 마케팅,marketing,marketing,Specific Question,Medium,Low,Medium,Medium,4,Construct overlap,needs protocol review
+T004,2. 조직인사,organization-hr,HR/Diversity,Broad Concept,Low,Medium,Low,Low,3,Generic terms,needs protocol review
+T005,2. 조직인사,organization-hr,HR/Retention,Broad Concept,Medium,Medium,Medium,Low,4,Overstudied topic,needs protocol review
+T006,5. 마케팅,marketing,marketing,Specific Question,High,Low,High,High,2,Emerging field,needs protocol review
+T007,1. 경영정보,mis,mis,Technical,High,Low,High,High,3,Platform specific,T007 legacy timeout observed
+T008,5. 마케팅,marketing,marketing,Consumer Behavior,Medium,Medium,Medium,Low,5,Brand naming,needs protocol review
+T009,1. 경영정보,mis,mis,Trust/Security,Medium,Low,High,Medium,4,FinTech specific,needs protocol review
+T010,1. 경영정보,mis,mis,Blockchain,Medium,Low,High,High,3,Hype cycle,needs protocol review
+T011,1. 경영정보,mis,mis,AI/Decision,High,Medium,High,Medium,4,Technical gap,needs protocol review
+T012,2. 조직인사,organization-hr,Diversity/Voice,Medium,Medium,Medium,Low,5,Soft constructs,needs protocol review
+T013,5. 마케팅,marketing,marketing,Omnichannel,Medium,Low,Medium,Medium,4,Retail specific,needs protocol review
+T014,3. 전략,strategy,strategy,Business Analytics,Medium,Medium,High,Medium,5,Advantage specific,needs protocol review
+T015,3. 전략,strategy,strategy,ESG/Sustainability,Low,High,High,High,3,Reporting bias,needs protocol review
+T016,4. 재무,finance,finance,FinTech/Lending,High,Low,High,Medium,4,Regulation specific,needs protocol review
+T017,4. 재무,finance,finance,Crypto/Market,High,Low,High,High,2,Volatility,needs protocol review
+T018,6. LSOM,lsom,lsom,Circular Economy,Medium,Medium,High,High,3,Operations specific,needs protocol review
+T019,6. LSOM,lsom,lsom,Smart Factory,High,Low,High,Medium,4,Industry 4.0,needs protocol review
+T020,3. 전략,strategy,strategy,Digital Transformation,Low,High,Medium,High,5,Vague term,needs protocol review

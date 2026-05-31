@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark Standard v2 Automated Evaluation Design
+
+- Added automated benchmark design documentation and protocol templates.
+- No benchmark execution or artifact rewrite was performed.
+- Human evaluation was explicitly excluded from the protocol.
+- The v2 protocol uses deterministic metrics and fixed LLM-as-a-judge scoring.
+
 ## 2026-06-01 (gemini) - Artifact Preservation Wording Correction
 
 - Corrected the Phase 3L report wording to reflect that Batch 2 and Batch 3 CSV artifacts were committed to preserve staged execution evidence.

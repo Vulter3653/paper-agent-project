@@ -1,5 +1,7 @@
 # Benchmark
 
+> Benchmark Standard v2 is documented in `docs/benchmark-standard-v2.md`. The v2 protocol is fully automated: it uses deterministic metadata checks, gold DOI matching, scripted metric computation, and fixed LLM-as-a-judge scoring. Human evaluation is not used. The current controlled quantitative comparison remains limited to T001-T003 until artifact rows are promoted through the v2 validation protocol.
+
 Source document: `paper_agent_enhanced_report.md`
 
 The benchmark follows a REPRO-Bench-style structure adapted to scholarly paper discovery. It must evaluate both final ranked outputs and intermediate agent behavior.

@@ -1,0 +1,6 @@
+task_id,paper_id_or_doi,title,label_type,relevance_score_v2,core_construct_match,context_match,method_or_domain_match,journal_policy_status,doi_verification_status,metadata_verification_status,reason,review_status
+T001,10.1016/j.chb.2022.107179,"Wait, I'm still human: The impact of AI disclosure...",core_gold,5,yes,yes,yes,S_tier,verified,verified,Direct match for constructs,script_verified
+T001,10.5465/amr.2022.0058,"Algorithms and the self...",acceptable_gold,4,partial,yes,yes,S_tier,verified,verified,Theoretical baseline,script_verified
+T013,10.1016/j.jretai.2022.02.003,"The omnichannel customer journey...",core_gold,5,yes,yes,yes,S_tier,verified,verified,Key T013 reference,script_verified
+T007,N/A,Pending automated discovery,near_miss,1,no,no,no,unknown,none,none,distractor example,pending_auto_validation
+T020,10.1287/isre.2022.1121,"Digital transformation and organizational value...",core_gold,5,yes,yes,yes,S_tier,verified,verified,Gold standard example,script_verified

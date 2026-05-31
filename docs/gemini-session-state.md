@@ -1,37 +1,37 @@
 # Gemini Session State
 
-Updated: 2026-06-01 (Benchmark v3 Deterministic Pipeline Implementation Complete)
+Updated: 2026-06-01 (Benchmark v3 Layer 4 Retrieval Metrics Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
 > The latest commit identity must be verified via the **Final Report Integrity Protocol** raw git output in the final summary of each task.
 
 ## Current Status
-- **Deterministic Pipeline**: Implemented scripts for Layer 1-3 metric computation.
-- **Normalization**: 342 result rows normalized from baseline and agent runs.
-- **Metrics**: 15/30 metrics computed across Foundation, Schema, and Validity layers.
-- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with pipeline details.
+- **Retrieval Accuracy**: Implemented Layer 4 metric calculator (P@5, NDCG, Recall, etc.).
+- **Deterministic Pipeline**: UPDATED to include Layer 4 in unified summary and check scripts.
+- **Metrics**: 20/30 metrics now computed from existing artifacts.
+- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with Layer 4 details.
 - **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
-- **Claim Boundary**: Layer 1-3 metrics computed; Layer 4-6 remain pending for full validation.
+- **Claim Boundary**: Layer 1-4 metrics computed; Layer 5-6 remain pending for full validation.
 
 ## Verification Baseline
-- **HEAD Commit**: `0728af84a8d76a9ba03276019879d39e0cf1e469` (Base for pipeline)
+- **HEAD Commit**: `6eed6f6160bfedda316569f742129cfc89e62e70` (Base for Layer 4)
 - **Local State**: Scripts and validation outputs ready for commit.
 
 ## Completed Actions
-1. **Scripting**: Created normalization and layer computation scripts in `benchmark/scripts/`.
-2. **Normalization**: Generated `normalized_results_t001_t020.csv`.
-3. **Computation**: Generated Layer 1-3 metrics and summary JSON.
-4. **Reporting**: Created `docs/benchmark-v3-deterministic-validation-report.md`.
-5. **Automation**: Added v3 scripts to `package.json`.
+1. **Scripting**: Created `benchmark/scripts/compute-layer4-retrieval-v3.mjs`.
+2. **Computation**: Generated task-level and method-level retrieval metrics.
+3. **Integration**: Updated unified summary script to include Layer 4 mean metrics.
+4. **Reporting**: Updated `docs/benchmark-v3-deterministic-validation-report.md` with Layer 4 section.
+5. **Automation**: Integrated Layer 4 into `benchmark:v3:deterministic` package script.
 
 ## Next Recommended Actions
-1. **Commit and Push**: "Scripts: add benchmark v3 deterministic validation pipeline".
-2. **Retrieval Metrics**: Implement Layer 4 (Retrieval Accuracy) calculator using Gold Set matching.
-3. **Qualitative Scoring**: Draft judge execution script for Layer 5 (Semantic Quality).
+1. **Commit and Push**: "Scripts: add benchmark v3 layer4 retrieval metrics".
+2. **Qualitative Scoring**: Implement Layer 5 (Semantic Quality) judge scorer.
+3. **Risk Analysis**: Implement Layer 6 (Robustness & Risk) analyzer.
 
 ## Blockers
-- **None**: Pipeline is functional and verified.
+- **None**: Layer 4 metrics are functional and verified.
 
 ## Verification Results
 - `npm run benchmark:v3:deterministic`: ✅ PASS
@@ -44,28 +44,17 @@ Updated: 2026-06-01 (Benchmark v3 Deterministic Pipeline Implementation Complete
 ```text
  M package.json
  M CHANGELOG.md
+ M benchmark/scripts/check-v3-deterministic-validation.mjs
+ M benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs
  M docs/benchmark-standard-v3-metric-specification.md
+ M docs/benchmark-v3-deterministic-validation-report.md
  M docs/debug-log.md
  M docs/gemini-session-state.md
  M docs/progress.md
- A benchmark/scripts/check-v3-deterministic-validation.mjs
- A benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs
- A benchmark/scripts/compute-layer1-foundation-v3.mjs
- A benchmark/scripts/compute-layer2-schema-v3.mjs
- A benchmark/scripts/compute-layer3-validity-v3.mjs
- A benchmark/scripts/normalize-results-v3.mjs
- A benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.csv
- A benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.json
- A benchmark/validation/v3/layer1_foundation_metrics.csv
- A benchmark/validation/v3/layer1_foundation_metrics_summary.json
- A benchmark/validation/v3/layer2_schema_metrics.csv
- A benchmark/validation/v3/layer2_schema_metrics_summary.json
- A benchmark/validation/v3/layer3_validity_metrics.csv
- A benchmark/validation/v3/layer3_validity_metrics_summary.json
- A benchmark/validation/v3/normalization_report_t001_t020.json
- A benchmark/validation/v3/normalized_results_t001_t020.csv
- A benchmark/validation/v3/reproducibility_manifest_t001_t020.json
- A docs/benchmark-v3-deterministic-validation-report.md
+ A benchmark/scripts/compute-layer4-retrieval-v3.mjs
+ A benchmark/validation/v3/layer4_retrieval_metrics_by_method.csv
+ A benchmark/validation/v3/layer4_retrieval_metrics_by_task.csv
+ A benchmark/validation/v3/layer4_retrieval_metrics_summary.json
 ```
 
 (gemini)

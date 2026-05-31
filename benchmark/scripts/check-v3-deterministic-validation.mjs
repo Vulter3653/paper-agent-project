@@ -7,6 +7,9 @@ const FILES_TO_CHECK = [
   'layer1_foundation_metrics.csv',
   'layer2_schema_metrics.csv',
   'layer3_validity_metrics.csv',
+  'layer4_retrieval_metrics_by_task.csv',
+  'layer4_retrieval_metrics_by_method.csv',
+  'layer4_retrieval_metrics_summary.json',
   'benchmark_v3_deterministic_metrics_summary.json',
   'reproducibility_manifest_t001_t020.json'
 ];
@@ -36,6 +39,16 @@ async function checkValidation() {
       console.error(`Summary constraint violation: ${c.field} should be ${c.expected}`);
       process.exit(1);
     }
+  }
+
+  if (!summary.computed_layers.includes('Layer 4: Retrieval Accuracy')) {
+    console.error('Summary missing Layer 4 in computed_layers');
+    process.exit(1);
+  }
+
+  if (summary.not_computed_layers.includes('Layer 4')) {
+    console.error('Summary incorrectly includes Layer 4 in not_computed_layers');
+    process.exit(1);
   }
 
   if (summary.claim_boundary.includes('full benchmark validation')) {

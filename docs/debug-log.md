@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Layer 4 Retrieval Metrics
+
+- Implemented automated quantitative retrieval accuracy calculator.
+- Correctly handled DOI normalization and Gold Set relevance mapping.
+- Verified that top-5 precision uses a denominator of 5 even for smaller result sets to penalize retrieval failures.
+- Updated unified summary to include Layer 4 mean metrics for the Proposed Agent.
+- Confirmed no full validation claims were made despite expanded task coverage.
+
 ## 2026-06-01 (gemini) - Benchmark v3 Deterministic Validation Pipeline
 
 - Implemented automated normalization of 342 result rows from disparate artifact sources.

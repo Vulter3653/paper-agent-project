@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark v3 Deterministic Validation Pipeline)
+Updated: 2026-06-01 (Benchmark v3 Layer 4 Retrieval Metrics)
+
+## 2026-06-01 (gemini) - Benchmark v3 Layer 4 Retrieval Metrics
+
+- **Status**: Implemented the Benchmark v3 Layer 4 Retrieval Accuracy metric calculator.
+- **Scope**: Computed Precision@5, NDCG@5, Recall@20, Gold Hit Rate, and MRR from existing normalized artifacts and Gold Set v2. No benchmark rerun occurred.
+- **Pipeline**: Added `compute-layer4-retrieval-v3.mjs` and updated the unified summary/check scripts.
+- **Outputs**: Generated `layer4_retrieval_metrics_by_task.csv`, `layer4_retrieval_metrics_by_method.csv`, and updated summary JSON in `benchmark/validation/v3/`.
+- **Claim Boundary**: Verified that T001-T003 results match the controlled baseline (P@5=0.1333, NDCG@5=0.3579). Comparative claims for T004-T020 remain limited due to PARTIAL baseline parity.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark v3 Deterministic Validation Pipeline
 

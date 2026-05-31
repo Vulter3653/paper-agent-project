@@ -1,0 +1,4 @@
+method,evaluated_task_count,total_result_count,mean_precision_at_5,mean_ndcg_at_5,mean_recall_at_20,gold_hit_rate,mrr,notes
+rule_based,3,15,0.0667,0.2154,0.1111,0.3333,0.3333,
+single_llm,3,15,0.6000,1.0000,1.0000,1.0000,1.0000,
+proposed_agent,19,312,0.0421,0.0930,0.1053,0.2632,0.1684,

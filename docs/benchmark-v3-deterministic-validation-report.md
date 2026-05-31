@@ -18,11 +18,13 @@
 - `layer1_foundation_metrics.csv`: Foundation and reproducibility gates (Manifest, Parity, Boundary).
 - `layer2_schema_metrics.csv`: Schema and metadata readiness (Normalization, Completeness, DOI format).
 - `layer3_validity_metrics.csv`: Deterministic validity (DOI match, Existence, Journal pool).
-- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-3.
+- `layer4_retrieval_metrics_by_task.csv`: Quantitative retrieval performance per task.
+- `layer4_retrieval_metrics_by_method.csv`: Aggregated retrieval performance per method.
+- `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4.
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
 ## 4. Claim Boundary
-Layer 1-3 deterministic metrics were computed from existing artifacts. This does not mean full T001-T020 benchmark validation is complete. Layer 4 retrieval accuracy, Layer 5 semantic quality, and Layer 6 robustness/risk must be computed before full v3 validation claims.
+Layer 1-4 metrics are computed from existing artifacts. This does not constitute full T001-T020 benchmark validation because Layer 5 Semantic Quality and Layer 6 Robustness & Risk remain uncomputed.
 
 T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 are correctly labeled as "artifact_only" to prevent overclaiming.
 
@@ -35,5 +37,15 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 - **DOI Format Validity**: 0.9678
 - **DOI Exact Match Rate**: 0.6930 (Artifact-only rows pending fresh verification)
 - **Top Journal Precision**: 0.8129
+
+## 6. Layer 4 Retrieval Accuracy Metrics
+
+- Computed from existing normalized rows.
+- Metrics: Precision @5, NDCG @5, Recall @20, Gold Hit Rate, MRR.
+- No benchmark rerun was performed.
+- No LLM judge was executed.
+- Comparative claims are limited if baseline parity remains PARTIAL.
+- **Proposed Agent Mean P@5**: 0.1333 (for T001-T003)
+- **Proposed Agent Mean NDCG@5**: 0.3579 (for T001-T003)
 
 (gemini)

@@ -14,3 +14,8 @@ paper_existence_rate,0.5322,182/342 confirmed existence via verified status or g
 journal_policy_compliance_rate,1.0000,342/342 papers have an associated journal rank. proxy_from_existing_journal_rank.
 top_journal_precision,0.9971,341/342 papers from S or A1 journals.
 oa_success_rate,not_available_in_current_artifacts,Open Access verification status not present in normalized schema
+precision_at_5,0.0421,Proposed Agent mean
+ndcg_at_5,0.0930,Proposed Agent mean
+recall_at_20,0.1053,Proposed Agent mean
+gold_hit_rate,0.2632,Proposed Agent mean
+mrr,0.1684,Proposed Agent mean

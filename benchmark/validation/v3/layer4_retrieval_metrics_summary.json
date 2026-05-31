@@ -1,0 +1,64 @@
+{
+  "benchmark_standard": "v3",
+  "layer": "Layer 4: Retrieval Accuracy",
+  "metrics_computed": [
+    "precision_at_5",
+    "ndcg_at_5",
+    "recall_at_20",
+    "gold_hit_rate",
+    "mrr"
+  ],
+  "scope": "T001-T020",
+  "input_files": [
+    "benchmark/validation/v3/normalized_results_t001_t020.csv",
+    "benchmark/gold_relevant_papers.csv",
+    "benchmark/tasks.jsonl"
+  ],
+  "output_files": [
+    "benchmark/validation/v3/layer4_retrieval_metrics_by_task.csv",
+    "benchmark/validation/v3/layer4_retrieval_metrics_by_method.csv"
+  ],
+  "human_evaluation": false,
+  "llm_judge_executed": false,
+  "benchmark_execution_performed": false,
+  "artifact_rows_modified": false,
+  "baseline_parity_status": "PARTIAL",
+  "claim_boundary": "Layer 4 retrieval metrics are computed from existing normalized rows. Comparative claims remain limited if baseline parity is not PASS. Baseline parity is currently PARTIAL. Layer 1-4 metrics are computed from existing artifacts. This does not constitute full T001-T020 benchmark validation because Layer 5 Semantic Quality and Layer 6 Robustness & Risk remain uncomputed.",
+  "gold_relevance_mapping": "human_relevance (if exists) maps directly torel_i. missing relevance_label → binary relevant = 1. label >= 4 → relevant for recall.",
+  "method_summary": {
+    "rule_based": {
+      "method": "rule_based",
+      "evaluated_task_count": 3,
+      "total_result_count": 15,
+      "mean_precision_at_5": "0.0667",
+      "mean_ndcg_at_5": "0.2154",
+      "mean_recall_at_20": "0.1111",
+      "gold_hit_rate": "0.3333",
+      "mrr": "0.3333",
+      "notes": ""
+    },
+    "single_llm": {
+      "method": "single_llm",
+      "evaluated_task_count": 3,
+      "total_result_count": 15,
+      "mean_precision_at_5": "0.6000",
+      "mean_ndcg_at_5": "1.0000",
+      "mean_recall_at_20": "1.0000",
+      "gold_hit_rate": "1.0000",
+      "mrr": "1.0000",
+      "notes": ""
+    },
+    "proposed_agent": {
+      "method": "proposed_agent",
+      "evaluated_task_count": 19,
+      "total_result_count": 312,
+      "mean_precision_at_5": "0.0421",
+      "mean_ndcg_at_5": "0.0930",
+      "mean_recall_at_20": "0.1053",
+      "gold_hit_rate": "0.2632",
+      "mrr": "0.1684",
+      "notes": ""
+    }
+  },
+  "generated_at": "2026-05-31T19:27:35.363Z"
+}

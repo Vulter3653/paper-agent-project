@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Docs: Added Benchmark Standard v3 as an implementation-ready metric specification layer for the 30-metric automated benchmark architecture. (gemini)
+- Benchmark: Added `metric_spec_v3.csv` and `metric_spec_v3.json` with 10 specification fields for each of the 30 benchmark metrics. (gemini)
 - Benchmark: Layered Benchmark Standard v2 metrics into a 30-indicator 6-layer architecture (Foundation, Schema, Validity, Accuracy, Quality, Risk) for enhanced diagnostic depth. (gemini)
 - Benchmark: Hardened protocol schemas with negative distractors, 9-gate promotion logic, and reproducibility metrics. (gemini)
 - Docs: Added Benchmark Standard v2 as an automated evaluation protocol using deterministic metrics, gold DOI matching, scripted validation, and fixed LLM-as-a-judge scoring without human evaluation. (gemini)

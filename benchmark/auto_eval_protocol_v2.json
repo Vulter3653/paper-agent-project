@@ -84,5 +84,13 @@
     "temperature": 0.0,
     "scale": "1-5",
     "required_fields": ["relevance_score_v2", "construct_match", "context_match", "method_domain_match", "reason", "confidence"]
+  },
+  "v3_metric_specification": {
+    "document": "docs/benchmark-standard-v3-metric-specification.md",
+    "csv": "benchmark/metric_spec_v3.csv",
+    "json": "benchmark/metric_spec_v3.json",
+    "metric_count": 30,
+    "fields_per_metric": 10,
+    "status": "specified_not_executed"
   }
 }

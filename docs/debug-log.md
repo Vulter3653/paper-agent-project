@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark Standard v3 Metric Specification
+
+- Created implementation-ready metric specification for the 30-metric benchmark architecture.
+- Added CSV and JSON metric specification schemas.
+- No benchmark execution, result rewrite, LLM judge execution, dashboard edit, paper edit, or presentation edit was performed.
+
 ## 2026-06-01 (gemini) - Benchmark Standard v2 Metric Layering
 
 - Refactored the metric architecture into 6 distinct layers.

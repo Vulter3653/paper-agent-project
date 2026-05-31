@@ -186,7 +186,10 @@ Artifact evidence (T004-T020) is promoted to "Validated Benchmark" only if:
 ## 14. Implementation Roadmap
 
 1. [v] Design automated v2 protocol (Current).
-2. [ ] Implement deterministic metric computation script.
-3. [ ] Normalize Batch 1-3 artifact rows.
-4. [ ] Execute automated LLM-as-a-judge scoring.
-5. [ ] Update claim boundaries with expanded validated metrics.
+2. [v] Benchmark Standard v3 Metric Specification (Implementation-ready).
+3. [ ] Implement deterministic metric computation script.
+4. [ ] Normalize Batch 1-3 artifact rows.
+5. [ ] Execute automated LLM-as-a-judge scoring.
+6. [ ] Update claim boundaries with expanded validated metrics.
+
+Benchmark Standard v3 extends v2 by converting the 30-metric layered architecture into implementation-ready metric specifications. Each metric receives 10 specification fields for script implementation, dashboard mapping, and claim-boundary control.

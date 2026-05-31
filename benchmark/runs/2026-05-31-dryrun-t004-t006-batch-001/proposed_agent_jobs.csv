@@ -1,0 +1,4 @@
+task_id,keyword,journal_category_id,job_id,status,current_step,source_result_count,allowed_result_count,paper_count,started_at,completed_at,error_message
+T004,algorithmic management employee trust,organization-hr,job-195826f7-38cd-4350-8164-025af54e5d94,completed,delivery,50,20,20,2026-05-31T15:01:55.300Z,2026-05-31T15:02:21.232Z,
+T005,AI transparency consumer trust,marketing,job-606316a0-b19f-40cf-af32-69674a742e73,completed,delivery,50,12,12,2026-05-31T15:02:24.684Z,2026-05-31T15:02:44.053Z,
+T006,chatbot service failure customer satisfaction,marketing,job-b86f64c5-8523-4817-9fba-1d9582696c33,completed,delivery,50,18,18,2026-05-31T15:02:52.777Z,2026-05-31T15:03:12.080Z,

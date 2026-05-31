@@ -1,6 +1,13 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark Standard v2 Metric Layering)
+Updated: 2026-06-01 (Benchmark Standard v3 Metric Specification)
+
+## 2026-06-01 (gemini) - Benchmark Standard v3 Metric Specification
+
+- **Status**: Added Benchmark Standard v3 as an implementation-ready specification layer for the 30-metric v2 architecture.
+- **Scope**: Documentation and schema specification only. No benchmark execution, T001-T020 rerun, D1 command, migration, seed, import, result rewrite, dashboard edit, paper edit, or presentation edit was performed.
+- **Metric Specification**: Each of the 30 metrics now has 10 specification fields: metric name, layer, definition, formula or rule, required input, output field, evidence level, pass condition, failure meaning, and dashboard use.
+- **Claim Boundary**: v3 specifies how metrics should be computed and displayed. It does not mean v2/v3 metrics have already been computed for T004-T020.
 
 ## 2026-06-01 (gemini) - Benchmark Standard v2 Metric Layering
 

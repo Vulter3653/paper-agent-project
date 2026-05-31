@@ -1,6 +1,8 @@
 # Benchmark
 
 > Benchmark Standard v2 is documented in `docs/benchmark-standard-v2.md`. The v2 protocol is fully automated: it uses deterministic metadata checks, gold DOI matching, scripted metric computation, and fixed LLM-as-a-judge scoring. Human evaluation is not used. v2 being documented means the automated evaluation protocol is defined. T004-T020 artifacts enter the validation layer only after the promotion gates and script-generated metrics are completed. The current controlled quantitative comparison remains limited to T001-T003 until artifact rows are promoted through the v2 validation protocol.
+>
+> Benchmark Standard v3 is documented in `docs/benchmark-standard-v3-metric-specification.md`. It does not add more benchmark claims; it makes the v2 30-metric architecture implementation-ready by assigning 10 specification fields to each metric.
 
 Source document: `paper_agent_enhanced_report.md`
 

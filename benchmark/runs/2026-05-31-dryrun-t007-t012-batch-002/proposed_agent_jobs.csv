@@ -1,0 +1,7 @@
+task_id,keyword,journal_category_id,job_id,status,current_step,source_result_count,allowed_result_count,paper_count,started_at,completed_at,error_message
+T007,platform work algorithmic control,organization-hr,,failed,benchmark_runner,,,0,2026-05-31T15:32:11.014Z,2026-05-31T15:36:29.269Z,Timed out waiting for job job-cf6ac39a-cad1-4d39-8061-72708c344dfd after 250250ms [Attempts: 21]
+T008,remote work knowledge sharing,common,job-dd948834-7f45-4ce5-8c25-c8426490f7d4,completed,delivery,50,20,20,2026-05-31T15:36:30.772Z,2026-05-31T15:36:52.064Z,
+T009,digital transformation dynamic capabilities,international-business,job-d3e8e06d-a323-472c-9ea6-2c290a3b6d33,completed,delivery,50,20,20,2026-05-31T15:36:58.376Z,2026-05-31T15:37:14.393Z,
+T010,ESG disclosure firm value,accounting,job-3538cd63-90c2-43cd-aefe-3fc698b9e0ca,completed,delivery,50,20,20,2026-05-31T15:37:25.551Z,2026-05-31T15:37:43.340Z,
+T011,greenwashing consumer skepticism,marketing,job-938425e6-6f65-4e9b-9292-a28699ac07f3,completed,delivery,50,7,7,2026-05-31T15:37:52.858Z,2026-05-31T15:38:10.418Z,
+T012,social media influencer authenticity purchase intention,marketing,job-460f7a76-a911-402f-af5e-625211229bae,completed,delivery,50,20,20,2026-05-31T15:38:20.222Z,2026-05-31T15:38:36.143Z,

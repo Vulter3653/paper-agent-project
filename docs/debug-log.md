@@ -1,5 +1,10 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3M LaTeX Minimal-Environment Compatibility Check
+- **Incident**: The first `/tmp` LaTeX compile failed because the minimal TeX environment did not provide `enumitem.sty`. (codex)
+- **Resolution**: Removed the non-essential `enumitem` dependency and kept the manuscript on standard LaTeX packages already available in the environment. (codex)
+- **Verification**: Recompiled the conference-style manuscript successfully to an 8-page `/tmp/final-paper-draft.pdf`. No benchmark, execute mode, D1 command, migration, or PPT generation was run. (codex)
+
 ## 2026-05-31 - Phase 3L Batch 1 T007 Timeout Stops Further Expansion
 - **Incident**: During the approved staged Batch 1 (`T007-T012`) artifact-only execution, T007 timed out after 250250ms and 21 polling attempts. (codex)
 - **Observed Result**: T008-T012 completed and produced 87 result rows. The runner appended one `TIMEOUT` record to `benchmark/proposed_agent_debug.jsonl`. (codex)

@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-31 (codex)
+- Docs: Drafted section-by-section final paper sources under `paper/sections/`, refreshed the conference-style `paper/final-paper-draft.tex`, and added the paper claim-boundary checklist plus instructor-criteria mapping. (codex)
 - Benchmark: Added `benchmark/scripts/run-staged-expanded-dry-run.mjs` with guarded plan, preflight, and execute modes for staged T007-T020 artifact-only expansion; stopped after the T007 timeout in Batch 1 and did not execute later batches. (codex)
 - Docs: Added `docs/phase-3l-t007-t020-staged-expansion-report.md` and recorded the partial Batch 1 artifact evidence, timeout containment, checksums, and claim boundary in progress and debug logs. (codex)
 - Docs: Added `docs/phase-3j-t004-t006-artifact-dry-run-report.md` and recorded the approved artifact-only T004-T006 execution boundary, checksums, row counts, safety checks, and untracked preservation recommendation. (codex)

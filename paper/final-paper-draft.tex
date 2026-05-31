@@ -1,80 +1,310 @@
 \documentclass[10pt,twocolumn]{article}
 
-\usepackage[letterpaper,margin=0.75in]{geometry}
+\usepackage[letterpaper,margin=0.72in]{geometry}
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{xcolor}
 \pagestyle{plain}
 
-\title{Paper Agent: A Multi-Agent Framework for Traceable and Trustworthy Scholarly Discovery}
-\author{MON AI Team\\AI Agent Based Domain Problem Solving Project\\Sungkyunkwan University}
+\title{Paper Agent: A Traceable Multi-Agent System for Verified Scholarly Paper Discovery}
+\author{MON AI Team\\AI Agent-Based Domain Problem Solving Project\\Sungkyunkwan University}
 \date{}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Early-stage literature review in business domains is plagued by tool fragmentation and a significant ``traceability gap'' in automated selection. While generic Large Language Models (LLMs) can retrieve paper titles, they often lack the rigorous metadata verification and journal-quality compliance required for academic standards. This paper presents Paper Agent, a multi-agent system deployed on Cloudflare that automates scholarly search, verification, and synthesis using a 12-stage ``Agent-as-a-Module'' architecture. Our system moves beyond the ``Black-box'' nature of naive LLM prompts by recording explicit agent traces in a persistent database, ensuring that every exclusion and ranking decision is auditable. We evaluate the framework using Paper-Agent-Bench, a repository-grounded benchmark with DOI-backed gold labels. Results on the T001--T003 control layer demonstrate that Paper Agent maintains 100\% top-journal precision and verified DOI integrity, providing a trustworthy alternative to popularity-biased search engines.
+Business-school literature review requires more than topically plausible recommendations. Researchers must verify DOI metadata, enforce journal-selection policies, inspect open-access status, and retain reproducible evidence explaining why each paper was included or excluded. A single large-language-model (LLM) response can produce useful suggestions, but it can also return unverifiable metadata and opaque recommendations. We present \textit{Paper Agent}, a traceable multi-agent system for verified scholarly paper discovery. The system decomposes literature review into a 12-stage tool-using pipeline covering planning, journal selection, retrieval, journal filtering, metadata verification, open-access checking, storage, evaluation preparation, relevance scoring, ranking, critic review, and report delivery. The deployed workflow uses Web of Science as its primary configured scholarly search provider and OpenAlex as a fallback, Crossref for DOI and metadata verification, Unpaywall for open-access status, Cloudflare Workers for execution, and Cloudflare D1 for persistent traces.
+
+We evaluate the system with \textit{Paper-Agent-Bench}. Quantitative comparison is restricted to a verified controlled T001--T003 layer containing nine comparison rows. On this layer, the Single LLM baseline has higher Precision@5 and NDCG@5, while Paper Agent preserves DOI accuracy, strict top-journal precision, traceability, and explicit policy enforcement. We additionally report artifact-only execution evidence: a gated T004--T006 dry-run produced three job rows and 50 result rows, and a staged T007--T012 attempt produced 87 result rows for T008--T012 while T007 timed out after approximately 250 seconds. Later batches were not started. These expansion artifacts are not benchmark validation. Full T004--T020 validation remains incomplete, and D1 batch-aware persistence is not implemented.
 \end{abstract}
 
-
-\noindent\textbf{Index Terms}--Multi-agent systems, scholarly search, literature review automation, metadata verification, Cloudflare Workers, benchmark evaluation.
-
+\noindent\textbf{Keywords}---multi-agent systems, scholarly search, literature review automation, DOI verification, tool use, reproducibility.
 
 \section{Introduction}
+Literature review is a recurring bottleneck for business-school researchers, graduate students, and project teams. The task is not merely to locate papers whose titles appear related to a question. A defensible review must identify relevant work, verify bibliographic metadata, retain DOI evidence, comply with an approved journal policy, inspect access paths, and explain why specific papers were ranked or excluded. Researchers often perform these checks across disconnected search portals, publisher pages, DOI registries, open-access services, spreadsheets, and local notes.
 
-Scholarly literature review is the cornerstone of academic rigor. However, researchers in business schools face a three-fold challenge: (1) fragmented access across databases like Web of Science (WoS) and OpenAlex, (2) the tedious manual overhead of verifying journal rankings and open-access paths, and (3) the opaque nature of search-ranking algorithms. While AI assistants promise speed, they often lack the accountability required for academic work.
+Generative AI can reduce search effort, but a single LLM call is an inadequate control surface for a scholarly workflow. A fluent answer may contain plausible yet unverifiable recommendations. Even when recommendations are real, the user may not know which external source was consulted, whether journal-policy constraints were applied, whether DOI metadata was checked, or why one result ranked above another. This traceability gap is especially important in academic contexts where the user remains responsible for the final literature selection.
 
-Paper Agent addresses these issues by positioning itself not as a generative chat interface, but as a modular execution pipeline. The core problem we solve is the ``Traceability Gap'' in automated research. By recording every intermediate agent decision in a persistent log, we allow researchers to audit the search path, understand exclusion criteria, and reproduce the workflow through a consistent audit trail.
+Paper Agent addresses this gap through a traceable multi-agent and tool-using pipeline. Rather than treating an LLM response as the result, the system treats externally verifiable artifacts as the result: candidate metadata, allowlist decisions, Crossref verification outcomes, Unpaywall status, ranking components, persisted traces, and downloadable reports. Its primary user is a researcher preparing an early-stage business-school literature review. Its design goal is reproducible decision support, not autonomous scholarship.
+
+This project makes five contributions:
+\begin{enumerate}
+    \item a traceable 12-stage multi-agent architecture for scholarly paper discovery;
+    \item a DOI- and journal-policy-aware verification pipeline;
+    \item Paper-Agent-Bench, a domain-specific evaluation protocol;
+    \item a controlled baseline comparison plus artifact-only staged expansion evidence; and
+    \item a reproducibility and claim-boundary framework for honest reporting.
+\end{enumerate}
+
+\subsection{Problem Definition and Design Requirements}
+The operational problem can be expressed as a constrained evidence-selection task. Given a research question, Paper Agent must retrieve candidate papers, apply a domain-specific venue policy, verify available metadata, score relevance, preserve the origin of each decision, and deliver reviewable outputs. A useful answer is therefore not only a ranked list. It is a ranked list accompanied by evidence that another researcher can inspect.
+
+We derive six design requirements from this problem. First, retrieval and recommendation must be separated so that a candidate can be checked before it is promoted. Second, the venue-selection policy must be explicit. Third, DOI and title metadata must be verifiable through a structured external service. Fourth, intermediate states and failures must be observable. Fifth, generated reports must link back to stored records and traces. Sixth, evaluation claims must remain bounded by the actual scope of audited evidence.
+
+These requirements clarify why a single conversational answer is insufficient. A single LLM response can help generate hypotheses, but it does not automatically expose its retrieval source, enforce an allowlist, preserve failed requests, or make artifact boundaries reproducible. Paper Agent uses agent decomposition to turn these requirements into explicit execution stages.
+
+\subsection{Representative User Workflow}
+A representative workflow begins when a business-school researcher submits a topic such as digital transformation, organizational resilience, or ESG disclosure. The Planner normalizes the request and runtime constraints. The Journal Selector interprets the selected field and prioritizes the approved journal pool. The Retriever submits structured queries to the configured provider. The remaining stages enrich, filter, score, rank, critique, and report the resulting records. The dashboard exposes progress rather than presenting a single opaque completion event.
+
+The user still performs scholarly judgment. A high-ranked result is a candidate for review, not an automatically accepted citation. The system is designed to reduce repetitive verification effort and improve observability while preserving the researcher's responsibility for relevance, methodology, and interpretation.
+
 \section{Related Work}
+\subsection{LLM-Based Scholarly Search}
+LLM-based assistants can summarize papers, reformulate questions, and generate candidate reading lists. Their usefulness depends on grounding and metadata verification. Ungrounded recommendations are risky in scholarly settings because a fabricated title, DOI, venue, or author list can consume researcher time and contaminate a review \cite{placeholder_scholarly_search}. Paper Agent therefore separates recommendation from verification and stores evidence for downstream inspection.
 
-Paper Agent is positioned at the intersection of scholarly retrieval systems, tool-using AI agents, and reproducible evaluation. Generic LLM assistants can summarize or recommend papers, but their recommendations are difficult to audit unless the retrieval source, metadata checks, and ranking criteria are exposed. Prior retrieval-augmented generation workflows improve grounding by consulting external documents; this project extends that principle by using scholarly APIs, DOI verification, journal allowlists, and persistent agent traces as first-class evidence.
+\subsection{Multi-Agent and Tool-Using Systems}
+Multi-agent systems decompose complex tasks into role-specific components such as planners, executors, critics, and reporters \cite{placeholder_multi_agent}. The value of decomposition is not the number of named agents alone; it is the ability to expose intermediate decisions and isolate failures. Paper Agent applies this principle to scholarly discovery by recording stage-level traces and preserving partial outcomes when a later service fails.
 
-\section{Method}
+\subsection{Retrieval-Augmented Workflows}
+Retrieval-augmented generation grounds model behavior in external evidence \cite{placeholder_rag}. Paper Agent follows the same grounding principle but emphasizes structured scholarly metadata and policy enforcement. Search results are filtered through an internal business-school journal allowlist and enriched through external metadata services before ranking.
 
-\subsection{System Architecture: The 12-Stage Pipeline}
+\subsection{Benchmarking and Reproducibility}
+Evaluation of agentic systems requires more than a single aggregate score. Reproducible evaluation should disclose task scope, baselines, metrics, failure evidence, artifact locations, and incomplete runs \cite{placeholder_reproducibility}. Paper Agent distinguishes controlled benchmark evidence from artifact-only expansion evidence.
 
-Paper Agent utilizes an ``Agent-as-a-Module'' design rationale. Each stage is an independent unit of execution with its own failure mode and retry logic:
-
-\begin{itemize}
-    \item \textbf{Planner/Selector}: Normalizes the research scope and enforces journal quality tiers.
-    \item \textbf{Retriever/Verifier}: Executes scholarly API queries (WoS/OpenAlex) and cross-references metadata via Crossref.
-    \item \textbf{Evaluation/Ranking}: Calculates multi-factor scores (relevance, journal fit, recency) using metadata by default. Vectorize semantic scoring is maintained as a planned opt-in path for high-resource environments.
-    \item \textbf{Critic/Reporter}: Performs qualitative screening using rule-based analysis by default (persisted via D1 critic flags), with LLM-backed evaluation kept as a future opt-in extension.
-\end{itemize}
-
-This separation ensures that a failure in one domain (e.g., Unpaywall rate limit) does not corrupt the integrity of other retrieved data.
-
-\section{Evaluation and Benchmark Design}
-
-We evaluate Paper Agent using \textbf{Paper-Agent-Bench}, a 20-task benchmark grounded in top-tier business journal metadata. Our primary evaluation focus is the \textbf{T001--T003 controlled comparison layer}, where manual verification ensures high-fidelity baseline analysis. We additionally report \textbf{Partial Expanded Evidence (T001--T018)} to demonstrate runtime scalability, noting that tasks T019 and T020 reached infrastructure-level resource limits (HTTP 503) during evaluation.
-
-\section{Results and Interpretation}
-
-Table 1 summarizes our findings on the T001--T003 controlled layer.
+\section{Method and System Design}
+Paper Agent is a multi-agent decision-support pipeline rather than a single LLM wrapper. Each stage records an inspectable output. The current Worker implementation uses Web of Science as the primary configured scholarly search provider and OpenAlex as a fallback for testing and quota resilience. Crossref performs DOI and metadata verification, while Unpaywall records open-access status. Cloudflare Workers execute the pipeline and Cloudflare D1 persists jobs, papers, scores, and traces.
 
 \begin{table*}[t]
 \centering
-\begin{tabular}{lcccc}
+\footnotesize
+\begin{tabularx}{\textwidth}{c l X X X}
 \toprule
-Method & Precision@5 & NDCG@5 & Top Journal Prec. & DOI Presence \\
+Stage & Agent Role & Input & Tool / Data Source & Output Trace \\
 \midrule
-Proposed Multi-Agent & 0.1333 & 0.3579 & 1.0000 & 1.0000 \\
-Rule-based & 0.1333 & 0.3579 & 1.0000 & 1.0000 \\
-Single-LLM (Baseline) & 0.6667 & 0.9949 & 0.9333 & 1.0000 \\
+1 & Planner & question, constraints & request payload & normalized scope \\
+2 & Journal Selector & scope, field & internal allowlist & journal pool \\
+3 & Search / Retriever & keywords, years & WoS primary; OpenAlex fallback & candidates \\
+4 & Journal Filtering & candidates & internal allowlist & accepted/excluded rows \\
+5 & Verifier & DOI metadata & Crossref & verification reasons \\
+6 & Open Access & verified DOI & Unpaywall & OA status and URLs \\
+7 & Storage & records, artifacts & D1, R2, optional Drive path & persistence trace \\
+8 & Evaluation Prep & enriched records & scoring preparation & normalized inputs \\
+9 & Relevance & metadata text & metadata scoring; optional semantic path & relevance components \\
+10 & Ranking & score components & deterministic ranking & ordered results \\
+11 & Critic & ranked results & rule-based default; opt-in LLM path & critic flags \\
+12 & Report / Delivery & results, traces & report generator, dashboard & downloadable outputs \\
 \bottomrule
-\end{tabular}
-\caption{Benchmark results for T001--T003 controlled layer. Evidence supports top-journal compliance and DOI integrity.}
+\end{tabularx}
+\caption{Twelve-stage Paper Agent workflow. Each stage has an explicit trace boundary.}
+\label{tab:pipeline}
 \end{table*}
 
-The Single-LLM baseline shows higher exact overlap with gold labels because it is repository-grounded and biased toward well-known papers. The Proposed Multi-Agent and Rule-based rows both report 100\% top-journal precision in the controlled T001--T003 sample only. Legacy T001--T018 partial artifacts are not final validation. The T004--T006 artifact dry-run has not yet executed, full T004--T020 validation remains incomplete, and T019--T020 resource-limit / HTTP 503 evidence remains visible.
+\subsection{Traceability and Failure Isolation}
+The pipeline records job progress and stage-level traces in D1. This preserves observable partial state: retrieval failure, timeout, OA lookup failure, or report-generation limitations can be recorded without silently rewriting earlier evidence. The staged benchmark wrappers similarly write isolated artifact directories and stop later batches after a task-level failure.
+
+\subsection{Journal Policy and Verification}
+The internal business-school allowlist is a deliberate constraint. It helps the system focus on journals recognized by the project domain, but it is not a universal quality oracle. The Journal Selector uses the selected business field and tier priorities to construct a search and filtering policy. The filtering stage then records whether a candidate remains eligible. This separation avoids presenting a venue-policy decision as a relevance judgment.
+
+For eligible candidates, the Verifier uses Crossref to inspect DOI and metadata consistency. The pipeline records whether title, year, and journal metadata match sufficiently for downstream review. A verification outcome does not prove substantive quality; it reduces bibliographic uncertainty. The Open Access stage separately uses Unpaywall to record whether an OA PDF or landing page is available. Access status is retained as metadata rather than treated as an academic-quality signal.
+
+\subsection{Scoring, Ranking, and Critic Review}
+Ranking combines observable components such as relevance, journal fit, verification status, citation metadata, recency, and access metadata. The implementation retains metadata-oriented scoring as the inspectable default. Semantic relevance and LLM-backed critic analysis remain optional paths because external model latency and resource constraints can affect live execution. The Critic stage does not overwrite the retrieved record. It adds review flags and summaries so that uncertainty remains visible.
+
+This design supports a conservative interpretation of automation. A ranking score is a prioritization aid, not a scholarly verdict. Researchers can inspect the score components, metadata evidence, and trace history when deciding whether to read, cite, exclude, or re-query a paper.
+
+\subsection{Storage, Reporting, and Dashboard Surfaces}
+Cloudflare D1 stores jobs, papers, evaluations, and stage traces. Cloudflare R2 is used for report-output persistence where configured. The report pipeline exposes CSV, Markdown, XLSX, and PDF outputs, while the dashboard presents research, operations, and evaluation views. The dashboard also distinguishes live D1 evidence, controlled benchmark evidence, legacy partial artifacts, mock blueprint elements, simulation panels, and planned-only features. These labels prevent interface polish from being mistaken for implementation or evaluation evidence.
+
+\subsection{Why the Architecture Is Agentic}
+The system is not a thin interface around one prompt. It combines role decomposition, retrieval tools, explicit verification, persistent traces, deterministic scoring, a critic stage, and report delivery. LLM-backed behavior is optional where appropriate; the default pipeline remains inspectable even when resource-intensive model calls are disabled.
+
+\section{Implementation Architecture}
+\subsection{Request Lifecycle}
+A Paper Agent request starts with a research keyword, optional year boundaries, a result-size limit, and an optional journal-field selection. The Worker creates a search job immediately and exposes a job identifier to the dashboard. This asynchronous boundary is important: the browser does not need to keep a single request open while retrieval and enrichment continue. The dashboard polls for observable progress and can present the latest completed state, while the Worker advances the job through its stage traces.
+
+The Planner records normalized runtime constraints. The Journal Selector resolves the field context and internal allowlist priorities. The Retriever then invokes the configured scholarly backend. In the deployed implementation, Web of Science is the primary provider, and OpenAlex is retained as a fallback for testing and quota resilience. Provider fallback is recorded in traces so that downstream users can distinguish a primary-provider result from a fallback result.
+
+After retrieval, journal filtering applies the approved business-school allowlist. This stage intentionally separates source retrieval count from accepted count. A low accepted count is not necessarily a search failure: it may indicate that the source returned papers outside the policy pool. The Verifier then calls Crossref for DOI-based metadata enrichment. Unpaywall lookup follows as a separate access-status stage. Separating these stages prevents an OA failure from being misreported as a DOI failure or a journal-policy failure.
+
+\subsection{Trace and Persistence Model}
+D1 stores search jobs, candidate papers, evaluations, and agent traces. A trace includes stage order, stage identifier, agent name, status, summary, detail, input count, output count, timestamps, and optional error messages. This representation serves two audiences. Researchers can inspect the human-readable summaries, while operators can use the counts and timestamps to diagnose a stall or external-service failure.
+
+The trace model also supports honest incompleteness. A pipeline does not need to erase a partial result when a later stage fails. For example, a retrieval timeout can be represented as a task-level failure while other tasks in an isolated batch retain their artifacts. This design differs from a product dashboard that displays only a final success badge. Paper Agent treats the path to a result as part of the result.
+
+The benchmark schema has been extended with fields intended for batch orchestration, including parent run identifiers, batch identifiers, derived-run markers, merge status, retry count, and task-level error fields. However, the current staged artifact wrappers do not persist these batch fields to Production D1. This limitation is explicitly retained in the manuscript because schema availability and end-to-end persistence are different implementation claims.
+
+\subsection{Evidence and Artifact Layers}
+The project distinguishes several evidence layers. \textit{Live D1 verified} data describes runtime jobs and traces obtained from deployed services. \textit{Controlled T001--T003} evidence describes the audited quantitative comparison layer. \textit{Artifact-only dry-run} data describes isolated CSV outputs created through gated wrappers. \textit{Legacy partial artifacts} preserve earlier incomplete attempts and failure records. Finally, \textit{mock blueprint} and \textit{scenario simulation} panels support interface design but are not live benchmark evidence.
+
+This taxonomy is enforced in both documentation and dashboard labels. The distinction matters because an interactive interface can look complete before every evaluation path has been audited. By separating evidence sources, the system avoids turning mock values, partial artifacts, or legacy runtime records into final claims.
+
+\subsection{Output Surfaces}
+The report pipeline exposes multiple artifact formats for different uses. CSV and XLSX files support analysis and inspection. Markdown supports readable review summaries. PDF supports distribution, subject to the current report-engine language constraints. Dashboard panels expose ranked papers, paper detail, workflow progress, system diagnostics, and available output links. R2-backed persistence is available for configured report outputs, while optional Drive-related paths remain distinct from the core metadata workflow.
+
+Each output format should be interpreted as a view over stored evidence, not as an independent source of truth. A PDF can summarize a run, but it cannot establish that an unaudited benchmark scope was completed. The report pipeline therefore inherits the same claim boundaries as the underlying jobs, traces, and artifacts.
+
+\subsection{Operational Safety Gates}
+Benchmark expansion uses explicit wrappers rather than broad package commands. Wrappers expose plan and preflight modes, isolate artifact paths by run ID, refuse protected directories, reject broad scopes, require explicit acknowledgement flags for execution, and preserve local outputs for read-only inspection. The T007 timeout demonstrates why this gate matters. After Batch 1 produced a failure, the staged process stopped before T013--T018 and T019--T020. A one-shot run could have obscured the point at which resource pressure became significant.
+
+The gate design does not solve every operational issue. It does not implement D1 batch-aware persistence, automatic resumability, or an approved retry policy. Instead, it creates a conservative foundation for later work. The current system favors evidence preservation over aggressive completion.
+
+\section{Benchmark Design}
+Paper-Agent-Bench evaluates whether a literature-review agent retrieves useful and defensible papers under business-school constraints. Tasks represent domain questions and keyword sets. Gold labels are DOI-backed paper records reviewed under a relevance rubric. The controlled quantitative layer currently covers T001--T003. Expansion runs beyond this layer are reported separately as artifact-only evidence until evaluation and audit are complete.
+
+\subsection{Baselines}
+We compare three approaches: (1) a \textit{Rule-Based} baseline with deterministic retrieval and ranking heuristics, (2) a \textit{Single LLM} recommendation baseline, and (3) \textit{Paper Agent}, the traceable multi-agent pipeline.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabularx}{\columnwidth}{l X}
+\toprule
+Metric & Definition and purpose \\
+\midrule
+Precision@5 & Fraction of top-five results judged relevant; measures immediate usefulness. \\
+NDCG@5 & Rank-sensitive normalized gain; rewards ordering of highly relevant results. \\
+DOI Accuracy & Fraction with correct DOI evidence; measures metadata integrity. \\
+Top Journal Precision & Fraction satisfying the approved journal policy. \\
+Hallucination Rate & Fraction of unsupported recommendations; measures trust risk. \\
+\bottomrule
+\end{tabularx}
+\caption{Paper-Agent-Bench metrics.}
+\label{tab:metrics}
+\end{table}
+
+\subsection{Task and Gold-Label Construction}
+Paper-Agent-Bench is organized around business-research topics rather than generic question answering. Each task contains a keyword query and a journal-category context. Gold-label construction requires DOI-backed scholarly papers and records enough metadata for follow-up verification. Ambiguous candidates must remain ambiguous rather than being silently promoted. This matters because an incorrect gold set can reward confident retrieval while penalizing defensible abstention.
+
+The controlled T001--T003 layer is intentionally narrow. It establishes an auditable starting point with nine comparison rows across the three methods. The remaining tasks are expansion targets, not automatically comparable observations. They require staged execution, artifact inspection, and subsequent evaluation before they can support metric claims.
+
+\subsection{Metric Interpretation}
+Precision@5 and NDCG@5 measure overlap and ordering relative to the gold labels. DOI Accuracy and Top Journal Precision measure integrity and policy compliance. Hallucination Rate captures unsupported recommendation risk. None of these metrics should be interpreted in isolation. For example, a method can achieve high overlap while offering weak traceability, or strict policy filtering can reduce overlap while increasing compliance. We therefore report a multi-dimensional evaluation rather than a single winner score.
+
+\subsection{Protocol and Reproducibility Controls}
+Quantitative claims are limited to the controlled T001--T003 layer with nine comparison rows. Execution artifacts from T004--T006 and T007--T012 are isolated by run ID and are not merged into controlled metrics. Gold labels are not rewritten to hide failures. The repository retains scripts, prompts, trace APIs, documentation reports, and claim-boundary rules. Live reproduction requires valid API credentials and available external services.
+
+\section{Experiments}
+\subsection{Controlled T001--T003 Comparison}
+The verified controlled layer compares Rule-Based, Single LLM, and Paper Agent baselines on T001--T003. It contains nine comparison rows. This is the only layer used for quantitative baseline claims in this manuscript.
+
+\subsection{T004--T006 Artifact-Only Dry-Run}
+An explicitly approved gated wrapper executed T004--T006 as an artifact-only dry-run. T004 generated 20 rows, T005 generated 12 rows, and T006 generated 18 rows. The run produced three job rows and 50 result rows without failed jobs. These artifacts demonstrate execution coverage, not benchmark validation.
+
+\subsection{Phase 3L Partial Staged Expansion}
+Phase 3L produced partial staged expansion evidence. Batch 1 (T007--T012) generated artifacts for T008--T012, while T007 timed out after approximately 250 seconds. Because this failure occurred within Batch 1, later batches T013--T018 and T019--T020 were not started. This result identifies both executable segments and infrastructure boundaries, and it does not constitute full benchmark validation.
+
+\subsection{Artifact Isolation Strategy}
+The staged execution wrappers enforce isolated output directories named by run ID. This prevents new attempts from overwriting controlled artifacts or earlier dry-run evidence. Before execution, wrappers expose plan and preflight modes. Execute mode requires explicit acknowledgement flags and an exact approved run ID. No permanent execute command is exposed through the package scripts. This operational design makes scope expansion reviewable and limits accidental broad execution.
+
+\subsection{What Was Not Evaluated}
+We do not report a completed T004--T020 benchmark. Artifact-only evidence is not merged into controlled metrics. D1 batch-aware persistence is not implemented. We do not claim global superiority over the Single LLM baseline.
+
+\section{Results and Discussion}
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+Metric & Rule & Single LLM & Paper Agent \\
+\midrule
+Precision@5 & 0.1333 & 0.6667 & 0.1333 \\
+NDCG@5 & 0.3579 & 0.9949 & 0.3579 \\
+DOI Accuracy & 1.0000 & 1.0000 & 1.0000 \\
+Top Journal Prec. & 1.0000 & 0.9333 & 1.0000 \\
+Hallucination Rate & 0.0 & risk noted & 0.0 \\
+\bottomrule
+\end{tabular}
+\caption{Controlled T001--T003 comparison only.}
+\label{tab:controlled}
+\end{table}
+
+The Single LLM baseline may appear strong under gold-label overlap metrics, but its recommendation process remains less traceable and less constrained by the explicit journal-policy and metadata-verification pipeline. Paper Agent does not outperform the Single LLM baseline on Precision@5 or NDCG@5 in the controlled scope. Its current contribution is a different tradeoff: DOI integrity, journal-policy compliance, traceability, and preserved failure evidence. Treating overlap metrics as the only objective can create an interpretive trap, but this is a risk to examine rather than a proven causal explanation.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{lrl}
+\toprule
+Task & Rows & Notes \\
+\midrule
+T004 & 20 & completed \\
+T005 & 12 & completed \\
+T006 & 18 & completed \\
+\midrule
+Total & 50 & artifact-only evidence \\
+\bottomrule
+\end{tabular}
+\caption{T004--T006 gated artifact-only dry-run.}
+\label{tab:t004t006}
+\end{table}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{lrl}
+\toprule
+Task & Rows & Notes \\
+\midrule
+T007 & 0 & timeout: 250250ms / 21 attempts \\
+T008 & 20 & completed \\
+T009 & 20 & completed \\
+T010 & 20 & completed \\
+T011 & 7 & completed \\
+T012 & 20 & completed \\
+\midrule
+Total & 87 & partial artifact evidence \\
+\bottomrule
+\end{tabular}
+\caption{Phase 3L Batch 1 partial staged expansion.}
+\label{tab:t007t012}
+\end{table}
+
+Batch 2 T013--T018 and Batch 3 T019--T020 were not started after the T007 timeout. Legacy T019--T020 resource-limit / HTTP 503 evidence remains visible. The safety stop is a meaningful system result: execution coverage should expand only when failure evidence remains inspectable.
+
+\subsection{Discussion of the Controlled Tradeoff}
+The controlled table should not be compressed into a winner narrative. The Single LLM baseline performs better on overlap-oriented metrics in T001--T003. Paper Agent matches the Rule-Based baseline on those metrics in the current controlled scope. At the same time, Paper Agent exposes an operationally different evidence surface: journal-policy filtering, structured metadata verification, stored traces, separated OA status, report artifacts, and failure preservation.
+
+This tradeoff is relevant for literature-review support because the cost of a recommendation is not limited to ranking error. Researchers also incur costs when they must investigate fabricated metadata, reconstruct an opaque decision, or discover that a polished interface mixed simulated and live evidence. The current experiment does not quantify all of these costs. It identifies them as dimensions for a broader benchmark.
+
+\subsection{Operational Failure Analysis}
+The T007 timeout provides a concrete operational boundary. The runner waited approximately 250 seconds across 21 polling attempts before recording a timeout. It then preserved the failure and continued through the remaining tasks in Batch 1. The outer staged process stopped before Batch 2 and Batch 3. This behavior demonstrates containment: the system retained successful T008--T012 artifacts without hiding T007 or escalating into an uncontrolled broad run.
+
+Legacy T019--T020 HTTP 503 records provide a second type of evidence. They indicate that external-service or Worker resource constraints must remain part of the evaluation story. The proper response is not to erase failed rows or relabel them as success. Future work should improve timeout handling, resource budgeting, and retry policies while keeping failure visibility intact.
+
+\subsection{Threats to Validity}
+There are at least four threats to validity. First, the controlled task set is small, so performance metrics cannot establish broad generalization. Second, gold-label quality depends on manual verification and may underrepresent relevant papers outside the initial pool. Third, live API behavior is time-dependent: quotas, provider responses, and network conditions can change. Fourth, the internal journal allowlist encodes institutional preferences that may not transfer to every research context. These threats motivate staged evidence collection and conservative claims.
 
 \section{Limitations and Ethics}
+The current evidence has clear boundaries. Full T004--T020 validation remains incomplete. D1 batch-aware persistence is not implemented. Phase 3L recorded a T007 timeout after approximately 250 seconds, and T013--T020 were not executed under Phase 3L after the safety stop. Gold-label coverage remains limited and should be expanded before broader performance claims.
 
-While Paper Agent improves traceability, it introduces ``Algorithmic Gatekeeping'' bias through its approved journal list. External bibliometric enrichment (e.g., live JCR/SCImago APIs) is currently planned but not live API-backed; journal rankings rely on static internal allowlists. Furthermore, default screening is rule-based; the use of LLMs in the Critic Agent carries qualitative bias risks and is thus kept as an opt-in extension. Ethical use requires that human scholarly review remains the final authority.
+Paper Agent also introduces normative choices. The internal journal allowlist can create algorithmic gatekeeping by prioritizing established venues and potentially excluding useful work from emerging, regional, or interdisciplinary outlets. Automated ranking can amplify citation and journal-hierarchy biases. DOI verification improves metadata integrity but does not establish substantive research quality. Open-access status can improve accessibility but should not be interpreted as a quality signal.
 
-\section{Conclusion and Reproducibility}
+Human scholarly review remains the final authority. Users must inspect recommendations, verify metadata when necessary, evaluate methodological fit, and take responsibility for citation choices. Responsibility for hallucination, metadata error, and ranking bias cannot be delegated entirely to an automated pipeline.
 
-Paper Agent demonstrates that academic discovery can be automated without sacrificing transparency. By delivering a 12-stage auditable pipeline on Cloudflare, we show that ``White-box'' research workflows are feasible even under resource constraints. Future work will execute the gated artifact dry-run, implement D1 batch-aware persistence, and evaluate the full T004--T020 scope without hiding T019--T020 resource-limit evidence.
+\section{Conclusion}
+Paper Agent is a traceable multi-agent pipeline for business-school scholarly discovery. It combines role decomposition, retrieval tools, DOI verification, journal-policy filtering, open-access checking, persistent traces, ranking, critic review, and report delivery. The verified T001--T003 controlled comparison shows a nuanced result: the Single LLM baseline has higher overlap-based metrics, while Paper Agent preserves strict top-journal precision, DOI integrity, traceability, and hallucination control within the controlled scope.
+
+Artifact-only expansion provides additional implementation evidence without changing the benchmark claim boundary. T004--T006 generated 50 result rows through a gated wrapper. Phase 3L generated 87 result rows for T008--T012 while preserving the T007 timeout and stopping later batches. Full T004--T020 validation remains incomplete.
+
+\section{Reproducibility Statement}
+\subsection{Repository Evidence}
+The GitHub repository contains source code, benchmark scripts, prompts, documentation reports, staged-wrapper logic, and a paper claim-boundary checklist. Cloudflare D1 stores live jobs and traces, while isolated local artifact directories preserve staged-run outputs. The controlled benchmark and expansion artifacts are intentionally described as separate evidence layers.
+
+\subsection{Reproduction Procedure}
+A reproduction attempt should first inspect repository status, configuration, and documented safety boundaries. Live execution requires separately provisioned API credentials and available external services. Benchmark expansion must use plan and preflight modes before any approved execute mode. Artifact directories must be isolated by run ID, and controlled T001--T003 evidence must remain unchanged. After execution, researchers should inspect job CSV files, result CSV files, checksums, status rows, failure messages, and trace records before making claims.
+
+\subsection{Reproduction Constraints}
+Reproduction depends on API credentials, external service availability, and explicit approval for gated execution. The current codebase does not implement D1 batch-aware persistence for staged artifacts. Consequently, local artifact inspection and documentation remain necessary. Future work includes separately approved T013--T020 staged expansion, D1 batch-aware persistence, broader gold-label coverage, improved timeout handling, and optional external bibliometric enrichment where appropriate.
+
+\section{Future Work}
+The next engineering priority is not a broader claim. It is a safer evidence pipeline. First, the team should diagnose the T007 timeout using the preserved polling evidence and determine whether Worker CPU limits, external API latency, enrichment volume, or report generation caused the delay. Any retry policy should be bounded and documented. Second, the batch-aware D1 fields should be connected to the staged wrappers so that parent run ID, batch ID, retry count, last error, and last-error timestamp are persisted end to end.
+
+Third, Paper-Agent-Bench should expand its DOI-backed gold labels and record clearer provenance for ambiguous rows. A broader controlled layer would allow the team to examine whether journal-policy filtering trades overlap for integrity in a consistent way across fields. Fourth, evaluation should include operational metrics such as latency, resource-limit incidence, trace completeness, and recovery behavior. These dimensions capture costs that Precision@5 and NDCG@5 alone cannot describe.
+
+Fifth, the journal-policy layer should support explicit alternatives. Researchers may need a strict internal allowlist, a broader discovery mode, or an externally enriched bibliometric view. Such modes should be visible and should not silently change the meaning of a score. Finally, placeholder scholarly references in this manuscript must be replaced with verified citations before submission.
+
+\section{Implementation and Evaluation Checklist}
+Before final submission, the team should replace placeholder references with verified sources, audit the T001--T003 metric provenance, inspect untracked staged artifacts, and retain the claim boundary. Any later T013--T020 execution requires a separate explicit approval. A completed dashboard or generated report must not be used as evidence of a completed benchmark unless the underlying artifacts and evaluation outputs have been audited.
+
+\begin{thebibliography}{4}
+\bibitem{placeholder_scholarly_search} TODO: Replace with a verified reference on LLM-based scholarly search and literature review automation.
+\bibitem{placeholder_multi_agent} TODO: Replace with a verified reference on multi-agent or tool-using AI systems.
+\bibitem{placeholder_rag} TODO: Replace with a verified reference on retrieval-augmented generation workflows.
+\bibitem{placeholder_reproducibility} TODO: Replace with a verified reference on reproducible evaluation of AI systems.
+\end{thebibliography}
 
 \end{document}

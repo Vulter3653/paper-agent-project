@@ -2,6 +2,11 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3M Final Paper Draft Structured And Merged
+- **Status**: Drafted the final academic paper section-by-section in English and merged the sections into a two-column conference-style LaTeX manuscript. (codex)
+- **Evidence Boundary**: Limited quantitative comparison to controlled T001-T003 evidence, integrated T004-T006 artifact-only execution and Phase 3L partial staged expansion without claiming validation, and retained the T007 timeout plus legacy T019-T020 HTTP 503 boundary. (codex)
+- **Deliverables**: Added `paper/sections/`, `paper/paper_claim_boundary_checklist.md`, `paper/section_to_evaluation_criteria_mapping.md`, and refreshed `paper/final-paper-draft.tex`. (codex)
+
 ## 2026-05-31 (codex) - Phase 3L Staged T007-T020 Expansion Stopped After Batch 1 Timeout
 - **Status**: Added a guarded staged wrapper and executed only Batch 1 (`T007-T012`). T007 timed out; T008-T012 completed with 87 isolated artifact rows. (codex)
 - **Safety Boundary**: Stopped before T013-T018 and T019-T020. Full T004-T020 validation remains incomplete. D1 batch-aware persistence remains unimplemented. (codex)

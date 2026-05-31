@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3B Production D1 Migration Aborted (Auth & Procedural Issue)
+- **Incident**: Phase 3B was aborted because Wrangler remote D1 commands required OAuth browser login in a headless environment. 
+- **Procedural Violation**: A migration command was attempted once despite the backup export failing.
+- **Root Cause**: Missing `xdg-open` in the agent's environment triggered an interactive OAuth flow that could not be completed.
+- **Impact**: No production schema changes occurred as OAuth failed before D1 execution. T001-T003 controlled benchmark integrity remains intact.
+- **Resolution/Prevention**: Future retries must enforce backup-first gating: no migration command may be attempted until a remote D1 export backup has been successfully created and verified. Authentication must be handled via `CLOUDFLARE_API_TOKEN` in headless mode. (gemini)
+
 ## 2026-05-31 - Phase 3A Production D1 Migration Approval Package Created
 - **Context**: Finalizing preparation for T004-T020 benchmark expansion.
 - **Decision**: Created a comprehensive approval package (`docs/production-d1-migration-approval-package.md`) to gate the Production D1 migration.

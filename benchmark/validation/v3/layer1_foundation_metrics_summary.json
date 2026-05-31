@@ -1,0 +1,30 @@
+{
+  "layer": "Layer 1",
+  "metrics": [
+    {
+      "metric_name": "reproducibility_manifest_completeness",
+      "value": "PASS",
+      "details": "All required fields present"
+    },
+    {
+      "metric_name": "baseline_parity_check",
+      "value": "PARTIAL",
+      "details": "[{'method':'rule_based','missingCount':17,'status':'PARTIAL'},{'method':'single_llm','missingCount':17,'status':'PARTIAL'},{'method':'proposed_agent','missingCount':1,'status':'PARTIAL'}]"
+    },
+    {
+      "metric_name": "claim_boundary_compliance",
+      "value": "PASS",
+      "details": "No violations"
+    },
+    {
+      "metric_name": "trace_completeness_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "Trace logs not present in input artifacts"
+    },
+    {
+      "metric_name": "critic_flag_coverage",
+      "value": "0.5417",
+      "details": "169/312 papers with some qualitative metadata"
+    }
+  ]
+}

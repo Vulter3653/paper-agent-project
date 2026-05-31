@@ -1,0 +1,6 @@
+metric_name,value,details
+schema_normalization_rate,1.0000,Successfully normalized rows vs total input rows
+metadata_completeness_rate,0.9912,339/342 rows have all required fields
+doi_format_validity_rate,0.9912,339/342 rows have syntactically valid DOIs
+json_parsing_success_rate,not_available_in_current_artifacts,JSON parsing logs not available
+metadata_mismatch_rate,0.0000,No metadata mismatches detected in artifacts

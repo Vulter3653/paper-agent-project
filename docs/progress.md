@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark Standard v3 Metric Specification)
+Updated: 2026-06-01 (Benchmark v3 Deterministic Validation Pipeline)
+
+## 2026-06-01 (gemini) - Benchmark v3 Deterministic Validation Pipeline
+
+- **Status**: Implemented the Benchmark v3 deterministic validation pipeline for Layers 1-3.
+- **Scope**: T001-T020 results normalization and automated metric computation from existing artifacts. No benchmark execution or API calls were performed.
+- **Pipeline**: Created 6 scripts for normalization, Layer 1 (Foundation), Layer 2 (Schema), Layer 3 (Validity), summary generation, and output verification.
+- **Outputs**: Generated `normalized_results_t001_t020.csv`, layer-specific metrics, unified summary JSON, and reproducibility manifest in `benchmark/validation/v3/`.
+- **Claim Boundary**: Verified that T004-T020 artifacts are correctly labeled to prevent overclaiming. Layer 4-6 metrics remain pending.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark Standard v3 Metric Specification
 

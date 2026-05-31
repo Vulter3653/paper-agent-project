@@ -17,6 +17,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (gemini)
+- Benchmark: Implemented the Benchmark v3 deterministic validation pipeline for Layers 1-3, including automated normalization and metric computation. (gemini)
+- Scripts: Added `benchmark/scripts/` for v3 normalization, layer computation, and summary generation. (gemini)
+- Docs: Created `docs/benchmark-v3-deterministic-validation-report.md` detailing the validation coverage for T001-T020. (gemini)
 - Docs: Added Benchmark Standard v3 as an implementation-ready metric specification layer for the 30-metric automated benchmark architecture. (gemini)
 - Benchmark: Added `metric_spec_v3.csv` and `metric_spec_v3.json` with 10 specification fields for each of the 30 benchmark metrics. (gemini)
 - Benchmark: Layered Benchmark Standard v2 metrics into a 30-indicator 6-layer architecture (Foundation, Schema, Validity, Accuracy, Quality, Risk) for enhanced diagnostic depth. (gemini)

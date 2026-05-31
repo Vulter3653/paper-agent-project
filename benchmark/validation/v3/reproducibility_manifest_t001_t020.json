@@ -1,0 +1,23 @@
+{
+  "run_id": "v3-val-2026-05-31",
+  "generated_at": "2026-05-31T19:10:52.068Z",
+  "base_commit_or_head": "0728af84a8d76a9ba03276019879d39e0cf1e469",
+  "input_files": [
+    "benchmark/tasks.jsonl",
+    "benchmark/gold_relevant_papers.csv",
+    "benchmark/baseline_rule_based_results.csv",
+    "benchmark/baseline_single_llm_results.csv",
+    "benchmark/proposed_agent_results.csv"
+  ],
+  "scripts": [
+    "benchmark/scripts/normalize-results-v3.mjs",
+    "benchmark/scripts/compute-layer1-foundation-v3.mjs",
+    "benchmark/scripts/compute-layer2-schema-v3.mjs",
+    "benchmark/scripts/compute-layer3-validity-v3.mjs",
+    "benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs"
+  ],
+  "metric_spec_file": "benchmark/metric_spec_v3.json",
+  "human_evaluation": false,
+  "benchmark_execution_performed": false,
+  "llm_judge_executed": false
+}

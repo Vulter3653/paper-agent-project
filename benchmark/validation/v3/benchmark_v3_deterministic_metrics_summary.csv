@@ -1,0 +1,16 @@
+metric_name,value,details
+reproducibility_manifest_completeness,PASS,All required fields present
+baseline_parity_check,PARTIAL,"[{'method':'rule_based','missingCount':17,'status':'PARTIAL'},{'method':'single_llm','missingCount':17,'status':'PARTIAL'},{'method':'proposed_agent','missingCount':1,'status':'PARTIAL'}]"
+claim_boundary_compliance,PASS,No violations
+trace_completeness_rate,not_available_in_current_artifacts,Trace logs not present in input artifacts
+critic_flag_coverage,0.5417,169/312 papers with some qualitative metadata
+schema_normalization_rate,1.0000,Successfully normalized rows vs total input rows
+metadata_completeness_rate,0.9912,339/342 rows have all required fields
+doi_format_validity_rate,0.9912,339/342 rows have syntactically valid DOIs
+json_parsing_success_rate,not_available_in_current_artifacts,JSON parsing logs not available
+metadata_mismatch_rate,0.0000,No metadata mismatches detected in artifacts
+doi_exact_match_rate,0.5322,182/342 DOIs verified or matched gold set. This metric is artifact-derived and does not perform fresh external DOI verification.
+paper_existence_rate,0.5322,182/342 confirmed existence via verified status or gold match.
+journal_policy_compliance_rate,1.0000,342/342 papers have an associated journal rank. proxy_from_existing_journal_rank.
+top_journal_precision,0.9971,341/342 papers from S or A1 journals.
+oa_success_rate,not_available_in_current_artifacts,Open Access verification status not present in normalized schema

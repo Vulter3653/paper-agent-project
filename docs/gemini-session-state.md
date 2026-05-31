@@ -1,52 +1,71 @@
 # Gemini Session State
 
-Updated: 2026-06-01 (Benchmark Standard v2 Metric Layering Complete)
+Updated: 2026-06-01 (Benchmark v3 Deterministic Pipeline Implementation Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
 > The latest commit identity must be verified via the **Final Report Integrity Protocol** raw git output in the final summary of each task.
 
 ## Current Status
-- **Metric Layering**: Refactored v2 protocol into a 30-metric, 6-layer architecture.
-- **Layers**: Foundation, Schema, Validity, Accuracy, Quality, Risk (5 metrics each).
-- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with refactoring details.
-- **Verification**: ✅ ALL PASSED (typecheck, web build, history integrity).
-- **Claim Boundary**: Protocol is ARCHITECTED and LAYERED, not yet IMPLEMENTED.
+- **Deterministic Pipeline**: Implemented scripts for Layer 1-3 metric computation.
+- **Normalization**: 342 result rows normalized from baseline and agent runs.
+- **Metrics**: 15/30 metrics computed across Foundation, Schema, and Validity layers.
+- **History Logs**: UPDATED (`CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md`) with pipeline details.
+- **Verification**: ✅ ALL PASSED (v3 check script, typecheck, web build).
+- **Claim Boundary**: Layer 1-3 metrics computed; Layer 4-6 remain pending for full validation.
 
 ## Verification Baseline
-- **HEAD Commit**: `63c1621a2eaec0dfd6b4ea55f631899aa22882cf` (Base for layering)
-- **Local State**: 7 files modified in working tree, ready for commit.
+- **HEAD Commit**: `0728af84a8d76a9ba03276019879d39e0cf1e469` (Base for pipeline)
+- **Local State**: Scripts and validation outputs ready for commit.
 
 ## Completed Actions
-1. **Refactoring**: Defined 6 layers and 30 metrics in `docs/benchmark-standard-v2.md`.
-2. **Schema Update**: Rewrote `benchmark/metric_spec_v2.csv` with layered indicators.
-3. **Protocol Update**: Injected `metric_layers` definition into `benchmark/auto_eval_protocol_v2.json`.
-4. **Documentation**: Referenced layered architecture in `docs/benchmark.md`.
+1. **Scripting**: Created normalization and layer computation scripts in `benchmark/scripts/`.
+2. **Normalization**: Generated `normalized_results_t001_t020.csv`.
+3. **Computation**: Generated Layer 1-3 metrics and summary JSON.
+4. **Reporting**: Created `docs/benchmark-v3-deterministic-validation-report.md`.
+5. **Automation**: Added v3 scripts to `package.json`.
 
 ## Next Recommended Actions
-1. **Commit and Push**: "Docs: layer benchmark standard v2 metrics".
-2. **Metric Scripting**: Begin the implementation of Layer 1 (Reproducibility) and Layer 2 (Schema) verification scripts.
-3. **Evaluation Loop**: Draft the LLM Judge prompt updates to specifically support Layer 5 (Semantic Quality) scores.
+1. **Commit and Push**: "Scripts: add benchmark v3 deterministic validation pipeline".
+2. **Retrieval Metrics**: Implement Layer 4 (Retrieval Accuracy) calculator using Gold Set matching.
+3. **Qualitative Scoring**: Draft judge execution script for Layer 5 (Semantic Quality).
 
 ## Blockers
-- **None**: Environment is stable and verified.
+- **None**: Pipeline is functional and verified.
 
 ## Verification Results
+- `npm run benchmark:v3:deterministic`: ✅ PASS
 - `npm run validate:history`: ✅ PASS
-- `npm run validate:agent-rules`: ✅ PASS
 - `npm run typecheck`: ✅ PASS
 - `npm run build:web`: ✅ PASS
-- `node scripts/validate-history-integrity.mjs`: ✅ PASS
+- `node benchmark/scripts/check-v3-deterministic-validation.mjs`: ✅ PASS
 
 ## Git Status Snapshot
 ```text
- M benchmark/auto_eval_protocol_v2.json
- M benchmark/metric_spec_v2.csv
+ M package.json
  M CHANGELOG.md
- M docs/benchmark-standard-v2.md
- M docs/benchmark.md
+ M docs/benchmark-standard-v3-metric-specification.md
  M docs/debug-log.md
+ M docs/gemini-session-state.md
  M docs/progress.md
+ A benchmark/scripts/check-v3-deterministic-validation.mjs
+ A benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs
+ A benchmark/scripts/compute-layer1-foundation-v3.mjs
+ A benchmark/scripts/compute-layer2-schema-v3.mjs
+ A benchmark/scripts/compute-layer3-validity-v3.mjs
+ A benchmark/scripts/normalize-results-v3.mjs
+ A benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.csv
+ A benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.json
+ A benchmark/validation/v3/layer1_foundation_metrics.csv
+ A benchmark/validation/v3/layer1_foundation_metrics_summary.json
+ A benchmark/validation/v3/layer2_schema_metrics.csv
+ A benchmark/validation/v3/layer2_schema_metrics_summary.json
+ A benchmark/validation/v3/layer3_validity_metrics.csv
+ A benchmark/validation/v3/layer3_validity_metrics_summary.json
+ A benchmark/validation/v3/normalization_report_t001_t020.json
+ A benchmark/validation/v3/normalized_results_t001_t020.csv
+ A benchmark/validation/v3/reproducibility_manifest_t001_t020.json
+ A docs/benchmark-v3-deterministic-validation-report.md
 ```
 
 (gemini)

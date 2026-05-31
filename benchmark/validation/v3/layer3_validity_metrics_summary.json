@@ -1,0 +1,30 @@
+{
+  "layer": "Layer 3",
+  "metrics": [
+    {
+      "metric_name": "doi_exact_match_rate",
+      "value": "0.5322",
+      "details": "182/342 DOIs verified or matched gold set. This metric is artifact-derived and does not perform fresh external DOI verification."
+    },
+    {
+      "metric_name": "paper_existence_rate",
+      "value": "0.5322",
+      "details": "182/342 confirmed existence via verified status or gold match."
+    },
+    {
+      "metric_name": "journal_policy_compliance_rate",
+      "value": "1.0000",
+      "details": "342/342 papers have an associated journal rank. proxy_from_existing_journal_rank."
+    },
+    {
+      "metric_name": "top_journal_precision",
+      "value": "0.9971",
+      "details": "341/342 papers from S or A1 journals."
+    },
+    {
+      "metric_name": "oa_success_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "Open Access verification status not present in normalized schema"
+    }
+  ]
+}

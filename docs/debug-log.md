@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Deterministic Validation Pipeline
+
+- Implemented automated normalization of 342 result rows from disparate artifact sources.
+- Resolved `ERR_MODULE_NOT_FOUND` by replacing external CSV dependencies with built-in string parsing.
+- Automated computation of 15 metrics across Layers 1, 2, and 3.
+- Verified that all outputs meet the v3 specification and safety constraints.
+- Confirmed that Layer 3 metrics are correctly labeled as artifact-derived to avoid misleading validity claims.
+
 ## 2026-06-01 (gemini) - Benchmark Standard v3 Metric Specification
 
 - Created implementation-ready metric specification for the 30-metric benchmark architecture.

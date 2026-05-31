@@ -1,0 +1,42 @@
+{
+  "total_input_files": 7,
+  "processed_files": [
+    {
+      "path": "benchmark/baseline_rule_based_results.csv",
+      "rows": 15,
+      "method": "rule_based"
+    },
+    {
+      "path": "benchmark/baseline_single_llm_results.csv",
+      "rows": 15,
+      "method": "single_llm"
+    },
+    {
+      "path": "benchmark/proposed_agent_results.csv",
+      "rows": 15,
+      "method": "proposed_agent"
+    },
+    {
+      "path": "benchmark/runs/2026-05-31-dryrun-t004-t006-batch-001/proposed_agent_results.csv",
+      "rows": 50,
+      "method": "proposed_agent"
+    },
+    {
+      "path": "benchmark/runs/2026-05-31-dryrun-t007-t012-batch-002/proposed_agent_results.csv",
+      "rows": 87,
+      "method": "proposed_agent"
+    },
+    {
+      "path": "benchmark/runs/2026-05-31-dryrun-t013-t018-batch-003/proposed_agent_results.csv",
+      "rows": 120,
+      "method": "proposed_agent"
+    },
+    {
+      "path": "benchmark/runs/2026-05-31-dryrun-t019-t020-batch-004/proposed_agent_results.csv",
+      "rows": 40,
+      "method": "proposed_agent"
+    }
+  ],
+  "duplicates_found": 0,
+  "total_rows": 342
+}

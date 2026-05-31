@@ -41,7 +41,14 @@
     "staging:check": "npm run typecheck && npm run build:web:staging && npm run smoke:worker:staging && npm run smoke:mcp:staging",
     "dev:worker:local": "npm run dev --workspace apps/worker -- --port 8787",
     "smoke:worker:local": "WORKER_URL=http://localhost:8787 REQUIRE_READY=false npm run smoke:worker",
-    "benchmark:auto-review-baselines": "node benchmark/scripts/auto-review-baselines.mjs"
+    "benchmark:auto-review-baselines": "node benchmark/scripts/auto-review-baselines.mjs",
+    "benchmark:v3:normalize": "node benchmark/scripts/normalize-results-v3.mjs",
+    "benchmark:v3:layer1": "node benchmark/scripts/compute-layer1-foundation-v3.mjs",
+    "benchmark:v3:layer2": "node benchmark/scripts/compute-layer2-schema-v3.mjs",
+    "benchmark:v3:layer3": "node benchmark/scripts/compute-layer3-validity-v3.mjs",
+    "benchmark:v3:summary": "node benchmark/scripts/compute-benchmark-v3-deterministic-summary.mjs",
+    "benchmark:v3:check": "node benchmark/scripts/check-v3-deterministic-validation.mjs",
+    "benchmark:v3:deterministic": "npm run benchmark:v3:normalize && npm run benchmark:v3:layer1 && npm run benchmark:v3:layer2 && npm run benchmark:v3:layer3 && npm run benchmark:v3:summary && npm run benchmark:v3:check"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

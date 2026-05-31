@@ -1,0 +1,98 @@
+{
+  "benchmark_standard": "v3",
+  "scope": "T001-T020",
+  "computed_layers": [
+    "Layer 1",
+    "Layer 2",
+    "Layer 3"
+  ],
+  "not_computed_layers": [
+    "Layer 4",
+    "Layer 5",
+    "Layer 6"
+  ],
+  "human_evaluation": false,
+  "llm_judge_executed": false,
+  "benchmark_execution_performed": false,
+  "artifact_rows_modified": false,
+  "validation_status": "deterministic_layer_1_3_computed",
+  "claim_boundary": "Layer 1-3 metrics computed from existing artifacts; T004-T020 is not full benchmark validation until all required layers and gates pass.",
+  "metrics": [
+    {
+      "metric_name": "reproducibility_manifest_completeness",
+      "value": "PASS",
+      "details": "All required fields present"
+    },
+    {
+      "metric_name": "baseline_parity_check",
+      "value": "PARTIAL",
+      "details": "[{'method':'rule_based','missingCount':17,'status':'PARTIAL'},{'method':'single_llm','missingCount':17,'status':'PARTIAL'},{'method':'proposed_agent','missingCount':1,'status':'PARTIAL'}]"
+    },
+    {
+      "metric_name": "claim_boundary_compliance",
+      "value": "PASS",
+      "details": "No violations"
+    },
+    {
+      "metric_name": "trace_completeness_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "Trace logs not present in input artifacts"
+    },
+    {
+      "metric_name": "critic_flag_coverage",
+      "value": "0.5417",
+      "details": "169/312 papers with some qualitative metadata"
+    },
+    {
+      "metric_name": "schema_normalization_rate",
+      "value": "1.0000",
+      "details": "Successfully normalized rows vs total input rows"
+    },
+    {
+      "metric_name": "metadata_completeness_rate",
+      "value": "0.9912",
+      "details": "339/342 rows have all required fields"
+    },
+    {
+      "metric_name": "doi_format_validity_rate",
+      "value": "0.9912",
+      "details": "339/342 rows have syntactically valid DOIs"
+    },
+    {
+      "metric_name": "json_parsing_success_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "JSON parsing logs not available"
+    },
+    {
+      "metric_name": "metadata_mismatch_rate",
+      "value": "0.0000",
+      "details": "No metadata mismatches detected in artifacts"
+    },
+    {
+      "metric_name": "doi_exact_match_rate",
+      "value": "0.5322",
+      "details": "182/342 DOIs verified or matched gold set. This metric is artifact-derived and does not perform fresh external DOI verification."
+    },
+    {
+      "metric_name": "paper_existence_rate",
+      "value": "0.5322",
+      "details": "182/342 confirmed existence via verified status or gold match."
+    },
+    {
+      "metric_name": "journal_policy_compliance_rate",
+      "value": "1.0000",
+      "details": "342/342 papers have an associated journal rank. proxy_from_existing_journal_rank."
+    },
+    {
+      "metric_name": "top_journal_precision",
+      "value": "0.9971",
+      "details": "341/342 papers from S or A1 journals."
+    },
+    {
+      "metric_name": "oa_success_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "Open Access verification status not present in normalized schema"
+    }
+  ],
+  "generated_at": "2026-05-31T19:10:52.068Z"
+}

@@ -1,0 +1,30 @@
+{
+  "layer": "Layer 2",
+  "metrics": [
+    {
+      "metric_name": "schema_normalization_rate",
+      "value": "1.0000",
+      "details": "Successfully normalized rows vs total input rows"
+    },
+    {
+      "metric_name": "metadata_completeness_rate",
+      "value": "0.9912",
+      "details": "339/342 rows have all required fields"
+    },
+    {
+      "metric_name": "doi_format_validity_rate",
+      "value": "0.9912",
+      "details": "339/342 rows have syntactically valid DOIs"
+    },
+    {
+      "metric_name": "json_parsing_success_rate",
+      "value": "not_available_in_current_artifacts",
+      "details": "JSON parsing logs not available"
+    },
+    {
+      "metric_name": "metadata_mismatch_rate",
+      "value": "0.0000",
+      "details": "No metadata mismatches detected in artifacts"
+    }
+  ]
+}

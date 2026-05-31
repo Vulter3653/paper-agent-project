@@ -1,6 +1,16 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Evaluator Demo UX Enhanced)
+Updated: 2026-05-31 (Report Integrity Hardened)
+
+## 2026-05-31 (gemini) - Final Report Integrity Protocol Implementation
+- **Summary**: Implemented a mandatory Git-verified reporting protocol to resolve recurring commit SHA mismatches in final summaries. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - `docs/final-report-integrity.md`: Established the `Final Report Integrity Protocol`.
+  - **Integrity Gate**: All future reports must include raw `git rev-parse HEAD`, `git ls-remote`, and a match confirmation status.
+  - **Incident Log**: Documented the "Recurrent Commit SHA Reporting Mismatch" in `docs/debug-log.md`.
+  - **Policy Enforcement**: Added requirement to verify `REPORT INTEGRITY VERIFIED` before concluding any task.
+- **Verification**: Protocol document created and linked to the reporting workflow. (gemini)
 
 ## 2026-05-31 (gemini) - Evaluator Demo UX Enhancement
 - **Summary**: Implemented a guided demo flow and multi-agent tool chain visualization on the Evaluation Dashboard to improve evaluator understanding. (gemini)

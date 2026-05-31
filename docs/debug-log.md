@@ -1,5 +1,17 @@
 # Debug Log
 
+## 2026-05-31 - Recurrent Commit SHA Reporting Mismatch
+- **Symptom**: The full commit SHA reported in the final Gemini summary consistently mismatches the actual remote `main` HEAD hash.
+- **Observed cases**:
+  1. Reported `0793a3c749911e2f694639963e6e3c8332ba1590` vs Actual `0793a3c4492f134c36860a2ad4e76cb248740169`
+  2. Reported `cdc5fd27f999903e67c8585483f21f66170d743a` vs Actual `cdc5fd29f14c8ed862eeaf0dc29b0e6d185c6bfa`
+  3. Reported `8ec558b292e3532f6a61765103a8904dfeb937ca` vs Actual `8ec558b692c41835d85e0c4641175e660c721089`
+- **Impact**: Evaluators cannot verify specific changes against the reported SHA, leading to a loss of project credibility and traceability.
+- **Root cause hypothesis**: Gemini may be hallucinating full SHAs by extrapolating from short SHAs (7-8 chars) or miscopying intermediate states before the final push.
+- **Immediate fix**: Implementation of a strict `Final Report Integrity Protocol` in `docs/final-report-integrity.md`.
+- **Prevention rule**: All future final reports MUST include raw output from Git commands verifying the exact HEAD and remote state.
+- **Future reporting requirements**: Mandatory inclusion of `git rev-parse HEAD`, `git ls-remote`, and match verification status. (gemini)
+
 ## 2026-05-31 - Evaluator Demo UX Enhancement
 - **Incident**: Previous dashboard versions lacked a structured narrative for evaluators, making it difficult to quickly grasp the agent architecture and the specific tools used.
 - **Resolution**:

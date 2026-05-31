@@ -1,5 +1,10 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3J Approved T004-T006 Artifact-Only Dry-Run
+- **Outcome**: Approved wrapper execution completed for T004-T006 only. Three completed job rows and 50 paper-result rows were written to an isolated local artifact directory. (codex)
+- **Checks**: Controlled T001-T003 artifacts and legacy artifacts were not modified. `benchmark/proposed_agent_debug.jsonl` was not appended. (codex)
+- **Boundary**: This is artifact-only execution evidence, not benchmark validation. Full T004-T020 validation remains incomplete and D1 batch-aware persistence remains unimplemented. (codex)
+
 ## 2026-05-31 - Phase 3C Production D1 Migration Verification
 - **Outcome**: Post-migration PRAGMA checks passed successfully.
 - **Verification**: Confirmed new batch orchestration columns and indexes are active in production.

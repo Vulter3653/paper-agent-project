@@ -2,6 +2,12 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3J T004-T006 Artifact-Only Dry-Run Recorded
+- **Status**: Executed the explicitly approved T004-T006 artifact-only dry-run through the gated wrapper. This is not benchmark validation. (codex)
+- **Artifacts**: Generated isolated local CSV files under `benchmark/runs/2026-05-31-dryrun-t004-t006-batch-001/` with 3 job rows and 50 result rows. (codex)
+- **Safety Boundary**: Full T004-T020 validation remains incomplete. D1 batch-aware persistence is not implemented. No direct D1 command, migration, seed, or import was executed. (codex)
+- **Preservation**: Left generated CSV artifacts untracked pending Gemini read-only post-run audit. (codex)
+
 ## 2026-05-31 (gemini) - Phase 3C Production D1 Migration Verified
 - **Summary**: Confirmed successful application of `0007_add_benchmark_batch_columns.sql` to production D1 via manual execution recovery. (gemini)
 - **Status**: Completed.

@@ -1,0 +1,37 @@
+# Benchmark v3 Layer 5A Representativeness Audit
+
+## Interpretation
+- Layer 5A is not a representative semantic-quality estimate. Layer 5A is a quota-limited partial implementation audit.
+- The successful evaluated subset contains no Proposed Agent rows. Do not infer Proposed Agent semantic quality from Layer 5A.
+- Coverage: 22/125 (0.1760)
+
+## Distribution
+| Dimension | Value | Inputs | Successful | Failed / Unevaluated | Coverage |
+| --- | --- | ---: | ---: | ---: | ---: |
+| task_id | T001 | 15 | 10 | 5 | 0.6667 |
+| task_id | T002 | 15 | 6 | 9 | 0.4000 |
+| task_id | T003 | 15 | 6 | 9 | 0.4000 |
+| task_id | T004 | 5 | 0 | 5 | 0.0000 |
+| task_id | T005 | 5 | 0 | 5 | 0.0000 |
+| task_id | T006 | 5 | 0 | 5 | 0.0000 |
+| task_id | T008 | 5 | 0 | 5 | 0.0000 |
+| task_id | T009 | 5 | 0 | 5 | 0.0000 |
+| task_id | T010 | 5 | 0 | 5 | 0.0000 |
+| task_id | T011 | 5 | 0 | 5 | 0.0000 |
+| task_id | T012 | 5 | 0 | 5 | 0.0000 |
+| task_id | T013 | 5 | 0 | 5 | 0.0000 |
+| task_id | T014 | 5 | 0 | 5 | 0.0000 |
+| task_id | T015 | 5 | 0 | 5 | 0.0000 |
+| task_id | T016 | 5 | 0 | 5 | 0.0000 |
+| task_id | T017 | 5 | 0 | 5 | 0.0000 |
+| task_id | T018 | 5 | 0 | 5 | 0.0000 |
+| task_id | T019 | 5 | 0 | 5 | 0.0000 |
+| task_id | T020 | 5 | 0 | 5 | 0.0000 |
+| method | proposed_agent | 95 | 0 | 95 | 0.0000 |
+| method | rule_based | 15 | 15 | 0 | 1.0000 |
+| method | single_llm | 15 | 7 | 8 | 0.4667 |
+| result_rank | 1 | 25 | 5 | 20 | 0.2000 |
+| result_rank | 2 | 25 | 5 | 20 | 0.2000 |
+| result_rank | 3 | 25 | 4 | 21 | 0.1600 |
+| result_rank | 4 | 25 | 4 | 21 | 0.1600 |
+| result_rank | 5 | 25 | 4 | 21 | 0.1600 |

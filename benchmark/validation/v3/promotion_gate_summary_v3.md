@@ -35,4 +35,9 @@ Benchmark v3 is ready for presentation as a reproducible automated benchmark fra
 - **Status**: PARTIAL COMMON-SUPPORT (T001-T003 Controlled)
 - **Scope**: T001–T003 (Controlled Comparison), T004–T020 (Artifact-level Validation)
 
-Generated at: 2026-05-31T21:23:09.353Z
+### Supplements
+- **Baseline Support Matrix**: 3/20 comparable tasks (T001, T002, T003)
+- **Layer 5A Representativeness**: 22/125 successful rows; Proposed Agent successful rows: 0
+- **Layer 5B Deterministic Proxy**: 125 rows; supplementary only, not a semantic-evaluation replacement
+
+Generated at: 2026-05-31T21:36:20.531Z

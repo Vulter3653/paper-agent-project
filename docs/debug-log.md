@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Benchmark v3 Supplement Audit Generation
+
+- Generated a baseline availability matrix from existing normalized, task, and gold artifacts.
+- Confirmed that only T001-T003 have proposed-agent, rule-based, single-LLM, and gold common support. T007 remains `proposed_agent_missing`.
+- Generated Layer 5A representativeness evidence: 22/125 successful judge rows, concentrated in T001-T003, with zero Proposed Agent rows.
+- Generated Layer 5B deterministic semantic proxies from existing judge inputs only. Candidate notes are used where abstracts are unavailable and are explicitly labeled as a limited proxy source.
+- No benchmark search, LLM judge rerun, raw judge output rewrite, API key exposure, D1 command, migration, or dashboard edit occurred. (codex)
+
 ## 2026-06-01 (gemini) - Benchmark v3 Promotion Gate Finalization
 
 - Finalized Benchmark v3 validation as **PASS WITH CLAIM BOUNDARIES**.

@@ -30,5 +30,27 @@
     "robustness_risk": "PASS"
   },
   "baseline_parity": "PARTIAL COMMON-SUPPORT (T001-T003 Controlled)",
-  "generated_at": "2026-05-31T21:23:09.353Z"
+  "supplements": {
+    "baseline_support_matrix": {
+      "status": "PARTIAL COMMON-SUPPORT",
+      "comparable_tasks": [
+        "T001",
+        "T002",
+        "T003"
+      ],
+      "claim_boundary": "Baseline comparison is limited to the common-support subset. T004-T020 remain artifact-level validation unless baseline parity is proven. The benchmark does not support full T001-T020 comparative superiority claims."
+    },
+    "layer5a_representativeness": {
+      "successful_rows": 22,
+      "total_input_rows": 125,
+      "proposed_agent_successful_rows": 0,
+      "interpretation": "Layer 5A is not a representative semantic-quality estimate. Layer 5A is a quota-limited partial implementation audit."
+    },
+    "layer5b_deterministic_proxy": {
+      "row_count": 125,
+      "semantic_evaluation_replacement": false,
+      "claim_boundary": "Layer 5B deterministic proxy supplements the quota-limited LLM judge audit. It does not replace LLM or human semantic evaluation and must not be reported as full semantic-quality validation."
+    }
+  },
+  "generated_at": "2026-05-31T21:36:20.531Z"
 }

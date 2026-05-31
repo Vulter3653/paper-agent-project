@@ -1,0 +1,44 @@
+{
+  "benchmark_standard": "v3",
+  "supplement": "Layer 5B Deterministic Semantic Proxy",
+  "source_files": [
+    "benchmark/validation/v3/layer5_judge_inputs_top5.jsonl"
+  ],
+  "row_count": 125,
+  "metrics": [
+    "query_title_overlap",
+    "query_abstract_or_notes_overlap",
+    "construct_coverage_proxy",
+    "method_context_match_proxy",
+    "evidence_field_presence"
+  ],
+  "semantic_evaluation_replacement": false,
+  "claim_boundary": "Layer 5B deterministic proxy supplements the quota-limited LLM judge audit. It does not replace LLM or human semantic evaluation and must not be reported as full semantic-quality validation.",
+  "caveat": "Abstracts are not consistently available. candidate_notes are used when available and may contain scoring notes rather than abstracts.",
+  "method_summary": {
+    "proposed_agent": {
+      "row_count": 95,
+      "query_title_overlap": "0.1882",
+      "query_abstract_or_notes_overlap": "0.0000",
+      "construct_coverage_proxy": "0.3009",
+      "method_context_match_proxy": "0.1882",
+      "evidence_field_presence": "1.0000"
+    },
+    "rule_based": {
+      "row_count": 15,
+      "query_title_overlap": "0.0636",
+      "query_abstract_or_notes_overlap": "0.0000",
+      "construct_coverage_proxy": "0.0857",
+      "method_context_match_proxy": "0.0636",
+      "evidence_field_presence": "1.0000"
+    },
+    "single_llm": {
+      "row_count": 15,
+      "query_title_overlap": "0.1249",
+      "query_abstract_or_notes_overlap": "0.0551",
+      "construct_coverage_proxy": "0.2967",
+      "method_context_match_proxy": "0.1800",
+      "evidence_field_presence": "1.0000"
+    }
+  }
+}

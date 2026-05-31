@@ -5,6 +5,9 @@ const VALIDATION_DIR = 'benchmark/validation/v3';
 const DETERMINISTIC_SUMMARY = path.join(VALIDATION_DIR, 'benchmark_v3_deterministic_metrics_summary.json');
 const LAYER5_SUMMARY = path.join(VALIDATION_DIR, 'layer5_semantic_metrics_summary.json');
 const LAYER6_SUMMARY = path.join(VALIDATION_DIR, 'layer6_robustness_metrics_summary.json');
+const BASELINE_SUPPORT = path.join(VALIDATION_DIR, 'baseline_support_matrix_v3.json');
+const LAYER5_REPRESENTATIVENESS = path.join(VALIDATION_DIR, 'layer5_representativeness_v3.json');
+const LAYER5_PROXY = path.join(VALIDATION_DIR, 'layer5_deterministic_semantic_proxy_v3.json');
 
 const OUTPUT_JSON = path.join(VALIDATION_DIR, 'promotion_gate_summary_v3.json');
 const OUTPUT_MD = path.join(VALIDATION_DIR, 'promotion_gate_summary_v3.md');
@@ -18,6 +21,9 @@ async function computePromotionSummary() {
   const detSummary = JSON.parse(fs.readFileSync(DETERMINISTIC_SUMMARY, 'utf-8'));
   const l5Summary = fs.existsSync(LAYER5_SUMMARY) ? JSON.parse(fs.readFileSync(LAYER5_SUMMARY, 'utf-8')) : null;
   const l6Summary = fs.existsSync(LAYER6_SUMMARY) ? JSON.parse(fs.readFileSync(LAYER6_SUMMARY, 'utf-8')) : null;
+  const baselineSupport = fs.existsSync(BASELINE_SUPPORT) ? JSON.parse(fs.readFileSync(BASELINE_SUPPORT, 'utf-8')) : null;
+  const representativeness = fs.existsSync(LAYER5_REPRESENTATIVENESS) ? JSON.parse(fs.readFileSync(LAYER5_REPRESENTATIVENESS, 'utf-8')) : null;
+  const deterministicProxy = fs.existsSync(LAYER5_PROXY) ? JSON.parse(fs.readFileSync(LAYER5_PROXY, 'utf-8')) : null;
 
   const layer5Stats = {
     total_input_rows: l5Summary?.total_input_rows || 125,
@@ -53,6 +59,11 @@ async function computePromotionSummary() {
       robustness_risk: "PASS"
     },
     baseline_parity: "PARTIAL COMMON-SUPPORT (T001-T003 Controlled)",
+    supplements: {
+      baseline_support_matrix: baselineSupport ? { status: baselineSupport.baseline_parity, comparable_tasks: baselineSupport.comparable_tasks, claim_boundary: baselineSupport.claim_boundary } : "not_generated",
+      layer5a_representativeness: representativeness ? { successful_rows: representativeness.successful_rows, total_input_rows: representativeness.total_input_rows, proposed_agent_successful_rows: representativeness.proposed_agent_successful_rows, interpretation: representativeness.interpretation } : "not_generated",
+      layer5b_deterministic_proxy: deterministicProxy ? { row_count: deterministicProxy.row_count, semantic_evaluation_replacement: deterministicProxy.semantic_evaluation_replacement, claim_boundary: deterministicProxy.claim_boundary } : "not_generated"
+    },
     generated_at: new Date().toISOString()
   };
 
@@ -94,6 +105,11 @@ ${promotionSummary.overall_conclusion}
 ### Baseline Parity
 - **Status**: ${promotionSummary.baseline_parity}
 - **Scope**: T001–T003 (Controlled Comparison), T004–T020 (Artifact-level Validation)
+
+### Supplements
+- **Baseline Support Matrix**: ${baselineSupport ? `${baselineSupport.comparable_task_count}/${baselineSupport.task_count} comparable tasks (${baselineSupport.comparable_tasks.join(', ')})` : 'not generated'}
+- **Layer 5A Representativeness**: ${representativeness ? `${representativeness.successful_rows}/${representativeness.total_input_rows} successful rows; Proposed Agent successful rows: ${representativeness.proposed_agent_successful_rows}` : 'not generated'}
+- **Layer 5B Deterministic Proxy**: ${deterministicProxy ? `${deterministicProxy.row_count} rows; supplementary only, not a semantic-evaluation replacement` : 'not generated'}
 
 Generated at: ${promotionSummary.generated_at}
 `;

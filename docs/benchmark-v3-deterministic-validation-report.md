@@ -27,6 +27,9 @@ Benchmark v3 is ready for presentation as a reproducible automated benchmark fra
 - `layer5_semantic_metrics_summary.json`: Partial semantic audit results.
 - `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4, 6, and partial 5.
 - `promotion_gate_summary_v3.json`: Formal promotion gate metadata.
+- `baseline_support_matrix_v3.*`: Common-support matrix separating controlled comparison from artifact-only validation.
+- `layer5_representativeness_v3.*`: Layer 5A subset representativeness audit.
+- `layer5_deterministic_semantic_proxy_v3.*`: Layer 5B deterministic semantic proxy supplement.
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
 ## 5. Claim Boundary
@@ -75,3 +78,11 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 - **Note**: No representative semantic quality estimate is available for the Proposed Agent. Layer 5 results are for implementation audit of the evaluation subset only.
 
 (gemini)
+
+## 9. Supplement Audits
+
+- **Baseline Support Matrix**: Cross-method comparison is limited to the T001-T003 common-support subset. T004-T020 remain artifact-level validation unless baseline parity is proven.
+- **Layer 5A Representativeness**: The quota-limited successful subset is an implementation audit, not a representative semantic-quality estimate. No Proposed Agent rows are present in the successful subset.
+- **Layer 5B Deterministic Proxy**: Lexical and evidence-field proxies supplement Layer 5A. They do not replace LLM or human semantic evaluation and do not establish full semantic-quality validation.
+
+(codex)

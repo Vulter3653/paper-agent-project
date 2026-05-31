@@ -2,6 +2,13 @@
 
 Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
 
+## 2026-06-01 (codex) - Benchmark v3 Supplement Audits
+
+- **Baseline Support**: Added a generated availability matrix confirming that controlled common-support comparison is limited to T001-T003. T004-T020 remain artifact-level validation unless baseline parity is proven.
+- **Layer 5A**: Added a representativeness audit confirming that the 22/125 quota-limited successful rows are an implementation-audit subset and contain no Proposed Agent rows.
+- **Layer 5B**: Added deterministic lexical and evidence-field proxy metrics for all prepared Layer 5 inputs. These supplement, but do not replace, LLM or human semantic evaluation.
+- **Safety Boundary**: No benchmark search, LLM judge rerun, raw judge output rewrite, D1 command, migration, dashboard edit, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (gemini) - Benchmark v3 Promotion Gate Summary
 
 - **Status**: Benchmark v3 is now ready for presentation as a reproducible automated framework.

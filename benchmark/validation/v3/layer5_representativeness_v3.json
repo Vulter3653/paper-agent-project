@@ -1,0 +1,234 @@
+{
+  "benchmark_standard": "v3",
+  "supplement": "Layer 5A Representativeness Audit",
+  "source_files": [
+    "benchmark/validation/v3/layer5_judge_inputs_top5.jsonl",
+    "benchmark/validation/v3/layer5_judge_outputs_raw.jsonl"
+  ],
+  "total_input_rows": 125,
+  "successful_rows": 22,
+  "failed_or_unevaluated_rows": 103,
+  "semantic_coverage_rate": "0.1760",
+  "proposed_agent_successful_rows": 0,
+  "representative_semantic_quality_estimate": false,
+  "interpretation": "Layer 5A is not a representative semantic-quality estimate. Layer 5A is a quota-limited partial implementation audit.",
+  "claim_boundary": "The successful evaluated subset contains no Proposed Agent rows. Do not infer Proposed Agent semantic quality from Layer 5A.",
+  "rows": [
+    {
+      "dimension": "task_id",
+      "value": "T001",
+      "input_rows": 15,
+      "successful_rows": 10,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.6667"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T002",
+      "input_rows": 15,
+      "successful_rows": 6,
+      "failed_or_unevaluated_rows": 9,
+      "coverage_rate": "0.4000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T003",
+      "input_rows": 15,
+      "successful_rows": 6,
+      "failed_or_unevaluated_rows": 9,
+      "coverage_rate": "0.4000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T004",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T005",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T006",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T008",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T009",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T010",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T011",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T012",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T013",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T014",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T015",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T016",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T017",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T018",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T019",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "task_id",
+      "value": "T020",
+      "input_rows": 5,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 5,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "method",
+      "value": "proposed_agent",
+      "input_rows": 95,
+      "successful_rows": 0,
+      "failed_or_unevaluated_rows": 95,
+      "coverage_rate": "0.0000"
+    },
+    {
+      "dimension": "method",
+      "value": "rule_based",
+      "input_rows": 15,
+      "successful_rows": 15,
+      "failed_or_unevaluated_rows": 0,
+      "coverage_rate": "1.0000"
+    },
+    {
+      "dimension": "method",
+      "value": "single_llm",
+      "input_rows": 15,
+      "successful_rows": 7,
+      "failed_or_unevaluated_rows": 8,
+      "coverage_rate": "0.4667"
+    },
+    {
+      "dimension": "result_rank",
+      "value": "1",
+      "input_rows": 25,
+      "successful_rows": 5,
+      "failed_or_unevaluated_rows": 20,
+      "coverage_rate": "0.2000"
+    },
+    {
+      "dimension": "result_rank",
+      "value": "2",
+      "input_rows": 25,
+      "successful_rows": 5,
+      "failed_or_unevaluated_rows": 20,
+      "coverage_rate": "0.2000"
+    },
+    {
+      "dimension": "result_rank",
+      "value": "3",
+      "input_rows": 25,
+      "successful_rows": 4,
+      "failed_or_unevaluated_rows": 21,
+      "coverage_rate": "0.1600"
+    },
+    {
+      "dimension": "result_rank",
+      "value": "4",
+      "input_rows": 25,
+      "successful_rows": 4,
+      "failed_or_unevaluated_rows": 21,
+      "coverage_rate": "0.1600"
+    },
+    {
+      "dimension": "result_rank",
+      "value": "5",
+      "input_rows": 25,
+      "successful_rows": 4,
+      "failed_or_unevaluated_rows": 21,
+      "coverage_rate": "0.1600"
+    }
+  ]
+}

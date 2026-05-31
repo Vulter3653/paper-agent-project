@@ -1,6 +1,16 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Session State Synchronized)
+Updated: 2026-05-31 (Phase 2 Design Complete)
+
+## 2026-05-31 (gemini) - Benchmark Batch Schema & API Design
+- **Summary**: Completed the minimal D1 schema and API extension design for T004-T020 batch expansion. (gemini)
+- **Status**: Completed (Design Phase).
+- **Key Deliverables**:
+  - **Design Document**: Created `docs/benchmark-batch-schema-api-design.md` detailing mandatory fields (`parent_run_id`, `is_derived`, `retry_count`) and new API endpoints.
+  - **Runner Strategy**: Defined how the future batch runner will interact with the new schema for resume/retry logic.
+  - **Verification Gates**: Designed a multi-stage verification process for pre-run, batch-level, and merge-level integrity.
+  - **Baseline Protection**: Reinforced immutable status for the T001-T003 controlled baseline.
+- **Verification**: Documentation-only update. `npm run validate:history` and other suite commands passing. (gemini)
 
 ## 2026-05-31 (gemini) - Session State Synchronization
 - **Summary**: Aligned `docs/gemini-session-state.md` with the latest main HEAD and updated the roadmap to reflect Phase 2 transition. (gemini)

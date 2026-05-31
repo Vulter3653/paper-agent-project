@@ -1,20 +1,18 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Phase 2 Design Ready)
+Updated: 2026-05-31 (Phase 2B Design Review Ready)
 
 ## Current Status
-- **main HEAD**: `5019692b801f0703a8e80a2a6e112c13ee441d54` (Verified)
-- **Batch Protocol**: `docs/benchmark-batch-protocol.md` created and completed (Design Phase).
-- **rowCount fix**: Pushed to origin main.
-- **Live Verification**: Automation script strengthened with 15+ regression checks and 5 endpoint calls.
-- **Integrity**: Report Integrity Protocol fully observed.
+- **main HEAD**: `f456fcd94baad091441f5d9eb9e36f94be43e523` (Verified)
+- **Batch Design**: `docs/benchmark-batch-schema-api-design.md` created and completed (Design Phase).
+- **Batch Protocol**: `docs/benchmark-batch-protocol.md` reviewed and integrated into schema design.
+- **Integrity**: Phase 2A design completed with zero code mutations.
 
 ## Completed Actions
-1. **Benchmark Batch Protocol Designed**: Created risk mitigation and execution roadmap for full 20-task validation in `docs/benchmark-batch-protocol.md`.
-2. **rowCount fix pushed**: D1 benchmark metrics now report correct row count (9/9).
-3. **Live verification implemented**: `scripts/verify-live-benchmark.mjs` created and verified.
-4. **Automation integrity strengthened**: Added performance checks (Precision/NDCG), strict rowCount enforcement, and detail/metrics endpoint validation.
-5. **Documentation synchronized**: README, progress, and debug logs updated with protocol details.
+1. **Benchmark Batch Schema & API Designed**: Detailed minimal extensions for D1 (`parent_run_id`, `is_derived`, `retry_count`) and new endpoints (`/api/benchmark-diagnostics`).
+2. **README Updated**: Linked the new design document for team visibility.
+3. **Documentation Synchronized**: Progress and debug logs updated with design decisions.
+4. **Validation Suite Passed**: Confirmed that the design documentation didn't break any build or verification gates.
 
 ## Verification Results
 - `node scripts/verify-live-benchmark.mjs`: ✅ PASS (15/15 checks)
@@ -25,9 +23,9 @@ Updated: 2026-05-31 (Phase 2 Design Ready)
 - `npm run benchmark:audit-gold`: ✅ PASS
 
 ## Next Recommended Actions
-1. **Protocol Review**: Review `docs/benchmark-batch-protocol.md` for batch chunking and merging logic.
-2. **Phase 2 Design**: Start minimal D1 schema and API extension design for batch orchestration (e.g., `parent_run_id`, `retry_count`).
-3. **Runner Prohibition**: Do not execute expanded or proposed benchmark runners until the protocol review and Phase 2 design are approved.
+1. **Design Review**: Review `docs/benchmark-batch-schema-api-design.md` for consistency and minimal change compliance.
+2. **Phase 2B Draft**: Prepare the SQL migration draft (`0005_add_benchmark_batch_columns.sql`) and static validation in a non-execution worktree.
+3. **Runner Prohibition**: Strictly maintain the prohibition on running expanded or proposed benchmark runners until Phase 2 is fully implemented and tested.
 
 ## Git Status Snapshot
 ```text

@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-31 - Benchmark Batch Schema & API Extension Design
+- **Context**: Phase 2 of the batch benchmark expansion roadmap.
+- **Action**: Designed a minimal, backward-compatible schema extension for D1 and new API endpoints to support batch orchestration (T004-T020).
+- **Decision**: 
+  - Introduced `parent_run_id` and `is_derived` in `benchmark_runs` to group independent batches.
+  - Added `retry_count` and `last_error` in `benchmark_run_tasks` for infrastructure resilience.
+  - Prioritized `GET /api/benchmark-diagnostics` for quota and resource monitoring.
+- **Constraint Compliance**: Verified that NO code changes or migrations were implemented during this design phase. (gemini)
+
 ## 2026-05-31 - Session State HEAD Staleness After Batch Protocol Design
 - **Incident**: Although the `docs/benchmark-batch-protocol.md` was created and completed, the `docs/gemini-session-state.md` file still contained the previous HEAD SHA and listed the protocol creation as a future action.
 - **Resolution**: Updated `docs/gemini-session-state.md` to reflect the verified HEAD (`5019692...`) and moved to Phase 2 (schema/API extension design) actions. (gemini)

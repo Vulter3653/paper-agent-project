@@ -33,6 +33,5 @@
 - **D1 Seeding**: Production D1 database needs to be seeded with `benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql` for the dashboard Run Selector to show live data.
 
 ## Next Recommended Actions
-1. **Commit and Push**: Stage and commit the restored history and final cleanup to the working branch.
-2. **D1 Seed**: Apply the generated SQL to the production Cloudflare D1 database.
-3. **Live Verification**: Confirm the dashboard displays "D1 Benchmark Run" source once seeded.
+1. **D1 Seed**: Production D1 database에 `benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql`을 적용하여 데이터를 시딩합니다.
+2. **Live Verification**: 시딩 후 Evaluation Dashboard에서 "D1 Benchmark Run" 데이터 소스가 정상적으로 표시되는지, 그리고 Run Selector가 올바르게 동작하는지 확인합니다.

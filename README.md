@@ -18,6 +18,12 @@ apps/worker
   -> D1 metadata
   -> R2 reports
   -> Vectorize opt-in semantic relevance; metadata scoring remains default.
+
+
+
+
+
+
   -> Google Drive / Web of Science / Crossref / Unpaywall tools
 
 apps/mcp

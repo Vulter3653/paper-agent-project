@@ -16,7 +16,23 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - Do not remove historical entries.
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
+## Unreleased
+- None.
+
 ## 2026-05-30 (gemini)
+- Fix: Corrected independent benchmark runner (run-independent-benchmark.mjs) regex escaping and CSV parsing logic so controlled T001-T003 metrics no longer collapse to all-zero outputs. (gemini)
+- Worker: Completed benchmark run detail/metrics API response shape for Evaluation Dashboard consumption. Implemented /api/benchmark-runs/:id and enhanced :id/metrics endpoints. (gemini)
+- Web: Bound Evaluation Dashboard run selector to actual selected benchmark run metrics endpoint and improved UI feedback for D1 vs Legacy fallback status. (gemini)
+- Docs: Clarified that Production D1 seeding is required before D1 benchmark run source appears in the deployed dashboard. (gemini)
+- Worker: Fixed apps/worker/src/index.ts truncation issues and ensured all benchmark helper imports are present. (gemini)
+- Feat: Implemented Independent Benchmark Evaluation Pipeline separating the static evaluation metrics from live runtime aggregation. (gemini)
+- Worker: Expanded D1 database schema in schema.sql and created migration 0006_add_benchmark_tables.sql to include benchmark persistence tables (benchmark_runs, benchmark_run_tasks, etc.). (gemini)
+- Worker: Added robust benchmark helper methods in persistence.ts to support runtime retrieval of benchmark_runs and benchmark_run_metrics. (gemini)
+- Worker: Updated /api/benchmark-metrics endpoint to intelligently serve latest completed benchmark run from D1, gracefully falling back to a legacy_static_snapshot. Added new endpoint /api/benchmark-runs. (gemini)
+- Scripts: Added run-independent-benchmark.mjs to execute independent baseline comparisons (Rule-based, Single LLM, Proposed Agent) against verified gold labels, saving artifacts in a non-destructive benchmark/runs/ architecture and generating D1 SQL inserts. (gemini)
+- Web: Upgraded Evaluation Dashboard DashboardPages.tsx to read the live API source, displaying whether data stems from D1, R2, or a static legacy snapshot. (gemini)
+- Web: Added an interactive "Run Selector" to the Evaluation Dashboard to toggle between distinct evaluation runs natively. (gemini)
+- Benchmark: Updated insert_run.sql generator to use INSERT OR REPLACE for repeatable seeding. (gemini)
 - Docs: Synchronized session-state and progress documentation with the current main status after Report Output Language Guide merge. (gemini)
 - Docs: Clarified current artifact language policy: Korean Markdown report, English PDF report, English-schema CSV/XLSX analysis files. (gemini)
 - Docs: Marked earlier English-report-preview wording as superseded by the later Korean Markdown / English PDF split. (gemini)

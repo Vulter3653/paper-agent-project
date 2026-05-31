@@ -1,23 +1,37 @@
-# Gemini Session State
+# Gemini Session State - 2026-05-30
 
-Updated: 2026-05-30 (Documentation State Consistency Reconciliation)
+## Current Status
+- **Goal**: Establish a functional and accurate Independent Benchmark Evaluation Pipeline.
+- **Outcome**: Completed. Metric accuracy verified (non-zero), D1 persistence implemented, Evaluation Dashboard run selector connected, and historical entry integrity restored in CHANGELOG.md.
 
-## Current Context
-- **Latest Commit**: `84b4b58d79ddeec7a829612017bf8edac8dcf265`
-- **Active Branch**: `pre-freeze/docs-state-consistency-2026-05-30`
-- **Current Task**: Synchronize documentation state with current main after Report Output Language Guide merge.
+## Changes Completed
+- **Worker**:
+  - Fixed `run-independent-benchmark.mjs` regex and CSV parsing (resolved zero-metric bug).
+  - Implemented `/api/benchmark-runs` and `/api/benchmark-runs/:id/metrics`.
+  - Added `getBenchmarkRunById` and other helpers to `persistence.ts`.
+  - Unified benchmark API response shapes in `index.ts`.
+- **Web**:
+  - Connected Evaluation Dashboard Run Selector to actual API endpoints.
+  - Improved UI feedback for D1 Benchmark Runs vs. Legacy Fallback.
+  - Fixed TypeScript error in `DashboardPages.tsx` by adding missing type fields.
+- **Benchmark Artifacts**:
+  - Regenerated `benchmark/runs/2026-05-30-controlled-t001-t003/` with verified non-zero metrics and latest fix-series commit provenance.
+  - Verified `insert_run.sql` contains `INSERT OR REPLACE` for safe seeding.
+- **Docs**:
+  - Restored all historical entries in `CHANGELOG.md` (2026-05-24 to 2026-05-27) while consolidating 2026-05-30 fixes.
+  - Verified `validate:history` passes on the working tree.
 
-## Completed Actions
-1. **Report Output Language Guide Merge**: Successfully merged and pushed the localization guide to `main`.
-2. **Artifact Labeling**: Explicitly labeled Markdown as "한글 보고서" (Korean Report) and PDF as "영문 PDF" (English PDF) in the dashboard.
-3. **Artifact Purpose Definition**: Defined CSV/XLSX as raw analysis source files with English schemas.
-4. **Language Policy UI**: Implemented an "Output Language Policy" card in the artifact panel for user transparency.
-5. **PDF Continuity**: Confirmed PDF functionality remains active with strictly English ASCII-safe content to prevent mojibake.
-6. **Live Verification**: Verified bifurcated output (KO Markdown, EN PDF) on the deployed environment.
+## Verification Results
+- `npm run validate:history`: Passed.
+- `npm run validate:agent-rules`: Passed.
+- `npm run typecheck`: Passed (Web & Worker).
+- `npm run build:web`: Passed.
+- `npm run benchmark:audit-gold`: Passed (60 rows, 20/20 tasks).
+- `run-independent-benchmark.mjs`: Successfully generated artifacts with non-zero metrics (P@5: 0.1333, NDCG: 0.3579) and updated `source_commit`.
 
-## Pending Actions
-1. **Documentation Reconciliation Merge**: Merge the current consistency branch into `main` and push to `origin`.
-2. **Feature Development**: Continue feature implementation based on project roadmap and user directives.
+## Pending / Blockers
+- **D1 Seeding**: Production D1 database needs to be seeded with `benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql` for the dashboard Run Selector to show live data.
 
-## Blockers
-- None. Documentation is being aligned with the verified system state.
+## Next Recommended Actions
+1. **D1 Seed**: Production D1 database에 `benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql`을 적용하여 데이터를 시딩합니다.
+2. **Live Verification**: 시딩 후 Evaluation Dashboard에서 "D1 Benchmark Run" 데이터 소스가 정상적으로 표시되는지, 그리고 Run Selector가 올바르게 동작하는지 확인합니다.

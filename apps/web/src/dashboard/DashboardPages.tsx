@@ -108,6 +108,8 @@ type BenchmarkAutoReviewMethod = {
 
 type BenchmarkMetrics = {
   source?: "static_snapshot" | "live" | string;
+  runId?: string;
+  runLabel?: string;
   note?: string;
   tasks: number;
   results: number;
@@ -1128,6 +1130,8 @@ function buildAutoReviewRows(metrics: BenchmarkMetrics | null) {
 export function EvaluationDashboardPage() {
   const [scenarioKey, setScenarioKey] = useState<EvaluationScenarioKey>("strict");
   const [benchmarkMetrics, setBenchmarkMetrics] = useState<BenchmarkMetrics | null>(null);
+  const [runs, setRuns] = useState<any[]>([]);
+  const [selectedRun, setSelectedRun] = useState<string>("latest");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     title: "데이터 불러오는 중",
@@ -1177,15 +1181,23 @@ export function EvaluationDashboardPage() {
   }, [scenarioKey, benchmarkMetrics]);
 
   const overall = Math.round(scenario.bars.reduce((sum, item) => sum + item.value, 0) / scenario.bars.length);
-  const benchmarkSourceLabel = benchmarkMetrics?.source === "static_snapshot" ? "정적(Static) 벤치마크 스냅샷" : "실제(Live) 벤치마크 지표";
-  const benchmarkDescription = benchmarkMetrics?.source === "static_snapshot"
+  
+  let benchmarkSourceLabel = "예시 데이터";
+  if (benchmarkMetrics) {
+    if (benchmarkMetrics.source === "d1_benchmark_run") benchmarkSourceLabel = "D1 Benchmark Run";
+    else if (benchmarkMetrics.source === "r2_benchmark_artifact") benchmarkSourceLabel = "R2 Benchmark Artifact";
+    else benchmarkSourceLabel = "Legacy Static Snapshot";
+  }
+
+  const benchmarkDescription = benchmarkMetrics?.source === "static_snapshot" || benchmarkMetrics?.source === "legacy_static_snapshot"
     ? "코드에 저장된 T001-T003 벤치마크 스냅샷입니다. 규칙 기반, 단일 LLM, 제안 모델의 결과 비교가 포함됩니다."
     : "서버에서 반환된 최신 벤치마크 평가 결과입니다.";
   const comparisonRows = buildComparisonRows(benchmarkMetrics);
   const autoReviewRows = buildAutoReviewRows(benchmarkMetrics);
 
   useEffect(() => {
-    void loadBenchmarkMetrics();
+    void loadRuns();
+    void loadBenchmarkMetrics("latest");
   }, []);
   
   useEffect(() => {
@@ -1195,17 +1207,38 @@ export function EvaluationDashboardPage() {
     });
   }, [scenarioKey, scenario.label, scenario.announcement, scenario.limitation]);
 
-  async function loadBenchmarkMetrics() {
+  async function loadRuns() {
+    try {
+      const response = await fetch(apiUrl("/api/benchmark-runs"));
+      if (response.ok) {
+        const data = await response.json() as { runs: any[] };
+        setRuns(data.runs || []);
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  async function loadBenchmarkMetrics(runId: string) {
     setLoading(true);
     try {
-      const response = await fetch(apiUrl("/api/benchmark-metrics"));
+      const fetchUrl = runId === "latest" ? apiUrl("/api/benchmark-metrics") : apiUrl(`/api/benchmark-runs/${runId}/metrics`);
+      const response = await fetch(fetchUrl);
       if (!response.ok) throw new Error("벤치마크 지표를 불러오지 못했습니다.");
       const data = (await response.json()) as BenchmarkMetrics;
       setBenchmarkMetrics(data);
-      setMessage({
-        title: data.source === "static_snapshot" ? "정적 벤치마크 로드됨" : "벤치마크 결과 확인됨",
-        body: `${data.tasks}개 태스크, ${data.results}개 결과물 기준입니다. ${data.note ?? ""}`
-      });
+      
+      let title = "벤치마크 결과 확인됨";
+      let body = `${data.tasks || 0}개 태스크, ${data.results || 0}개 결과물 기준입니다. ${data.note ?? ""}`;
+      
+      if (data.source === "legacy_static_snapshot") {
+        title = "정적 벤치마크 로드됨 (Fallback)";
+        body = "아직 Production D1에 benchmark run이 seed되지 않았습니다. 현재 표는 legacy fallback이며, 실제 run selector는 D1 seed 이후 활성화됩니다.";
+      } else if (data.source === "d1_benchmark_run") {
+        title = `D1 Benchmark Run: ${data.runId}`;
+      }
+      
+      setMessage({ title, body });
     } catch (error) {
       console.error(error);
       setMessage({
@@ -1215,6 +1248,12 @@ export function EvaluationDashboardPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleRunChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const val = e.target.value;
+    setSelectedRun(val);
+    void loadBenchmarkMetrics(val);
   }
 
   return (
@@ -1237,7 +1276,7 @@ export function EvaluationDashboardPage() {
                 {item.label}
               </button>
             ))}
-            <button className="uxSoftButton" type="button" onClick={loadBenchmarkMetrics} disabled={loading} aria-label="새로고침">
+            <button className="uxSoftButton" type="button" onClick={() => loadBenchmarkMetrics(selectedRun)} disabled={loading} aria-label="새로고침">
               <RefreshCw size={14} className={loading ? "spin" : ""} />
             </button>
           </div>
@@ -1297,9 +1336,20 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>기준모형 성능 비교 (Baseline Evaluation)</h2>
-                <p>{benchmarkMetrics ? `${benchmarkMetrics.tasks}개 통제 태스크(T001-T003) 기준 매크로 평균입니다.` : "예시 데이터(Mock): 실제 벤치마크 결과를 불러오기 전입니다."}</p>
+                <p>{benchmarkMetrics ? `${benchmarkMetrics.tasks || 3}개 통제 태스크(T001-T003) 기준 매크로 평균입니다.` : "예시 데이터(Mock): 실제 벤치마크 결과를 불러오기 전입니다."}</p>
+                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <label htmlFor="run-selector" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Run 선택:</label>
+                  <select id="run-selector" value={selectedRun} onChange={handleRunChange} style={{ fontSize: '0.8rem', padding: '0.2rem' }}>
+                    <option value="latest">최신 (Latest)</option>
+                    {runs.map(run => (
+                      <option key={run.id} value={run.id}>
+                        {run.run_label} ({new Date(run.created_at).toLocaleString()}) [{run.benchmark_scope}]
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <span className={`uxPill ${benchmarkMetrics ? "blue" : "amber"}`}>{benchmarkMetrics ? benchmarkSourceLabel : "예시 데이터"}</span>
+              <span className={`uxPill ${benchmarkMetrics ? "blue" : "amber"}`}>{benchmarkSourceLabel}</span>
             </div>
             <div className="uxTableWrap">
               <table className="uxTable">
@@ -1328,6 +1378,45 @@ export function EvaluationDashboardPage() {
                       <td>{row.finding}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Functional Capability Comparison */}
+            <div className="uxPanelHead" style={{ marginTop: "2rem" }}>
+              <div>
+                <h2>기능적 역량 비교 (Functional Capabilities)</h2>
+                <p>단순 검색 성능 우위가 아닌, <strong>기능 범위 및 감사 가능성(Auditability)</strong>에 대한 질적 비교입니다.</p>
+              </div>
+            </div>
+            <div className="uxTableWrap">
+              <table className="uxTable">
+                <thead>
+                  <tr>
+                    <th>핵심 역량</th>
+                    <th>규칙 기반 (Rule-based)</th>
+                    <th>단일 LLM (Single LLM)</th>
+                    <th>제안 모델 (Proposed)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>투명성 (Traceability)</td>
+                    <td>부분 제공 (검색 조건 확인 가능)</td>
+                    <td>불가 (블랙박스)</td>
+                    <td><strong style={{ color: "#16a34a" }}>완전 제공 (12-stage 추적 로그)</strong></td>
+                  </tr>
+                  <tr>
+                    <td>검증 (Verification)</td>
+                    <td>없음</td>
+                    <td>불안정 (환각 발생 위험)</td>
+                    <td><strong style={{ color: "#16a34a" }}>시스템 검증 (Crossref/Unpaywall)</strong></td>
+                  </tr>
+                  <tr>
+                    <td>산출물 (Outputs)</td>
+                    <td>데이터 (CSV/JSON)</td>
+                    <td>비정형 텍스트</td>
+                    <td><strong style={{ color: "#16a34a" }}>보고서 & 데이터 (MD, PDF, CSV, XLSX)</strong></td>
+                  </tr>
                 </tbody>
               </table>
             </div>

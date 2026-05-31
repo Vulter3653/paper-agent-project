@@ -1,6 +1,24 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-30 (Documentation state reconciled with main)
+Updated: 2026-05-30 (Independent Benchmark Evaluation Pipeline)
+
+## 2026-05-30 (gemini) - Independent Benchmark Evaluation Pipeline Completion
+- **Summary**: Established a fully functional and accurate evaluation pipeline that separates static benchmarks from runtime aggregation. Verified metric accuracy and implemented dynamic dashboard switching. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - Accurate T001-T003 macro-averages (e.g., P@5: 0.1333, NDCG: 0.3579).
+  - D1-backed Benchmark Run retrieval and metrics APIs.
+  - Interactive Run Selector in the Evaluation Dashboard.
+  - Robust local artifact creation via `run-independent-benchmark.mjs`.
+- **Infrastructure Note**: Production D1 requires seeding with `benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql` to activate the live Run Selector. (gemini)
+- **Claim Boundary**: Verified quantitative performance comparison for T001-T003 controlled layer. (gemini)
+
+## 2026-05-30 (gemini) - Independent Benchmark Evaluation Pipeline
+- **Pipeline Implementation**: Replaced the hardcoded static benchmark snapshot approach by introducing `benchmark/scripts/run-independent-benchmark.mjs`. This script acts as an independent runner, filtering baseline CSV outputs and directly executing the evaluation against verified gold standard outputs to output pristine `summary.json`, `metrics.csv`, and an `audit_report.md` artifact into a distinct timestamped `benchmark/runs/` directory.
+- **Database Schema (D1) Evolution**: Added comprehensive D1 SQL schema modifications to persist run metrics cleanly in table structures decoupled from production Search endpoints (i.e. `benchmark_runs`, `benchmark_run_tasks`, `benchmark_run_results`, `benchmark_run_metrics`, `benchmark_run_artifacts`).
+- **Live Worker API Updates**: Extended `apps/worker/src/persistence.ts` with runtime metric fetching helpers. Upgraded `GET /api/benchmark-metrics` to selectively look up the `latestCompletedBenchmarkRun` from D1 to render accurate dashboard scores dynamically while seamlessly falling back to `legacy_static_snapshot` when the D1 table is empty. Added `GET /api/benchmark-runs`.
+- **Dashboard Data Binding**: Hooked the React Evaluation Dashboard directly to these dynamic queries. Designed a drop-down Selector for manually toggling between the static fallback or historical dynamic runs based natively on worker API output.
+- **Data Protection**: Explicitly strictly preserved all previously captured benchmark CSV and JSON files (zero modifications) to act as absolute baselines, relying completely on the novel `runs/` folder execution mechanism to satisfy separation of concern guidelines.
 
 ## 2026-05-30 (gemini) - Documentation State Consistency Reconciliation
 - **Artifact Policy Alignment**: Synchronized documentation with the current `main` state following the merge of the "Report Output Language Guide".

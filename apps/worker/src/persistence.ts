@@ -914,3 +914,35 @@ export async function getMissingColumns(db: D1Database): Promise<{ table: string
 
   return missing;
 }
+
+// Benchmark Query Helpers
+export async function listBenchmarkRuns(db: D1Database, scope?: string): Promise<any[]> {
+  let query = "SELECT * FROM benchmark_runs ORDER BY created_at DESC";
+  let params: any[] = [];
+  if (scope) {
+    query = "SELECT * FROM benchmark_runs WHERE benchmark_scope = ? ORDER BY created_at DESC";
+    params = [scope];
+  }
+  const result = await db.prepare(query).bind(...params).all();
+  return result.results;
+}
+
+export async function getLatestCompletedBenchmarkRun(db: D1Database, scope: string = "controlled"): Promise<any | null> {
+  const result = await db.prepare("SELECT * FROM benchmark_runs WHERE benchmark_scope = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1").bind(scope).first();
+  return result;
+}
+
+export async function getBenchmarkRunById(db: D1Database, runId: string): Promise<any | null> {
+  const result = await db.prepare("SELECT * FROM benchmark_runs WHERE id = ?").bind(runId).first();
+  return result;
+}
+
+export async function getBenchmarkRunMetrics(db: D1Database, runId: string): Promise<any[]> {
+  const result = await db.prepare("SELECT * FROM benchmark_run_metrics WHERE run_id = ?").bind(runId).all();
+  return result.results;
+}
+
+export async function getBenchmarkRunTasks(db: D1Database, runId: string): Promise<any[]> {
+  const result = await db.prepare("SELECT * FROM benchmark_run_tasks WHERE run_id = ?").bind(runId).all();
+  return result.results;
+}

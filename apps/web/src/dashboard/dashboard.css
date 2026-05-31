@@ -28,7 +28,7 @@
 
 .uxBrandMark {
   align-items: center;
-  background: linear-gradient(135deg, #2563eb, #60a5fa);
+  background: #2563eb;
   border-radius: 8px;
   box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
   color: #ffffff;
@@ -102,7 +102,7 @@
 }
 
 .uxHero::before {
-  background: linear-gradient(90deg, #2563eb, #60a5fa, #16a34a, #d97706);
+  background: #2563eb;
   content: "";
   height: 6px;
   inset: 0 0 auto;
@@ -221,7 +221,7 @@
 }
 
 .uxProgressTrack span {
-  background: linear-gradient(90deg, #2563eb, #60a5fa, #16a34a);
+  background: #2563eb;
   border-radius: inherit;
   display: block;
   height: 100%;
@@ -772,7 +772,7 @@
 }
 
 .uxBar span {
-  background: linear-gradient(90deg, #16a34a, #60a5fa);
+  background: #2563eb;
   display: block;
   height: 100%;
 }
@@ -919,3 +919,38 @@
   margin: 2px 0 6px !important;
   padding: 2px 8px;
 }
+
+
+/* Paper Agent evaluator-first evidence system. See root DESIGN.md. */
+.uxExecutiveSummary { background: #ffffff; border: 1px solid #dbe3ef; border-radius: 8px; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05); margin-bottom: 20px; padding: 22px; }
+.uxExecutiveHead { align-items: flex-start; display: flex; gap: 16px; justify-content: space-between; }
+.uxExecutiveHead h1 { color: #0f172a; font-size: 30px; line-height: 1.12; margin: 0; }
+.uxExecutiveHead p { color: #475569; font-size: 1.08rem; line-height: 1.6; margin-top: 8px; }
+.uxEvidenceGrid, .uxGlossaryGrid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.uxEvidenceGrid { margin-top: 18px; }
+.uxEvidenceCard { background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #64748b; border-radius: 8px; min-width: 0; padding: 15px; }
+.uxEvidenceCard.verified { border-left-color: #15803d; }
+.uxEvidenceCard.artifact { border-left-color: #2563eb; }
+.uxEvidenceCard.partial { border-left-color: #b45309; }
+.uxEvidenceCard.planned { border-left-color: #7c3aed; }
+.uxEvidenceCard h2, .uxEvidenceCard h3 { color: #0f172a; font-size: 15px; margin: 12px 0 6px; }
+.uxEvidenceCard p, .uxEvidenceCard strong { color: #475569; display: block; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; word-break: break-word; }
+.uxEvidenceBadge { border: 1px solid transparent; border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 850; line-height: 1; margin: 0 5px 4px 0; max-width: 100%; padding: 6px 9px; white-space: normal; }
+.uxEvidenceBadge.verified, .uxEvidenceBadge.green { background: #dcfce7; border-color: #bbf7d0; color: #15803d; }
+.uxEvidenceBadge.artifact, .uxEvidenceBadge.blue { background: #dbeafe; border-color: #bfdbfe; color: #1d4ed8; }
+.uxEvidenceBadge.partial, .uxEvidenceBadge.infra, .uxEvidenceBadge.amber { background: #fef3c7; border-color: #fde68a; color: #b45309; }
+.uxEvidenceBadge.purple { background: #f3e8ff; border-color: #e9d5ff; color: #7c3aed; }
+.uxEvidenceBadge.gray { background: #eef3f8; border-color: #d8e1ea; color: #475569; }
+.uxNotCompleteNote { align-items: flex-start; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; color: #92400e; display: flex; gap: 10px; margin-top: 14px; padding: 12px 14px; }
+.uxNotCompleteNote span { line-height: 1.5; overflow-wrap: anywhere; }
+.uxGlossary { border-top: 1px solid #e2e8f0; margin-top: 16px; padding-top: 16px; }
+.uxGlossary h2 { color: #0f172a; font-size: 15px; margin-bottom: 10px; }
+.uxGlossaryItem { align-items: flex-start; display: flex; flex-direction: column; gap: 4px; }
+.uxGlossaryItem small { color: #64748b; line-height: 1.4; }
+.uxExpansionPanel { margin-bottom: 20px; }
+.uxInterpretationCallout, .uxTraceCollapsed { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; margin: 12px 0; padding: 13px; }
+.uxInterpretationCallout div { align-items: center; color: #1d4ed8; display: flex; gap: 8px; }
+.uxInterpretationCallout p, .uxTraceCollapsed p { color: #475569; font-size: 13px; line-height: 1.55; margin-top: 7px; }
+.uxTraceCollapsed { background: #f8fafc; border-color: #e2e8f0; }
+.uxMetric strong, .uxSystemItem span, .uxTinyStatus, .uxPanelNote { overflow-wrap: anywhere; word-break: break-word; }
+@media (max-width: 760px) { .uxExecutiveHead, .uxNotCompleteNote { flex-direction: column; } .uxExecutiveHead h1 { font-size: 25px; } .uxEvidenceGrid, .uxGlossaryGrid { grid-template-columns: 1fr; } }

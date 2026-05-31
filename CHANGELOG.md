@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-31 (codex)
+- Added: Created root `DESIGN.md` as the Paper Agent evaluator-first plain-text design system for future UI agents. (codex)
+- Changed: Applied evidence-first dashboard UX with reusable executive summary cards, badge glossary, staged expansion panel, controlled benchmark interpretation helper, responsive layout rules, and collapsed technical traces. (codex)
 - Docs: Drafted section-by-section final paper sources under `paper/sections/`, refreshed the conference-style `paper/final-paper-draft.tex`, and added the paper claim-boundary checklist plus instructor-criteria mapping. (codex)
 - Benchmark: Added `benchmark/scripts/run-staged-expanded-dry-run.mjs` with guarded plan, preflight, and execute modes for staged T007-T020 artifact-only expansion; stopped after the T007 timeout in Batch 1 and did not execute later batches. (codex)
 - Docs: Added `docs/phase-3l-t007-t020-staged-expansion-report.md` and recorded the partial Batch 1 artifact evidence, timeout containment, checksums, and claim boundary in progress and debug logs. (codex)

@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3N Dashboard Evidence Hierarchy Review
+- **Finding**: The dashboard exposed extensive technical detail before an evaluator could quickly distinguish controlled evidence, artifact-only output, partial expansion, and incomplete work. (codex)
+- **Resolution**: Added a reusable executive summary, evidence glossary, staged-expansion cards, benchmark interpretation helper, and collapsed-by-default technical trace console. (codex)
+- **Safety**: No benchmark, execute mode, D1 command, migration, gold-label edit, paper edit, or PPT edit was performed. (codex)
+- **Visual Check Constraint**: Browser MCP screenshot verification could not run because the environment lacks the configured Chrome distribution. Production `typecheck` and `build:web` completed successfully. (codex)
+
 ## 2026-05-31 - Phase 3M LaTeX Minimal-Environment Compatibility Check
 - **Incident**: The first `/tmp` LaTeX compile failed because the minimal TeX environment did not provide `enumitem.sty`. (codex)
 - **Resolution**: Removed the non-essential `enumitem` dependency and kept the manuscript on standard LaTeX packages already available in the environment. (codex)

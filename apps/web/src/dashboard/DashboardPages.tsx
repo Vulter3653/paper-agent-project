@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, ArrowRight, BarChart3, Cloud, FileText, LayoutList, Play, RefreshCw, Search, ShieldCheck, Terminal } from "lucide-react";
+import { Activity, ArrowRight, BarChart3, Cloud, Eye, FileText, LayoutList, Play, RefreshCw, Search, ShieldCheck, Terminal } from "lucide-react";
 import {
   agentStatuses,
   criticReviews,
@@ -178,6 +178,116 @@ export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
         </nav>
       </div>
     </header>
+  );
+}
+
+export function ExecutiveSummaryPanel() {
+  const [demoMode, setDemoMode] = useState(true);
+  const glossary = [
+    ["VERIFIED BENCHMARK", "audited controlled benchmark evidence", "green"],
+    ["ARTIFACT EVIDENCE", "execution artifact, not validation", "blue"],
+    ["PARTIAL EXPANSION", "some tasks completed, some failed or stopped", "amber"],
+    ["INFRA LIMIT", "timeout / HTTP 503 / resource boundary", "amber"],
+    ["PLANNED", "not yet implemented", "purple"],
+    ["DEMO EXAMPLE", "mock or illustrative content", "gray"],
+    ["TECHNICAL TRACE", "raw trace/debug evidence", "gray"]
+  ] as const;
+
+  return (
+    <section className="uxExecutiveSummary" aria-label="Paper Agent evaluator summary">
+      <div className="uxExecutiveHead">
+        <div>
+          <span className="uxEyebrow">Evaluator Summary</span>
+          <h1>Paper Agent: Verified Research Assistant</h1>
+          <p>A traceable multi-agent system for scholarly paper discovery.</p>
+        </div>
+        <button className="uxSoftButton" type="button" onClick={() => setDemoMode((current) => !current)}>
+          <Eye size={16} /> {demoMode ? "상세 증거 보기 / Evidence Detail" : "Demo View"}
+        </button>
+      </div>
+      <div className="uxEvidenceGrid">
+        <article className="uxEvidenceCard verified">
+          <span className="uxEvidenceBadge verified">VERIFIED BENCHMARK</span>
+          <h2>검증된 벤치마크</h2>
+          <p>T001-T003 controlled benchmark verified.</p>
+        </article>
+        <article className="uxEvidenceCard artifact">
+          <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
+          <h2>아티팩트 증거</h2>
+          <p>T004-T006 artifact-only dry-run executed; 3 jobs, 50 rows.</p>
+        </article>
+        <article className="uxEvidenceCard partial">
+          <span className="uxEvidenceBadge partial">PARTIAL EXPANSION · INFRA LIMIT</span>
+          <h2>부분 확장</h2>
+          <p>T007-T012 partial staged expansion; T008-T012 produced 87 rows, T007 timed out.</p>
+        </article>
+      </div>
+      <div className="uxNotCompleteNote">
+        <strong>NOT COMPLETE</strong>
+        <span>Full T004-T020 validation remains incomplete. D1 batch-aware persistence is not implemented.</span>
+      </div>
+      {!demoMode && (
+        <div className="uxGlossary" aria-label="Evidence badge glossary">
+          <h2>증거 배지 안내 / Evidence Badge Glossary</h2>
+          <div className="uxGlossaryGrid">
+            {glossary.map(([label, detail, tone]) => (
+              <div key={label} className="uxGlossaryItem">
+                <span className={`uxEvidenceBadge ${tone}`}>{label}</span>
+                <small>{detail}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function StagedExpansionEvidencePanel() {
+  return (
+    <section className="uxPanel uxExpansionPanel">
+      <div className="uxPanelHead">
+        <div>
+          <h2>Staged Expansion Evidence</h2>
+          <p>단계별 실행 증거를 검증 완료 상태와 분리하여 표시합니다.</p>
+        </div>
+        <span className="uxEvidenceBadge partial">PARTIAL EXPANSION</span>
+      </div>
+      <div className="uxEvidenceGrid">
+        <article className="uxEvidenceCard artifact">
+          <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
+          <h3>T004-T006</h3>
+          <p>completed artifact-only dry-run</p>
+          <strong>50 rows · 3 jobs</strong>
+        </article>
+        <article className="uxEvidenceCard partial">
+          <span className="uxEvidenceBadge partial">PARTIAL EXPANSION</span>
+          <span className="uxEvidenceBadge infra">INFRA LIMIT</span>
+          <h3>T007-T012</h3>
+          <p>87 rows from T008-T012</p>
+          <strong>T007 timeout: 250250ms / 21 attempts</strong>
+        </article>
+        <article className="uxEvidenceCard planned">
+          <span className="uxEvidenceBadge gray">NOT COMPLETE</span>
+          <h3>T013-T020</h3>
+          <p>not started after Batch 1 timeout</p>
+          <strong>Legacy T019-T020 HTTP 503 evidence remains visible.</strong>
+        </article>
+      </div>
+      <p className="uxPanelNote">This is execution evidence, not full benchmark validation.</p>
+    </section>
+  );
+}
+
+function BenchmarkInterpretationHelper() {
+  return (
+    <aside className="uxInterpretationCallout">
+      <div>
+        <ShieldCheck size={18} />
+        <strong>How to read this benchmark</strong>
+      </div>
+      <p>Single LLM has higher Precision@5 and NDCG@5 in the controlled T001-T003 layer, but Paper Agent is designed for traceability, DOI verification, hallucination control, and journal-policy compliance. This table is not a global outperform claim.</p>
+    </aside>
   );
 }
 
@@ -397,6 +507,7 @@ export function AgentOpsPage() {
   const [benchmarkError, setBenchmarkError] = useState("");
   const [logs, setLogs] = useState(toolCallLogs);
   const [pollingStartTime, setPollingStartTime] = useState<number>(0);
+  const [showTechnicalEvidence, setShowTechnicalEvidence] = useState(false);
   const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
   const progress = traces.length ? Math.round((completedTraceCount / 12) * 100) : 0;
   const liveStages = traces.length ? mapTracesToWorkflowStages(traces) : literatureWorkflowStages;
@@ -527,6 +638,7 @@ export function AgentOpsPage() {
 
   return (
     <main className="uxShell">
+      <ExecutiveSummaryPanel />
       <section className="uxHero">
         <div className="uxHeroGrid">
           <div>
@@ -686,15 +798,24 @@ export function AgentOpsPage() {
                 <h2>실행 단계 요약 로그 (Trace Console)</h2>
                 <p>{traces.length ? "D1 agent_traces 기반의 실행 결과 요약입니다. 사용된 토큰 수나 세부 에러가 기록됩니다." : "예시 데이터(Mock): 실행 기록이 없으면 임시 로그를 보여줍니다."}</p>
               </div>
-              <button className="uxSoftButton" type="button" onClick={() => setLogs([])}> 지우기</button>
+              <button className="uxSoftButton" type="button" onClick={() => setShowTechnicalEvidence((current) => !current)}>
+                <Terminal size={14} /> {showTechnicalEvidence ? "기술 증거 숨기기" : "기술 증거 보기 / Show Technical Evidence"}
+              </button>
             </div>
-            <div className="uxTerminal">
-              {logs.map((log, index) => (
-                <div key={`${log.message}-${index}`} className={log.level}>
-                  <span>$</span> {log.message}
-                </div>
-              ))}
-            </div>
+            {showTechnicalEvidence ? (
+              <div className="uxTerminal">
+                {logs.map((log, index) => (
+                  <div key={`${log.message}-${index}`} className={log.level}>
+                    <span>$</span> {log.message}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="uxTraceCollapsed">
+                <span className="uxEvidenceBadge gray">TECHNICAL TRACE</span>
+                <p>원시 D1 trace, run ID, debug 로그는 기본적으로 접혀 있습니다. 평가자는 요약을 먼저 확인하고 필요할 때만 기술 증거를 펼칠 수 있습니다.</p>
+              </div>
+            )}
           </section>
 
           <OutputArtifactsPanel outputs={outputs} errorMessage={artifactError} />
@@ -1466,6 +1587,7 @@ export function EvaluationDashboardPage() {
 
   return (
     <main className="uxShell">
+      <ExecutiveSummaryPanel />
       <section className="uxHero compact">
         <span className="uxEyebrow">인터랙티브 평가 대시보드</span>
         <h1>통제된 T001-T003 증거와 시나리오 시뮬레이션을 구분하여 확인합니다.</h1>
@@ -1476,6 +1598,8 @@ export function EvaluationDashboardPage() {
       </section>
 
       <EvaluatorDemoGuide />
+
+      <StagedExpansionEvidencePanel />
 
       <section className="uxPanel uxScenarioPanel">
         <div className="uxPanelHead">
@@ -1608,7 +1732,7 @@ export function EvaluationDashboardPage() {
               <div className="uxSystemItem">
                 <strong>확장 실행 상태</strong>
                 <span>PLANNED ONLY / NOT YET EXECUTED</span>
-                <small>T004-T006 artifact dry-run 및 T004-T020 전체 검증은 아직 실행되지 않음</small>
+                <small>T004-T006 artifact-only dry-run 실행됨. Full T004-T020 validation은 미완료</small>
               </div>
             </div>
           </section>
@@ -1632,6 +1756,7 @@ export function EvaluationDashboardPage() {
               </div>
               <span className={`uxPill ${benchmarkMetrics ? "blue" : "amber"}`}>{benchmarkSourceLabel}</span>
             </div>
+            <BenchmarkInterpretationHelper />
             <div className="uxTableWrap">
               <table className="uxTable">
                 <thead>

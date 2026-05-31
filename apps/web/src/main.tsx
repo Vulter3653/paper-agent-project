@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Download, Eye, FileText, History, Play, RefreshCw, Search } from "lucide-react";
 import { BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS, type AgentTrace, type PaperSummary, type SearchJob } from "@paper-agent/shared";
-import { AgentOpsPage, DashboardNav, EvaluationDashboardPage, ResearchExperiencePanels, resolveDashboardRoute } from "./dashboard/DashboardPages";
+import { AgentOpsPage, DashboardNav, EvaluationDashboardPage, ExecutiveSummaryPanel, ResearchExperiencePanels, resolveDashboardRoute } from "./dashboard/DashboardPages";
 import "./styles.css";
 
 type JobResponse = {
@@ -407,6 +407,7 @@ function ResearchDashboard() {
 
   return (
     <main className="shell">
+      <ExecutiveSummaryPanel />
       <section className="toolbar">
         <div className="titleBlock">
           <span className="eyebrow">MON AI Team</span>

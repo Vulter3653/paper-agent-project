@@ -2,6 +2,12 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3N DESIGN.md-Guided Dashboard UX Improvement
+- **Status**: Added root `DESIGN.md` and applied an evaluator-first academic evidence design system to the dashboard. (codex)
+- **UX Boundary**: Added executive evidence summary, badge glossary, staged expansion panel, controlled benchmark interpretation helper, responsive evidence grids, and collapsed-by-default technical trace console. (codex)
+- **Claim Boundary**: Preserved controlled T001-T003 verification, T004-T006 artifact-only evidence, Phase 3L partial expansion, T007 timeout, legacy T019-T020 HTTP 503 evidence, incomplete full validation, and unimplemented D1 batch-aware persistence. (codex)
+- **Verification**: `npm run typecheck`, `npm run build:web`, and `git diff --check` passed. Browser MCP screenshot inspection was unavailable because the environment lacks its configured Chrome distribution. (codex)
+
 ## 2026-05-31 (codex) - Phase 3M Final Paper Draft Structured And Merged
 - **Status**: Drafted the final academic paper section-by-section in English and merged the sections into a two-column conference-style LaTeX manuscript. (codex)
 - **Evidence Boundary**: Limited quantitative comparison to controlled T001-T003 evidence, integrated T004-T006 artifact-only execution and Phase 3L partial staged expansion without claiming validation, and retained the T007 timeout plus legacy T019-T020 HTTP 503 boundary. (codex)

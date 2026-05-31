@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3L Batch 1 T007 Timeout Stops Further Expansion
+- **Incident**: During the approved staged Batch 1 (`T007-T012`) artifact-only execution, T007 timed out after 250250ms and 21 polling attempts. (codex)
+- **Observed Result**: T008-T012 completed and produced 87 result rows. The runner appended one `TIMEOUT` record to `benchmark/proposed_agent_debug.jsonl`. (codex)
+- **Containment**: Did not execute Batch 2 (`T013-T018`) or Batch 3 (`T019-T020`). No D1 command, migration, seed/import, gold modification, or broad T004-T020 run occurred. (codex)
+- **Next Step**: Diagnose T007 timeout and perform a read-only artifact audit before requesting any additional staged execution approval. (codex)
+
 ## 2026-05-31 - Phase 3J Approved T004-T006 Artifact-Only Dry-Run
 - **Outcome**: Approved wrapper execution completed for T004-T006 only. Three completed job rows and 50 paper-result rows were written to an isolated local artifact directory. (codex)
 - **Checks**: Controlled T001-T003 artifacts and legacy artifacts were not modified. `benchmark/proposed_agent_debug.jsonl` was not appended. (codex)

@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-31 (codex)
+- Benchmark: Added `benchmark/scripts/run-staged-expanded-dry-run.mjs` with guarded plan, preflight, and execute modes for staged T007-T020 artifact-only expansion; stopped after the T007 timeout in Batch 1 and did not execute later batches. (codex)
+- Docs: Added `docs/phase-3l-t007-t020-staged-expansion-report.md` and recorded the partial Batch 1 artifact evidence, timeout containment, checksums, and claim boundary in progress and debug logs. (codex)
 - Docs: Added `docs/phase-3j-t004-t006-artifact-dry-run-report.md` and recorded the approved artifact-only T004-T006 execution boundary, checksums, row counts, safety checks, and untracked preservation recommendation. (codex)
 - Docs: Aligned final demo, submission story, freeze checklist, paper draft, presentation outlines, progress report, and Phase 3D wording with the controlled T001-T003 claim boundary; preserved T019-T020 HTTP 503 evidence and marked T004-T006 plus full T004-T020 as not yet executed. (codex)
 - Changed: Clarified dashboard benchmark claim boundaries across `apps/web/src/dashboard/DashboardPages.tsx`, `apps/web/src/dashboard/mockData.ts`, and `apps/web/src/main.tsx` with explicit live, controlled, legacy, mock, planned, and not-yet-executed labels. (codex)

@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-31 - Benchmark Batch Protocol Design
+- **Context**: Planning the extension of quantitative evaluation to T004-T020.
+- **Action**: Created `docs/benchmark-batch-protocol.md` to define risk mitigation strategies for Cloudflare CPU limits, WoS quotas, and partial failures.
+- **Resolution**: Established a 6-phase roadmap and a task-level chunking strategy (batches of 5 tasks) to ensure baseline stability during the expansion. (gemini)
+
+## 2026-05-31 - Session State HEAD Staleness After Automation Fix
+- **Incident**: Although the verification automation fix was completed and pushed, the `docs/gemini-session-state.md` file still contained the previous HEAD SHA and an ambiguous recommendation for benchmark execution.
+- **Resolution**: Updated `docs/gemini-session-state.md` to reflect the verified HEAD (`c17c488...`) and clarified that T004-T020 expansion requires prior approval of the batch protocol. (gemini)
+
 ## 2026-05-31 - Live Verification Automation Did Not Enforce rowCount
 - **Incident**: The initial implementation of `scripts/verify-live-benchmark.mjs` calculated `rowCountPass` but failed to push it to the `checks` array, preventing it from acting as a regression gate. Additionally, only 3 out of 5 planned benchmark endpoints were being called.
 - **Resolution**: Strengthened the verification script:
@@ -35,7 +44,7 @@
 - **Future reporting requirements**: Mandatory inclusion of `git rev-parse HEAD`, `git ls-remote`, and match verification status. (gemini)
 
 ## 2026-05-31 - Evaluator Demo UX Enhancement
-- **Incident**: Previous dashboard versions lacked a structured narrative for evaluators, making it difficult to quickly grasp the agent architecture and the specific tools used.
+- **Incident**: Previous dashboard versions lacked a structured narrative for evaluators, making it difficult for academics to quickly grasp the agent architecture and the specific tools used.
 - **Resolution**:
   - Added `EvaluatorDemoGuide` component to Evaluation Dashboard.
   - Added `ToolChainEvidence` component providing a "transparency map" of the agent-tool relationship.

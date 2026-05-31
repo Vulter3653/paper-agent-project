@@ -5,6 +5,7 @@
 - **Live Verification**: [docs/live-benchmark-verification-2026-05-31.md](docs/live-benchmark-verification-2026-05-31.md)
 - **Benchmark Coverage**: Controlled T001-T003 performance is served live from Production D1.
 - **Evidence**: Raw API responses captured in `docs/api-benchmark-*.json`.
+- **Expansion Protocol**: [docs/benchmark-batch-protocol.md](docs/benchmark-batch-protocol.md) (gemini)
 
 AI Agent 기반 학술논문 탐색 및 문헌검토 자동화 시스템입니다.
 

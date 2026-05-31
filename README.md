@@ -5,8 +5,9 @@
 | Submission item | Repository path |
 | --- | --- |
 | Final paper LaTeX source | [`paper/final-paper-draft.tex`](paper/final-paper-draft.tex) |
-| Presentation outline | [`presentation/final-presentation-outline.md`](presentation/final-presentation-outline.md) |
-| Final presentation PPTX | [`presentation/final-paper-agent-benchmark-presentation.pptx`](presentation/final-paper-agent-benchmark-presentation.pptx) |
+| Authoritative presentation content source | [`presentation/final-presentation-essential-content.md`](presentation/final-presentation-essential-content.md) |
+| Presentation outline / 8-minute speaker notes | [`presentation/final-presentation-outline.md`](presentation/final-presentation-outline.md) |
+| Generated presentation PPTX draft, subject to visual QA | [`presentation/final-paper-agent-benchmark-presentation.pptx`](presentation/final-paper-agent-benchmark-presentation.pptx) |
 | Live demo script | [`docs/final-demo-script.md`](docs/final-demo-script.md) |
 | Prompt inventory | [`docs/prompts.md`](docs/prompts.md) |
 | Used papers list | [`docs/used_papers_list.md`](docs/used_papers_list.md) |

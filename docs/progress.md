@@ -2,6 +2,11 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3P-Step 2B Authoritative Presentation Markdown
+- **Status**: Added `presentation/final-presentation-essential-content.md` as the concise, claim-bounded content source of truth for any future visual deck redesign. (codex)
+- **Artifact Roles**: Retained `presentation/final-presentation-outline.md` as the official 8-minute speaker-notes script and marked the generated PPTX as a draft subject to visual QA. (codex)
+- **Safety Boundary**: No PPTX generation, benchmark, execute mode, D1 command, migration, dashboard edit, benchmark-script edit, gold-label edit, JSONL edit, or artifact-directory edit was performed. (codex)
+
 ## 2026-05-31 (codex) - Phase 3P-Step 2 Final PPTX Alignment
 - **Status**: Generated `presentation/final-paper-agent-benchmark-presentation.pptx` as the claim-safe 14-slide submission deck and linked it from `README.md`. (codex)
 - **Content Boundary**: Deck retains controlled T001-T003 quantitative scope, Single LLM overlap-metric lead, T004-T006 artifact-only evidence, Phase 3L partial expansion, T007 timeout, unstarted later batches, and unimplemented D1 batch-aware persistence. (codex)

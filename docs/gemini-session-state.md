@@ -1,56 +1,38 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Live Verification Automation Complete)
+Updated: 2026-05-31 (Automation Integrity Strengthened)
 
 ## Current Status
-- **main HEAD**: `75e032688001e38933b497046e7f12e84d720b08` (Local with rowCount fix and verification script)
-- **Ops Dashboard**: `Benchmark Seed Diagnostics` panel implemented and verified.
-- **Worker API**: `rowCount` field added to `/api/benchmark-metrics` to fix 0/9 display bug.
-- **Verification**: `scripts/verify-live-benchmark.mjs` created and executed successfully against Production.
+- **main HEAD**: `5c96f5ae4731d8b34a63a14f0aa73d60503ade28` (Push completed)
+- **rowCount fix**: Pushed to origin main.
+- **Live Verification**: Automation script strengthened with 15+ regression checks and 5 endpoint calls.
 - **Integrity**: Report Integrity Protocol fully observed.
 
 ## Completed Actions
-1. **Verified Ops Dashboard Live**: programs confirmed diagnostics, metrics, and runs are operational.
-2. **Fixed Worker Response**: Added missing `rowCount` to benchmark metrics comparison object.
-3. **Automated Verification**: Created `scripts/verify-live-benchmark.mjs` for continuous CI/CD health checks.
-4. **Updated Documentation**:
-   - `docs/live-benchmark-verification-2026-05-31.md` generated.
-   - `docs/api-benchmark-*.json` updated with live responses.
-   - `CHANGELOG.md`, `docs/progress.md`, `docs/debug-log.md` prepended with new entries.
-5. **Full Validation**: `validate:history`, `typecheck`, `build:web`, `audit-gold` all passing.
+1. **rowCount fix pushed**: D1 benchmark metrics now report correct row count (9/9).
+2. **Live verification implemented**: `scripts/verify-live-benchmark.mjs` created and verified.
+3. **Automation integrity strengthened**: Added performance checks (Precision/NDCG), strict rowCount enforcement, and detail/metrics endpoint validation.
+4. **Documentation synchronized**: Evidence JSON files and reports updated with latest live production responses.
 
 ## Verification Results
-- `node scripts/verify-live-benchmark.mjs`: ✅ PASS
+- `node scripts/verify-live-benchmark.mjs`: ✅ PASS (15/15 checks)
 - `npm run validate:history`: ✅ PASS
 - `npm run validate:agent-rules`: ✅ PASS
 - `npm run typecheck`: ✅ PASS
 - `npm run build:web`: ✅ PASS
 - `npm run benchmark:audit-gold`: ✅ PASS
 
-## Blockers & Risks
-- **WoS API Quota**: Expanded tasks T004-T020 may hit quota limits if run concurrently.
-- **Worker CPU Limit**: Complex searches (maxResults > 10) still risk 1101 errors; "Safe Execution Mode" recommended.
-
 ## Next Recommended Actions
-1. **Deploy Worker Fix**: Push the `rowCount` fix to origin main to enable the dashboard to show "9 / 9" metric rows.
-2. **Batch Benchmark Protocol**: Start Option 2 - design `docs/benchmark-batch-protocol.md` for T004-T020 expansion.
-3. **Run Expanded Benchmark**: Once protocol is approved, begin T004-T020Proposed Agent collection.
+1. **Benchmark Batch Protocol**: Start Option 2 - design `docs/benchmark-batch-protocol.md` for T004-T020 expansion.
+2. **Run Expanded Benchmark**: Begin T004-T020 Proposed Agent collection using the new batch protocol.
 
 ## Git Status Snapshot
 ```text
 On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
-  (use "git push" to publish your local commits)
+Your branch is up to date with 'origin/main'.
 
-Changes to be committed:
-  (none)
-
-Changes not staged for commit:
-  (none)
-
-Untracked files:
-  docs/live-benchmark-verification-2026-05-31.md
-  scripts/verify-live-benchmark.mjs
+nothing to commit, working tree clean
 ```
 
 (gemini)
+

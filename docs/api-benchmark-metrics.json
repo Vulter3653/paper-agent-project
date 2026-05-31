@@ -24,6 +24,7 @@
   },
   "comparison": {
     "k": 5,
+    "rowCount": 9,
     "methodOrder": [
       "rule_based",
       "single_llm",

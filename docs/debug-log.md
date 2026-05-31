@@ -1,5 +1,14 @@
 # Debug Log
 
+## 2026-05-31 - Live Verification Automation Did Not Enforce rowCount
+- **Incident**: The initial implementation of `scripts/verify-live-benchmark.mjs` calculated `rowCountPass` but failed to push it to the `checks` array, preventing it from acting as a regression gate. Additionally, only 3 out of 5 planned benchmark endpoints were being called.
+- **Resolution**: Strengthened the verification script:
+  1.  Implemented mandatory calls to all 5 endpoints including run detail and metrics.
+  2.  Added strict enforcement of `rowCount === 9`.
+  3.  Added performance regression checks for Precision and NDCG (~0.1333 and ~0.3579).
+  4.  Updated evidence storage to include all 4 JSON artifacts.
+- **Verification**: `node scripts/verify-live-benchmark.mjs` confirmed 15/15 checks PASSING against production. (gemini)
+
 ## 2026-05-31 - Benchmark Metrics `rowCount` Missing in Worker Response
 - **Incident**: The Ops Dashboard showed "0 / 9" metric rows despite the production database containing the correct data. This was traced to the `rowCount` field being missing from the `/api/benchmark-metrics` JSON response.
 - **Resolution**: Updated `formatBenchmarkMetrics` in `apps/worker/src/index.ts` to explicitly include `rowCount: metrics.length` in the `comparison` object.

@@ -24,18 +24,18 @@
       "method": "rule_based",
       "evaluated_count": 15,
       "llm_judge_relevance_score": "2.2667",
-      "construct_coverage_score": "NaN",
-      "context_method_match_score": "NaN",
-      "llm_judge_confidence_score": "NaN",
+      "construct_coverage_score": "1.9333",
+      "context_method_match_score": "2.6000",
+      "llm_judge_confidence_score": "0.9200",
       "llm_judge_reasoning_validity": "1.0000"
     },
     "single_llm": {
       "method": "single_llm",
       "evaluated_count": 7,
       "llm_judge_relevance_score": "3.7143",
-      "construct_coverage_score": "NaN",
-      "context_method_match_score": "NaN",
-      "llm_judge_confidence_score": "NaN",
+      "construct_coverage_score": "3.0000",
+      "context_method_match_score": "4.5714",
+      "llm_judge_confidence_score": "1.0000",
       "llm_judge_reasoning_validity": "1.0000"
     }
   },

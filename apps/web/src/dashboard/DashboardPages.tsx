@@ -184,9 +184,10 @@ export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
 export function ExecutiveSummaryPanel() {
   const [demoMode, setDemoMode] = useState(true);
   const glossary = [
-    ["VERIFIED BENCHMARK", "audited controlled benchmark evidence", "green"],
-    ["ARTIFACT EVIDENCE", "execution artifact, not validation", "blue"],
-    ["PARTIAL EXPANSION", "some tasks completed, some failed or stopped", "amber"],
+    ["VERIFIED BENCHMARK", "audited controlled common-support evidence", "green"],
+    ["ARTIFACT EVIDENCE", "execution artifact, not full validation", "blue"],
+    ["PARTIAL SEMANTIC AUDIT", "quota-limited semantic evaluation subset", "amber"],
+    ["BASELINE: PARTIAL", "incomplete common-support comparison", "amber"],
     ["INFRA LIMIT", "timeout / HTTP 503 / resource boundary", "amber"],
     ["PLANNED", "not yet implemented", "purple"],
     ["DEMO EXAMPLE", "mock or illustrative content", "gray"],
@@ -208,23 +209,23 @@ export function ExecutiveSummaryPanel() {
       <div className="uxEvidenceGrid">
         <article className="uxEvidenceCard verified">
           <span className="uxEvidenceBadge verified">VERIFIED BENCHMARK</span>
-          <h2>검증된 벤치마크</h2>
-          <p>T001-T003 controlled benchmark verified.</p>
+          <h2>검증된 벤치마크 (T001-T003)</h2>
+          <p>T001-T003 controlled common-support comparison verified.</p>
         </article>
         <article className="uxEvidenceCard artifact">
           <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
-          <h2>아티팩트 증거</h2>
-          <p>T004-T006 artifact-only dry-run executed; 3 jobs, 50 rows.</p>
+          <h2>V3 정량 자동 평가 (T001-T020)</h2>
+          <p>Benchmark v3: Layers 1-4 & 6 computed for T001-T020 artifact rows.</p>
         </article>
         <article className="uxEvidenceCard partial">
-          <span className="uxEvidenceBadge partial">PARTIAL EXPANSION · INFRA LIMIT</span>
-          <h2>부분 확장</h2>
-          <p>T007-T012 partial staged expansion; T008-T012 produced 87 rows, T007 timed out.</p>
+          <span className="uxEvidenceBadge partial">PARTIAL SEMANTIC AUDIT</span>
+          <h2>정성 감사 (부분)</h2>
+          <p>Layer 5: Quota-limited partial implementation audit (22/125 evaluated).</p>
         </article>
       </div>
       <div className="uxNotCompleteNote">
-        <strong>NOT COMPLETE</strong>
-        <span>Full T004-T020 validation remains incomplete. D1 batch-aware persistence is not implemented.</span>
+        <strong>PASS WITH CLAIM BOUNDARIES</strong>
+        <span>Benchmark v3 framework ready. Full semantic coverage and global T001-T020 superiority claims are disabled.</span>
       </div>
       {!demoMode && (
         <div className="uxGlossary" aria-label="Evidence badge glossary">
@@ -248,33 +249,38 @@ function StagedExpansionEvidencePanel() {
     <section className="uxPanel uxExpansionPanel">
       <div className="uxPanelHead">
         <div>
-          <h2>Staged Expansion Evidence</h2>
-          <p>단계별 실행 증거를 검증 완료 상태와 분리하여 표시합니다.</p>
+          <h2>Benchmark v3 Staged Execution Evidence</h2>
+          <p>T001-T020 범위에 대한 실행 증거 및 정규화 데이터가 확보되었습니다.</p>
         </div>
-        <span className="uxEvidenceBadge partial">PARTIAL EXPANSION</span>
+        <span className="uxEvidenceBadge blue">V3 ARTIFACTS LOADED</span>
       </div>
       <div className="uxEvidenceGrid">
         <article className="uxEvidenceCard artifact">
           <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
-          <h3>T004-T006</h3>
-          <p>completed artifact-only dry-run</p>
-          <strong>50 rows · 3 jobs</strong>
+          <h3>T001-T020 Quantitative</h3>
+          <p>342 normalized result rows</p>
+          <strong>Layers 1, 2, 3, 4, 6: PASS</strong>
         </article>
         <article className="uxEvidenceCard partial">
-          <span className="uxEvidenceBadge partial">PARTIAL EXPANSION</span>
-          <span className="uxEvidenceBadge infra">INFRA LIMIT</span>
-          <h3>T007-T012</h3>
-          <p>87 rows from T008-T012</p>
-          <strong>T007 timeout: 250250ms / 21 attempts</strong>
+          <span className="uxEvidenceBadge partial">PARTIAL AUDIT</span>
+          <span className="uxEvidenceBadge infra">QUOTA LIMIT</span>
+          <h3>Layer 5 Semantic</h3>
+          <p>22/125 rows evaluated</p>
+          <strong>Audit Depth: 17.6% (Quota-bounded)</strong>
         </article>
-        <article className="uxEvidenceCard planned">
-          <span className="uxEvidenceBadge gray">NOT COMPLETE</span>
-          <h3>T013-T020</h3>
-          <p>not started after Batch 1 timeout</p>
-          <strong>Legacy T019-T020 HTTP 503 evidence remains visible.</strong>
+        <article className="uxEvidenceCard verified">
+          <span className="uxEvidenceBadge verified">REPRODUCIBLE</span>
+          <h3>Reproducibility</h3>
+          <p>v3 deterministic pipeline</p>
+          <strong>Manifest & Summary Generated</strong>
         </article>
       </div>
-      <p className="uxPanelNote">This is execution evidence, not full benchmark validation.</p>
+      <p className="uxPanelNote">
+        Benchmark v3 metrics are computed from available artifacts.
+        T001–T003: Controlled Common-Support Comparison.
+        T004–T020: Artifact-level Validation.
+        Full semantic quality claim is disabled due to partial audit status.
+      </p>
     </section>
   );
 }

@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (gemini) - Benchmark v3 Promotion Gate Finalization
+
+- Finalized Benchmark v3 validation as **PASS WITH CLAIM BOUNDARIES**.
+- Generated formal `promotion_gate_summary_v3.json` and `.md`.
+- Concluded Layer 5 as a quota-limited partial semantic audit (22/125 successful rows).
+- Integrated v3 artifacts and audit depth indicators into the Executive Summary and Staged Expansion dashboard panels.
+- Verified zero score fabrication and strict adherence to artifact-derived evidence constraints.
+
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Partial Audit
 
 - Encountered persistent Gemini free-tier quota exceeded errors (repeated HTTP 429) during Layer 5 retry.

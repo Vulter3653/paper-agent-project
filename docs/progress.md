@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-06-01 (Benchmark v3 Layer 5 Partial Audit)
+Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
+
+## 2026-06-01 (gemini) - Benchmark v3 Promotion Gate Summary
+
+- **Status**: Benchmark v3 is now ready for presentation as a reproducible automated framework.
+- **Promotion Gate**: Generated `promotion_gate_summary_v3.json` and `.md`. Overall readiness is **PASS WITH CLAIM BOUNDARIES**.
+- **Layer 5 Audit**: Finalized Layer 5 as a quota-limited partial semantic audit (22/125 rows, 17.6%). Marked as **NON-BLOCKING PARTIAL**.
+- **Dashboard**: Updated `ExecutiveSummaryPanel` and `StagedExpansionEvidencePanel` to reflect v3 status and partial audit badges. Updated implementation roadmap in `mockData.ts`.
+- **Claim Boundary**: Documented that full semantic coverage and global T001-T020 superiority claims are disabled. Framework supports artifact-level validation and controlled evaluation.
+- **Verification**: ✅ ALL PASSED (v3 check, validate:history, typecheck, web build).
 
 ## 2026-06-01 (gemini) - Benchmark v3 Layer 5 Partial Audit
 

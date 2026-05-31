@@ -110,7 +110,9 @@ export const evaluationImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Single LLM Baseline", status: "live", evidence: "T001-T003 통제 데이터 반영됨", next: "외부 모델 실행 프로토콜 정의" },
   { feature: "Automated Baseline Review", status: "live", evidence: "auto-review-baselines 결과 반영됨", next: "판정 규칙 고도화" },
   { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 제어 레이어 기준 산출", next: "전체 20개 태스크 확장" },
-  { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics 실시간 스냅샷 연결", next: "D1 aggregation 실시간화" }
+  { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics 실시간 스냅샷 연결", next: "D1 aggregation 실시간화" },
+  { feature: "Benchmark v3: Layer 1-4, 6", status: "live", evidence: "Deterministic validation complete (342 artifact rows)", next: "Dashboard v3 visualization integration" },
+  { feature: "Benchmark v3: Layer 5 Quality", status: "partial", evidence: "Quota-Limited Partial Audit (22/125 evaluated)", next: "High-tier LLM judge execution (Planned)" }
 ];
 
 export const literatureWorkflowStages: WorkflowStage[] = [

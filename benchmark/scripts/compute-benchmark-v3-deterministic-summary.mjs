@@ -40,35 +40,46 @@ async function computeSummary() {
   for (const file of LAYER_FILES) {
     if (fs.existsSync(file)) {
       const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      layersInfo.push(data.layer);
+
+      if (data.layer === 'Layer 5: Semantic Quality' && data.llm_judge_executed) {
+        llmJudgeExecuted = true;
+        layer5Status = data.status;
+      }
+
       if (data.metrics) {
         allMetrics.push(...data.metrics);
       } else if (data.method_summary) {
         const methods = Object.keys(data.method_summary);
-        if (methods.includes('proposed_agent')) {
+
+        if (data.layer === 'Layer 4: Retrieval Accuracy' && methods.includes('proposed_agent')) {
           const stats = data.method_summary['proposed_agent'];
-          if (data.layer === 'Layer 4: Retrieval Accuracy') {
-            allMetrics.push(
-              { metric_name: 'precision_at_5', value: stats.mean_precision_at_5, details: 'Proposed Agent mean' },
-              { metric_name: 'ndcg_at_5', value: stats.mean_ndcg_at_5, details: 'Proposed Agent mean' },
-              { metric_name: 'recall_at_20', value: stats.mean_recall_at_20, details: 'Proposed Agent mean' },
-              { metric_name: 'gold_hit_rate', value: stats.gold_hit_rate, details: 'Proposed Agent mean' },
-              { metric_name: 'mrr', value: stats.mrr, details: 'Proposed Agent mean' }
-            );
-          } else if (data.layer === 'Layer 5: Semantic Quality' && data.llm_judge_executed) {
-            llmJudgeExecuted = true;
-            layer5Status = data.status;
-            allMetrics.push(
-              { metric_name: 'llm_judge_relevance_score', value: stats.llm_judge_relevance_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
-              { metric_name: 'construct_coverage_score', value: stats.construct_coverage_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
-              { metric_name: 'context_method_match_score', value: stats.context_method_match_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
-              { metric_name: 'llm_judge_confidence_score', value: stats.llm_judge_confidence_score, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
-              { metric_name: 'llm_judge_reasoning_validity', value: stats.llm_judge_reasoning_validity, details: `Proposed Agent mean (${data.evaluated_rows} rows)` },
-              { metric_name: 'semantic_coverage_rate', value: data.semantic_coverage_rate, details: `Audit depth: ${data.evaluated_rows}/${data.total_input_rows}` }
-            );
-          }
+          allMetrics.push(
+            { metric_name: 'precision_at_5', value: stats.mean_precision_at_5, details: 'Proposed Agent mean' },
+            { metric_name: 'ndcg_at_5', value: stats.mean_ndcg_at_5, details: 'Proposed Agent mean' },
+            { metric_name: 'recall_at_20', value: stats.mean_recall_at_20, details: 'Proposed Agent mean' },
+            { metric_name: 'gold_hit_rate', value: stats.gold_hit_rate, details: 'Proposed Agent mean' },
+            { metric_name: 'mrr', value: stats.mrr, details: 'Proposed Agent mean' }
+          );
+        } else if (data.layer === 'Layer 5: Semantic Quality' && data.llm_judge_executed) {
+          const stats = data.method_summary['proposed_agent'] || {
+            llm_judge_relevance_score: 'not_available_in_subset',
+            construct_coverage_score: 'not_available_in_subset',
+            context_method_match_score: 'not_available_in_subset',
+            llm_judge_confidence_score: 'not_available_in_subset',
+            llm_judge_reasoning_validity: 'not_available_in_subset'
+          };
+
+          allMetrics.push(
+            { metric_name: 'llm_judge_relevance_score', value: stats.llm_judge_relevance_score, details: `Proposed Agent mean (${data.evaluated_rows} rows evaluated in total subset)` },
+            { metric_name: 'construct_coverage_score', value: stats.construct_coverage_score, details: `Proposed Agent mean (${data.evaluated_rows} rows evaluated in total subset)` },
+            { metric_name: 'context_method_match_score', value: stats.context_method_match_score, details: `Proposed Agent mean (${data.evaluated_rows} rows evaluated in total subset)` },
+            { metric_name: 'llm_judge_confidence_score', value: stats.llm_judge_confidence_score, details: `Proposed Agent mean (${data.evaluated_rows} rows evaluated in total subset)` },
+            { metric_name: 'llm_judge_reasoning_validity', value: stats.llm_judge_reasoning_validity, details: `Proposed Agent mean (${data.evaluated_rows} rows evaluated in total subset)` },
+            { metric_name: 'semantic_coverage_rate', value: data.semantic_coverage_rate, details: `Audit depth: ${data.evaluated_rows}/${data.total_input_rows}` }
+          );
         }
       }
-      layersInfo.push(data.layer);
     }
   }
 

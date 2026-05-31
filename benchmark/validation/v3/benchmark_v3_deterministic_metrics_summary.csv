@@ -19,6 +19,12 @@ ndcg_at_5,0.0930,Proposed Agent mean
 recall_at_20,0.1053,Proposed Agent mean
 gold_hit_rate,0.2632,Proposed Agent mean
 mrr,0.1684,Proposed Agent mean
+llm_judge_relevance_score,not_available_in_subset,Proposed Agent mean (22 rows evaluated in total subset)
+construct_coverage_score,not_available_in_subset,Proposed Agent mean (22 rows evaluated in total subset)
+context_method_match_score,not_available_in_subset,Proposed Agent mean (22 rows evaluated in total subset)
+llm_judge_confidence_score,not_available_in_subset,Proposed Agent mean (22 rows evaluated in total subset)
+llm_judge_reasoning_validity,not_available_in_subset,Proposed Agent mean (22 rows evaluated in total subset)
+semantic_coverage_rate,0.1760,Audit depth: 22/125
 negative_distractor_false_positive_rate,placeholder_only,
 hallucination_rate,0.4181,
 timeout_rate,0.0588,

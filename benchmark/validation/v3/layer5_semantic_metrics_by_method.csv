@@ -1,3 +1,3 @@
 method,evaluated_count,llm_judge_relevance_score,construct_coverage_score,context_method_match_score,llm_judge_confidence_score,llm_judge_reasoning_validity
-rule_based,15,2.2667,NaN,NaN,NaN,1.0000
-single_llm,7,3.7143,NaN,NaN,NaN,1.0000
+rule_based,15,2.2667,1.9333,2.6000,0.9200,1.0000
+single_llm,7,3.7143,3.0000,4.5714,1.0000,1.0000

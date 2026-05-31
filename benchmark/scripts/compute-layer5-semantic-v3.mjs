@@ -91,15 +91,33 @@ async function computeLayer5() {
 
     const isValidReasoning = out.reasoning_validity === 'pass' && (out.reason || '').length >= 30;
     
+    const mapScore = (val) => {
+      if (val === 'yes') return 5;
+      if (val === 'partial') return 3;
+      if (val === 'no') return 1;
+      return 1; // default to low
+    };
+
+    const mapConfidence = (val) => {
+      if (val === 'high') return 1.0;
+      if (val === 'medium') return 0.6;
+      if (val === 'low') return 0.3;
+      return 0.3;
+    };
+
+    const constructScore = mapScore(out.construct_match);
+    const contextScore = (mapScore(out.context_match) + mapScore(out.method_domain_match)) / 2;
+    const confidenceScore = mapConfidence(out.confidence);
+
     const row = {
       judge_input_id: out.judge_input_id,
       method: input.method,
       task_id: input.task_id,
       result_rank: input.result_rank,
       relevance_score: out.relevance_score_v2,
-      construct_coverage: out.construct_coverage_score,
-      context_match: out.context_method_match_score,
-      confidence: out.confidence,
+      construct_coverage: constructScore,
+      context_match: contextScore,
+      confidence: confidenceScore,
       reasoning_validity: isValidReasoning ? 'valid' : 'invalid',
       reason: out.reason
     };
@@ -110,9 +128,9 @@ async function computeLayer5() {
     }
     const ms = methodStats[input.method];
     ms.relevance.push(out.relevance_score_v2);
-    ms.construct.push(out.construct_coverage_score);
-    ms.context.push(out.context_method_match_score);
-    ms.confidence.push(out.confidence);
+    ms.construct.push(constructScore);
+    ms.context.push(contextScore);
+    ms.confidence.push(confidenceScore);
     if (isValidReasoning) ms.validReasoning++;
     ms.total++;
   });

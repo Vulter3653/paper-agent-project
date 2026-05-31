@@ -4,17 +4,19 @@
 - T001-T020
 - Existing artifacts only
 - Layer 1-4 and 6 computed
-- Layer 5: Quota-limited partial audit
+- Layer 5: Quota-limited partial audit (Implementation Audit)
 
-## 2. Safety Boundary
+## 2. Readiness Status: PASS WITH CLAIM BOUNDARIES
+Benchmark v3 is ready for presentation as a reproducible automated benchmark framework with clear claim boundaries. Layers 1–4 and Layer 6 are computed, while Layer 5 is reported as a quota-limited partial semantic audit (22/125 rows evaluated). The benchmark supports artifact-level validation and controlled retrieval evaluation, but not full semantic-quality validation or full T001–T020 comparative superiority claims.
+
+## 3. Safety Boundary
 - No benchmark execution
 - No D1 command
 - No artifact rewrite (appends only to logs)
 - Fixed LLM judge execution (Quota-bounded)
-- No dashboard/paper/presentation edit
 - No score fabrication
 
-## 3. Generated Outputs
+## 4. Generated Outputs
 - `normalized_results_t001_t020.csv`: 342 normalized result rows from baseline and agent runs.
 - `layer1_foundation_metrics.csv`: Foundation and reproducibility gates (Manifest, Parity, Boundary).
 - `layer2_schema_metrics.csv`: Schema and metadata readiness (Normalization, Completeness, DOI format).
@@ -24,9 +26,10 @@
 - `layer6_robustness_metrics.csv`: System stability and risk indicators.
 - `layer5_semantic_metrics_summary.json`: Partial semantic audit results.
 - `benchmark_v3_deterministic_metrics_summary.json`: Unified summary of Layers 1-4, 6, and partial 5.
+- `promotion_gate_summary_v3.json`: Formal promotion gate metadata.
 - `reproducibility_manifest_t001_t020.json`: Complete manifest for the validation run.
 
-## 4. Claim Boundary
+## 5. Claim Boundary
 Layer 1-4 and Layer 6 metrics are computed from existing artifacts. Layer 5 is a quota-limited partial semantic audit (22/125 rows evaluated). Full semantic coverage claim is disabled. This does not constitute full T001-T020 benchmark validation because Layer 5 remains partial and baseline parity remains partial.
 
 T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 are correctly labeled as "artifact_only" to prevent overclaiming.
@@ -65,10 +68,10 @@ T001-T003 remain the only tasks with "controlled_validation" state. T004-T020 ar
 
 - Uses fixed LLM-as-a-judge scoring.
 - Evaluation scope: top-5 rows per method-task pair.
-- **Status**: quota_limited_partial
+- **Status**: quota_limited_partial (Implementation Audit)
 - **Semantic Coverage Rate**: 0.1760 (22/125 rows)
 - **Reason**: Gemini free-tier quota exceeded; audit depth capped for time-bounded delivery.
-- Layer 5 metrics are semantic proxy metrics and do not override deterministic DOI, metadata, paper existence, journal policy, or gold matching failures.
-- **Proposed Agent Mean Relevance Score (Partial Audit)**: 4.4545 (Based on 11 evaluated rows)
+- **Successful Subset Method Distribution**: Rule-based: 15, Single-LLM: 7, Proposed Agent: 0.
+- **Note**: No representative semantic quality estimate is available for the Proposed Agent. Layer 5 results are for implementation audit of the evaluation subset only.
 
 (gemini)

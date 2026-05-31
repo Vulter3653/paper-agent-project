@@ -1,6 +1,15 @@
 # Project Progress And Session Handoff
 
-Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
+Updated: 2026-05-31 (Phase 2D Provenance Correction Complete)
+
+## 2026-05-31 (gemini) - Phase 2D Provenance Correction
+- **Summary**: Identified and corrected a mismatch between reported changed files and the actual final commit in Phase 2D. (gemini)
+- **Status**: Completed.
+- **Key Deliverables**:
+  - **Commit Audit**: Confirmed that Phase 2D changes were split across two commits: implementation (`f27b54b`) and session-state handoff (`7bbd66a`).
+  - **Documentation Correction**: Updated `docs/debug-log.md` with an incident record and `docs/gemini-session-state.md` to clearly list split commits.
+  - **Protocol Strengthening**: Updated `docs/final-report-integrity.md` with mandatory "Changed Files Provenance Check" requiring `git show --stat HEAD` or commit range diffs in final reports.
+- **Verification**: `npm run validate:history` passing. (gemini)
 
 ## 2026-05-31 (gemini) - Benchmark Batch Compatibility Implementation
 - **Summary**: Implemented backward-compatible Worker API and Dashboard components for the upcoming Phase 3 benchmark batch expansion. (gemini)
@@ -10,7 +19,7 @@ Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
   - **Dashboard Type Extension**: Added the optional batch orchestration columns to the `BenchmarkRun` interface in `apps/web/src/dashboard/DashboardPages.tsx`.
   - **Documentation Sync**: Updated `docs/benchmark-batch-schema-api-design.md` with implementation notes, confirming the deferral of the `/api/benchmark-runs/:id/batches` endpoint to strictly follow the minimal extension mandate.
 - **Integrity Check**: Verified the live regression script (`scripts/verify-live-benchmark.mjs`) passes successfully against the production D1, ensuring no disruption to the controlled T001-T003 tracking. (gemini)
-
+... [rest of file] ...
 ## 2026-05-31 (gemini) - Benchmark Batch Local Schema Test
 - **Summary**: Successfully verified the minimal D1 schema extension migration draft (`0007_add_benchmark_batch_columns.sql`) in a local D1 environment. (gemini)
 - **Status**: Completed (Test Phase).

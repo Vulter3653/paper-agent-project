@@ -377,6 +377,8 @@ type BenchmarkRun = {
   is_derived?: number;
   merge_status?: string | null;
 };
+
+export function AgentOpsPage() {
   const [running, setRunning] = useState(false);
   const [keyword, setKeyword] = useState("AI interview employer branding");
   const [searchSize, setSearchSize] = useState<"fast" | "standard">("fast");

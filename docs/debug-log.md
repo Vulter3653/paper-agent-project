@@ -1,5 +1,18 @@
 # Debug Log
 
+## 2026-05-31 - Phase 2D Reported Changed Files Did Not Match Final Commit Diff
+- **Symptom**: The Phase 2D completion report listed six modified files under a single final commit SHA (`7bbd66a`), but the git diff for that SHA showed only one file (`docs/gemini-session-state.md`) was changed.
+- **Observed Mismatch**: 
+  - Reported: `apps/web/src/dashboard/DashboardPages.tsx`, `apps/worker/src/persistence.ts`, `docs/benchmark-batch-local-schema-test.md`, `docs/benchmark-batch-schema-api-design.md`, `docs/progress.md`, `docs/gemini-session-state.md`.
+  - Actual (7bbd66a): `docs/gemini-session-state.md` only.
+- **Impact**: Change provenance was obscured, making it difficult to verify exactly when and where the implementation logic was committed.
+- **Root Cause Hypothesis**: The agent performed the implementation in one commit (`f27b54b`) and the final documentation/handoff update in a subsequent commit (`7bbd66a`), but reported the final handoff SHA as the representative for all changes without specifying the implementation commit or the commit range.
+- **Actual Implementation Commit(s)**: 
+  - Implementation: `f27b54baacc042f7cbb5d98fabcb608a9436e7c5`
+  - Handoff: `7bbd66a71e149ed4747835a7aaa5de943f944d7d`
+- **Resolution**: Updated `docs/final-report-integrity.md` to include a "Changed Files Provenance Check" and added a provenance correction log in `docs/progress.md`.
+- **Prevention Rule**: Final reports must now include `git show --stat HEAD` or a commit range diff to ensure the reported file list matches the actual repository state. (gemini)
+
 ## 2026-05-31 - Benchmark Batch Migration Draft
 - **Context**: Phase 2B of the batch benchmark expansion roadmap.
 - **Action**: Prepared the SQL migration script (`0007_add_benchmark_batch_columns.sql`) for D1.

@@ -1,6 +1,6 @@
 # Gemini Session State
 
-Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
+Updated: 2026-05-31 (Phase 2D Provenance Correction Complete)
 
 > [!IMPORTANT]
 > **This file is a handoff summary and historical record, NOT the authoritative source for the latest commit SHA.**
@@ -8,14 +8,19 @@ Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
 
 ## Current Status
 - **Phase 2 State**: Phase 2D (Worker API & Dashboard Navigation Updates) completed.
-- **Verification Baseline**: The `main` branch contains compatibility layers for the upcoming migration.
-- **Compatibility Test**: `scripts/verify-live-benchmark.mjs` passes without the new columns in Production D1.
+- **Provenance Corrected**: Identified that Phase 2D changes were split across two commits.
+- **Verification Baseline**: The `main` branch contains compatibility layers and strengthened integrity protocols.
+
+## Phase 2D Provenance
+- **Implementation Commit**: `f27b54baacc042f7cbb5d98fabcb608a9436e7c5` (Initial compatibility layer)
+- **Handoff/Session-State Commit**: `7bbd66a71e149ed4747835a7aaa5de943f944d7d` (Documentation sync)
+- **Correction Commit**: (This session) Added provenance rules and fixed a component signature deletion in `DashboardPages.tsx`.
 
 ## Completed Actions
-1. **Worker API Fallbacks**: Implemented default injections for `parent_run_id`, `batch_id`, `is_derived`, `merge_status` in `listBenchmarkRuns`, `getBenchmarkRunById`, etc.
-2. **Dashboard Type Extension**: Added optional batch columns to `BenchmarkRun` interface in React.
-3. **Endpoint Deferral**: Deferred `/api/benchmark-runs/:id/batches` to strictly follow minimal scope.
-4. **Documentation**: Added compatibility notes to `docs/benchmark-batch-schema-api-design.md` and updated `docs/benchmark-batch-local-schema-test.md` to note pending production migration.
+1. **Worker API Fallbacks**: Implemented default injections for `parent_run_id`, `is_derived`, etc.
+2. **Dashboard Type Extension**: Added optional batch columns to `BenchmarkRun` interface.
+3. **Integrity Strengthening**: Added "Changed Files Provenance Check" to `docs/final-report-integrity.md`.
+4. **Bug Fix**: Restored `AgentOpsPage` signature in `DashboardPages.tsx` accidentally deleted in `f27b54b`.
 
 ## Verification Results
 - `node scripts/verify-live-benchmark.mjs`: ✅ PASS (15/15 checks)
@@ -26,8 +31,8 @@ Updated: 2026-05-31 (Phase 2D Compatibility Implementation Complete)
 - `npm run benchmark:audit-gold`: ✅ PASS
 
 ## Next Recommended Actions
-1. **Production Migration Approval**: Await user review and explicit approval for Phase 3 (Production D1 Migration).
-2. **Local Seeded Preservation Test**: (Optional) Execute a local seed test if additional row-preservation evidence is required before production.
+1. **Phase 2D Provenance Review**: Review `docs/debug-log.md` and `docs/final-report-integrity.md` for the new provenance standards.
+2. **Production Migration Approval**: Await user approval for Phase 3 (Production D1 Migration) after provenance review.
 3. **Batch Runner**: Develop the batch execution script in Phase 3.
 
 ## Git Status Snapshot

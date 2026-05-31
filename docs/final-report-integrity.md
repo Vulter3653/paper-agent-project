@@ -32,14 +32,31 @@ Before generating the final report, the following commands must be executed and 
     ```bash
     git log -1 --format="%H %s"
     ```
+7.  **File Diff Stat**: Capture the list of files changed in the final commit.
+    ```bash
+    git show --stat HEAD
+    ```
 
 ## Final Reporting Requirements
 The final report must explicitly include the raw outputs of the commands above. An integrity check must be performed:
 
-- **Check**: Do `Local HEAD`, `origin/main`, and `ls-remote` SHAs match exactly?
+- **Check 1: SHA Consistency**: Do `Local HEAD`, `origin/main`, and `ls-remote` SHAs match exactly?
+- **Check 2: Provenance Consistency**: Does the list of "Modified Files" in the report exactly match the output of `git show --stat HEAD`?
 - **Conclusion**:
     - If ALL match: `REPORT INTEGRITY VERIFIED`
-    - If ANY mismatch: `REPORT INTEGRITY FAILED` (Do NOT report task completion if failed).
+    - If SHA mismatch: `REPORT INTEGRITY FAILED`
+    - If File Provenance mismatch: `REPORT PROVENANCE FAILED`
+    - Do NOT report task completion if any check fails.
+
+## Changed Files Provenance Check
+To maintain transparency regarding code implementation and documentation updates:
+
+- **Single Commit**: If all changes are in one commit, the reported file list must match `git show --stat HEAD`.
+- **Multiple Commits**: If changes are spread across multiple commits (e.g., implementation followed by handoff), the report MUST:
+  1.  Clearly identify the **Implementation Commit(s)**.
+  2.  Clearly identify the **Handoff/Session-State Commit**.
+  3.  Provide the cumulative diff stat using a commit range: `git diff --stat <base_sha>..HEAD`.
+- **Zero Hallucination**: Agents must not list files in the "Modified Files" section if they are not actually part of the diff for the reported SHA(s).
 
 ## Prevention of SHA Hallucination
 - **NEVER** manually type or "guess" a commit SHA.

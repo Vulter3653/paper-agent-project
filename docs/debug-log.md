@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-05-31 - Phase 3P-Step 2 PPTX Generator Template Cleanup
+- **Finding**: Existing PPTX candidates were outdated: one had 13 slides and a forbidden superiority phrase, while the prior generated deck had 19 slides and external template traces. (codex)
+- **Resolution**: Generated a new claim-safe deck through the PPTX MCP, removed the generator-added closing slide, replaced external template text, and verified a 14-slide output aligned with `presentation/final-presentation-outline.md`. (codex)
+- **Speaker Notes**: PPTX notes XML exists, but the reviewed Markdown outline remains the official notes source because generator notes were not treated as reliable presentation narration. (codex)
+- **Safety**: No benchmark, execute mode, D1 command, migration, dashboard edit, benchmark-script edit, gold-label edit, or local artifact edit was performed. (codex)
+
 ## 2026-05-31 - Phase 3N Dashboard Evidence Hierarchy Review
 - **Finding**: The dashboard exposed extensive technical detail before an evaluator could quickly distinguish controlled evidence, artifact-only output, partial expansion, and incomplete work. (codex)
 - **Resolution**: Added a reusable executive summary, evidence glossary, staged-expansion cards, benchmark interpretation helper, and collapsed-by-default technical trace console. (codex)

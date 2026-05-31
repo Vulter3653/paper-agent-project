@@ -2,6 +2,12 @@
 
 Updated: 2026-05-31 (Phase 3C Verification Complete)
 
+## 2026-05-31 (codex) - Phase 3P-Step 2 Final PPTX Alignment
+- **Status**: Generated `presentation/final-paper-agent-benchmark-presentation.pptx` as the claim-safe 14-slide submission deck and linked it from `README.md`. (codex)
+- **Content Boundary**: Deck retains controlled T001-T003 quantitative scope, Single LLM overlap-metric lead, T004-T006 artifact-only evidence, Phase 3L partial expansion, T007 timeout, unstarted later batches, and unimplemented D1 batch-aware persistence. (codex)
+- **Speaker Notes**: The generator produced notes XML, but `presentation/final-presentation-outline.md` remains the official reviewed 8-minute speaker-notes source. (codex)
+- **Safety Boundary**: No benchmark, execute mode, D1 command, migration, dashboard edit, benchmark-script edit, gold-label edit, or local artifact edit was performed. (codex)
+
 ## 2026-05-31 (codex) - Phase 3O Final Submission Package Completion
 - **Status**: Replaced final-paper placeholder citations with four real references, expanded the presentation outline to 14 timed slides with speaker notes, populated the project prompt inventory, and created `docs/used_papers_list.md`. (codex)
 - **README**: Added final submission links and an explicit claim-boundary section covering controlled T001-T003 evidence, artifact-only expansion, the T007 timeout, later unstarted batches, and the unimplemented D1 batch-aware persistence path. (codex)

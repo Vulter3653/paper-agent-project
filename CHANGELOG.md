@@ -17,6 +17,7 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-05-31 (codex)
+- Docs: Generated and verified the claim-safe 14-slide submission deck at `presentation/final-paper-agent-benchmark-presentation.pptx`; linked it from `README.md` and retained the Markdown outline as the official speaker-notes source. (codex)
 - Docs: Completed the final non-dashboard submission package by replacing paper citation placeholders, expanding the 14-slide presentation outline, documenting project prompts, adding the used-papers list, and linking claim-safe submission materials from `README.md`. (codex)
 - Added: Created root `DESIGN.md` as the Paper Agent evaluator-first plain-text design system for future UI agents. (codex)
 - Changed: Applied evidence-first dashboard UX with reusable executive summary cards, badge glossary, staged expansion panel, controlled benchmark interpretation helper, responsive layout rules, and collapsed technical traces. (codex)

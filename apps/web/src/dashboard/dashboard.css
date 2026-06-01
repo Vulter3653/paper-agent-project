@@ -1035,3 +1035,11 @@
 .uxDemoBoundaryGrid span { color: #64748b; font-size: 14px; }
 .uxDemoFooter { border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; margin-top: 18px; padding-top: 14px; }
 @media (max-width: 760px) { .uxDemoHero { flex-direction: column; } .uxDemoHero h1 { font-size: 23px; } .uxDemoStepper { grid-template-columns: 1fr 1fr; } .uxDemoStage { padding: 15px; } }
+
+/* Artifact Download UX Patch */
+.uxArtifactActions { display: grid; gap: 8px; margin-top: 8px; }
+.uxArtifactActionButtons { display: flex; gap: 6px; flex-wrap: wrap; }
+.uxArtifactBtn { font-size: 11px !important; padding: 4px 8px !important; min-height: unset !important; }
+.uxDelayedNotice { color: #d97706 !important; font-size: 11px !important; font-weight: bold; margin: 0; }
+.uxArtifactWarning { color: #64748b !important; font-size: 11px !important; font-style: italic; margin: 0; }
+.uxArtifactPolicyNotice { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; color: #0369a1; font-size: 12px; line-height: 1.5; padding: 12px; margin-bottom: 12px; }

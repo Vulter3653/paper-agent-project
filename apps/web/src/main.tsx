@@ -762,10 +762,86 @@ function CriticFlagsList({ flags, errorMessage }: { flags: CriticFlag[]; errorMe
   );
 }
 
+function ArtifactActionButton({ url, label, type, usage }: { url: string; label: string; type?: string; usage?: string }) {
+  const [status, setStatus] = useState<"idle" | "opening" | "copied" | "delayed">("idle");
+
+  const getFullUrl = () => {
+    if (url.startsWith("http")) return url;
+    const path = url.startsWith("/") ? url : "/" + url;
+    return apiUrl(path);
+  };
+
+  const handleOpen = () => {
+    if (!url) return;
+    setStatus("opening");
+    window.open(getFullUrl(), "_blank", "noopener,noreferrer");
+    setTimeout(() => {
+      setStatus("delayed");
+    }, 3000);
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(getFullUrl());
+      setStatus("copied");
+      setTimeout(() => setStatus("idle"), 2000);
+    } catch {
+      alert(`링크 복사 실패. 아래 주소를 직접 복사하세요:\n${getFullUrl()}`);
+    }
+  };
+
+  if (!url) return <span className="uxPill gray">URL 없음</span>;
+
+  return (
+    <div className="uxArtifactActions" style={{ display: 'grid', gap: '8px', marginTop: '8px' }}>
+      <div className="uxArtifactActionButtons" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <button className="iconButton compact" type="button" onClick={handleOpen} disabled={status === "opening"} style={{ fontSize: '11px', padding: '4px 8px' }}>
+          {status === "opening" ? "새 탭을 여는 중..." : label}
+        </button>
+        <button className="iconButton compact outline" type="button" onClick={handleCopy} style={{ fontSize: '11px', padding: '4px 8px' }}>
+          {status === "copied" ? "링크 복사됨" : "링크 복사"}
+        </button>
+      </div>
+      {status === "delayed" && <p className="errorMessage compact" style={{color: '#d97706', fontSize: '11px', margin: 0}}>파일이 늦게 열리면 링크 복사를 사용하세요.</p>}
+      {type === "pdf" && <p className="errorMessage compact" style={{color: '#64748b', fontSize: '11px', margin: 0}}>PDF는 영문 제공이며 파일 생성/다운로드가 상대적으로 느릴 수 있습니다. 발표 중에는 Markdown 보고서를 우선 사용하세요.</p>}
+      {usage === "source" && <p className="errorMessage compact" style={{color: '#64748b', fontSize: '11px', margin: 0}}>분석용 원자료입니다. 발표 중 직접 열기보다 링크 복사 또는 사후 확인을 권장합니다.</p>}
+    </div>
+  );
+}
+
 function OutputArtifactsPanel({
   job, outputs, errorMessage, onRefresh
 }: { job: SearchJob | null; outputs: JobOutput[]; errorMessage: string; onRefresh: () => void }) {
   const displayOutputs = getDisplayOutputs(job, outputs);
+
+  const getArtifactInfo = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "md":
+      case "markdown":
+        return {
+          label: "발표용 한글 보고서 — 우선 열기",
+          usage: "presentation"
+        };
+      case "pdf":
+        return {
+          label: "영문 PDF — 다운로드 지연 가능",
+          usage: "pdf"
+        };
+      case "csv":
+        return {
+          label: "분석용 원자료 — 발표 중 직접 열람 비권장",
+          usage: "source"
+        };
+      case "xlsx":
+        return {
+          label: "스프레드시트 원자료 — 발표 중 직접 열람 비권장",
+          usage: "source"
+        };
+      default:
+        return { label: "산출물 열기", usage: "" };
+    }
+  };
+
   return (
     <section className="diagnosticsPanel outputArtifactsPanel">
       <div className="diagnosticsHeader">
@@ -777,18 +853,33 @@ function OutputArtifactsPanel({
           <RefreshCw size={18} />
         </button>
       </div>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', color: '#0369a1', fontSize: '12px', lineHeight: 1.5, padding: '12px', marginBottom: '12px' }}>
+        <strong>다운로드 지연 안내</strong>
+        <p style={{margin: '4px 0 0 0'}}>파일 다운로드는 R2 저장소 응답 또는 브라우저 다운로드 처리에 따라 몇 초 지연될 수 있습니다. 발표 중에는 Markdown 보고서를 우선 새 탭에서 열고, 지연될 경우 링크 복사를 사용하세요.</p>
+      </div>
+
       {errorMessage ? <p className="errorMessage compact">{errorMessage}</p> : null}
       <div className="artifactList">
-        {displayOutputs.length ? displayOutputs.map((output) => (
-          <article className="artifactItem" key={output.id}>
-            <div>
-              <strong>{output.outputType.toUpperCase()}</strong>
-              <span>{output.storage} · {output.detail}</span>
-              {output.urlPath ? <a href={apiUrl(output.urlPath)} target="_blank" rel="noreferrer">산출물 열기</a> : <small>Endpoint 예정</small>}
-            </div>
-            <StatusBadge value={output.status} tone={getOutputTone(output.status)} />
-          </article>
-        )) : <p className="emptyState">완료된 job은 CSV, Markdown, XLSX, PDF 산출물을 기록합니다.</p>}
+        {displayOutputs.length ? displayOutputs.map((output) => {
+          const info = getArtifactInfo(output.outputType);
+          return (
+            <article className="artifactItem" key={output.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                <div>
+                  <strong>{output.outputType.toUpperCase()}</strong>
+                  <span>{output.storage} · {output.detail}</span>
+                </div>
+                <StatusBadge value={output.status} tone={getOutputTone(output.status)} />
+              </div>
+              {output.urlPath ? (
+                <ArtifactActionButton url={output.urlPath} label="새 탭에서 열기" type={info.usage === "pdf" ? "pdf" : undefined} usage={info.usage === "source" ? "source" : undefined} />
+              ) : (
+                <small>Endpoint 예정</small>
+              )}
+            </article>
+          );
+        }) : <p className="emptyState">완료된 job은 CSV, Markdown, XLSX, PDF 산출물을 기록합니다.</p>}
       </div>
     </section>
   );

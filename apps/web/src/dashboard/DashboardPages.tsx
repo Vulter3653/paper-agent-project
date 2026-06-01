@@ -362,7 +362,7 @@ function BenchmarkV3PresentationDashboard() {
 
       <section className="uxPanel uxPresentationSection">
         <SectionTitle eyebrow="Section 9" title="Trace / Artifact 탐색기" detail="이 대시보드의 모든 주장은 생성된 Artifact로 추적할 수 있습니다." />
-        <div className="uxArtifactExplorer">{benchmarkV3.artifacts.map((artifact) => <article className="uxArtifactEvidence" key={artifact.path}><div><span className="uxEvidenceBadge gray">TECHNICAL TRACE</span><h3>{artifact.name}</h3><p>{artifact.purpose}</p><small>{artifact.path}</small></div><div><strong>{artifact.status}</strong><a href={artifact.href} target="_blank" rel="noreferrer">산출물 열기 <ArrowRight size={13} /></a></div></article>)}</div>
+        <div className="uxArtifactExplorer">{benchmarkV3.artifacts.map((artifact) => <article className="uxArtifactEvidence" key={artifact.path}><div><span className="uxEvidenceBadge gray">TECHNICAL TRACE</span><h3>{artifact.name}</h3><p>{artifact.purpose}</p><small>{artifact.path}</small></div><div><strong>{artifact.status}</strong><ArtifactActionButton url={artifact.href} label="산출물 열기" /></div></article>)}</div>
       </section>
 
       <section className="uxPanel uxPresentationSection">
@@ -1193,36 +1193,83 @@ export function AgentOpsPage() {
   );
 }
 
+function ArtifactActionButton({ url, label, type, usage }: { url: string; label: string; type?: string; usage?: string }) {
+  const [status, setStatus] = useState<"idle" | "opening" | "copied" | "delayed">("idle");
+
+  const getFullUrl = () => {
+    if (url.startsWith("http")) return url;
+    const path = url.startsWith("/") ? url : "/" + url;
+    return apiUrl(path);
+  };
+
+  const handleOpen = () => {
+    if (!url) return;
+    setStatus("opening");
+    window.open(getFullUrl(), "_blank", "noopener,noreferrer");
+    setTimeout(() => {
+      setStatus("delayed");
+    }, 3000);
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(getFullUrl());
+      setStatus("copied");
+      setTimeout(() => setStatus("idle"), 2000);
+    } catch {
+      alert(`링크 복사 실패. 아래 주소를 직접 복사하세요:\n${getFullUrl()}`);
+    }
+  };
+
+  if (!url) return <span className="uxPill gray">URL 없음</span>;
+
+  return (
+    <div className="uxArtifactActions">
+      <div className="uxArtifactActionButtons">
+        <button className="uxPrimaryButton uxArtifactBtn" type="button" onClick={handleOpen} disabled={status === "opening"}>
+          {status === "opening" ? "새 탭을 여는 중..." : label}
+        </button>
+        <button className="uxSoftButton uxArtifactBtn" type="button" onClick={handleCopy}>
+          {status === "copied" ? "링크 복사됨" : "링크 복사"}
+        </button>
+      </div>
+      {status === "delayed" && <p className="uxDelayedNotice">파일이 늦게 열리면 링크 복사를 사용하세요.</p>}
+      {type === "pdf" && <p className="uxArtifactWarning">PDF는 영문 제공이며 파일 생성/다운로드가 상대적으로 느릴 수 있습니다. 발표 중에는 Markdown 보고서를 우선 사용하세요.</p>}
+      {usage === "source" && <p className="uxArtifactWarning">분석용 원자료입니다. 발표 중 직접 열기보다 링크 복사 또는 사후 확인을 권장합니다.</p>}
+    </div>
+  );
+}
+
 function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[]; errorMessage: string }) {
   const getArtifactInfo = (type: string) => {
     switch (type.toLowerCase()) {
       case "md":
       case "markdown":
         return {
-          label: "한글 보고서",
+          label: "발표용 한글 보고서 — 우선 열기",
           description: "대시보드 사용자를 위한 공식 한글 문헌 검색 보고서입니다.",
-          usage: "검토, 복사, 발표 준비, 문헌 정리"
+          usage: "presentation"
         };
       case "pdf":
         return {
-          label: "영문 PDF",
+          label: "영문 PDF — 다운로드 지연 가능",
           description: "현재 PDF 엔진의 폰트 제약으로 영어로 제공됩니다. PDF 기능은 정상 작동합니다.",
-          usage: "파일 제출, 빠른 공유, 영문 출력 확인"
+          usage: "pdf"
         };
       case "csv":
         return {
-          label: "분석용 원자료",
+          label: "분석용 원자료 — 발표 중 직접 열람 비권장",
           description: "데이터 처리와 재분석을 위한 표 형식 파일입니다. 컬럼명은 시스템 호환성을 위해 영어로 유지됩니다.",
-          usage: "데이터 분석, 재현성 확인, 외부 도구 연동"
+          usage: "source"
         };
       case "xlsx":
         return {
-          label: "스프레드시트 원자료",
+          label: "스프레드시트 원자료 — 발표 중 직접 열람 비권장",
           description: "엑셀에서 열람 가능한 분석용 파일입니다. 컬럼명은 시스템 호환성을 위해 영어로 유지됩니다.",
-          usage: "엑셀 검토, 정렬, 필터링"
+          usage: "source"
         };
       default:
-        return { label: "", description: "", usage: "" };
+        return { label: "산출물", description: "", usage: "" };
     }
   };
 
@@ -1234,6 +1281,11 @@ function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[];
           <p>CSV, Markdown, XLSX, PDF 최종 산출물의 물리적 저장 상태입니다. (R2 스토리지 기준)</p>
         </div>
         <FileText size={18} />
+      </div>
+
+      <div className="uxArtifactPolicyNotice">
+        <strong>다운로드 지연 안내</strong>
+        <p>파일 다운로드는 R2 저장소 응답 또는 브라우저 다운로드 처리에 따라 몇 초 지연될 수 있습니다. 발표 중에는 Markdown 보고서를 우선 새 탭에서 열고, 지연될 경우 링크 복사를 사용하세요.</p>
       </div>
 
       <div className="uxPolicyCard">
@@ -1259,14 +1311,7 @@ function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[];
                 </div>
                 <span>{output.storage} · {output.detail}</span>
                 <p className="uxArtifactDesc">{info.description}</p>
-                <small className="uxArtifactUsage">권장 사용: {info.usage}</small>
-                {output.urlPath ? (
-                  <div style={{ marginTop: '4px' }}>
-                    <a href={apiUrl(output.urlPath)} target="_blank" rel="noreferrer">산출물 열기</a>
-                  </div>
-                ) : (
-                  <small style={{ display: 'block', marginTop: '4px' }}>생성 예정</small>
-                )}
+                <ArtifactActionButton url={output.urlPath} label="새 탭에서 열기" type={info.usage === "pdf" ? "pdf" : undefined} usage={info.usage === "source" ? "source" : undefined} />
               </div>
               <span className={`uxPill ${output.status === "stored" || output.status === "generated" ? "green" : output.status === "failed" ? "amber" : "gray"}`}>{formatRuntimeStatus(output.status)}</span>
             </article>

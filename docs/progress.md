@@ -1,5 +1,12 @@
 # Project Progress And Session Handoff
 
+## 2026-06-01 (codex) - Final Presentation Dashboard Landing Blocker Patch
+
+- **Default Landing**: Changed `/dashboard` fallback and the brand home link to open the Benchmark v3 evidence view while preserving `/dashboard/research`, `/dashboard/ops`, and `/dashboard/evaluation`.
+- **First Viewport**: Added the direct `Not full semantic validation` wording beside `Not full superiority` and `PASS WITH CLAIM BOUNDARIES`.
+- **Projector Readability**: Increased evidence-card title text to `17px` and card/interpretation text to `14px`.
+- **Safety Boundary**: No benchmark artifact, score, paper, presentation, execution script, D1 command, or migration change occurred. (codex)
+
 ## 2026-06-01 (codex) - Presentation-Ready Benchmark v3 Evidence Dashboard
 
 - **JSON Source Of Truth**: Added `apps/web/src/dashboard/benchmarkV3Data.ts` to import generated Benchmark v3 JSON artifacts and keep presentation metrics aligned with repository evidence.

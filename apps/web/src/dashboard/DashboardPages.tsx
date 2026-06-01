@@ -149,8 +149,9 @@ type BenchmarkMetrics = {
 
 export function resolveDashboardRoute(pathname = window.location.pathname): DashboardRoute {
   if (pathname.includes("/dashboard/ops")) return "ops";
+  if (pathname.includes("/dashboard/research")) return "research";
   if (pathname.includes("/dashboard/evaluation")) return "evaluation";
-  return "research";
+  return "evaluation";
 }
 
 export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
@@ -163,7 +164,7 @@ export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
   return (
     <header className="uxTopbar">
       <div className="uxTopbarInner">
-        <a className="uxBrand" href="/dashboard/research">
+        <a className="uxBrand" href="/dashboard">
           <span className="uxBrandMark">PA</span>
           <span>
             <strong>Paper Agent</strong>
@@ -220,7 +221,7 @@ export function ExecutiveSummaryPanel() {
         </article>
         <article className="uxEvidenceCard partial">
           <span className="uxEvidenceBadge partial">SEMANTIC BOUNDARY</span>
-          <h2>Not full semantic coverage</h2>
+          <h2>Not full semantic validation</h2>
           <p>Layer 5A is quota-limited. Layer 5B is a deterministic supplementary proxy.</p>
         </article>
         <article className="uxEvidenceCard planned">

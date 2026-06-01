@@ -933,8 +933,8 @@
 .uxEvidenceCard.artifact { border-left-color: #2563eb; }
 .uxEvidenceCard.partial { border-left-color: #b45309; }
 .uxEvidenceCard.planned { border-left-color: #7c3aed; }
-.uxEvidenceCard h2, .uxEvidenceCard h3 { color: #0f172a; font-size: 15px; margin: 12px 0 6px; }
-.uxEvidenceCard p, .uxEvidenceCard strong { color: #475569; display: block; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; word-break: break-word; }
+.uxEvidenceCard h2, .uxEvidenceCard h3 { color: #0f172a; font-size: 17px; margin: 12px 0 6px; }
+.uxEvidenceCard p, .uxEvidenceCard strong { color: #475569; display: block; font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; word-break: break-word; }
 .uxEvidenceBadge { border: 1px solid transparent; border-radius: 999px; display: inline-flex; font-size: 11px; font-weight: 850; line-height: 1; margin: 0 5px 4px 0; max-width: 100%; padding: 6px 9px; white-space: normal; }
 .uxEvidenceBadge.verified, .uxEvidenceBadge.green { background: #dcfce7; border-color: #bbf7d0; color: #15803d; }
 .uxEvidenceBadge.artifact, .uxEvidenceBadge.blue { background: #dbeafe; border-color: #bfdbfe; color: #1d4ed8; }
@@ -964,7 +964,7 @@
 .uxSectionTitle p { color: #64748b; font-size: 14px; line-height: 1.55; margin: 6px 0 0; }
 .uxMetricsAuto { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .uxSourceNote { color: #64748b; font-size: 12px; margin: 10px 0 0; }
-.uxInterpretationBox { align-items: flex-start; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e3a8a; display: flex; font-size: 13px; gap: 8px; line-height: 1.55; margin: 14px 0 0; padding: 12px 14px; }
+.uxInterpretationBox { align-items: flex-start; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e3a8a; display: flex; font-size: 14px; gap: 8px; line-height: 1.55; margin: 14px 0 0; padding: 12px 14px; }
 .uxInterpretationBox svg { flex: 0 0 auto; margin-top: 2px; }
 .uxSemanticBoundary { border-color: #fcd34d; box-shadow: 0 12px 30px rgba(180, 83, 9, 0.08); }
 .uxProxyList { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }

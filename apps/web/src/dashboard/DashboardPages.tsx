@@ -214,13 +214,13 @@ export function ExecutiveSummaryPanel() {
         </article>
         <article className="uxEvidenceCard artifact">
           <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
-          <h2>V3 정량 자동 평가 (T001-T020)</h2>
-          <p>Benchmark v3: Layers 1-4 & 6 computed for T001-T020 artifact rows.</p>
+          <h2>Artifact-Level Validation (T004-T020)</h2>
+          <p>T004-T020 artifact rows are available for scoped validation. Baseline parity is not proven.</p>
         </article>
         <article className="uxEvidenceCard partial">
           <span className="uxEvidenceBadge partial">PARTIAL SEMANTIC AUDIT</span>
           <h2>정성 감사 (부분)</h2>
-          <p>Layer 5: Quota-limited partial implementation audit (22/125 evaluated).</p>
+          <p>Layer 5A: 22/125 evaluated. The successful subset contains no Proposed Agent rows.</p>
         </article>
       </div>
       <div className="uxNotCompleteNote">
@@ -249,37 +249,37 @@ function StagedExpansionEvidencePanel() {
     <section className="uxPanel uxExpansionPanel">
       <div className="uxPanelHead">
         <div>
-          <h2>Benchmark v3 Staged Execution Evidence</h2>
-          <p>T001-T020 범위에 대한 실행 증거 및 정규화 데이터가 확보되었습니다.</p>
+          <h2>Benchmark v3 Evidence Summary</h2>
+          <p>T001-T020 정규화 아티팩트와 제한된 해석 범위를 표시합니다.</p>
         </div>
         <span className="uxEvidenceBadge blue">V3 ARTIFACTS LOADED</span>
       </div>
       <div className="uxEvidenceGrid">
         <article className="uxEvidenceCard artifact">
           <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
-          <h3>T001-T020 Quantitative</h3>
+          <h3>T001-T020 Normalized Artifacts</h3>
           <p>342 normalized result rows</p>
-          <strong>Layers 1, 2, 3, 4, 6: PASS</strong>
+          <strong>T004-T020 artifact-level; T007 missing</strong>
         </article>
         <article className="uxEvidenceCard partial">
           <span className="uxEvidenceBadge partial">PARTIAL AUDIT</span>
           <span className="uxEvidenceBadge infra">QUOTA LIMIT</span>
-          <h3>Layer 5 Semantic</h3>
+          <h3>Layer 5A Semantic Audit</h3>
           <p>22/125 rows evaluated</p>
-          <strong>Audit Depth: 17.6% (Quota-bounded)</strong>
+          <strong>17.6% coverage; no Proposed Agent rows</strong>
         </article>
         <article className="uxEvidenceCard verified">
           <span className="uxEvidenceBadge verified">REPRODUCIBLE</span>
-          <h3>Reproducibility</h3>
-          <p>v3 deterministic pipeline</p>
-          <strong>Manifest & Summary Generated</strong>
+          <h3>Layer 5B Proxy</h3>
+          <p>125 deterministic proxy rows</p>
+          <strong>Supplementary, not semantic ground truth</strong>
         </article>
       </div>
       <p className="uxPanelNote">
         Benchmark v3 metrics are computed from available artifacts.
-        T001–T003: Controlled Common-Support Comparison.
-        T004–T020: Artifact-level Validation.
-        Full semantic quality claim is disabled due to partial audit status.
+        T001–T003: controlled common-support comparison.
+        T004–T020: artifact-level validation unless baseline parity is proven.
+        Full T001–T020 comparative superiority and full semantic-quality validation claims are disabled.
       </p>
     </section>
   );
@@ -1599,7 +1599,7 @@ export function EvaluationDashboardPage() {
         <h1>통제된 T001-T003 증거와 시나리오 시뮬레이션을 구분하여 확인합니다.</h1>
         <p>상단 버튼은 검증 결과를 추가 생성하지 않습니다. 프론트엔드 시나리오 시뮬레이션으로 표시 방식을 바꿉니다.</p>
         <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#b45309', fontWeight: 'bold' }}>
-          * Claim Boundary: Controlled quantitative benchmark covers T001-T003 only. Expanded T001-T018 evidence remains partial and should not be interpreted as full 20-task validation.
+          * Claim Boundary: T001-T003 is the common-support comparison subset. T004-T020 remains artifact-level validation unless baseline parity is proven. T007 is proposed_agent_missing.
         </p>
       </section>
 
@@ -1715,30 +1715,30 @@ export function EvaluationDashboardPage() {
             <div className="uxPanelHead">
               <div>
                 <h2>벤치마크 증거 경계 (Evidence Boundary)</h2>
-                <p>통제된 T001-T003 실시간 증거와 부분적 확장 결과를 구분합니다.</p>
+                <p>T001-T003 공통지원 비교, T004-T020 아티팩트 검증, Layer 5 부분 감사를 구분합니다.</p>
               </div>
               <ShieldCheck size={18} className="blue" />
             </div>
             <div className="uxSystemGrid">
               <div className="uxSystemItem">
-                <strong>통제 비교 레이어 (Control)</strong>
+                <strong>공통지원 비교 레이어 (Common Support)</strong>
                 <span>T001-T003</span>
-                <small>Production D1 기반 실시간 벤치마크 서빙 중</small>
+                <small>Production D1 기반 통제 비교. 정량 비교 주장은 이 범위로 제한.</small>
               </div>
               <div className="uxSystemItem">
-                <strong>부분 확장 증거 (Partial)</strong>
-                <span>LEGACY PARTIAL ARTIFACT</span>
-                <small>T001-T018 과거 부분 artifact이며 최종 검증이 아님. T019-T020 HTTP 503 실패 증거 유지.</small>
+                <strong>아티팩트 검증 레이어 (Artifact-Level)</strong>
+                <span>T004-T020</span>
+                <small>Baseline parity가 입증되지 않은 아티팩트 수준 검증. 전역 비교 우위 주장 불가.</small>
               </div>
               <div className="uxSystemItem">
-                <strong>인프라 제한 (Resource Limit)</strong>
-                <span>T019-T020</span>
-                <small>런타임 자원 한계로 인한 미완료 항목</small>
+                <strong>누락 증거 (Missing Evidence)</strong>
+                <span>T007: proposed_agent_missing</span>
+                <small>누락 상태를 숨기지 않고 Baseline Support Matrix에 유지.</small>
               </div>
               <div className="uxSystemItem">
-                <strong>확장 실행 상태</strong>
-                <span>PLANNED ONLY / NOT YET EXECUTED</span>
-                <small>T004-T006 artifact-only dry-run 실행됨. Full T004-T020 validation은 미완료</small>
+                <strong>정성 감사 경계 (Layer 5A / 5B)</strong>
+                <span>22/125 = 17.6% / Proxy 125 rows</span>
+                <small>Layer 5A는 quota-limited 부분 감사. Layer 5B는 보조 proxy이며 의미 품질 검증 대체 불가.</small>
               </div>
             </div>
           </section>

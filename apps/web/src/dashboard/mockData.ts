@@ -104,12 +104,12 @@ export const opsImplementationStatus: FeatureImplementationItem[] = [
 
 export const evaluationImplementationStatus: FeatureImplementationItem[] = [
   { feature: "Benchmark Fixtures", status: "live", evidence: "20 tasks, 60 gold rows, audit scripts", next: "verified gold 100개 이상 확충" },
-  { feature: "Proposed Agent Runner", status: "live", evidence: "benchmark:run-proposed 스크립트 구현됨", next: "20 task full runtime collection" },
+  { feature: "Proposed Agent Runner", status: "live", evidence: "artifact-level staged execution evidence 보존", next: "T007 bounded recovery and baseline parity expansion" },
   { feature: "Baseline Evaluation UI", status: "live", evidence: "/api/benchmark-metrics에서 T001-T003 snapshot 로드", next: "전체 태스크 라이브 집계 연결" },
   { feature: "Rule-based Baseline", status: "live", evidence: "T001-T003 통제 데이터 반영됨", next: "20-task baseline 확장" },
   { feature: "Single LLM Baseline", status: "live", evidence: "T001-T003 통제 데이터 반영됨", next: "외부 모델 실행 프로토콜 정의" },
   { feature: "Automated Baseline Review", status: "live", evidence: "auto-review-baselines 결과 반영됨", next: "판정 규칙 고도화" },
-  { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 제어 레이어 기준 산출", next: "전체 20개 태스크 확장" },
+  { feature: "Precision@5 / DOI Accuracy", status: "live", evidence: "T001-T003 공통지원 비교 기준 산출", next: "baseline parity가 확보된 태스크만 비교 범위 확장" },
   { feature: "Dashboard Metric Binding", status: "live", evidence: "/api/benchmark-metrics 실시간 스냅샷 연결", next: "D1 aggregation 실시간화" },
   { feature: "Benchmark v3: Layer 1-4, 6", status: "live", evidence: "Deterministic validation complete (342 artifact rows)", next: "Dashboard v3 visualization integration" },
   { feature: "Benchmark v3: Layer 5 Quality", status: "partial", evidence: "Quota-Limited Partial Audit (22/125 evaluated)", next: "High-tier LLM judge execution (Planned)" }
@@ -194,7 +194,7 @@ export const systemStatuses: SystemStatus[] = [
   { name: "Google Drive", status: "부분 구현", detail: "OA PDF (Unpaywall) 업로드 경로 연결됨", tone: "amber" },
   { name: "Vectorize", status: "부분 구현", detail: "Opt-in experimental semantic ranking path", tone: "blue" },
   { name: "Remote MCP", status: "온라인", detail: "paper-agent-mcp /mcp", tone: "purple" },
-  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route; legacy partial artifacts are NOT FINAL", tone: "amber" }
+  { name: "Pages UI", status: "부분 구현", detail: "Research/Ops/Evaluation route; Benchmark v3 claim boundaries displayed", tone: "amber" }
 ];
 
 export const criticReviews: CriticReviewItem[] = [
@@ -217,7 +217,7 @@ export const evaluationScenarios: EvaluationScenario[] = [
     key: "strict",
     label: "엄격한 통제 검증 (Strict)",
     description: "Gold label과 DOI 검증을 가장 엄격하게 비교하는 평가입니다. (T001-T003 통제 레이어 기준)",
-    limitation: "LEGACY PARTIAL ARTIFACT T001-T018은 최종 검증이 아닙니다. T019-T020 실패 증거를 유지해야 합니다.",
+    limitation: "T001-T003만 공통지원 비교입니다. T004-T020은 baseline parity가 입증되지 않은 artifact-level validation이며 T007 누락 증거를 유지합니다.",
     announcement: "SCENARIO SIMULATION: 통제된 T001-T003 증거를 보수적으로 해석하는 프론트엔드 예시입니다. 전역 우위를 입증하지 않습니다.",
     metrics: {
       precisionAt5: "NOT LIVE DATA",

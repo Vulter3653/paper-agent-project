@@ -2,6 +2,13 @@
 
 Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
 
+## 2026-06-01 (codex) - Dashboard Benchmark v3 Claim-Boundary Alignment
+
+- **Dashboard Evidence Cards**: Replaced stale legacy-expansion wording with T001-T003 common-support comparison, T004-T020 artifact-level validation, and T007 `proposed_agent_missing` disclosure.
+- **Semantic Boundary**: Exposed Layer 5A as a quota-limited partial implementation audit (22/125, 17.6%, no Proposed Agent rows in the successful subset) and Layer 5B as a 125-row supplementary proxy.
+- **Deployment Audit**: Confirmed that the currently deployed Pages bundle still contains pre-fix dashboard text before this source update. Browser screenshot tooling remains unavailable because the local Playwright Chrome binary is missing.
+- **Safety Boundary**: No benchmark search, LLM judge rerun, D1 command, migration, benchmark-script edit, gold-label edit, raw artifact rewrite, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Final Submission Entry-Point Benchmark v3 Alignment
 
 - **Submission Entry Points**: Updated `README.md`, `docs/final-demo-script.md`, `docs/final-submission-story.md`, `docs/benchmark.md`, `docs/used_papers_list.md`, and presentation handoff files to use Benchmark v3 claim boundaries.

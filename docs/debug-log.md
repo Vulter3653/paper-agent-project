@@ -1,5 +1,13 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Dashboard Benchmark v3 Stale Claim-Boundary Cleanup
+
+- Confirmed through source inspection and a read-only fetch of the deployed Pages JavaScript bundle that stale dashboard narrative remained after Benchmark v3 documentation alignment.
+- Replaced obsolete T001-T018 legacy-expansion cards with T001-T003 common-support comparison, T004-T020 artifact-level validation, T007 `proposed_agent_missing`, Layer 5A 22/125 quota-limited audit, and Layer 5B 125-row supplementary-proxy wording.
+- Preserved conservative interpretation: full T001-T020 comparative superiority and full semantic-quality validation claims remain disabled.
+- Playwright screenshot QA could not run because `/opt/google/chrome/chrome` is not installed in the local environment. Source validation and read-only deployed-bundle inspection were used instead.
+- No benchmark search, LLM judge rerun, D1 command, migration, benchmark-script edit, gold-label edit, raw artifact rewrite, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Final Submission Entry-Point Stale Narrative Cleanup
 
 - Found stale final-demo, submission-story, presentation-MCP, README, and Canva-input content that predated Benchmark v3 promotion-gate supplements.

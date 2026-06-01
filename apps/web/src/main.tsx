@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Download, Eye, FileText, History, Play, RefreshCw, Search } from "lucide-react";
 import { BUSINESS_SCHOOL_JOURNAL_CATEGORY_OPTIONS, type AgentTrace, type PaperSummary, type SearchJob } from "@paper-agent/shared";
-import { AgentOpsPage, DashboardNav, EvaluationDashboardPage, ExecutiveSummaryPanel, ResearchExperiencePanels, resolveDashboardRoute } from "./dashboard/DashboardPages";
+import { AgentOpsPage, DashboardNav, EvaluationDashboardPage, ExecutiveSummaryPanel, LiveDemoPage, ResearchExperiencePanels, resolveDashboardRoute } from "./dashboard/DashboardPages";
 import "./styles.css";
 
 type JobResponse = {
@@ -147,7 +147,7 @@ function App() {
   return (
     <>
       <DashboardNav activeRoute={activeRoute} />
-      {activeRoute === "ops" ? <AgentOpsPage /> : activeRoute === "evaluation" ? <EvaluationDashboardPage /> : <ResearchDashboard />}
+      {activeRoute === "ops" ? <AgentOpsPage /> : activeRoute === "evaluation" ? <EvaluationDashboardPage /> : activeRoute === "demo" ? <LiveDemoPage /> : <ResearchDashboard />}
       <footer className="uxFooterLegend">
         <div className="legendItem"><span className="uxStatusChip live">구현됨</span> live API/DB-backed</div>
         <div className="legendItem"><span className="uxStatusChip partial">부분 구현</span> partially connected or conditional</div>

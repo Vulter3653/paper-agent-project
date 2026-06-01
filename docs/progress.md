@@ -1,5 +1,11 @@
 # Project Progress And Session Handoff
 
+## 2026-06-01 (codex) - Live Demo Mode
+
+- **New Route**: Added `/dashboard/demo` as a Korean-first, presenter-controlled six-stage demo while preserving `/dashboard`, `/dashboard/research`, `/dashboard/ops`, and `/dashboard/evaluation`.
+- **Existing API Reuse**: Reused `/api/diagnostics`, `/api/search-jobs`, job detail, Trace, and Artifact endpoints. No backend endpoint or automatic page-load execution was added.
+- **Presentation Safety**: Added quick-mode limits (`maxResults=5`, `enrichmentLimit=5`, Semantic Ranking off, LLM Critic off), 60-second delay guidance, recent completed job fallback, collapsed technical evidence, and a final Benchmark v3 claim-boundary stage. (codex)
+
 ## 2026-06-01 (codex) - Final Presentation Dashboard Korean Visibility Patch
 
 - **Korean-First Presentation Copy**: Localized Executive Summary, evidence cards, interpretation boxes, Baseline Support Matrix guidance, Layer 5 boundaries, risk explanations, Artifact Explorer, and Live Demo guidance while preserving core technical terms.

@@ -982,3 +982,56 @@
 .uxClosingClaim { background: #0f172a; border-radius: 8px; color: #f8fafc; font-size: 14px; font-weight: 750; line-height: 1.6; margin-top: 14px; padding: 15px; }
 .uxInteractiveAppendix { margin-top: 28px; }
 @media (max-width: 760px) { .uxArtifactEvidence { flex-direction: column; } .uxArtifactEvidence > div:last-child { align-items: flex-start; text-align: left; } }
+
+/* Presentation-only Live Demo Mode. Existing dashboard routes remain unchanged. */
+.uxDemoShell { display: grid; gap: 18px; padding-bottom: 30px; }
+.uxDemoHero { align-items: flex-start; background: #0f172a; border-radius: 8px; color: #f8fafc; display: flex; gap: 18px; justify-content: space-between; padding: 22px; }
+.uxDemoHero h1 { font-size: 27px; margin: 4px 0 7px; }
+.uxDemoHero p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0; }
+.uxDemoPreflight { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; }
+.uxDemoPreflight > div:first-child { align-items: baseline; display: flex; gap: 9px; }
+.uxDemoPreflight > div:first-child span { color: #64748b; font-size: 14px; }
+.uxDemoPreflightGrid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 11px; }
+.uxDemoPreflightGrid span { border: 1px solid #e2e8f0; border-radius: 6px; display: flex; flex-direction: column; font-size: 14px; gap: 3px; padding: 9px; }
+.uxDemoPreflightGrid span.ok { background: #f0fdf4; border-color: #bbf7d0; }
+.uxDemoPreflightGrid span.warn { background: #fffbeb; border-color: #fde68a; }
+.uxDemoPreflightGrid small { color: #64748b; overflow-wrap: anywhere; }
+.uxDemoStepper { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); list-style: none; margin: 0; padding: 0; }
+.uxDemoStepper li button { background: #fff; border: 1px solid #e2e8f0; border-radius: 7px; color: #475569; cursor: pointer; display: flex; font-size: 14px; gap: 8px; min-height: 58px; padding: 10px; text-align: left; width: 100%; }
+.uxDemoStepper li span { align-items: center; background: #e2e8f0; border-radius: 50%; display: inline-flex; flex: 0 0 auto; font-size: 12px; height: 22px; justify-content: center; width: 22px; }
+.uxDemoStepper li.active button { background: #eff6ff; border-color: #60a5fa; color: #1d4ed8; }
+.uxDemoStepper li.done span { background: #dcfce7; color: #166534; }
+.uxDemoStage { padding: 20px; }
+.uxDemoStageBody { color: #334155; display: grid; font-size: 15px; gap: 15px; line-height: 1.6; }
+.uxDemoStageBody p { margin: 0; }
+.uxDemoField { display: grid; gap: 7px; max-width: 620px; }
+.uxDemoField span { font-size: 14px; font-weight: 800; }
+.uxDemoField input { border: 1px solid #cbd5e1; border-radius: 7px; font-size: 16px; padding: 12px; }
+.uxDemoConfig { display: flex; flex-wrap: wrap; gap: 7px; }
+.uxDemoConfig span { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; color: #475569; font-size: 13px; padding: 6px 8px; }
+.uxDemoJobSummary { display: grid; gap: 9px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.uxDemoJobSummary div { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; display: grid; gap: 4px; padding: 10px; }
+.uxDemoJobSummary small { color: #64748b; font-size: 13px; }
+.uxDemoJobSummary strong { color: #0f172a; font-size: 14px; overflow-wrap: anywhere; }
+.uxDemoProgress { background: #e2e8f0; border-radius: 999px; height: 18px; overflow: hidden; position: relative; }
+.uxDemoProgress div { background: #2563eb; height: 100%; transition: width 180ms ease; }
+.uxDemoProgress span { color: #0f172a; font-size: 12px; font-weight: 850; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.uxDemoTraceGrid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.uxDemoTraceGrid article { align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; display: flex; flex-direction: column; gap: 8px; min-height: 78px; padding: 11px; }
+.uxDemoTraceGrid strong { color: #0f172a; font-size: 14px; }
+.uxDemoWarning { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 7px; color: #92400e; font-size: 14px; padding: 11px; }
+.uxDemoActions { display: flex; flex-wrap: wrap; gap: 8px; }
+.uxTraceToggle { align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; color: #334155; cursor: pointer; display: inline-flex; font-size: 14px; font-weight: 800; gap: 7px; padding: 9px 11px; width: fit-content; }
+.uxDemoPaperList { display: grid; gap: 8px; }
+.uxDemoPaperList article { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; display: flex; gap: 10px; padding: 11px; }
+.uxDemoPaperList article > span { color: #2563eb; font-size: 14px; font-weight: 850; }
+.uxDemoPaperList article div { display: grid; gap: 3px; min-width: 0; }
+.uxDemoPaperList strong, .uxDemoPaperList small { overflow-wrap: anywhere; }
+.uxDemoPaperList small { color: #64748b; font-size: 13px; }
+.uxDemoEmpty { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 7px; color: #64748b; font-size: 14px; padding: 14px; }
+.uxDemoBoundaryGrid { display: grid; gap: 9px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.uxDemoBoundaryGrid article { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; display: grid; gap: 7px; padding: 13px; }
+.uxDemoBoundaryGrid strong { color: #0f172a; font-size: 15px; }
+.uxDemoBoundaryGrid span { color: #64748b; font-size: 14px; }
+.uxDemoFooter { border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; margin-top: 18px; padding-top: 14px; }
+@media (max-width: 760px) { .uxDemoHero { flex-direction: column; } .uxDemoHero h1 { font-size: 23px; } .uxDemoStepper { grid-template-columns: 1fr 1fr; } .uxDemoStage { padding: 15px; } }

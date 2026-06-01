@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Live Demo Mode Safety Verification
+
+- Confirmed that the existing Worker API already supports diagnostics, search-job creation, job detail, Trace polling, recent job listing, and output Artifact status. No new backend endpoint was required.
+- Added `/dashboard/demo` with manual stage navigation and an explicit run button. Loading the page performs diagnostics only and does not automatically start an Agent job.
+- Added a 60-second no-Trace delay message and a user-triggered recent-completed-job fallback so a live presentation can continue without hiding external API delay.
+- Preserved the Benchmark v3 evidence landing and explicit claim boundaries: the demo is execution evidence, not a full superiority or full semantic-validation claim. (codex)
+
 ## 2026-06-01 (codex) - Final Presentation Dashboard Korean Visibility Review
 
 - Reviewed presentation-facing dashboard copy after the default-route blocker patch and found English-heavy explanations that would slow a Korean-language live presentation.

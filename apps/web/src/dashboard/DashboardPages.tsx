@@ -20,10 +20,10 @@ import {
   type FeatureImplementationStatus
 } from "./mockData";
 import { benchmarkV3 } from "./benchmarkV3Data";
-import type { AgentTrace, SearchJob } from "@paper-agent/shared";
+import type { AgentTrace, PaperSummary, SearchJob } from "@paper-agent/shared";
 import "./dashboard.css";
 
-export type DashboardRoute = "research" | "ops" | "evaluation";
+export type DashboardRoute = "research" | "ops" | "evaluation" | "demo";
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://paper-agent-project.shch3653.workers.dev").replace(/\/$/, "");
 
@@ -33,6 +33,7 @@ function apiUrl(path: string): string {
 
 type TraceResponse = { job: SearchJob; traces: AgentTrace[] };
 type JobsResponse = { jobs: SearchJob[] };
+type JobDetailResponse = { job: SearchJob; papers: PaperSummary[] };
 type CriticFlag = { id: string; paperRank: number; severity: "low" | "medium" | "high" | string; flagType: string; message: string; evidence: string };
 type JobOutput = { id: string; outputType: string; status: string; storage: string; urlPath: string; detail: string };
 type CriticFlagsResponse = { job: SearchJob; criticFlags: CriticFlag[] };
@@ -151,6 +152,7 @@ export function resolveDashboardRoute(pathname = window.location.pathname): Dash
   if (pathname.includes("/dashboard/ops")) return "ops";
   if (pathname.includes("/dashboard/research")) return "research";
   if (pathname.includes("/dashboard/evaluation")) return "evaluation";
+  if (pathname.includes("/dashboard/demo")) return "demo";
   return "evaluation";
 }
 
@@ -158,7 +160,8 @@ export function DashboardNav({ activeRoute }: { activeRoute: DashboardRoute }) {
   const routes: Array<{ id: DashboardRoute; label: string; href: string }> = [
     { id: "research", label: "1. 연구 스튜디오", href: "/dashboard/research" },
     { id: "ops", label: "2. Agent 운영", href: "/dashboard/ops" },
-    { id: "evaluation", label: "3. 평가", href: "/dashboard/evaluation" }
+    { id: "evaluation", label: "3. 평가", href: "/dashboard/evaluation" },
+    { id: "demo", label: "4. 라이브 데모", href: "/dashboard/demo" }
   ];
 
   return (
@@ -575,6 +578,238 @@ export function ResearchExperiencePanels({ isRunning }: { isRunning: boolean }) 
   );
 }
 
+const liveDemoSteps = [
+  { id: 1, title: "연구 질문 입력", description: "발표에서 사용할 연구 주제를 확인합니다." },
+  { id: 2, title: "Agent 실행", description: "빠른 검증 모드로 실제 Worker pipeline을 시작합니다." },
+  { id: 3, title: "Pipeline / Trace 확인", description: "논문 검색부터 report 생성까지 진행 상태를 확인합니다." },
+  { id: 4, title: "추천 논문 결과 확인", description: "검증된 metadata가 포함된 추천 논문 후보를 확인합니다." },
+  { id: 5, title: "산출물 / Report 확인", description: "Markdown, CSV/XLSX, PDF 산출물 저장 상태를 확인합니다." },
+  { id: 6, title: "Benchmark v3 Claim Boundary 연결", description: "실시간 demo 결과와 평가 주장의 경계를 분리합니다." }
+] as const;
+
+const liveDemoTraceGroups = [
+  { title: "Query Planning", steps: [1, 2] },
+  { title: "Search / Retrieval", steps: [3, 4] },
+  { title: "DOI & Metadata Verification", steps: [5, 6, 7] },
+  { title: "Ranking", steps: [8, 9, 10] },
+  { title: "Report / Artifact Generation", steps: [11, 12] }
+] as const;
+
+export function LiveDemoPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [keyword, setKeyword] = useState("AI hiring fairness");
+  const [activeJob, setActiveJob] = useState<SearchJob | null>(null);
+  const [papers, setPapers] = useState<PaperSummary[]>([]);
+  const [traces, setTraces] = useState<AgentTrace[]>([]);
+  const [outputs, setOutputs] = useState<JobOutput[]>([]);
+  const [diagnostics, setDiagnostics] = useState<DiagnosticsResponse | null>(null);
+  const [diagnosticsError, setDiagnosticsError] = useState("");
+  const [demoError, setDemoError] = useState("");
+  const [artifactError, setArtifactError] = useState("");
+  const [delayWarning, setDelayWarning] = useState("");
+  const [running, setRunning] = useState(false);
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [pollingStartedAt, setPollingStartedAt] = useState(0);
+  const [showTechnicalEvidence, setShowTechnicalEvidence] = useState(false);
+
+  const completedTraceCount = traces.filter((trace) => trace.status === "completed" || trace.status === "skipped").length;
+  const progress = activeJob ? Math.min(100, Math.round((completedTraceCount / 12) * 100)) : 0;
+  const traceGroups = liveDemoTraceGroups.map((group) => {
+    const groupTraces = traces.filter((trace) => group.steps.includes(trace.stepOrder as never));
+    const status = groupTraces.some((trace) => trace.status === "failed") ? "failed"
+      : groupTraces.some((trace) => trace.status === "running") ? "running"
+      : groupTraces.length && groupTraces.every((trace) => trace.status === "completed" || trace.status === "skipped") ? "completed"
+      : "pending";
+    return { ...group, status };
+  });
+  const preflightItems = diagnostics ? [
+    { name: "Search provider", status: diagnostics.readiness.activeProviderReady, detail: diagnostics.searchProvider },
+    { name: "Crossref", status: diagnostics.env.crossrefEmail, detail: "DOI / Metadata 검증" },
+    { name: "Unpaywall", status: diagnostics.env.unpaywallEmail, detail: "Open Access 확인" },
+    { name: "R2", status: diagnostics.env.r2Reports, detail: "Artifact 저장" }
+  ] : [];
+
+  useEffect(() => {
+    void loadDiagnostics();
+  }, []);
+
+  useEffect(() => {
+    if (!activeJob || activeJob.status === "completed" || activeJob.status === "failed") return;
+    const timer = window.setInterval(() => void loadJob(activeJob.id), 2500);
+    return () => window.clearInterval(timer);
+  }, [activeJob?.id, activeJob?.status, pollingStartedAt]);
+
+  async function loadDiagnostics() {
+    try {
+      const response = await fetch(apiUrl("/api/diagnostics"));
+      if (!response.ok) throw new Error(await readDashboardError(response, "진단 상태를 불러오지 못했습니다."));
+      setDiagnostics(await response.json() as DiagnosticsResponse);
+      setDiagnosticsError("");
+    } catch (error) {
+      setDiagnosticsError(error instanceof Error ? error.message : "진단 상태를 불러오지 못했습니다.");
+    }
+  }
+
+  async function loadJob(jobId: string) {
+    try {
+      const [jobResponse, traceResponse, outputResponse] = await Promise.all([
+        fetch(apiUrl(`/api/search-jobs/${jobId}`)),
+        fetch(apiUrl(`/api/search-jobs/${jobId}/traces`)),
+        fetch(apiUrl(`/api/search-jobs/${jobId}/outputs`))
+      ]);
+      if (!jobResponse.ok) throw new Error(await readDashboardError(jobResponse, "job 결과를 불러오지 못했습니다."));
+      if (!traceResponse.ok) throw new Error(await readDashboardError(traceResponse, "Trace를 불러오지 못했습니다."));
+      const detail = await jobResponse.json() as JobDetailResponse;
+      const traceData = await traceResponse.json() as TraceResponse;
+      setActiveJob(detail.job);
+      setPapers(detail.papers);
+      setTraces(traceData.traces);
+      if (outputResponse.ok) {
+        const outputData = await outputResponse.json() as JobOutputsResponse;
+        setOutputs(outputData.outputs);
+        setArtifactError("");
+      } else {
+        setArtifactError(await readDashboardError(outputResponse, "산출물 상태를 불러오지 못했습니다."));
+      }
+      if (detail.job.status === "completed" || detail.job.status === "failed") setRunning(false);
+      if (pollingStartedAt && Date.now() - pollingStartedAt >= 60000 && traceData.traces.length === 0) {
+        setDelayWarning("외부 API 응답 지연으로 실시간 실행이 늦어지고 있습니다. 최근 완료된 job 결과를 사용해 동일한 pipeline 결과를 확인할 수 있습니다.");
+      }
+      setDemoError("");
+    } catch (error) {
+      setDemoError(error instanceof Error ? error.message : "job 상태를 불러오지 못했습니다.");
+    }
+  }
+
+  async function runQuickDemo() {
+    setRunning(true);
+    setDemoError("");
+    setDelayWarning("");
+    setPapers([]);
+    setTraces([]);
+    setOutputs([]);
+    const startedAt = Date.now();
+    setPollingStartedAt(startedAt);
+    try {
+      const response = await fetch(apiUrl("/api/search-jobs"), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ keyword, maxResults: 5, enrichmentLimit: 5, useSemanticRanking: false, useLlmCritic: false })
+      });
+      if (!response.ok) throw new Error(await readDashboardError(response, "빠른 검증 모드를 시작하지 못했습니다."));
+      const data = await response.json() as JobDetailResponse;
+      setActiveJob(data.job);
+      setPapers(data.papers);
+      await loadJob(data.job.id);
+    } catch (error) {
+      setRunning(false);
+      setDemoError(error instanceof Error ? error.message : "빠른 검증 모드를 시작하지 못했습니다.");
+    }
+  }
+
+  async function loadRecentCompletedJob() {
+    setLoadingRecent(true);
+    setDemoError("");
+    try {
+      const response = await fetch(apiUrl("/api/search-jobs?limit=10"));
+      if (!response.ok) throw new Error(await readDashboardError(response, "최근 job 목록을 불러오지 못했습니다."));
+      const data = await response.json() as JobsResponse;
+      const completedJob = data.jobs.find((job) => job.status === "completed");
+      if (!completedJob) throw new Error("최근 완료된 job이 없습니다. 잠시 후 다시 시도해 주세요.");
+      setPollingStartedAt(0);
+      setDelayWarning("");
+      await loadJob(completedJob.id);
+    } catch (error) {
+      setDemoError(error instanceof Error ? error.message : "최근 완료된 job을 불러오지 못했습니다.");
+    } finally {
+      setLoadingRecent(false);
+    }
+  }
+
+  function renderStep() {
+    if (currentStep === 1) return (
+      <div className="uxDemoStageBody">
+        <p>사용자가 연구 주제를 입력하면 Paper Agent가 관련 논문 후보를 검색하고, DOI와 Metadata를 검증한 뒤 결과를 정렬합니다.</p>
+        <label className="uxDemoField">
+          <span>연구 질문</span>
+          <input value={keyword} onChange={(event) => setKeyword(event.target.value)} />
+        </label>
+        <button className="uxPrimaryButton" type="button" onClick={() => setCurrentStep(2)}>이 주제로 데모 준비하기 <ArrowRight size={16} /></button>
+      </div>
+    );
+    if (currentStep === 2) return (
+      <div className="uxDemoStageBody">
+        <p>빠른 검증 모드는 발표 중 timeout 위험을 줄이기 위해 최대 5개 논문 후보만 처리합니다. 더 큰 검색은 배치 실행 또는 표준 검색에서 수행할 수 있습니다.</p>
+        <div className="uxDemoConfig"><span>keyword = {keyword}</span><span>maxResults = 5</span><span>enrichmentLimit = 5</span><span>Semantic Ranking = off</span><span>LLM Critic = off</span></div>
+        <button className="uxPrimaryButton" type="button" onClick={() => void runQuickDemo()} disabled={running || !keyword.trim()}><Play size={16} /> {running ? "Agent 실행 중" : "Agent 실행: 빠른 검증 모드"}</button>
+        <DemoJobSummary job={activeJob} />
+      </div>
+    );
+    if (currentStep === 3) return (
+      <div className="uxDemoStageBody">
+        <p>이 단계에서는 Agent가 논문 후보를 검색하고, DOI와 Metadata를 확인하며, Ranking과 Report 생성을 수행하는 과정을 Trace로 확인합니다.</p>
+        <DemoJobSummary job={activeJob} />
+        <div className="uxDemoProgress"><div style={{ width: `${progress}%` }} /><span>{progress}%</span></div>
+        <div className="uxDemoTraceGrid">{traceGroups.map((group) => <article key={group.title}><strong>{group.title}</strong><span className={`uxPill ${group.status === "completed" ? "green" : group.status === "failed" ? "red" : group.status === "running" ? "blue" : "gray"}`}>{group.status}</span></article>)}</div>
+        {delayWarning ? <div className="uxDemoWarning">{delayWarning}</div> : null}
+        <div className="uxDemoActions"><button className="uxSoftButton" type="button" onClick={() => activeJob && void loadJob(activeJob.id)} disabled={!activeJob}><RefreshCw size={15} /> 상태 새로고침</button><button className="uxSoftButton" type="button" onClick={() => void loadRecentCompletedJob()} disabled={loadingRecent}>{loadingRecent ? "불러오는 중" : "최근 완료된 job 결과 불러오기"}</button></div>
+        <button className="uxTraceToggle" type="button" onClick={() => setShowTechnicalEvidence((current) => !current)}><Terminal size={15} /> {showTechnicalEvidence ? "기술 증거 접기" : "기술 증거 보기"}</button>
+        {showTechnicalEvidence ? <pre className="uxTraceConsole">{traces.length ? traces.map(formatTraceConsoleMessage).join("\n") : "아직 Trace가 없습니다."}</pre> : null}
+      </div>
+    );
+    if (currentStep === 4) return (
+      <div className="uxDemoStageBody">
+        <p>추천 결과는 DOI, 저널 정보, 검증 상태와 함께 표시됩니다. 실시간 응답이 지연되면 최근 완료된 동일 pipeline 결과를 사용할 수 있습니다.</p>
+        {papers.length ? <div className="uxDemoPaperList">{papers.slice(0, 5).map((paper) => <article key={paper.id}><span>#{paper.rank}</span><div><strong>{paper.title}</strong><small>{paper.journalName || paper.publisher || "저널 정보 확인 중"}</small><small>DOI: {paper.doi || "확인 중"}</small><small>Score: {(paper.relevanceScore ?? paper.finalScore).toFixed(4)} · Verification: {paper.verificationStatus ?? "metadata checked"}</small></div></article>)}</div> : <div className="uxDemoEmpty">아직 결과가 생성되지 않았습니다. 외부 API 응답이 지연될 수 있으므로 잠시 후 새로고침하거나 최근 완료된 job 결과를 사용할 수 있습니다.</div>}
+        <div className="uxDemoActions"><button className="uxSoftButton" type="button" onClick={() => activeJob && void loadJob(activeJob.id)} disabled={!activeJob}><RefreshCw size={15} /> 결과 새로고침</button><button className="uxSoftButton" type="button" onClick={() => void loadRecentCompletedJob()} disabled={loadingRecent}>{loadingRecent ? "불러오는 중" : "최근 완료된 job 결과 불러오기"}</button></div>
+      </div>
+    );
+    if (currentStep === 5) return (
+      <div className="uxDemoStageBody">
+        <p>Agent 실행 결과는 화면 출력으로 끝나지 않고 Markdown, CSV/XLSX, PDF 등의 Artifact로 저장됩니다. 발표와 한글 검토에는 Markdown 보고서를 우선 사용하고, 분석 재현에는 CSV/XLSX를 사용할 수 있습니다.</p>
+        <OutputArtifactsPanel outputs={outputs} errorMessage={artifactError} />
+      </div>
+    );
+    return (
+      <div className="uxDemoStageBody">
+        <p>이 데모는 Agent가 실제로 검색, 검증, 정렬, 산출물 생성을 수행한다는 것을 보여줍니다. 그러나 우리는 이 결과를 전체 우수성 주장으로 확장하지 않습니다. Benchmark v3는 어떤 주장이 가능한지와 어떤 주장이 아직 불가능한지를 구분하기 위한 claim-boundary evidence dashboard입니다.</p>
+        <div className="uxDemoBoundaryGrid">
+          <article><strong>PASS WITH CLAIM BOUNDARIES</strong><span>주장 범위를 제한한 조건부 통과</span></article>
+          <article><strong>전체 과제에서의 완전한 우수성 주장이 아님</strong><span>T001–T003만 통제 비교 가능</span></article>
+          <article><strong>의미 품질이 완전히 검증된 것은 아님</strong><span>Layer 5A: 22/125 · 17.6% partial audit</span></article>
+          <article><strong>T004–T020은 산출물 수준 검증</strong><span>Layer 5B는 deterministic proxy이며 의미 평가를 대체하지 않음</span></article>
+        </div>
+        <a className="uxPrimaryLink" href="/dashboard">Benchmark v3 전체 보기 <ArrowRight size={16} /></a>
+      </div>
+    );
+  }
+
+  return (
+    <main className="uxShell uxDemoShell">
+      <section className="uxDemoHero">
+        <div><span className="uxEyebrow">발표용 Live Demo</span><h1>Paper Agent Live Demo Mode</h1><p>연구 질문 입력부터 Traceable Benchmark v3 claim boundary까지 2–3분 안에 순서대로 확인합니다.</p></div>
+        <span className="uxPill blue">수동 진행 · 빠른 검증 모드</span>
+      </section>
+      <section className="uxDemoPreflight">
+        <div><strong>Preflight 상태</strong><span>진단 실패가 demo page 전체를 막지는 않습니다.</span></div>
+        <div className="uxDemoPreflightGrid">{diagnostics ? preflightItems.map((item) => <span key={item.name} className={item.status ? "ok" : "warn"}><b>{item.name}</b> {item.status ? "준비됨" : "확인 필요"}<small>{item.detail}</small></span>) : <span className="warn">진단 상태 확인 중</span>}</div>
+        {diagnosticsError ? <small className="uxTinyError">{diagnosticsError}</small> : null}
+      </section>
+      <ol className="uxDemoStepper">{liveDemoSteps.map((step) => <li key={step.id} className={step.id === currentStep ? "active" : step.id < currentStep ? "done" : ""}><button type="button" onClick={() => setCurrentStep(step.id)}><span>{step.id}</span><strong>{step.title}</strong></button></li>)}</ol>
+      <section className="uxPanel uxDemoStage">
+        <div className="uxSectionTitle"><span>Step {currentStep} / 6</span><h2>{liveDemoSteps[currentStep - 1].title}</h2><p>{liveDemoSteps[currentStep - 1].description}</p></div>
+        {demoError ? <p className="uxTinyError">{demoError}</p> : null}
+        {renderStep()}
+        <footer className="uxDemoFooter"><button className="uxSoftButton" type="button" onClick={() => setCurrentStep((step) => Math.max(1, step - 1))} disabled={currentStep === 1}>이전 단계</button><button className="uxPrimaryButton" type="button" onClick={() => setCurrentStep((step) => Math.min(6, step + 1))} disabled={currentStep === 6}>다음 단계 <ArrowRight size={16} /></button></footer>
+      </section>
+    </main>
+  );
+}
+
+function DemoJobSummary({ job }: { job: SearchJob | null }) {
+  return <div className="uxDemoJobSummary"><div><small>작업 번호(job_id)</small><strong>{job?.id ?? "Agent 실행 후 표시됩니다."}</strong></div><div><small>현재 상태</small><strong>{job ? formatRuntimeStatus(job.status) : "대기"}</strong></div><div><small>실행 시작 시간</small><strong>{job?.createdAt ? new Date(job.createdAt).toLocaleString("ko-KR") : "-"}</strong></div></div>;
+}
+
 type BenchmarkRun = {
   id: string;
   run_label: string;
@@ -962,6 +1197,7 @@ function OutputArtifactsPanel({ outputs, errorMessage }: { outputs: JobOutput[];
   const getArtifactInfo = (type: string) => {
     switch (type.toLowerCase()) {
       case "md":
+      case "markdown":
         return {
           label: "한글 보고서",
           description: "대시보드 사용자를 위한 공식 한글 문헌 검색 보고서입니다.",

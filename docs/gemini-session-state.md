@@ -1,5 +1,9 @@
 # Gemini Session State
 
+> [!NOTE]
+> Historical Gemini handoff snapshot. It is superseded by Benchmark v3 `PASS WITH CLAIM BOUNDARIES`, Layer 5A quota-limited partial audit results, Layer 5B proxy supplements, and the latest raw git state.
+
+
 Updated: 2026-06-01 (Benchmark v3 Layer 5 Semantic Pipeline Complete)
 
 > [!IMPORTANT]

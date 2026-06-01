@@ -1,5 +1,17 @@
 # Benchmark
 
+## Current Benchmark v3 Status
+
+- Readiness: **PASS WITH CLAIM BOUNDARIES**.
+- Architecture: six layers and 30 metrics.
+- Layers 1--4 and Layer 6 are computed.
+- Baseline comparison: T001--T003 common-support subset only.
+- T004--T020: artifact-level validation unless baseline parity is proven.
+- T007: `proposed_agent_missing`.
+- Layer 5A: quota-limited partial implementation audit, 22/125 rows or 17.6%; no Proposed Agent rows in the successful subset.
+- Layer 5B: deterministic semantic proxy for 125 rows; supplementary only.
+- The benchmark does not support full T001--T020 comparative superiority or full semantic-quality validation claims.
+
 > Benchmark Standard v2 is documented in `docs/benchmark-standard-v2.md`. The v2 protocol is fully automated: it uses deterministic metadata checks, gold DOI matching, scripted metric computation, and fixed LLM-as-a-judge scoring. Human evaluation is not used. v2 being documented means the automated evaluation protocol is defined. T004-T020 artifacts enter the validation layer only after the promotion gates and script-generated metrics are completed. The current controlled quantitative comparison remains limited to T001-T003 until artifact rows are promoted through the v2 validation protocol.
 >
 > Benchmark Standard v3 is documented in `docs/benchmark-standard-v3-metric-specification.md`. It does not add more benchmark claims; it makes the v2 30-metric architecture implementation-ready by assigning 10 specification fields to each metric.

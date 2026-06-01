@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Final Submission Entry-Point Stale Narrative Cleanup
+
+- Found stale final-demo, submission-story, presentation-MCP, README, and Canva-input content that predated Benchmark v3 promotion-gate supplements.
+- Replaced submission-facing narrative with **PASS WITH CLAIM BOUNDARIES**, T001-T003 common-support comparison, T004-T020 artifact-level validation, T007 `proposed_agent_missing`, Layer 5A 22/125 quota-limited audit, and Layer 5B supplementary proxy wording.
+- Preserved historical freeze and Gemini handoff records with superseded notices.
+- No benchmark search, LLM judge rerun, D1 command, migration, dashboard edit, benchmark-script edit, raw artifact rewrite, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Benchmark v3 Supplement Audit Generation
 
 - Generated a baseline availability matrix from existing normalized, task, and gold artifacts.

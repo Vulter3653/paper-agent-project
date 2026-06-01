@@ -1,5 +1,9 @@
 # Sunday Code Freeze Checklist (2026-05-30)
 
+> [!NOTE]
+> Historical pre-freeze audit. For final submission use `docs/final-submission-story.md`, `docs/final-demo-script.md`, and the Benchmark v3 promotion-gate artifacts.
+
+
 이 문서는 일요일 코드 프리즈(Sunday Code Freeze)를 앞두고 시스템의 아키텍처 상태, 클레임 경계, 벤치마크 데이터의 무결성 및 데모 준비 상황을 점검하기 위한 최종 감사 기록입니다.
 
 ## 1. Repository State Audit

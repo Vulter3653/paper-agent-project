@@ -13,37 +13,37 @@
 | Used papers list | [`docs/used_papers_list.md`](docs/used_papers_list.md) |
 | Benchmark documentation | [`docs/benchmark.md`](docs/benchmark.md) |
 | Paper claim-boundary checklist | [`paper/paper_claim_boundary_checklist.md`](paper/paper_claim_boundary_checklist.md) |
+| Final submission checklist | [`docs/final-submission-checklist-v3.md`](docs/final-submission-checklist-v3.md) |
 | Dashboard | https://paper-agent-project.pages.dev/ |
 
 ## Claim Boundary
 
+Current readiness: **PASS WITH CLAIM BOUNDARIES**.
+
 Allowed claims:
 
-- Controlled T001-T003 benchmark verified.
-- Evidence scope for quantitative comparison is limited to T001-T003.
-- T004-T006 artifact-only dry-run executed through a gated wrapper.
-- T004-T006 produced 3 job rows and 50 result rows.
-- Phase 3L produced partial staged artifact-expansion evidence.
-- T008-T012 generated 87 result rows.
-- T007 timeout evidence was preserved.
-- Later batches T013-T018 and T019-T020 were not started.
-- Full T004-T020 validation remains incomplete.
-- D1 batch-aware persistence is not implemented.
-- Paper Agent emphasizes traceability, DOI integrity, hallucination control, and journal-policy compliance.
+- Benchmark v3 provides a reproducible automated evaluation framework with 6 layers and 30 metrics.
+- Layers 1--4 and Layer 6 are computed.
+- Baseline comparison is limited to the T001--T003 common-support subset.
+- T004--T020 are artifact-level validation tasks unless baseline parity is proven.
+- T007 is marked `proposed_agent_missing`.
+- Layer 5A is a quota-limited partial implementation audit: 22/125 successful rows, or 17.6%.
+- The successful Layer 5A subset contains no Proposed Agent rows.
+- Proposed Agent Layer 5 score is `not_available_in_subset`.
+- Layer 5B deterministic semantic proxies were generated for 125 rows.
+- Layer 5B supplements, but does not replace, LLM or human semantic evaluation.
+- Paper Agent emphasizes traceability, DOI integrity, hallucination control, journal-policy compliance, and visible failure reporting.
 
-Interpretation note:
+Interpretation limits:
 
-- Single LLM has higher Precision@5 and NDCG@5 in the controlled T001-T003 benchmark.
-- Paper Agent is not claimed to globally outperform the Single LLM.
-- Paper Agent's validated strength is traceability, DOI verification, hallucination control, and journal-policy compliance within the controlled evidence boundary.
+- Single LLM has higher Precision@5 and NDCG@5 in the controlled T001--T003 comparison.
+- Paper Agent is not claimed to globally outperform the Single LLM or other baselines.
+- The current evidence does not support full T001--T020 comparative superiority claims.
+- The current evidence does not support full semantic-quality validation claims.
+- D1 batch-aware persistence is not implemented end-to-end.
 
-## Final Submission Status (2026-05-31)
-- **Status**: Production Deployment & Verification Complete (gemini)
-
-
-
-
-
+## Final Submission Status (2026-06-01)
+- **Status**: Benchmark v3 documentation aligned; readiness is **PASS WITH CLAIM BOUNDARIES**. (codex)
 - **Live Verification**: [docs/live-benchmark-verification-2026-05-31.md](docs/live-benchmark-verification-2026-05-31.md)
 - **Benchmark Coverage**: Controlled T001-T003 performance is served live from Production D1.
 - **Evidence**: Raw API responses captured in `docs/api-benchmark-*.json`.
@@ -72,15 +72,6 @@ apps/worker
   -> D1 metadata
   -> R2 reports
   -> Vectorize opt-in semantic relevance; metadata scoring remains default.
-
-
-
-
-
-
-
-
-
   -> Google Drive / Web of Science / Crossref / Unpaywall tools
 
 apps/mcp

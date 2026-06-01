@@ -1,6 +1,6 @@
 # Used Papers List
 
-Updated: 2026-05-31 (codex)
+Updated: 2026-06-01 (codex)
 
 This file records the scholarly references used in the Paper Agent final manuscript and explains their role. It is a submission artifact for reproducibility. The references support design and evaluation framing; they are not benchmark outputs or recommended papers returned by a live Paper Agent run.
 
@@ -19,10 +19,12 @@ The project also relies on non-paper evidence sources that are documented separa
 | --- | --- | --- |
 | Paper-Agent-Bench specification | Domain benchmark protocol and metrics. | [`docs/benchmark.md`](benchmark.md) |
 | Controlled T001-T003 evidence | Audited quantitative comparison layer. | [`benchmark/`](../benchmark/) |
-| Phase 3J report | T004-T006 artifact-only execution evidence. | [`docs/phase-3j-t004-t006-artifact-dry-run-report.md`](phase-3j-t004-t006-artifact-dry-run-report.md) |
-| Phase 3L report | Partial staged T007-T012 artifact expansion and timeout evidence. | [`docs/phase-3l-t007-t020-staged-expansion-report.md`](phase-3l-t007-t020-staged-expansion-report.md) |
+| Benchmark v3 deterministic report | Six-layer, 30-metric validation summary and promotion-gate context. | [`docs/benchmark-v3-deterministic-validation-report.md`](benchmark-v3-deterministic-validation-report.md) |
+| Baseline support supplement | T001-T003 common-support boundary and T004-T020 artifact-level boundary. | [`benchmark/validation/v3/baseline_support_matrix_v3.md`](../benchmark/validation/v3/baseline_support_matrix_v3.md) |
+| Layer 5 representativeness supplement | 22/125 quota-limited subset audit and no-Proposed-Agent-row boundary. | [`benchmark/validation/v3/layer5_representativeness_v3.md`](../benchmark/validation/v3/layer5_representativeness_v3.md) |
+| Layer 5B proxy supplement | Deterministic semantic proxy coverage for 125 rows. | [`benchmark/validation/v3/layer5_deterministic_semantic_proxy_v3.md`](../benchmark/validation/v3/layer5_deterministic_semantic_proxy_v3.md) |
 | Claim-boundary checklist | Safe interpretation constraints for the final paper. | [`paper/paper_claim_boundary_checklist.md`](../paper/paper_claim_boundary_checklist.md) |
 
 ## Scope Note
 
-This list intentionally distinguishes scholarly references from runtime artifacts. Controlled quantitative comparison remains limited to T001-T003. The T004-T006 and T008-T012 outputs are artifact-only evidence, not full benchmark validation.
+This list intentionally distinguishes scholarly references from runtime artifacts. Controlled quantitative comparison remains limited to T001-T003 common support. T004-T020 remain artifact-level validation tasks unless baseline parity is proven. Layer 5A is quota-limited and Layer 5B is supplementary.

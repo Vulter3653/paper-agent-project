@@ -1,86 +1,17 @@
-# Canva 입력용 PPT 초안 프롬프트
+# Canva Input Prompt for Benchmark v3 Presentation
 
-## 목적
-이 문서는 Canva에 입력하여 추후 PPT 초안을 생성하기 위한 프롬프트 기록본이다.
+Updated: 2026-06-01 (codex)
 
-## 사용 방식
-1. Canva에서 프레젠테이션 생성 기능을 연다.
-2. 아래 `Canva 입력 프롬프트` 전체를 복사하여 입력한다.
-3. 생성된 초안은 이후 benchmark 결과, dashboard 상태, claim boundary에 맞춰 수동 보정한다.
-4. 특히 T004~T020 benchmark 확장 전에는 “full 20-task validation 완료”라고 표현하지 않는다.
+## Purpose
 
-## Canva 입력 프롬프트
+Use this prompt to generate a visually polished final deck from the reviewed Benchmark v3 narrative. The authoritative content source remains [`presentation/final-presentation-essential-content.md`](presentation/final-presentation-essential-content.md).
 
-```text
-monaiteamproject-07360303:~/monaiteamproject{main}$ npx wrangler d1 execute paper_agent_db --remote --file=benchmark/runs/2026-05-30-controlled-t001-t003/insert_run.sql
+## Usage
 
- ⛅️ wrangler 4.86.0 (update available 4.95.0)
-─────────────────────────────────────────────
-Resource location: remote 
-
-✔ ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
-  Ok to proceed? … yes
-🌀 Executing on remote database paper_agent_db (4d622431-3574-4e04-a359-dada93e97438):
-🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
-Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
-🌀 File already uploaded. Processing.
-🌀 Starting import...
-🌀 Processed 13 queries.
-🚣 Executed 13 queries in 2.35ms (0 rows read, 38 rows written)
-   Database is currently at bookmark 000000f9-0000000e-0000507c-018ae574bc31b577c2c7f515d117b219.
-┌────────────────────────┬───────────┬──────────────┬────────────────────┐
-│ Total queries executed │ Rows read │ Rows written │ Database size (MB) │
-├────────────────────────┼───────────┼──────────────┼────────────────────┤
-│ 13                     │ 0         │ 38           │ 8.50               │
-└────────────────────────┴───────────┴──────────────┴────────────────────┘
-monaiteamproject-07360303:~/monaiteamproject{main}$ npx wrangler d1 execute paper_agent_db --remote --command "SELECT id, run_label, benchmark_scope, task_range, status, source_commit, gold_version, created_at FROM benchmark_runs WHERE id = '2026-05-30-controlled-t001-t003';"
-
- ⛅️ wrangler 4.86.0 (update available 4.95.0)
-─────────────────────────────────────────────
-Resource location: remote 
-
-🌀 Executing on remote database paper_agent_db (4d622431-3574-4e04-a359-dada93e97438):
-🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
-🚣 Executed 1 command in 0.26ms
-┌─────────────────────────────────┬────────────────────────────────────────┬─────────────────┬────────────────┬───────────┬──────────────────────────────────────────┬──────────────┬──────────────────────────┐
-│ id                              │ run_label                              │ benchmark_scope │ task_range     │ status    │ source_commit                            │ gold_version │ created_at               │
-├─────────────────────────────────┼────────────────────────────────────────┼─────────────────┼────────────────┼───────────┼──────────────────────────────────────────┼──────────────┼──────────────────────────┤
-│ 2026-05-30-controlled-t001-t003 │ Independent Benchmark Run - controlled │ controlled      │ T001,T002,T003 │ completed │ f36a9c25b72bc7a6a58bd3d02bb69cf1bedce2fd │ verified     │ 2026-05-30T19:43:23.149Z │
-└─────────────────────────────────┴────────────────────────────────────────┴─────────────────┴────────────────┴───────────┴──────────────────────────────────────────┴──────────────┴──────────────────────────┘
-monaiteamproject-07360303:~/monaiteamproject{main}$ npx wrangler d1 execute paper_agent_db --remote --command "SELECT method, task_id, precision_at_5, ndcg_at_5, gold_doi_hit_rate_at_5 FROM benchmark_run_metrics WHERE run_id = '2026-05-30-controlled-t001-t003' ORDER BY method, task_id;"
-
- ⛅️ wrangler 4.86.0 (update available 4.95.0)
-─────────────────────────────────────────────
-Resource location: remote 
-
-🌀 Executing on remote database paper_agent_db (4d622431-3574-4e04-a359-dada93e97438):
-🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
-🚣 Executed 1 command in 0.23ms
-┌────────────────┬─────────┬────────────────┬───────────┬────────────────────────┐
-│ method         │ task_id │ precision_at_5 │ ndcg_at_5 │ gold_doi_hit_rate_at_5 │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ proposed_agent │ T001    │ 0.2            │ 0.6463    │ 0.3333                 │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ proposed_agent │ T002    │ 0              │ 0         │ 0                      │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ proposed_agent │ T003    │ 0.2            │ 0.4275    │ 0.25                   │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ rule_based     │ T001    │ 0.2            │ 0.6463    │ 0.3333                 │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ rule_based     │ T002    │ 0              │ 0         │ 0                      │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ rule_based     │ T003    │ 0.2            │ 0.4275    │ 0.25                   │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ single_llm     │ T001    │ 0.6            │ 1         │ 1                      │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ single_llm     │ T002    │ 0.6            │ 1         │ 1                      │
-├────────────────┼─────────┼────────────────┼───────────┼────────────────────────┤
-│ single_llm     │ T003    │ 0.8            │ 0.9847    │ 1                      │
-└────────────────┴─────────┴────────────────┴───────────┴────────────────────────┘
-monaiteamproject-07360303:~/monaiteamproject{main}$
-```
-
----
+1. Paste the prompt below into Canva or another presentation-design tool.
+2. Preserve all claim-boundary language.
+3. Keep the final presentation suitable for an 8-minute talk and 2--3 minute demo.
+4. Review visual output manually before submission.
 
 ## Benchmark v3 업데이트 Canva 입력 프롬프트
 

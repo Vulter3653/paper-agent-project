@@ -2,6 +2,14 @@
 
 Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
 
+## 2026-06-01 (codex) - Final Submission Entry-Point Benchmark v3 Alignment
+
+- **Submission Entry Points**: Updated `README.md`, `docs/final-demo-script.md`, `docs/final-submission-story.md`, `docs/benchmark.md`, `docs/used_papers_list.md`, and presentation handoff files to use Benchmark v3 claim boundaries.
+- **Canva Prompt**: Removed obsolete raw D1 transcript content from `paper_agent_canva_ppt_prompt.md` and retained the reviewed Benchmark v3 generation prompt.
+- **Historical Records**: Preserved older freeze and Gemini handoff documents with explicit superseded notices rather than rewriting historical evidence.
+- **Checklist**: Added `docs/final-submission-checklist-v3.md` for remaining human visual QA, screenshot capture, rehearsal, and tagging steps.
+- **Safety Boundary**: No benchmark search, LLM judge rerun, D1 command, migration, dashboard edit, benchmark-script edit, raw artifact rewrite, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Final Paper And Presentation Benchmark v3 Alignment
 
 - **Paper**: Updated the LaTeX manuscript and section drafts to describe Benchmark v3 as a six-layer, 30-metric automated framework with **PASS WITH CLAIM BOUNDARIES** readiness.

@@ -1,40 +1,39 @@
 # Final Demo Script: Paper Agent
 
-(gemini)
+Updated: 2026-06-01 (codex)
 
-## 1. Introduction: The Traceability Gap (1 minute)
-- **Start**: Navigate to the Research Dashboard (`/dashboard/research`).
-- **Narration**: "Scholarly research demands more than just keyword matches; it requires a trustworthy chain of evidence. Today, we demonstrate Paper Agent— a modular assistant that turns research keywords into traceable scholarly results."
-- **Action**: Enter keywords: `algorithmic management employee trust`.
-- **Action**: Click **Run**.
-- **Narration**: "While a generic AI might simply list titles, Paper Agent begins a 12-stage execution pipeline, visible here in our progress tracker."
+Target duration: 2--3 minutes.
 
-## 2. White-box Evidence & Agent Board (2 minutes)
-- **Start**: Navigate to the Ops Dashboard (`/dashboard/ops`).
-- **Narration**: "The core of our system is transparency. In the Agent Status Board, you can see each specialized module—from the Planner to the Verifier—performing its specific role."
-- **Action**: Highlight the **Verifier Agent** and **Journal Selector** traces.
-- **Narration**: "This is our 'White-box' evidence. Unlike a black-box LLM, we record every API intent and decision in Cloudflare D1. If a paper is excluded, the researcher can see exactly why (e.g., failed FT50 journal check)."
+## 1. Research Workflow (45 seconds)
 
-## 3. Auditable Ranking & Score Breakdown (2 minutes)
-- **Start**: Return to `/dashboard/research`.
-- **Action**: Select a top-ranked paper from the table.
-- **Narration**: "Once the pipeline completes, we present papers that have passed our quality gate. We don't just provide a list; we provide an auditable Score Breakdown."
-- **Action**: Point to the score bars (Relevance, Journal Fit, DOI Integrity).
-- **Narration**: "Every score is grounded in verified metadata from Crossref and Web of Science. We also surface Open Access status via Unpaywall, ensuring the researcher has a legal path to the full text."
+- Open `/dashboard/research`.
+- Explain: "Paper Agent is a traceable multi-agent system for scholarly discovery. It does not return only a list of titles; it preserves retrieval, filtering, DOI verification, and reporting evidence."
+- Use a conservative keyword search or load a completed fallback job.
+- Point to the 12-stage workflow and ranked-paper details.
 
-## 4. Benchmark: Trust over Popularity (2 minutes)
-- **Start**: Navigate to the Evaluation Dashboard (`/dashboard/evaluation`).
-- **Narration**: "We evaluate our rigor using 'Paper-Agent-Bench'. Here we compare our Multi-Agent approach against Rule-based and Single-LLM baselines."
-- **Action**: Show the comparison table for T001-T003.
-- **Narration**: "The controlled T001-T003 comparison reports metadata-integrity and journal-compliance measurements for that limited scope only. Our goal is traceable evidence, not a global performance claim."
-- **Action**: Mention that **Legacy T001-T018 Partial Artifacts are not final validation**, while keeping the T019-T020 resource-limit / HTTP 503 evidence visible.
-- **Narration**: "The verified comparison remains limited to controlled T001-T003 evidence. The T004-T006 artifact dry-run has not yet executed, and full T004-T020 validation remains incomplete."
+## 2. Traceability (35 seconds)
 
-## 5. Synthesis & Deliverables (1 minute)
-- **Action**: Click the **Download PDF Report** button.
-- **Narration**: "Finally, we synthesize the findings into narrative reports. These artifacts—stored in Cloudflare R2—provide a high-level summary of findings and research gaps, ready for final human review."
-- **Action**: (Optional/Fallback) "If a live search hits a quota limit, we can instantly reload a completed job from our Recent Jobs history to ensure a smooth research flow."
-- **End**: "Paper Agent closes the traceability gap, providing the accountability academic work requires."
+- Open `/dashboard/ops`.
+- Show Planner, Journal Selector, Retriever, Verifier, Open Access, Ranking, Critic, and Report traces.
+- Explain: "The trace view separates live evidence from mock or planned surfaces. Failure evidence remains visible."
 
----
-**Status**: Script Refined. (gemini)
+## 3. Benchmark v3 (60 seconds)
+
+- Open `/dashboard/evaluation`.
+- State: "Benchmark v3 has six layers and 30 metrics. Its current readiness is **PASS WITH CLAIM BOUNDARIES**."
+- Explain the boundary:
+  - T001--T003: partial common-support comparison.
+  - T004--T020: artifact-level validation unless baseline parity is proven.
+  - T007: `proposed_agent_missing`.
+  - Layer 5A: quota-limited partial implementation audit, 22/125 rows or 17.6%.
+  - Layer 5B: deterministic semantic proxy for 125 rows, supplementary only.
+- State: "The current evidence does not support full T001--T020 comparative superiority or full semantic-quality validation claims."
+
+## 4. Close (30 seconds)
+
+- Download or show a report artifact.
+- Explain: "Paper Agent's contribution is reproducible, claim-boundary-aware evaluation for a traceable literature-discovery workflow. Human scholarly review remains the final authority."
+
+## Fallback
+
+If a live provider is slow or quota-limited, use a previously completed job and continue the trace, evaluation, and report walkthrough. Do not describe fallback evidence as a new live benchmark run.

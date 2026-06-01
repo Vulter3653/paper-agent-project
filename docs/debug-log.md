@@ -1,5 +1,11 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Final Presentation Dashboard Korean Visibility Review
+
+- Reviewed presentation-facing dashboard copy after the default-route blocker patch and found English-heavy explanations that would slow a Korean-language live presentation.
+- Localized explanatory text and controls while retaining technical keywords such as `Benchmark v3`, `PASS WITH CLAIM BOUNDARIES`, `Layer 5A`, `Layer 5B`, `Precision@5`, `NDCG@5`, `Artifact`, and `Trace`.
+- Confirmed that no Benchmark v3 numerical values, JSON artifacts, routes, benchmark scripts, paper files, or presentation files were modified by this language-only patch. (codex)
+
 ## 2026-06-01 (codex) - Final Presentation Dashboard Default-Route Verification
 
 - Self-review found that `/dashboard` still resolved to the Research Studio because the route resolver defaulted to `research`.

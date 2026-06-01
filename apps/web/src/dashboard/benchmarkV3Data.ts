@@ -22,12 +22,12 @@ export const benchmarkV3 = {
     baselineParity: baselineSupport.baseline_parity
   },
   layers: [
-    ["Layer 1", "Foundation & Reproducibility", "Computed"],
-    ["Layer 2", "Schema & Metadata", "Computed"],
-    ["Layer 3", "Deterministic Validity", "Computed"],
-    ["Layer 4", "Retrieval Accuracy", "Computed"],
-    ["Layer 5", "Semantic Quality", "Partial / Proxy"],
-    ["Layer 6", "Robustness & Risk", "Computed"]
+    ["Layer 1", "기반 및 재현성 (Foundation & Reproducibility)", "Computed"],
+    ["Layer 2", "Schema 및 Metadata", "Computed"],
+    ["Layer 3", "Deterministic 유효성", "Computed"],
+    ["Layer 4", "검색 정확도 (Retrieval Accuracy)", "Computed"],
+    ["Layer 5", "의미 품질 (Semantic Quality)", "Partial / Proxy"],
+    ["Layer 6", "Robustness & Risk: 운영상 위험", "Computed"]
   ],
   deterministic: [
     ["Schema Normalization", metricMap.schema_normalization_rate.value],
@@ -63,24 +63,24 @@ export const benchmarkV3 = {
     proxyMetrics: layer5Proxy.metrics
   },
   robustness: [
-    ["Hallucination Rate", metricMap.hallucination_rate.value, "Artifact-derived risk proxy"],
-    ["Timeout Rate", metricMap.timeout_rate.value, "Recorded jobs"],
-    ["Latency per task", `${metricMap.latency_per_task.value}s`, "Recorded jobs with timestamps"]
+    ["Hallucination Rate", metricMap.hallucination_rate.value, "검증되지 않은 DOI 또는 논문 정보가 포함될 위험"],
+    ["Timeout Rate", metricMap.timeout_rate.value, "기록된 실행 작업 기준"],
+    ["Latency per task", `${metricMap.latency_per_task.value}s`, "timestamp가 기록된 작업 기준 평균 처리 시간"]
   ],
   artifacts: [
-    ["Promotion Gate Summary", "Presentation readiness and explicit claim boundaries", "PASS WITH CLAIM BOUNDARIES", "benchmark/validation/v3/promotion_gate_summary_v3.json"],
-    ["Baseline Support Matrix", "T001-T003 common-support boundary and T004-T020 artifact-level scope", "PARTIAL COMMON-SUPPORT", "benchmark/validation/v3/baseline_support_matrix_v3.json"],
-    ["Layer 5A Representativeness", "Quota-limited evaluated subset audit", "22 / 125 rows", "benchmark/validation/v3/layer5_representativeness_v3.json"],
-    ["Layer 5B Deterministic Proxy", "Supplementary semantic proxy metrics", "125 rows", "benchmark/validation/v3/layer5_deterministic_semantic_proxy_v3.json"],
-    ["Benchmark Result JSON", "Unified generated metrics from available artifacts", "30 metrics", "benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.json"],
-    ["Validation Report", "Deterministic validation interpretation", "GENERATED REPORT", "docs/benchmark-v3-deterministic-validation-report.md"],
-    ["QA Report", "Gold and benchmark audit evidence", "AUDIT TRAIL", "benchmark/gold_audit_report.md"]
+    ["Promotion Gate Summary", "발표 준비 상태와 명시적인 주장 범위", "PASS WITH CLAIM BOUNDARIES", "benchmark/validation/v3/promotion_gate_summary_v3.json"],
+    ["Baseline Support Matrix", "T001–T003 공통지원 경계와 T004–T020 산출물 수준 범위", "PARTIAL COMMON-SUPPORT", "benchmark/validation/v3/baseline_support_matrix_v3.json"],
+    ["Layer 5A Representativeness", "API quota로 제한된 평가 subset 감사", "22 / 125행", "benchmark/validation/v3/layer5_representativeness_v3.json"],
+    ["Layer 5B Deterministic Proxy", "의미 평가를 대체하지 않는 보조 Proxy 지표", "125행", "benchmark/validation/v3/layer5_deterministic_semantic_proxy_v3.json"],
+    ["Benchmark Result JSON", "현재 Artifact에서 생성된 통합 지표", "30개 지표", "benchmark/validation/v3/benchmark_v3_deterministic_metrics_summary.json"],
+    ["Validation Report", "Deterministic 검증 해석 보고서", "GENERATED REPORT", "docs/benchmark-v3-deterministic-validation-report.md"],
+    ["QA Report", "Gold label 및 Benchmark 감사 증거", "AUDIT TRAIL", "benchmark/gold_audit_report.md"]
   ].map(([name, purpose, status, path]) => ({ name, purpose, status, path, href: repositoryArtifactBase + path })),
   demoSteps: [
-    "Open dashboard and show PASS WITH CLAIM BOUNDARIES",
-    "Show Benchmark v3 structure: 20 tasks / 6 layers / 30 metrics",
-    "Show deterministic and retrieval results",
-    "Show Baseline Support Matrix and explain T001-T003 limitation",
-    "Show Layer 5 semantic boundary and robustness risks"
+    "대시보드를 열고 PASS WITH CLAIM BOUNDARIES를 설명",
+    "Benchmark v3 구조 설명: 20개 과제 / 6개 Layer / 30개 지표",
+    "Deterministic 결과와 검색 성능 결과 확인",
+    "Baseline Support Matrix에서 T001–T003 비교 범위 한계 설명",
+    "Layer 5 의미 품질 경계와 운영상 위험 지표 설명"
   ]
 } as const;

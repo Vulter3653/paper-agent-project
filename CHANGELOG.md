@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (codex)
+- Changed: Localized presentation-facing dashboard explanations, interpretation boxes, evidence summaries, Artifact links, demo guidance, and scenario-example labels while preserving Benchmark v3 technical terms and source-of-truth metrics in `apps/web/src/dashboard/`. (codex)
+
 - Fixed: Routed `/dashboard` and the brand home link to the Benchmark v3 evidence landing, preserved explicit research and ops routes, clarified the semantic-validation boundary, and increased presentation-card text sizes in `apps/web/src/dashboard/`. (codex)
 
 - Changed: Added a presentation-ready Benchmark v3 evidence dashboard backed by imported `benchmark/validation/v3` JSON artifacts, with separate deterministic, retrieval, common-support, semantic-boundary, robustness, trace-explorer, and live-demo sections in `apps/web/src/dashboard/`. (codex)

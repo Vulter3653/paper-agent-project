@@ -1,5 +1,11 @@
 # Project Progress And Session Handoff
 
+## 2026-06-01 (codex) - Final Presentation Dashboard Korean Visibility Patch
+
+- **Korean-First Presentation Copy**: Localized Executive Summary, evidence cards, interpretation boxes, Baseline Support Matrix guidance, Layer 5 boundaries, risk explanations, Artifact Explorer, and Live Demo guidance while preserving core technical terms.
+- **Example Labels**: Replaced English mock and simulation labels in the appendix with Korean-first labels such as `예시 구조`, `시나리오 시뮬레이션`, and `실제 실행 데이터 아님`.
+- **Safety Boundary**: Preserved the `/dashboard` Benchmark v3 landing route, source-of-truth metrics, JSON artifacts, benchmark scripts, paper, and presentation files without numerical changes. (codex)
+
 ## 2026-06-01 (codex) - Final Presentation Dashboard Landing Blocker Patch
 
 - **Default Landing**: Changed `/dashboard` fallback and the brand home link to open the Benchmark v3 evidence view while preserving `/dashboard/research`, `/dashboard/ops`, and `/dashboard/evaluation`.

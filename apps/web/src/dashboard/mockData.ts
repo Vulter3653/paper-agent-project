@@ -78,7 +78,7 @@ export type FeatureImplementationItem = {
 export const implementationLegend: Array<{ status: FeatureImplementationStatus; label: string; detail: string }> = [
   { status: "live", label: "LIVE D1 VERIFIED", detail: "실제 Worker/D1/R2/API 또는 배포된 기능과 연결됨" },
   { status: "partial", label: "PLANNED ONLY / PARTIAL", detail: "일부 실제 기능이 있으나 화면의 일부는 정적 데이터 또는 추가 연결 필요" },
-  { status: "mock", label: "MOCK BLUEPRINT", detail: "실제 결과가 아니며 API/DB 연결 전의 자리표시자" },
+  { status: "mock", label: "예시 구조", detail: "실제 결과가 아니며 API/DB 연결 전의 자리표시자" },
   { status: "planned", label: "PLANNED ONLY", detail: "설계상 필요하지만 아직 코드/인프라 연결 전" }
 ];
 
@@ -218,19 +218,19 @@ export const evaluationScenarios: EvaluationScenario[] = [
     label: "엄격한 통제 검증 (Strict)",
     description: "Gold label과 DOI 검증을 가장 엄격하게 비교하는 평가입니다. (T001-T003 통제 레이어 기준)",
     limitation: "T001-T003만 공통지원 비교입니다. T004-T020은 baseline parity가 입증되지 않은 artifact-level validation이며 T007 누락 증거를 유지합니다.",
-    announcement: "SCENARIO SIMULATION: 통제된 T001-T003 증거를 보수적으로 해석하는 프론트엔드 예시입니다. 전역 우위를 입증하지 않습니다.",
+    announcement: "시나리오 시뮬레이션: 통제된 T001-T003 증거를 보수적으로 해석하는 프론트엔드 예시입니다. 전역 우위를 입증하지 않습니다.",
     metrics: {
-      precisionAt5: "NOT LIVE DATA",
-      doiAccuracy: "NOT LIVE DATA",
-      topJournalPrecision: "NOT LIVE DATA",
-      hallucinationRate: "NOT LIVE DATA",
-      reportCompleteness: "SIMULATED",
-      avgLatency: "SIMULATED"
+      precisionAt5: "실제 실행 데이터 아님",
+      doiAccuracy: "실제 실행 데이터 아님",
+      topJournalPrecision: "실제 실행 데이터 아님",
+      hallucinationRate: "실제 실행 데이터 아님",
+      reportCompleteness: "예시값",
+      avgLatency: "예시값"
     },
     rows: [
-      { metric: "Precision@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 통제 증거 로드 전의 시각화 구조입니다." },
-      { metric: "NDCG@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 검증된 성능 비교가 아닙니다." },
-      { metric: "DOI Accuracy", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "Crossref 검증 경로를 설명하는 예시이며 전역 정확도 주장이 아닙니다." }
+      { metric: "Precision@5", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "예시 구조: 통제 증거 로드 전의 시각화 구조입니다." },
+      { metric: "NDCG@5", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "시나리오 시뮬레이션: 검증된 성능 비교가 아닙니다." },
+      { metric: "DOI Accuracy", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "Crossref 검증 경로를 설명하는 예시이며 전역 정확도 주장이 아닙니다." }
     ],
     bars: [
       { label: "Precision", value: 13 },
@@ -243,19 +243,19 @@ export const evaluationScenarios: EvaluationScenario[] = [
     label: "넓은 탐색 평가 (Broad Recall)",
     description: "연구 초기 단계에서 관련 후보 논문을 폭넓게 확보하는 능력을 봅니다.",
     limitation: "넓게 찾는 성능(Recall)이 최종 연구 인용 정확성(Precision)을 보장하지 않습니다.",
-    announcement: "SCENARIO SIMULATION: 넓은 탐색 관점을 설명하는 프론트엔드 예시입니다. 검증된 성능 주장이 아닙니다.",
+    announcement: "시나리오 시뮬레이션: 넓은 탐색 관점을 설명하는 프론트엔드 예시입니다. 검증된 성능 주장이 아닙니다.",
     metrics: {
-      precisionAt5: "NOT LIVE DATA",
-      doiAccuracy: "NOT LIVE DATA",
-      topJournalPrecision: "NOT LIVE DATA",
-      hallucinationRate: "NOT LIVE DATA",
-      reportCompleteness: "SIMULATED",
-      avgLatency: "SIMULATED"
+      precisionAt5: "실제 실행 데이터 아님",
+      doiAccuracy: "실제 실행 데이터 아님",
+      topJournalPrecision: "실제 실행 데이터 아님",
+      hallucinationRate: "실제 실행 데이터 아님",
+      reportCompleteness: "예시값",
+      avgLatency: "예시값"
     },
     rows: [
-      { metric: "Precision@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 넓은 탐색 시나리오 구조입니다." },
-      { metric: "NDCG@5", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 검증된 랭킹 결과가 아닙니다." },
-      { metric: "DOI Accuracy", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "Crossref 경로의 계획된 해석 예시입니다." }
+      { metric: "Precision@5", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "예시 구조: 넓은 탐색 시나리오 구조입니다." },
+      { metric: "NDCG@5", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "시나리오 시뮬레이션: 검증된 랭킹 결과가 아닙니다." },
+      { metric: "DOI Accuracy", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "Crossref 경로의 계획된 해석 예시입니다." }
     ],
     bars: [
       { label: "Recall/Broad", value: 65 },
@@ -268,19 +268,19 @@ export const evaluationScenarios: EvaluationScenario[] = [
     label: "빠른 시연 평가 (Fast Demo)",
     description: "발표 시 제한된 시간 안에 시스템의 12단계 흐름을 보여주기 위한 빠른 설정입니다.",
     limitation: "시연용 성공 지표는 전체 20-task 벤치마크 성능과 다를 수 있습니다.",
-    announcement: "SCENARIO SIMULATION: 발표 흐름을 설명하는 프론트엔드 예시입니다. 전체 파이프라인 검증 완료를 의미하지 않습니다.",
+    announcement: "시나리오 시뮬레이션: 발표 흐름을 설명하는 프론트엔드 예시입니다. 전체 파이프라인 검증 완료를 의미하지 않습니다.",
     metrics: {
-      precisionAt5: "NOT LIVE DATA",
-      doiAccuracy: "NOT LIVE DATA",
-      topJournalPrecision: "NOT LIVE DATA",
-      hallucinationRate: "NOT LIVE DATA",
-      reportCompleteness: "SIMULATED",
-      avgLatency: "SIMULATED"
+      precisionAt5: "실제 실행 데이터 아님",
+      doiAccuracy: "실제 실행 데이터 아님",
+      topJournalPrecision: "실제 실행 데이터 아님",
+      hallucinationRate: "실제 실행 데이터 아님",
+      reportCompleteness: "예시값",
+      avgLatency: "예시값"
     },
     rows: [
-      { metric: "Workflow 완료율", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "MOCK BLUEPRINT: 12단계 시연 구조이며 완료율 검증 결과가 아닙니다." },
-      { metric: "응답 속도", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "SCENARIO SIMULATION: 실제 latency 측정값이 아닙니다." },
-      { metric: "출력 안정성", ruleBased: "SIMULATED", singleLlm: "SIMULATED", proposed: "SIMULATED", finding: "계획된 fallback 설명이며 전체 안정성 검증 완료를 의미하지 않습니다." }
+      { metric: "Workflow 완료율", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "예시 구조: 12단계 시연 구조이며 완료율 검증 결과가 아닙니다." },
+      { metric: "응답 속도", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "시나리오 시뮬레이션: 실제 latency 측정값이 아닙니다." },
+      { metric: "출력 안정성", ruleBased: "예시값", singleLlm: "예시값", proposed: "예시값", finding: "계획된 fallback 설명이며 전체 안정성 검증 완료를 의미하지 않습니다." }
     ],
     bars: [
       { label: "Completion", value: 100 },

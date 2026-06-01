@@ -187,6 +187,16 @@ To test another endpoint or a specific D1 job:
 MCP_URL=https://paper-agent-mcp.shch3653.workers.dev/mcp MCP_JOB_ID=job-... npm run smoke:mcp
 ```
 
+Validate the final dashboard and repository history before presentation:
+
+```bash
+npm run typecheck
+npm run build:web
+npm run benchmark:v3:check
+npm run validate:history
+npm run validate:agent-rules
+```
+
 ## Cloudflare Setup
 
 Create three Cloudflare projects from this single GitHub repository.

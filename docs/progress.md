@@ -1,9 +1,15 @@
 # Project Progress And Session Handoff
 
+## 2026-06-01 (codex) - Artifact Download UX For Live Demo
+
+- **Presentation Flow**: Added new-tab Artifact opening, link-copy fallback, and a three-second delayed-download notice so the presenter can continue without waiting for browser downloads.
+- **Output Policy**: Marked Markdown as the presentation-first Korean report, PDF as an English artifact with possible delay, and CSV/XLSX as analysis source data for later inspection.
+- **Scope**: Preserved routes, Benchmark v3 metrics, JSON artifacts, paper, and presentation files. (codex)
+
 ## 2026-06-01 (codex) - README Minimal Final Patch
 
 - **Evaluator Entry Point**: Added a Korean-first README summary and `/dashboard/demo` live-demo guidance so evaluators can understand the project and Benchmark v3 claim boundaries from the GitHub landing page.
-- **Documentation Only**: Recorded the six-stage demo flow, Artifact download fallback, and backup routes without changing Dashboard, Live Demo Mode, or Artifact Download UX code, which remain in PASS state.
+- **Documentation Only**: Recorded the six-stage demo flow, Artifact download fallback, backup routes, and final validation commands without changing Dashboard, Live Demo Mode, or Artifact Download UX code, which remain in PASS state.
 - **Remaining Rehearsal**: Open `/dashboard` and `/dashboard/demo` directly on the presentation device before the final presentation. (codex)
 
 ## 2026-06-01 (codex) - Live Demo Mode

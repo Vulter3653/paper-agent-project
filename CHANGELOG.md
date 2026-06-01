@@ -17,7 +17,9 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (codex)
-- Docs: Added a Korean-first project summary, `/dashboard/demo` live-demo link, six-stage presentation flow, Benchmark v3 claim-boundary explanation, and Artifact download fallback guidance to `README.md`. (codex)
+- Fixed: Added presentation-safe Artifact actions with new-tab opening, link copy, three-second delay guidance, Markdown-first usage, English-PDF limitation notes, and CSV/XLSX source-data guidance for Live Demo output panels. (codex)
+
+- Docs: Added a Korean-first project summary, `/dashboard/demo` live-demo link, six-stage presentation flow, Benchmark v3 claim-boundary explanation, Artifact download fallback guidance, and final validation commands to `README.md`. (codex)
 
 - Added: Implemented `/dashboard/demo` as a manual six-stage Live Demo Mode that reuses existing diagnostics, search-job, Trace, recent-completed-job fallback, and Artifact endpoints without changing the Benchmark v3 evidence landing. (codex)
 

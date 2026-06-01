@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (codex)
+- Docs: Added a Korean-first project summary, `/dashboard/demo` live-demo link, six-stage presentation flow, Benchmark v3 claim-boundary explanation, and Artifact download fallback guidance to `README.md`. (codex)
+
 - Added: Implemented `/dashboard/demo` as a manual six-stage Live Demo Mode that reuses existing diagnostics, search-job, Trace, recent-completed-job fallback, and Artifact endpoints without changing the Benchmark v3 evidence landing. (codex)
 
 - Changed: Localized presentation-facing dashboard explanations, interpretation boxes, evidence summaries, Artifact links, demo guidance, and scenario-example labels while preserving Benchmark v3 technical terms and source-of-truth metrics in `apps/web/src/dashboard/`. (codex)

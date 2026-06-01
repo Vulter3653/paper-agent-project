@@ -1,5 +1,17 @@
 # Paper Agent Project
 
+## 한국어 요약
+
+Paper Agent는 사용자가 입력한 연구 주제에 대해 관련 학술논문을 검색하고, DOI와 metadata를 검증하며, 추천 결과와 산출물을 생성하는 AI literature review agent입니다.
+
+최종 상태는 **PASS WITH CLAIM BOUNDARIES**입니다.
+
+> 주장 범위를 제한한 조건부 통과
+
+이 프로젝트는 Paper Agent가 모든 task에서 baseline보다 우수하다고 주장하지 않습니다. 핵심 기여는 AI Agent 결과를 재현 가능하고, 추적 가능하며, 주장 범위가 명확한 방식으로 평가하는 Benchmark v3 framework를 구축한 것입니다.
+
+발표용 메인 화면은 [`/dashboard`](https://paper-agent-project.pages.dev/dashboard)이고, 실제 2~3분 AI Agent 시연은 [`/dashboard/demo`](https://paper-agent-project.pages.dev/dashboard/demo)에서 진행합니다.
+
 ## Final Submission Package
 
 | Submission item | Repository path |
@@ -14,7 +26,7 @@
 | Benchmark documentation | [`docs/benchmark.md`](docs/benchmark.md) |
 | Paper claim-boundary checklist | [`paper/paper_claim_boundary_checklist.md`](paper/paper_claim_boundary_checklist.md) |
 | Final submission checklist | [`docs/final-submission-checklist-v3.md`](docs/final-submission-checklist-v3.md) |
-| Dashboard | https://paper-agent-project.pages.dev/ |
+| Dashboard | https://paper-agent-project.pages.dev/dashboard |
 
 ## Claim Boundary
 
@@ -41,6 +53,28 @@ Interpretation limits:
 - The current evidence does not support full T001--T020 comparative superiority claims.
 - The current evidence does not support full semantic-quality validation claims.
 - D1 batch-aware persistence is not implemented end-to-end.
+
+## Claim Boundary 한국어 설명
+
+이 프로젝트는 다음을 주장하지 않습니다.
+
+- Paper Agent가 전체 T001--T020에서 baseline보다 우수하다.
+- full semantic validation이 완료되었다.
+- Proposed Agent semantic quality가 완전히 검증되었다.
+- 모든 task에서 Paper Agent가 우수하다.
+- Layer 5가 완전한 의미 품질 검증이다.
+
+Benchmark v3의 목적은 Paper Agent의 완전한 우수성을 증명하는 것이 아니라, AI Agent 결과를 어떤 범위에서 신뢰할 수 있고 어떤 범위에서는 아직 주장할 수 없는지를 명확히 구분하는 것입니다.
+
+현재 수치와 해석 경계:
+
+- Benchmark v3 = 20 tasks / 6 layers / 30 metrics
+- T001--T003만 common-support controlled comparison
+- T004--T020은 artifact-level validation
+- T007은 `proposed_agent_missing`
+- Layer 5A = 22/125, 17.6%
+- Proposed Agent Layer 5 score = `not_available_in_subset`
+- Layer 5B = deterministic semantic proxy, not semantic replacement
 
 ## Final Submission Status (2026-06-01)
 - **Status**: Benchmark v3 documentation aligned; readiness is **PASS WITH CLAIM BOUNDARIES**. (codex)
@@ -178,7 +212,8 @@ Recommended names:
 
 | 구분 | 링크 | 확인 기준 |
 | --- | --- | --- |
-| 대시보드 메인 | https://paper-agent-project.pages.dev/ | 화면이 열리고 Research/Ops/Evaluation 라우트로 이동 가능해야 합니다. |
+| 발표용 메인 대시보드 | https://paper-agent-project.pages.dev/dashboard | Benchmark v3 evidence landing과 claim boundary를 발표 첫 화면에서 확인합니다. |
+| 라이브 데모 모드 | https://paper-agent-project.pages.dev/dashboard/demo | 2~3분 발표용 AI Agent 시연 화면입니다. 연구 질문 입력 → Agent 실행 → Pipeline / Trace 확인 → 추천 논문 결과 확인 → 산출물 / Report 확인 → Benchmark v3 Claim Boundary 연결까지 순차적으로 진행합니다. |
 | Research Dashboard | https://paper-agent-project.pages.dev/dashboard/research | 검색 실행, Ranked Papers, Paper Detail, Report Preview를 확인합니다. |
 | Ops Dashboard | https://paper-agent-project.pages.dev/dashboard/ops | Worker, D1, R2, MCP, Agent trace 상태 및 Benchmark Seed Diagnostics를 확인합니다. |
 | Evaluation Dashboard | https://paper-agent-project.pages.dev/dashboard/evaluation | Rule-based, Single-LLM, Proposed Multi-Agent 비교와 D1-backed controlled benchmark run을 확인합니다. |
@@ -190,7 +225,53 @@ Recommended names:
 
 주의: Worker 루트 경로 `https://paper-agent-project.shch3653.workers.dev/`는 `{ "error": "Not found" }`를 반환할 수 있습니다. 이는 오류가 아니며, 상태 확인은 `/api/health`와 `/api/diagnostics`를 기준으로 합니다.
 
+## 라이브 데모 진행 방법
+
+과제 요구사항: **(4) 라이브 데모 — 발표 중 AI Agent 시연, 2~3분 분량 권장**
+
+발표자는 `/dashboard/demo`에서 다음 6단계를 순서대로 진행합니다.
+
+1. **연구 질문 입력**
+   - 기본 검색어: `AI hiring fairness`
+   - 사용자가 연구 주제를 입력하면 Paper Agent가 관련 논문 후보를 검색할 준비를 합니다.
+2. **Agent 실행**
+   - 빠른 검증 모드를 사용합니다.
+   - `maxResults = 5`, `enrichmentLimit = 5`, `useSemanticRanking = false`, `useLlmCritic = false`
+   - 페이지 로드 시 자동 실행되지 않고, 발표자가 버튼을 눌렀을 때만 실행됩니다.
+3. **Pipeline / Trace 확인**
+   - 검색, DOI 검증, metadata 확인, ranking, report 생성 과정을 Trace로 확인합니다.
+4. **추천 논문 결과 확인**
+   - title, DOI, journal/publisher, score/relevance, verification status, source를 확인합니다.
+5. **산출물 / Report 확인**
+   - Markdown report, CSV/XLSX, PDF, R2 저장 상태를 확인합니다.
+   - 발표 중에는 Markdown report를 우선 사용합니다.
+   - CSV/XLSX는 분석용 원자료입니다.
+   - PDF는 영문 제공이며, 다운로드 지연 가능성이 있습니다.
+   - 산출물 버튼은 새 탭에서 열기와 링크 복사를 제공합니다.
+6. **Benchmark v3 Claim Boundary 연결**
+   - **PASS WITH CLAIM BOUNDARIES**
+   - 전체 과제에서의 완전한 우수성 주장이 아닙니다.
+   - 의미 품질이 완전히 검증된 것은 아닙니다.
+   - T001--T003만 통제 비교가 가능합니다.
+   - T004--T020은 산출물 수준 검증입니다.
+   - Layer 5A는 22/125, 17.6% partial audit입니다.
+   - Layer 5B는 의미 평가를 대체하지 않는 deterministic proxy입니다.
+
+지연 대응:
+
+- 실시간 API 응답이 지연되면 **최근 완료된 job 결과 불러오기**를 사용합니다.
+- 다운로드가 지연되면 Markdown report를 우선 열고, 나머지는 링크 복사 또는 사후 확인으로 처리합니다.
+- 발표 중에는 PDF/CSV/XLSX 다운로드 완료를 기다리지 않고, 산출물이 저장되고 접근 가능하다는 점만 보여준 뒤 다음 단계로 진행합니다.
+
 ### 평가자 시연 가이드 (Evaluator Demo Flow)
+
+최종 발표의 2~3분 라이브 데모는 `/dashboard/demo`를 우선 사용합니다. 기존 `/dashboard/research`, `/dashboard/ops`, `/dashboard/evaluation`은 상세 확인 및 백업 경로로 사용합니다.
+
+- 발표용 빠른 시연: `/dashboard/demo`
+- 전체 평가 결과 확인: `/dashboard`
+- 실제 검색 상세 확인: `/dashboard/research`
+- 운영 상태 및 Trace 확인: `/dashboard/ops`
+- Benchmark evidence 상세 확인: `/dashboard/evaluation`
 
 평가자는 다음 순서에 따라 시스템의 무결성과 Agent 동작을 검증할 수 있습니다:
 1. **평가 대시보드(Evaluation)**: D1 기반 실시간 벤치마크 증거 확인 및 모델별 정량 지표 비교.

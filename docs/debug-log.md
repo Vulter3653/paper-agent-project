@@ -1,5 +1,12 @@
 # Debug Log
 
+## 2026-06-01 (codex) - Benchmark v3 Presentation Dashboard Artifact Binding
+
+- Confirmed that the latest generated Benchmark v3 JSON artifacts differ from older presentation values for deterministic validity and robustness metrics.
+- Added a web data adapter that imports repository JSON artifacts directly at build time and keeps T001-T003 controlled comparison separate from the overall Proposed Agent artifact mean.
+- Added visible interpretation boxes so the dashboard states `PASS WITH CLAIM BOUNDARIES`, partial common-support comparison, artifact-level validation, and quota-limited Layer 5 semantics without implying full superiority.
+- No benchmark search, LLM judge rerun, D1 command, migration, benchmark-script edit, gold-label edit, or score fabrication occurred. (codex)
+
 ## 2026-06-01 (codex) - Dashboard Benchmark v3 Stale Claim-Boundary Cleanup
 
 - Confirmed through source inspection and a read-only fetch of the deployed Pages JavaScript bundle that stale dashboard narrative remained after Benchmark v3 documentation alignment.

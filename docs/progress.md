@@ -1,5 +1,12 @@
 # Project Progress And Session Handoff
 
+## 2026-06-01 (codex) - Presentation-Ready Benchmark v3 Evidence Dashboard
+
+- **JSON Source Of Truth**: Added `apps/web/src/dashboard/benchmarkV3Data.ts` to import generated Benchmark v3 JSON artifacts and keep presentation metrics aligned with repository evidence.
+- **Presentation Flow**: Added Benchmark overview, deterministic metrics, overall Proposed Agent retrieval means, T001-T003 common-support comparison, Layer 5A/5B semantic boundaries, robustness risks, artifact explorer, and a five-step live demo flow.
+- **Numerical Correction**: Dashboard now uses artifact-derived hallucination `0.4181`, timeout `0.0588`, latency `33.25s`, DOI exact match `0.5322`, and paper existence `0.5322` instead of older presentation values.
+- **Safety Boundary**: No benchmark search, LLM judge rerun, D1 command, migration, benchmark-script edit, gold-label edit, or score fabrication occurred. (codex)
+
 Updated: 2026-06-01 (Benchmark v3 Promotion Gate Summary)
 
 ## 2026-06-01 (codex) - Dashboard Benchmark v3 Claim-Boundary Alignment

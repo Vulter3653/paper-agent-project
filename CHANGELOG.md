@@ -17,6 +17,8 @@ This project follows a strict manual changelog policy. Every commit or pull requ
 - If a change is intentionally not user-visible, still record it as `Infra`, `Docs`, or `Changed`.
 
 ## 2026-06-01 (codex)
+- Changed: Added a presentation-ready Benchmark v3 evidence dashboard backed by imported `benchmark/validation/v3` JSON artifacts, with separate deterministic, retrieval, common-support, semantic-boundary, robustness, trace-explorer, and live-demo sections in `apps/web/src/dashboard/`. (codex)
+
 - Fixed: Aligned dashboard Benchmark v3 evidence cards and roadmap labels with T001-T003 common-support comparison, T004-T020 artifact-level validation, T007 missing evidence, and Layer 5A/5B claim boundaries in `apps/web/src/dashboard/`. (codex)
 - Docs: Aligned README, final demo, submission story, benchmark guide, Canva prompt, presentation MCP handoff, and final submission checklist with Benchmark v3 claim boundaries. (codex)
 - Docs: Updated the final paper, section drafts, claim checklist, enhanced report, and presentation sources for Benchmark v3 `PASS WITH CLAIM BOUNDARIES`, six-layer and 30-metric reporting, T001-T003 common-support limits, and Layer 5A/5B semantic-audit boundaries. (codex)

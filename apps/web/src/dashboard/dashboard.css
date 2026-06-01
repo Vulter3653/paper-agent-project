@@ -954,3 +954,31 @@
 .uxTraceCollapsed { background: #f8fafc; border-color: #e2e8f0; }
 .uxMetric strong, .uxSystemItem span, .uxTinyStatus, .uxPanelNote { overflow-wrap: anywhere; word-break: break-word; }
 @media (max-width: 760px) { .uxExecutiveHead, .uxNotCompleteNote { flex-direction: column; } .uxExecutiveHead h1 { font-size: 25px; } .uxEvidenceGrid, .uxGlossaryGrid { grid-template-columns: 1fr; } }
+
+/* Benchmark v3 presentation dashboard: generated JSON artifacts are the numerical source of truth. */
+.uxPresentationDashboard { display: grid; gap: 18px; margin-bottom: 22px; }
+.uxPresentationSection { scroll-margin-top: 92px; }
+.uxSectionTitle { margin-bottom: 14px; }
+.uxSectionTitle > span { color: #2563eb; display: block; font-size: 11px; font-weight: 850; letter-spacing: 0; margin-bottom: 5px; text-transform: uppercase; }
+.uxSectionTitle h2 { color: #0f172a; font-size: 21px; line-height: 1.25; margin: 0; }
+.uxSectionTitle p { color: #64748b; font-size: 14px; line-height: 1.55; margin: 6px 0 0; }
+.uxMetricsAuto { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.uxSourceNote { color: #64748b; font-size: 12px; margin: 10px 0 0; }
+.uxInterpretationBox { align-items: flex-start; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: #1e3a8a; display: flex; font-size: 13px; gap: 8px; line-height: 1.55; margin: 14px 0 0; padding: 12px 14px; }
+.uxInterpretationBox svg { flex: 0 0 auto; margin-top: 2px; }
+.uxSemanticBoundary { border-color: #fcd34d; box-shadow: 0 12px 30px rgba(180, 83, 9, 0.08); }
+.uxProxyList { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.uxProxyList span { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; color: #475569; font-size: 11px; overflow-wrap: anywhere; padding: 5px 7px; }
+.uxArtifactExplorer { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.uxArtifactEvidence { align-items: flex-start; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; gap: 12px; justify-content: space-between; min-width: 0; padding: 13px; }
+.uxArtifactEvidence h3 { color: #0f172a; font-size: 14px; margin: 6px 0; }
+.uxArtifactEvidence p, .uxArtifactEvidence small { color: #64748b; display: block; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; word-break: break-word; }
+.uxArtifactEvidence > div:last-child { align-items: flex-end; display: flex; flex: 0 0 auto; flex-direction: column; gap: 9px; text-align: right; }
+.uxArtifactEvidence strong { color: #0f172a; font-size: 11px; max-width: 150px; overflow-wrap: anywhere; }
+.uxArtifactEvidence a { align-items: center; color: #2563eb; display: inline-flex; font-size: 12px; font-weight: 800; gap: 4px; text-decoration: none; }
+.uxDemoFlow { counter-reset: demo-step; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); list-style: none; margin: 0; padding: 0; }
+.uxDemoFlow li { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; color: #334155; font-size: 13px; line-height: 1.5; padding: 13px; }
+.uxDemoFlow li::before { color: #2563eb; content: counter(list-item) ". "; font-weight: 850; }
+.uxClosingClaim { background: #0f172a; border-radius: 8px; color: #f8fafc; font-size: 14px; font-weight: 750; line-height: 1.6; margin-top: 14px; padding: 15px; }
+.uxInteractiveAppendix { margin-top: 28px; }
+@media (max-width: 760px) { .uxArtifactEvidence { flex-direction: column; } .uxArtifactEvidence > div:last-child { align-items: flex-start; text-align: left; } }

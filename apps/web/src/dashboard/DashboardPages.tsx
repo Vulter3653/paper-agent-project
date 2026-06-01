@@ -19,6 +19,7 @@ import {
   type FeatureImplementationItem,
   type FeatureImplementationStatus
 } from "./mockData";
+import { benchmarkV3 } from "./benchmarkV3Data";
 import type { AgentTrace, SearchJob } from "@paper-agent/shared";
 import "./dashboard.css";
 
@@ -198,9 +199,9 @@ export function ExecutiveSummaryPanel() {
     <section className="uxExecutiveSummary" aria-label="Paper Agent evaluator summary">
       <div className="uxExecutiveHead">
         <div>
-          <span className="uxEyebrow">Evaluator Summary</span>
-          <h1>Paper Agent: Verified Research Assistant</h1>
-          <p>A traceable multi-agent system for scholarly paper discovery.</p>
+          <span className="uxEyebrow">Responsible AI Agent Evaluation</span>
+          <h1>Paper Agent Benchmark v3</h1>
+          <p>Reproducible AI Literature Review Agent Evaluation with Explicit Claim Boundaries</p>
         </div>
         <button className="uxSoftButton" type="button" onClick={() => setDemoMode((current) => !current)}>
           <Eye size={16} /> {demoMode ? "상세 증거 보기 / Evidence Detail" : "Demo View"}
@@ -208,24 +209,29 @@ export function ExecutiveSummaryPanel() {
       </div>
       <div className="uxEvidenceGrid">
         <article className="uxEvidenceCard verified">
-          <span className="uxEvidenceBadge verified">VERIFIED BENCHMARK</span>
-          <h2>검증된 벤치마크 (T001-T003)</h2>
-          <p>T001-T003 controlled common-support comparison verified.</p>
+          <span className="uxEvidenceBadge verified">BENCHMARK SCOPE</span>
+          <h2>20 tasks · 6 layers · 30 metrics</h2>
+          <p>Generated Benchmark v3 artifacts support traceable, reproducible evaluation.</p>
         </article>
         <article className="uxEvidenceCard artifact">
-          <span className="uxEvidenceBadge artifact">ARTIFACT EVIDENCE</span>
-          <h2>Artifact-Level Validation (T004-T020)</h2>
-          <p>T004-T020 artifact rows are available for scoped validation. Baseline parity is not proven.</p>
+          <span className="uxEvidenceBadge artifact">CLAIM STATUS</span>
+          <h2>Not full superiority</h2>
+          <p>Partial common-support comparison. T004-T020 remain artifact-level validation tasks.</p>
         </article>
         <article className="uxEvidenceCard partial">
-          <span className="uxEvidenceBadge partial">PARTIAL SEMANTIC AUDIT</span>
-          <h2>정성 감사 (부분)</h2>
-          <p>Layer 5A: 22/125 evaluated. The successful subset contains no Proposed Agent rows.</p>
+          <span className="uxEvidenceBadge partial">SEMANTIC BOUNDARY</span>
+          <h2>Not full semantic coverage</h2>
+          <p>Layer 5A is quota-limited. Layer 5B is a deterministic supplementary proxy.</p>
+        </article>
+        <article className="uxEvidenceCard planned">
+          <span className="uxEvidenceBadge purple">DEMO VALUE</span>
+          <h2>Traceable evaluation</h2>
+          <p>Traceable artifacts, automated QA, and reproducible benchmark outputs.</p>
         </article>
       </div>
       <div className="uxNotCompleteNote">
         <strong>PASS WITH CLAIM BOUNDARIES</strong>
-        <span>Benchmark v3 framework ready. Full semantic coverage and global T001-T020 superiority claims are disabled.</span>
+        <span>Paper Agent Benchmark v3 does not claim full superiority across all tasks. It provides a reproducible, multi-layer benchmark framework with explicit claim boundaries.</span>
       </div>
       {!demoMode && (
         <div className="uxGlossary" aria-label="Evidence badge glossary">
@@ -283,6 +289,97 @@ function StagedExpansionEvidencePanel() {
       </p>
     </section>
   );
+}
+
+function BenchmarkV3PresentationDashboard() {
+  return (
+    <div className="uxPresentationDashboard">
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 2" title="Benchmark v3 Overview" detail="Six-layer automated evaluation with an explicit semantic boundary." />
+        <div className="uxTableWrap">
+          <table className="uxTable uxCompactTable">
+            <thead><tr><th>Layer</th><th>Evaluation area</th><th>Status</th></tr></thead>
+            <tbody>{benchmarkV3.layers.map(([layer, name, status]) => <tr key={layer}><td>{layer}</td><td>{name}</td><td><span className={`uxEvidenceBadge ${status === "Computed" ? "verified" : "partial"}`}>{status}</span></td></tr>)}</tbody>
+          </table>
+        </div>
+        <InterpretationBox>Layers 1–4 and 6 are computed through deterministic or artifact-based validation. Layer 5 remains partial because the LLM judge audit was quota-limited; therefore semantic quality is explicitly bounded rather than overclaimed.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 3" title="Deterministic Results" detail="Metadata-level and artifact-derived validation. These values are not full semantic correctness claims." />
+        <div className="uxMetrics uxMetricsAuto">{benchmarkV3.deterministic.map(([label, value]) => <MetricTile key={label} label={label} value={value} detail="latest v3 artifact" tone="blue" />)}</div>
+        <p className="uxSourceNote">Values are loaded from the latest benchmark/validation/v3 artifacts.</p>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 4" title="Overall Proposed Agent Retrieval Mean" detail="Available Proposed Agent artifact scope. This panel is intentionally separate from the T001-T003 controlled subset." />
+        <div className="uxMetrics uxMetricsAuto">{benchmarkV3.retrieval.map(([label, value]) => <MetricTile key={label} label={label} value={value} detail="Proposed Agent mean" tone="purple" />)}</div>
+        <InterpretationBox>These values summarize Proposed Agent retrieval performance across the available benchmark artifact scope. They should not be interpreted as evidence of full baseline superiority.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 5" title="Baseline Support Matrix" detail="Partial common-support comparison separates comparable tasks from artifact-level validation." />
+        <div className="uxEvidenceGrid">
+          <EvidenceFact tone="verified" badge="3-WAY CONTROLLED" title="T001-T003" body="3-way controlled comparison available" />
+          <EvidenceFact tone="artifact" badge="ARTIFACT-LEVEL" title="T004-T020" body="Artifact-level validation only" />
+          <EvidenceFact tone="partial" badge="MISSING EVIDENCE" title="T007" body="Proposed Agent missing" />
+          <EvidenceFact tone="planned" badge="BASELINE PARITY" title={benchmarkV3.scope.baselineParity} body={`${benchmarkV3.scope.comparableTaskCount} / ${benchmarkV3.scope.tasks} tasks comparable`} />
+        </div>
+        <InterpretationBox>Baseline comparison is limited to the T001-T003 common-support subset. T004-T020 cannot be used to claim full comparative superiority unless baseline parity is established.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 6" title="T001-T003 Controlled Subset Results" detail="Only controlled 3-way baseline comparison subset. Do not generalize this table to T001-T020." />
+        <div className="uxTableWrap">
+          <table className="uxTable uxCompactTable">
+            <thead><tr><th>Metric</th><th>Rule-Based</th><th>Single LLM</th><th>Paper Agent</th></tr></thead>
+            <tbody>{benchmarkV3.controlledComparison.map(([metric, rule, llm, agent]) => <tr key={metric}><td>{metric}</td><td>{rule}</td><td>{llm}</td><td>{agent}</td></tr>)}</tbody>
+          </table>
+        </div>
+        <InterpretationBox>Single LLM is stronger on Precision@5 and NDCG@5 in this controlled subset. Paper Agent is evaluated for traceability, DOI integrity, hallucination control, and journal-policy compliance without a global outperform claim.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection uxSemanticBoundary">
+        <SectionTitle eyebrow="Section 7" title="Layer 5 Semantic Boundary" detail="Responsible interpretation of quota-limited semantic evidence." />
+        <div className="uxEvidenceGrid">
+          <EvidenceFact tone="partial" badge="LAYER 5A · QUOTA LIMIT" title={`${benchmarkV3.semantic.successfulRows} / ${benchmarkV3.semantic.totalInputRows} rows`} body={`${(Number(benchmarkV3.semantic.coverageRate) * 100).toFixed(1)}% coverage · ${benchmarkV3.semantic.failedRows} failed or unevaluated rows`} />
+          <EvidenceFact tone="partial" badge="EVALUATED SUBSET ONLY" title="Proposed Agent rows: 0" body={`Layer 5 score: ${benchmarkV3.semantic.proposedAgentScore}`} />
+          <EvidenceFact tone="artifact" badge="LAYER 5B · PROXY" title={`${benchmarkV3.semantic.proxyRows} rows`} body="Deterministic supplementary proxy · semantic replacement: false" />
+        </div>
+        <div className="uxProxyList">{benchmarkV3.semantic.proxyMetrics.map((metric) => <span key={metric}>{metric}</span>)}</div>
+        <InterpretationBox>Layer 5A is a quota-limited partial implementation audit. Layer 5B supplements the incomplete LLM judge audit. It does not replace LLM or human semantic evaluation.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 8" title="Robustness & Risk" detail="Material operational risks remain visible instead of being hidden." />
+        <div className="uxMetrics uxMetricsAuto">{benchmarkV3.robustness.map(([label, value, detail]) => <MetricTile key={label} label={label} value={value} detail={detail} tone="amber" />)}</div>
+        <InterpretationBox>Material operational risks remain. The benchmark surfaces hallucination, timeout, and latency risks rather than hiding them.</InterpretationBox>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 9" title="Trace / Artifact Explorer" detail="Every claim on this dashboard is backed by a generated artifact." />
+        <div className="uxArtifactExplorer">{benchmarkV3.artifacts.map((artifact) => <article className="uxArtifactEvidence" key={artifact.path}><div><span className="uxEvidenceBadge gray">TECHNICAL TRACE</span><h3>{artifact.name}</h3><p>{artifact.purpose}</p><small>{artifact.path}</small></div><div><strong>{artifact.status}</strong><a href={artifact.href} target="_blank" rel="noreferrer">Open artifact <ArrowRight size={13} /></a></div></article>)}</div>
+      </section>
+
+      <section className="uxPanel uxPresentationSection">
+        <SectionTitle eyebrow="Section 10" title="Live Demo Flow" detail="Five steps for a 2–3 minute presentation walkthrough." />
+        <ol className="uxDemoFlow">{benchmarkV3.demoSteps.map((step) => <li key={step}>{step}</li>)}</ol>
+        <div className="uxClosingClaim">The contribution is not a claim of complete agent superiority. The contribution is a reproducible benchmark framework that makes AI agent evaluation traceable, bounded, and auditable.</div>
+      </section>
+    </div>
+  );
+}
+
+function SectionTitle({ eyebrow, title, detail }: { eyebrow: string; title: string; detail: string }) {
+  return <div className="uxSectionTitle"><span>{eyebrow}</span><h2>{title}</h2><p>{detail}</p></div>;
+}
+
+function EvidenceFact({ tone, badge, title, body }: { tone: "verified" | "artifact" | "partial" | "planned"; badge: string; title: string; body: string }) {
+  return <article className={`uxEvidenceCard ${tone}`}><span className={`uxEvidenceBadge ${tone}`}>{badge}</span><h3>{title}</h3><p>{body}</p></article>;
+}
+
+function InterpretationBox({ children }: { children: string }) {
+  return <p className="uxInterpretationBox"><ShieldCheck size={16} /> <span>{children}</span></p>;
 }
 
 function BenchmarkInterpretationHelper() {
@@ -1594,7 +1691,8 @@ export function EvaluationDashboardPage() {
   return (
     <main className="uxShell">
       <ExecutiveSummaryPanel />
-      <section className="uxHero compact">
+      <BenchmarkV3PresentationDashboard />
+      <section className="uxHero compact uxInteractiveAppendix">
         <span className="uxEyebrow">인터랙티브 평가 대시보드</span>
         <h1>통제된 T001-T003 증거와 시나리오 시뮬레이션을 구분하여 확인합니다.</h1>
         <p>상단 버튼은 검증 결과를 추가 생성하지 않습니다. 프론트엔드 시나리오 시뮬레이션으로 표시 방식을 바꿉니다.</p>
